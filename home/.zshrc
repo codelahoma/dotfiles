@@ -75,3 +75,11 @@ export EDITOR='vim'
 
 source "$HOME/.homesick/repos/homeshick/homeshick.sh"
 fpath=($HOME/.homesick/repos/homeshick/completions $fpath)
+
+function fix_dos_git_repos {
+  git config core.filemode false
+  git config core.autocrlf false
+  rm .git/index
+  git checkout -f HEAD
+} 
+
