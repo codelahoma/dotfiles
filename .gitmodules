@@ -1,6 +1,6 @@
 [submodule "home/.vim"]
 	path = home/.vim
-	url = git@github.com:codelahoma/dot_vim
+	url = https://github.com/codelahoma/dot_vim.git
 [submodule "home/.oh-my-zsh"]
 	path = home/.oh-my-zsh
-	url = git@github.com:codelahoma/oh-my-zsh
+	url = https://github.com/codelahoma/oh-my-zsh
