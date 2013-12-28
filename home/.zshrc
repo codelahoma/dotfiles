@@ -55,7 +55,7 @@ source $(brew --prefix nvm)/nvm.sh
 # User configuration
 
 export PATH=$HOME/bin:/usr/local/bin:/usr/local/opt/coreutils/libexec/gnubin:$PATH
-# export MANPATH="/usr/local/man:$MANPATH"
+export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
 
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
@@ -83,3 +83,5 @@ function fix_dos_git_repos {
   git checkout -f HEAD
 } 
 
+
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
