@@ -36,7 +36,7 @@ call vundle#rc()
 Bundle 'bling/vim-airline'
 Bundle 'vim-misc'
 Bundle 'dogrover/vim-pentadactyl'
-Bundle 'christoomey/vim-tmux-navigator'
+" Bundle 'christoomey/vim-tmux-navigator'
 Bundle 'Lokaltog/vim-easymotion'
 Bundle 'SirVer/ultisnips'
 Bundle 'gmarik/vundle'
@@ -75,6 +75,7 @@ Bundle 'vim-ruby/vim-ruby'
 " Javascript
 Bundle 'pangloss/vim-javascript'
 Bundle 'jelera/vim-javascript-syntax'
+Bundle 'mxw/vim-jsx'
 
 " Coffeescript
 Bundle 'kchmck/vim-coffee-script'
@@ -297,11 +298,6 @@ let g:localvimrc_sandbox=0
 let NERDTreeQuitOnOpen=1
 "}}}
 
-" UltiSnips configuration"{{{
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-"}}}
 
 " Manage vimrc ---------------------------------------- {{{
 if has('win32')
@@ -632,6 +628,31 @@ noremap <leader>ss :call StripWhiteSpace()<CR>
 
 " Commands -- "{{{
 command! InsertTime :normal a<c-r>=strftime('%F %H:%M')<cr>
+"}}}
+" UltiSnips configuration"{{{
+"
+" source:  http://stackoverflow.com/questions/14896327/ultisnips-and-youcompleteme
+
+function! g:UltiSnips_Complete()
+  call UltiSnips_ExpandSnippet()
+  if g:ulti_expand_res == 0
+    if pumvisible()
+      return "\<C-n>"
+    else
+      call UltiSnips_JumpForwards()
+      if g:ulti_jump_forwards_res == 0
+        return "\<TAB>"
+      endif
+    endif
+  endif
+  return ""
+endfunction
+
+let g:UltiSnipsExpandTriger="<c-j>"
+
+au BufEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsListSnippets="<c-e>"
 "}}}
 
 " Include user's local vim config

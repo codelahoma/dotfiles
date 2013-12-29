@@ -67,6 +67,10 @@ export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
 
 export EDITOR='vim'
 
+autoload edit-command-line
+zle -N edit-command-line
+bindkey '^X^E' edit-command-line
+
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 

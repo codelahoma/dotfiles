@@ -1,0 +1,35 @@
+"hg6978
+
+loadplugins '\.(js|penta)$'
+group user
+  map -count -modes=n ; -builtin <count>:
+  map -count -modes=n : -builtin <count>;
+  map -count -modes=n <Leader>f -builtin <count>:emenu<Space>View.Full<Space>Screen<Return>
+  map -count -modes=hints <C-f> <Esc><C-f>g;b
+  map -count -modes=c <C-n> <Tab>
+  map -count -modes=c <C-p> <S-Tab>
+  
+  set editor='/usr/local/bin/mvim -f +<line> +"sil! call cursor(0, <column>)" <file>'
+  set showtabline=never
+  set pintaboardToken="toldorknown:84A6160BE16125D73267"
+  
+  "--Appearance----------------------------------------
+  colorscheme solarized-light
+ 
+  "adjust font sizes - http://curtisfree.com/blog/2013/03/16/changing_pentadactyl_font
+
+  hi FontFixed -append font-size: 9pt !important;
+
+  " some groups -- such asa `CmdLine` and `StatusLine` -- are linked by default
+  hi -append -link FontFixed Hint
+  hi -append -link FontFixed CompItem
+  hi -append -link FontFixed CompTitle
+
+  autocmd LocationChange mail.google.com :normal! <C-Z>
+  autocmd LocationChange pinboard.in :normal! <C-Z>
+  autocmd LocationChange feedly.com :normal! <C-Z>
+
+
+
+
+" vim: set ft=pentadactyl:
