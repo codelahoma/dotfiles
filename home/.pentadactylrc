@@ -8,6 +8,7 @@ group user
   map -count -modes=hints <C-f> <Esc><C-f>g;b
   map -count -modes=c <C-n> <Tab>
   map -count -modes=c <C-p> <S-Tab>
+  map -modes=n ,fb -builtin :firebug toggle<Return>
   
   set editor='/usr/local/bin/mvim -f +<line> +"sil! call cursor(0, <column>)" <file>'
   set showtabline=never
@@ -29,6 +30,7 @@ group user
   autocmd LocationChange pinboard.in :normal! <C-Z>
   autocmd LocationChange feedly.com :normal! <C-Z>
 
-
+" commands
+command evernote emenu Tools.Add\ to\ Evernote
 
 " vim: set ft=pentadactyl:
