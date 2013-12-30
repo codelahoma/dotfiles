@@ -77,6 +77,10 @@ bindkey '^X^E' edit-command-line
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
 
+if [[ -f ~/.zshrc.local ]]; then
+  source ~/.zshrc.local
+fi
+
 
 source "$HOME/.homesick/repos/homeshick/homeshick.sh"
 fpath=($HOME/.homesick/repos/homeshick/completions $fpath)
@@ -90,3 +94,4 @@ function fix_dos_git_repos {
 
 
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+
