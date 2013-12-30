@@ -44,7 +44,7 @@ Bundle 'majutsushi/tagbar'
 Bundle 'mattn/gist-vim'
 Bundle 'nanotech/jellybeans.vim'
 Bundle 'roman/golden-ratio'
-Bundle 'scrooloose/nerdtree'
+" Bundle 'scrooloose/nerdtree'
 Bundle 'sjl/gundo.vim'
 Bundle 'tpope/vim-abolish'
 Bundle 'tpope/vim-commentary'
@@ -53,6 +53,7 @@ Bundle 'tpope/vim-fugitive'
 Bundle 'tpope/vim-repeat'
 Bundle 'tpope/vim-surround'
 Bundle 'tpope/vim-unimpaired'
+Bundle 'tpope/vim-vinegar'
 Bundle 'vim-scripts/Align'
 Bundle 'kakkyz81/evervim'
 Bundle 'nathanaelkane/vim-indent-guides'
@@ -295,9 +296,9 @@ set ttymouse=xterm2
 
 let g:localvimrc_sandbox=0
 
-" NERDTree configuration"{{{
-let NERDTreeQuitOnOpen=1
-"}}}
+" " NERDTree configuration"{{{
+" let NERDTreeQuitOnOpen=1
+" "}}}
 
 
 " Manage vimrc ---------------------------------------- {{{
@@ -377,8 +378,8 @@ set number
       " Give Y a consistent behavior
       nnoremap Y y$
 
-      " Toggle NERDTree
-      nnoremap <leader>t :NERDTreeToggle<cr>
+      " " Toggle NERDTree
+      " nnoremap <leader>t :NERDTreeToggle<cr>
 
       " Smart Buffer Delete mappings -------------------- {{{
       nnoremap <silent> <leader>sbd  :Sbd<cr>
@@ -523,8 +524,8 @@ set number
       nnoremap <c-x>s :w<cr>
       nnoremap <c-x>c :wq<cr>
 
-      " Hide/Show NERDTree
-      nnoremap <f2> :NERDTreeToggle<cr>
+      " " Hide/Show NERDTree
+      " nnoremap <f2> :NERDTreeToggle<cr>
 
       " }}}
 
