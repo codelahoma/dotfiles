@@ -43,7 +43,6 @@ Bundle 'gmarik/vundle'
 Bundle 'majutsushi/tagbar'
 Bundle 'mattn/gist-vim'
 Bundle 'nanotech/jellybeans.vim'
-Bundle 'programble/itchy.vim'
 Bundle 'roman/golden-ratio'
 Bundle 'scrooloose/nerdtree'
 Bundle 'sjl/gundo.vim'
@@ -59,22 +58,19 @@ Bundle 'kakkyz81/evervim'
 Bundle 'nathanaelkane/vim-indent-guides'
 Bundle 'Valloric/YouCompleteMe'
 Bundle 'Syntastic'
-Bundle 'chrisbra/NrrwRgn'
-Bundle 'tpope/vim-speeddating'
-Bundle 'calendar.vim'
 
 " Language Additions
 "  Ruby
 
-Bundle 'tpope/vim-haml'
-Bundle 'tpope/vim-rails'
-Bundle 'tpope/vim-rake'
-Bundle 'tpope/vim-rvm'
-Bundle 'vim-ruby/vim-ruby'
+" Bundle 'tpope/vim-haml'
+" Bundle 'tpope/vim-rails'
+" Bundle 'tpope/vim-rake'
+" Bundle 'tpope/vim-rvm'
+" Bundle 'vim-ruby/vim-ruby'
 
 " Javascript
 Bundle 'pangloss/vim-javascript'
-Bundle 'jelera/vim-javascript-syntax'
+" Bundle 'jelera/vim-javascript-syntax'
 Bundle 'mxw/vim-jsx'
 
 " Coffeescript
@@ -88,19 +84,19 @@ Bundle 'https://github.com/kien/rainbow_parentheses.vim.git'
 Bundle 'vim-slamhound'
 
 Bundle 'altercation/vim-colors-solarized'
-Bundle 'zenorocha/dracula-theme'
+" Bundle 'zenorocha/dracula-theme'
 
 "  Parentheses colours using Solarized
-let g:rbpt_colorpairs = [
-      \ [ '13', '#6c71c4'],
-      \ [ '5',  '#d33682'],
-      \ [ '1',  '#dc322f'],
-      \ [ '9',  '#cb4b16'],
-      \ [ '3',  '#b58900'],
-      \ [ '2',  '#859900'],
-      \ [ '6',  '#2aa198'],
-      \ [ '4',  '#268bd2'],
-      \ ]
+" let g:rbpt_colorpairs = [
+"       \ [ '13', '#6c71c4'],
+"       \ [ '5',  '#d33682'],
+"       \ [ '1',  '#dc322f'],
+"       \ [ '9',  '#cb4b16'],
+"       \ [ '3',  '#b58900'],
+"       \ [ '2',  '#859900'],
+"       \ [ '6',  '#2aa198'],
+"       \ [ '4',  '#268bd2'],
+"       \ ]
 
 " Enable rainbow parentheses for all buffers
 augroup rainbow_parentheses
@@ -115,6 +111,7 @@ Bundle 'https://github.com/guns/vim-clojure-static.git'
 Bundle 'paredit.vim'
 " vimscripts.org
 
+Bundle 'Zenburn'
 Bundle 'ZoomWin'
 Bundle 'ctrlp.vim'
 Bundle 'dbext.vim'
@@ -124,7 +121,7 @@ Bundle 'localvimrc'
 Bundle 'errormarker.vim'
 Bundle 'AsyncCommand'
 Bundle 'WebAPI.vim'
-Bundle 'Puppet-Syntax-Highlighting'
+" Bundle 'Puppet-Syntax-Highlighting'
 
 filetype plugin indent on
 if iCanHazVundle == 0
@@ -151,6 +148,10 @@ command! OrgCaptureFile :call org#OpenCaptureFile()"}}}
 
 " Settings ---------------------------------------- {{{
 set encoding=utf-8
+
+" fix brain-dead change to html indenting
+let g:html_indent_inctags = "html,body,head,tbody"
+
 
 " Persist undo history across sessions
 set undofile
