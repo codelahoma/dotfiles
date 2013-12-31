@@ -1,0 +1,26 @@
+set from = "rod@rodknowlton.com"
+set realname = "Rod Knowlton"
+
+set imap_user = "rod.knowlton@gmail.com"
+set imap_pass = "cclztspqhzoytyoy"
+
+# Remote GMail Folders
+set folder = "imaps://imap.gmail.com:993"
+set spoolfile = "+INBOX"
+set postponed = "+[Google Mail]/Drafts"
+set trash = "+[Google Mail]/Trash"
+
+# Local folders for cached headers and certificates
+set header_cache =~/.mutt/cache/headers
+set message_cachedir =~/.mutt/cache/bodies
+set certificate_file =~/.mutt/certificates
+
+# SMTP Settings
+set smtp_url = "smtp://rod.knowlton@smtp.gmail.com:587"
+set smtp_pass = "cclztspqhzoytyoy"
+
+# Securing
+set move = no #Stop asking to "move read messages to mbox"
+set imap_keepalive = 900
+
+
