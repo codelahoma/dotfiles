@@ -13,6 +13,8 @@ group user
   set editor='/usr/local/bin/mvim -f +<line> +"sil! call cursor(0, <column>)" <file>'
   set showtabline=never
   set pintaboardToken="toldorknown:84A6160BE16125D73267"
+	set hintkeys='asdfg;lkjh'
+	set showstatuslinks=command
   
   "--Appearance----------------------------------------
   colorscheme solarized-light
@@ -31,6 +33,6 @@ group user
   autocmd LocationChange feedly.com :normal! <C-Z>
 
 " commands
-command evernote emenu Tools.Add\ to\ Evernote
+command evernote emenu Tools.Add to Evernote
 
 " vim: set ft=pentadactyl:
