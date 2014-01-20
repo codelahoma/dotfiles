@@ -45,6 +45,7 @@ Bundle 'Lokaltog/vim-easymotion'
 Bundle 'SirVer/ultisnips'
 Bundle 'honza/vim-snippets'
 Bundle 'majutsushi/tagbar'
+Bundle 'mattn/webapi-vim'
 Bundle 'mattn/gist-vim'
 Bundle 'nanotech/jellybeans.vim'
 " Bundle 'roman/golden-ratio'
@@ -129,6 +130,7 @@ Bundle 'AsyncCommand'
 Bundle 'WebAPI.vim'
 Bundle 'TVO--The-Vim-Outliner'
 " Bundle 'Puppet-Syntax-Highlighting'
+Bundle 'taskpaper.vim'
 
 filetype plugin indent on
 if iCanHazVundle == 0
