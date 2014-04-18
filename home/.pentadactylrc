@@ -8,9 +8,10 @@ group user
   map -count -modes=hints <C-f> <Esc><C-f>g;b
   map -count -modes=c <C-n> <Tab>
   map -count -modes=c <C-p> <S-Tab>
-  map -modes=n -builtin ,fb  :firebug toggle<Return>
   map -modes=n -builtin ,,  <C-6>
   map -modes=n z= -builtin <M-0>
+  map -modes=n ,fb -builtin :firebug toggle<Return>
+  map -builtin ,pb :pinbookmark -tags 
   
   set editor='/usr/local/bin/mvim -f +<line> +"sil! call cursor(0, <column>)" <file>'
   set showtabline=never
@@ -28,6 +29,7 @@ group user
   hi -append -link FontFixed Hint
   hi -append -link FontFixed CompItem
   hi -append -link FontFixed CompTitle
+  hi -append Hint font-size: 15px !important;
 
   hi -append Hint font-size: 18px !important;margin-left: -.4em;
 

@@ -32,19 +32,23 @@ endif
 call vundle#rc()
 
 " github repos
-
+ " gallery: http://daylerees.github.io/
+Bundle 'daylerees/colour-schemes', { "rtp": "vim/" }
+Bundle 'mattn/emmet-vim'
 Bundle 'bling/vim-airline'
 Bundle 'vim-misc'
+Bundle 'nblock/vim-dokuwiki'
 Bundle 'dogrover/vim-pentadactyl'
+Bundle 'khorser/vim-qfnotes'
 " Bundle 'christoomey/vim-tmux-navigator'
 Bundle 'Lokaltog/vim-easymotion'
 Bundle 'SirVer/ultisnips'
-Bundle 'gmarik/vundle'
+Bundle 'honza/vim-snippets'
 Bundle 'majutsushi/tagbar'
 Bundle 'mattn/gist-vim'
 Bundle 'nanotech/jellybeans.vim'
-Bundle 'roman/golden-ratio'
-" Bundle 'scrooloose/nerdtree'
+" Bundle 'roman/golden-ratio'
+Bundle 'scrooloose/nerdtree'
 Bundle 'sjl/gundo.vim'
 Bundle 'tpope/vim-abolish'
 Bundle 'tpope/vim-commentary'
@@ -59,6 +63,7 @@ Bundle 'kakkyz81/evervim'
 " Bundle 'nathanaelkane/vim-indent-guides'
 Bundle 'Valloric/YouCompleteMe'
 Bundle 'Syntastic'
+" Bundle 'vimoutliner/vimoutliner'
 
 " Language Additions
 "  Ruby
@@ -71,11 +76,12 @@ Bundle 'Syntastic'
 
 " Javascript
 Bundle 'pangloss/vim-javascript'
-" Bundle 'jelera/vim-javascript-syntax'
-Bundle 'mxw/vim-jsx'
+Bundle 'jelera/vim-javascript-syntax'
+" Bundle 'mxw/vim-jsx'
 
 " Coffeescript
 Bundle 'kchmck/vim-coffee-script'
+Bundle 'mintplant/vim-literate-coffeescript'
 
 " Clojure
 Bundle 'https://github.com/tpope/vim-classpath.git'
@@ -116,12 +122,12 @@ Bundle 'Zenburn'
 Bundle 'ZoomWin'
 Bundle 'ctrlp.vim'
 Bundle 'dbext.vim'
-Bundle 'matchit.zip'
 Bundle 'ack.vim'
 Bundle 'localvimrc'
 Bundle 'errormarker.vim'
 Bundle 'AsyncCommand'
 Bundle 'WebAPI.vim'
+Bundle 'TVO--The-Vim-Outliner'
 " Bundle 'Puppet-Syntax-Highlighting'
 
 filetype plugin indent on
@@ -138,6 +144,7 @@ endif
 
 " Other Sourcings----------------------------------------"{{{
 source $VIMRUNTIME/ftplugin/man.vim
+runtime macros/matchit.vim
 " }}}
 
 " Org Mode  ----------------------------------------"{{{
@@ -228,6 +235,7 @@ set statusline+=(%c)                     " column number
 set statusline+=%l                       " Current line
 set statusline+=/                        " Separator
 set statusline+=%L                       " Total Lines
+let g:airline_theme='hybrid'
 
 " Abbreviations - fixing my common typos
 abbreviate ): );
@@ -266,7 +274,7 @@ set t_Co=256
 " colorscheme solarized
 
 set background=dark
-colorscheme torte
+colorscheme earthsong-contrast
 " if !has('gui_running')
 "   colorscheme slate
 " endif
@@ -296,16 +304,16 @@ set ttymouse=xterm2
 
 let g:localvimrc_sandbox=0
 
-" " NERDTree configuration"{{{
-" let NERDTreeQuitOnOpen=1
-" "}}}
+" NERDTree configuration"{{{
+ let NERDTreeQuitOnOpen=1
+"}}}
 
 
 " Manage vimrc ---------------------------------------- {{{
 if has('win32')
   nnoremap <leader>ev :execute "edit ~/vimfiles/vimrc"<cr>
 else
-  nnoremap <leader>ev :execute "edit " . resolve($MYVIMRC)<cr>
+  nnoremap <leader>ev :execute "tabedit " . resolve($MYVIMRC)<cr>
   nnoremap <leader>elv :execute "edit ./.lvimrc"<cr>
 endif
 nnoremap <leader>sv :source $MYVIMRC<cr>
@@ -357,9 +365,12 @@ set number
       " nnoremap <C-c><C-c> vip:ScreenSend<cr>
       "
 
+      " No more fat fingering help when I want Esc
+      nnoremap <silent> <f1> <esc>
+
       " keep search pattern at the center of the screen (http://vimbits.com/bits/92)
       nnoremap <silent> n nzz
-      nnoremap <silent> N nzz
+      nnoremap <silent> N Nzz
       nnoremap <silent> * *zz
       nnoremap <silent> # #zz
       nnoremap <silent> g* g*zz
@@ -379,7 +390,7 @@ set number
       nnoremap Y y$
 
       " " Toggle NERDTree
-      " nnoremap <leader>t :NERDTreeToggle<cr>
+      nnoremap <leader>t :NERDTreeToggle<cr>
 
       " Smart Buffer Delete mappings -------------------- {{{
       nnoremap <silent> <leader>sbd  :Sbd<cr>
@@ -540,6 +551,9 @@ set number
       " }}}
 
       " File Settings -------------------- {{{
+      "
+        :au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+
       " Real tabs -------------------- {{{
       augroup real_tabs
         " make and python use real tabs
@@ -555,11 +569,11 @@ set number
       augroup END
       " }}}
 
-      " Jasmine specs --------------"{{{
-      augroup filetype_jasmine
-        autocmd BufRead,BufNewFile *.{spec.js} setlocal foldmethod=indent foldlevel=2
-      augroup END
-      "}}}
+      " " Jasmine specs --------------"{{{
+      " augroup filetype_jasmine
+      "   autocmd BufRead,BufNewFile *.spec.js setlocal foldmethod=indent foldlevel=3
+      " augroup END
+      " "}}}
 
       " Ruby -------------------- {{{
       augroup filetype_ruby
@@ -575,7 +589,13 @@ set number
         au BufRead,BufNewFile *.txt call s:setupWrapping()
         au BufRead,BufNewFile *.md setlocal ft=markdown
       augroup END
-
+      " }}}
+"{{{
+      augroup filetype_dokuwiki
+        " *.docuwiki.txt files come from pentadactyl + dokuft plugin
+        au BufRead,BufNewFile *.dokuwiki.txt setlocal ft=dokuwiki textwidth=0 wrapmargin=0
+      augroup END
+"}}}
       function! s:setupWrapping()
       set wrap
       set wm=2
@@ -601,8 +621,8 @@ set number
   "   au VimEnter,WinEnter,BufWinEnter * setlocal cursorcolumn
   "   au WinLeave * setlocal nocursorline
   "   au WinLeave * setlocal nocursorcolumn
-  " augroup END"}}}
-  " " }}}
+  " augroup END"
+  " }}}
 
   " Functions --"{{{
 
@@ -635,25 +655,26 @@ command! InsertTime :normal a<c-r>=strftime('%F %H:%M')<cr>
 "
 " source:  http://stackoverflow.com/questions/14896327/ultisnips-and-youcompleteme
 
-function! g:UltiSnips_Complete()
-  call UltiSnips_ExpandSnippet()
-  if g:ulti_expand_res == 0
-    if pumvisible()
-      return "\<C-n>"
-    else
-      call UltiSnips_JumpForwards()
-      if g:ulti_jump_forwards_res == 0
-        return "\<TAB>"
-      endif
-    endif
-  endif
-  return ""
-endfunction
+" function! g:UltiSnips_Complete()
+"   call UltiSnips_ExpandSnippet()
+"   if g:ulti_expand_res == 0
+"     if pumvisible()
+"       return "\<C-n>"
+"     else
+"       call UltiSnips_JumpForwards()
+"       if g:ulti_jump_forwards_res == 0
+"         return "\<TAB>"
+"       endif
+"     endif
+"   endif
+"   return ""
+" endfunction
 
-let g:UltiSnipsExpandTriger="<c-j>"
+let g:UltiSnipsExpandTrigger="<c-j>"
 
-au BufEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
+" au BufEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
+let g:UltiSnipsJumpForwardTrigger="<c-f>"
+let g:UltiSnipsJumpBackwardTrigger="<c-k>"
 let g:UltiSnipsListSnippets="<c-e>"
 "}}}
 
