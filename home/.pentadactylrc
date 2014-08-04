@@ -25,7 +25,7 @@ group user
 
   hi FontFixed -append font-size: 9pt !important;
 
-  " some groups -- such asa `CmdLine` and `StatusLine` -- are linked by default
+  " some groups -- such as a `CmdLine` and `StatusLine` -- are linked by default
   hi -append -link FontFixed Hint
   hi -append -link FontFixed CompItem
   hi -append -link FontFixed CompTitle
