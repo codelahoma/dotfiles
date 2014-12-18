@@ -79,8 +79,8 @@ Plugin 'jiangmiao/auto-pairs'
 
 " Javascript
 Plugin 'pangloss/vim-javascript'
-Plugin 'jelera/vim-javascript-syntax'
-" Plugin 'mxw/vim-jsx'
+" Plugin 'jelera/vim-javascript-syntax'
+Plugin 'mxw/vim-jsx'
 
 " Coffeescript
 Plugin 'kchmck/vim-coffee-script'
@@ -188,7 +188,11 @@ set ruler
 set scrolloff=5
 set tildeop
 set visualbell
+
+
+
 syntax on
+let g:syntastic_javascript_checkers = ['jsxhint']
 
 " Text Formatting
 set nowrap
@@ -221,6 +225,37 @@ set smartcase  " be case sensitive if search includes caps
 set wildmenu
 set wildmode=list:longest,list:full
 set wildignore+=*.o,*.obj,.git,*.rbc
+
+" Airline
+if !exists('g:airline_symbols')
+  let g:airline_symbols = {}
+endif
+
+"unicode symbols
+let g:airline_left_sep = '»'
+let g:airline_left_sep = '▶'
+let g:airline_right_sep = '«'
+let g:airline_right_sep = '◀'
+let g:airline_symbols.linenr = '␊'
+let g:airline_symbols.linenr = '␤'
+let g:airline_symbols.linenr = '¶'
+let g:airline_symbols.branch = '⎇'
+let g:airline_symbols.paste = 'ρ'
+let g:airline_symbols.paste = 'Þ'
+let g:airline_symbols.paste = '∥'
+let g:airline_symbols.whitespace = 'Ξ'
+
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#buffer_idx_mode = 1
+nmap <leader>1 <Plug>AirlineSelectTab1
+nmap <leader>2 <Plug>AirlineSelectTab2
+nmap <leader>3 <Plug>AirlineSelectTab3
+nmap <leader>4 <Plug>AirlineSelectTab4
+nmap <leader>5 <Plug>AirlineSelectTab5
+nmap <leader>6 <Plug>AirlineSelectTab6
+nmap <leader>7 <Plug>AirlineSelectTab7
+nmap <leader>8 <Plug>AirlineSelectTab8
+nmap <leader>9 <Plug>AirlineSelectTab9
 
 " Status bar
 set laststatus=2
@@ -270,7 +305,7 @@ set modelines=10
 " 	colorscheme solarized
 " endif
 "
-" colorscheme jellybeans
+colorscheme jellybeans
 "
 
 set t_Co=256
@@ -290,6 +325,7 @@ let g:pad_dir = '~/Shared/vim-pad'
 "Directories for swp files
 set backupdir=~/.vim/backup
 set directory=~/.vim/backup
+set backupskip=/tmp/*,/private/tmp/*
 "
 " set the thesaurus
 set thesaurus=~/.vim/mthesaur.txt
