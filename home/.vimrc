@@ -65,6 +65,7 @@ Plugin 'kakkyz81/evervim'
 " Plugin 'nathanaelkane/vim-indent-guides'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'Syntastic'
+Plugin 'jiangmiao/auto-pairs'
 " Plugin 'vimoutliner/vimoutliner'
 
 " Language Additions
@@ -97,16 +98,16 @@ Plugin 'davidoc/taskpaper.vim'
 " Plugin 'zenorocha/dracula-theme'
 
 "  Parentheses colours using Solarized
-" let g:rbpt_colorpairs = [
-"       \ [ '13', '#6c71c4'],
-"       \ [ '5',  '#d33682'],
-"       \ [ '1',  '#dc322f'],
-"       \ [ '9',  '#cb4b16'],
-"       \ [ '3',  '#b58900'],
-"       \ [ '2',  '#859900'],
-"       \ [ '6',  '#2aa198'],
-"       \ [ '4',  '#268bd2'],
-"       \ ]
+let g:rbpt_colorpairs = [
+      \ [ '13', '#6c71c4'],
+      \ [ '5',  '#d33682'],
+      \ [ '1',  '#dc322f'],
+      \ [ '9',  '#cb4b16'],
+      \ [ '3',  '#b58900'],
+      \ [ '2',  '#859900'],
+      \ [ '6',  '#2aa198'],
+      \ [ '4',  '#268bd2'],
+      \ ]
 
 " Enable rainbow parentheses for all buffers
 augroup rainbow_parentheses
