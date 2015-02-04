@@ -8,6 +8,13 @@ set nocompatible
 let s:darwin = has('mac')
 
 let g:ft_ignore_pat = '\.org'
+
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall
+endif
+
 call plug#begin('~/.vim/plugged')
 Plug 'mattn/emmet-vim'
 Plug 'tacahiroy/ctrlp-funky'
@@ -45,6 +52,7 @@ Plug 'junegunn/vim-github-dashboard'
 Plug 'junegunn/vim-xmark', {'do': 'make'}
 Plug 'junegunn/seoul256.vim'
 Plug 'junegunn/limelight.vim'
+Plug 'junegunn/vader.vim'
 Plug 'kakkyz81/evervim'
 " Language Additions
 "  Ruby
@@ -88,8 +96,12 @@ function! BuildYCM(info)
   endif
 endfunction
 
-" Code tools
-Plug 'Valloric/YouCompleteMe', {'do': function('BuildYCM')}
+" Load on nothing
+Plug 'SirVer/ultisnips', { 'on': [] }
+Plug 'Valloric/YouCompleteMe', {'on': [], 'do': function('BuildYCM')}
+
+
+
 Plug 'Syntastic'
 Plug 'jiangmiao/auto-pairs'
 
@@ -598,6 +610,12 @@ noremap  <Right> <nop>
 " File Settings -------------------- {{{
 "
 :au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+
+augroup load_us_ycm  "{{{
+  autocmd!
+  autocmd InsertEnter * call plug#load('ultisnips', 'YouCompleteMe')
+                     \| call youcompleteme#Enable() | autocmd! load_us_ycm
+augroup END "}}}
 
     " Real tabs -------------------- {{{
     augroup real_tabs
