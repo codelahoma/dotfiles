@@ -354,6 +354,11 @@ if has('win32')
 endif
 " }}}
 
+" expands %% to current file's directory in command-line mode
+cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<CR>
+" [S]plit line (sister to [J]oin lines)
+" cc still substitutes the line like S would
+nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 
 " Relative numbering for speedy movement -------------------- {{{
 function! NumberToggle()
