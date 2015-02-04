@@ -6,96 +6,111 @@
 set nocompatible
 
 let g:ft_ignore_pat = '\.org'
+call plug#begin('~/.vim/plugged')
+Plug 'mattn/emmet-vim'
+Plug 'tacahiroy/ctrlp-funky'
+Plug 'bling/vim-airline'
+Plug 'vim-misc'
+Plug 'nblock/vim-dokuwiki'
+Plug 'dogrover/vim-pentadactyl'
+Plug 'khorser/vim-qfnotes'
+Plug 'airblade/vim-gitgutter'
+Plug 'daylerees/colour-schemes', { 'rtp': 'vim' }
+Plug 'Lokaltog/vim-easymotion'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+Plug 'majutsushi/tagbar'
+Plug 'mattn/gist-vim'
+Plug 'nanotech/jellybeans.vim'
+" Plug 'scrooloose/nerdtree'
+Plug 'sjl/gundo.vim'
 
-" Vundle----------------------------------------"{{{
+Plug 'tpope/vim-abolish'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-endwise'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-scriptease'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-vinegar'
+Plug 'tpope/vim-sensible'
 
-" Setting up Vundle - the vim plugin bundler
-let iCanHazVundle=1
-let vundle_readme=expand('~/.vim/bundle/vundle/README.md')
-if !filereadable(vundle_readme)
-  echo "Installing Vundle.."
-  echo ""
-  silent !mkdir -p ~/.vim/bundle
-  silent !git clone https://github.com/gmarik/vundle ~/.vim/bundle/vundle
-  let iCanHazVundle=0
-endif
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
-Plugin 'gmarik/vundle'
-"Add your bundles here
-filetype off
-if has('win32')
-  set rtp+=~/vimfiles/bundle/vundle
-else
-  set rtp+=~/.vim/bundle/vundle
-endif
-call vundle#rc()
-
-" github repos
- " gallery: http://daylerees.github.io/
-Bundle 'daylerees/colour-schemes', { "rtp": "vim/" }
-Plugin 'mattn/emmet-vim'
-Plugin 'tacahiroy/ctrlp-funky'
-Plugin 'bling/vim-airline'
-Plugin 'vim-misc'
-Plugin 'nblock/vim-dokuwiki'
-Plugin 'dogrover/vim-pentadactyl'
-Plugin 'khorser/vim-qfnotes'
-Plugin 'airblade/vim-gitgutter'
-" Plugin 'christoomey/vim-tmux-navigator'
-Plugin 'Lokaltog/vim-easymotion'
-Plugin 'SirVer/ultisnips'
-Plugin 'honza/vim-snippets'
-Plugin 'majutsushi/tagbar'
-Plugin 'mattn/gist-vim'
-Plugin 'nanotech/jellybeans.vim'
-" Plugin 'roman/golden-ratio'
-Plugin 'scrooloose/nerdtree'
-Plugin 'sjl/gundo.vim'
-Plugin 'tpope/vim-abolish'
-Plugin 'tpope/vim-commentary'
-Plugin 'tpope/vim-endwise'
-Plugin 'tpope/vim-fugitive'
-Plugin 'tpope/vim-repeat'
-Plugin 'tpope/vim-surround'
-Plugin 'tpope/vim-unimpaired'
-Plugin 'tpope/vim-vinegar'
-Plugin 'vim-scripts/Align'
-Plugin 'kakkyz81/evervim'
-" Plugin 'nathanaelkane/vim-indent-guides'
-Plugin 'Valloric/YouCompleteMe'
-Plugin 'Syntastic'
-Plugin 'jiangmiao/auto-pairs'
-" Plugin 'vimoutliner/vimoutliner'
-
+Plug 'vim-scripts/Align'
+Plug 'junegunn/vim-easy-align'
+Plug 'junegunn/vim-peekaboo'
+Plug 'junegunn/goyo.vim'
+Plug 'junegunn/vim-github-dashboard'
+Plug 'junegunn/vim-xmark', {'do': 'make'}
+Plug 'junegunn/seoul256.vim'
+Plug 'kakkyz81/evervim'
 " Language Additions
 "  Ruby
 
-" Plugin 'tpope/vim-haml'
-" Plugin 'tpope/vim-rails'
-" Plugin 'tpope/vim-rake'
-" Plugin 'tpope/vim-rvm'
-" Plugin 'vim-ruby/vim-ruby'
+" Plug 'tpope/vim-haml'
+" Plug 'tpope/vim-rails'
+" Plug 'tpope/vim-rake'
+" Plug 'tpope/vim-rvm'
+" Plug 'vim-ruby/vim-ruby'
 
 " Javascript
-Plugin 'pangloss/vim-javascript'
-" Plugin 'jelera/vim-javascript-syntax'
-Plugin 'mxw/vim-jsx'
+Plug 'pangloss/vim-javascript'
+" Plug 'jelera/vim-javascript-syntax'
+Plug 'mxw/vim-jsx'
 
 " Coffeescript
-Plugin 'kchmck/vim-coffee-script'
-Plugin 'mintplant/vim-literate-coffeescript'
+Plug 'kchmck/vim-coffee-script'
+Plug 'mintplant/vim-literate-coffeescript'
 
 " Clojure
-Plugin 'https://github.com/tpope/vim-classpath.git'
-Plugin 'https://github.com/tpope/vim-fireplace.git'
+Plug 'https://github.com/tpope/vim-classpath.git'
+" Plug 'https://github.com/tpope/vim-fireplace.git'
+Plug 'tpope/vim-fireplace', { 'for': 'clojure'}
+Plug 'kovisoft/paredit', {'for': ['clojure', 'scheme']}
 
-Plugin 'https://github.com/kien/rainbow_parentheses.vim.git'
-Plugin 'vim-slamhound'
+Plug 'https://github.com/kien/rainbow_parentheses.vim.git'
+Plug 'vim-slamhound'
 
-Plugin 'altercation/vim-colors-solarized'
-Plugin 'davidoc/taskpaper.vim'
-" Plugin 'zenorocha/dracula-theme'
+Plug 'altercation/vim-colors-solarized'
+Plug 'davidoc/taskpaper.vim'
+" Plug 'zenorocha/dracula-theme'
+
+function! BuildYCM(info)
+  " info is a dictionary with 3 fields, passed by Plug
+  " - name: name of the plugin
+  " - status: 'installed', 'updated', or 'unchanged'
+  " - force: set on PlugInstall! or PlugUpdate!
+  if a:info.status == 'installed' || a:info.force
+    !./install.sh
+  endif
+endfunction
+
+Plug 'Valloric/YouCompleteMe', {'do': function('BuildYCM')}
+
+Plug 'Syntastic'
+Plug 'jiangmiao/auto-pairs'
+Plug 'https://github.com/guns/vim-clojure-static.git'
+" vimscripts.org
+
+Plug 'Zenburn'
+Plug 'ZoomWin'
+Plug 'ctrlp.vim'
+Plug 'dbext.vim'
+Plug 'ack.vim'
+Plug 'localvimrc'
+Plug 'errormarker.vim'
+Plug 'AsyncCommand'
+Plug 'WebAPI.vim'
+Plug 'TVO--The-Vim-Outliner'
+" github repos
+ " gallery: http://daylerees.github.io/
+" Plug 'christoomey/vim-tmux-navigator'
+" Plug 'roman/golden-ratio'
+" Plug 'nathanaelkane/vim-indent-guides'
+" Plug 'vimoutliner/vimoutliner'
+" Plug 'Puppet-Syntax-Highlighting'
+call plug#end()
+
 
 "  Parentheses colours using Solarized
 let g:rbpt_colorpairs = [
@@ -118,38 +133,9 @@ augroup rainbow_parentheses
   au BufEnter * RainbowParenthesesLoadBraces
 augroup END
 
-Plugin 'https://github.com/guns/vim-clojure-static.git'
-Plugin 'paredit.vim'
-" vimscripts.org
-
-Plugin 'Zenburn'
-Plugin 'ZoomWin'
-Plugin 'ctrlp.vim'
-Plugin 'dbext.vim'
-Plugin 'ack.vim'
-Plugin 'localvimrc'
-Plugin 'errormarker.vim'
-Plugin 'AsyncCommand'
-Plugin 'WebAPI.vim'
-Plugin 'TVO--The-Vim-Outliner'
-" Plugin 'Puppet-Syntax-Highlighting'
-
-filetype plugin indent on
-if iCanHazVundle == 0
-  echo "Installing Plugins, please ignore key map error messages"
-  echo ""
-  :PluginInstall
-endif
-" Setting up Vundle - the vim plugin bundler end
 
 
-"}}}
 
-
-" Other Sourcings----------------------------------------"{{{
-source $VIMRUNTIME/ftplugin/man.vim
-runtime macros/matchit.vim
-" }}}
 
 " Org Mode  ----------------------------------------"{{{
 au! BufRead,BufWrite,BufWritePost,BufNewFile *.org
@@ -264,9 +250,9 @@ set statusline+=%m                       " modified flag
 set statusline+=\                        " Separator
 set statusline+=%y                       " File type
 set statusline+=\                        " Separator
-if !has('win32')
-  set statusline+=%{rvm#statusline()}      " Current Ruby version
-endif
+" if !has('win32')
+"   set statusline+=%{rvm#statusline()}      " Current Ruby version
+" endif
 set statusline+=\                        " Separator
 set statusline+=%{fugitive#statusline()} " Git information
 set statusline+=%=                       " Switch to the right side
@@ -313,7 +299,7 @@ set t_Co=256
 " colorscheme solarized
 
 set background=dark
-colorscheme earthsong-contrast
+colorscheme jellybeans
 " if !has('gui_running')
 "   colorscheme slate
 " endif
@@ -323,9 +309,9 @@ colorscheme earthsong-contrast
 let g:pad_dir = '~/Shared/vim-pad'
 
 "Directories for swp files
-set backupdir=~/.vim/backup
-set directory=~/.vim/backup
-set backupskip=/tmp/*,/private/tmp/*
+" set backupdir=~/.vim/backup
+" set directory=~/.vim/backup
+" set backupskip=/tmp/*,/private/tmp/*
 "
 " set the thesaurus
 set thesaurus=~/.vim/mthesaur.txt
@@ -345,7 +331,7 @@ set ttymouse=xterm2
 let g:localvimrc_sandbox=0
 
 " NERDTree configuration"{{{
- let NERDTreeQuitOnOpen=1
+ " let NERDTreeQuitOnOpen=1
 "}}}
 
 
@@ -430,7 +416,7 @@ nnoremap <leader>ig :IndentGuidesToggle<cr>
 nnoremap Y y$
 
 " " Toggle NERDTree
-nnoremap <leader>t :NERDTreeFocus<cr>
+" nnoremap <leader>t :NERDTreeFocus<cr>
 
 " Smart Buffer Delete mappings -------------------- {{{
 nnoremap <silent> <leader>sbd  :Sbd<cr>
