@@ -5,6 +5,8 @@
 " Use Vim settings. Must run before other settings
 set nocompatible
 
+let s:darwin = has('mac')
+
 let g:ft_ignore_pat = '\.org'
 call plug#begin('~/.vim/plugged')
 Plug 'mattn/emmet-vim'
@@ -15,13 +17,12 @@ Plug 'nblock/vim-dokuwiki'
 Plug 'dogrover/vim-pentadactyl'
 Plug 'khorser/vim-qfnotes'
 Plug 'airblade/vim-gitgutter'
-Plug 'daylerees/colour-schemes', { 'rtp': 'vim' }
 Plug 'Lokaltog/vim-easymotion'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'majutsushi/tagbar'
+Plug 'mattn/webapi-vim'
 Plug 'mattn/gist-vim'
-Plug 'nanotech/jellybeans.vim'
 " Plug 'scrooloose/nerdtree'
 Plug 'sjl/gundo.vim'
 
@@ -43,6 +44,7 @@ Plug 'junegunn/goyo.vim'
 Plug 'junegunn/vim-github-dashboard'
 Plug 'junegunn/vim-xmark', {'do': 'make'}
 Plug 'junegunn/seoul256.vim'
+Plug 'junegunn/limelight.vim'
 Plug 'kakkyz81/evervim'
 " Language Additions
 "  Ruby
@@ -52,6 +54,9 @@ Plug 'kakkyz81/evervim'
 " Plug 'tpope/vim-rake'
 " Plug 'tpope/vim-rvm'
 " Plug 'vim-ruby/vim-ruby'
+
+" Jade templating
+Plug 'jade.vim'
 
 " Javascript
 Plug 'pangloss/vim-javascript'
@@ -64,14 +69,12 @@ Plug 'mintplant/vim-literate-coffeescript'
 
 " Clojure
 Plug 'https://github.com/tpope/vim-classpath.git'
-" Plug 'https://github.com/tpope/vim-fireplace.git'
 Plug 'tpope/vim-fireplace', { 'for': 'clojure'}
 Plug 'kovisoft/paredit', {'for': ['clojure', 'scheme']}
 
 Plug 'https://github.com/kien/rainbow_parentheses.vim.git'
 Plug 'vim-slamhound'
 
-Plug 'altercation/vim-colors-solarized'
 Plug 'davidoc/taskpaper.vim'
 " Plug 'zenorocha/dracula-theme'
 
@@ -85,10 +88,22 @@ function! BuildYCM(info)
   endif
 endfunction
 
+" Code tools
 Plug 'Valloric/YouCompleteMe', {'do': function('BuildYCM')}
-
 Plug 'Syntastic'
 Plug 'jiangmiao/auto-pairs'
+
+" The look
+Plug 'daylerees/colour-schemes', { 'rtp': 'vim' }
+Plug 'nanotech/jellybeans.vim'
+Plug 'altercation/vim-colors-solarized'
+Plug 'chriskempson/vim-tomorrow-theme'
+
+
+if s:darwin
+  Plug 'rizzatti/dash.vim'
+endif
+
 Plug 'https://github.com/guns/vim-clojure-static.git'
 " vimscripts.org
 
@@ -100,11 +115,10 @@ Plug 'ack.vim'
 Plug 'localvimrc'
 Plug 'errormarker.vim'
 Plug 'AsyncCommand'
-Plug 'WebAPI.vim'
 Plug 'TVO--The-Vim-Outliner'
 " github repos
  " gallery: http://daylerees.github.io/
-" Plug 'christoomey/vim-tmux-navigator'
+Plug 'christoomey/vim-tmux-navigator'
 " Plug 'roman/golden-ratio'
 " Plug 'nathanaelkane/vim-indent-guides'
 " Plug 'vimoutliner/vimoutliner'

@@ -35,7 +35,7 @@ group user
 
 
   autocmd LocationChange mail.google.com :normal! <C-Z>
-  autocmd LocationChange pinboard.in :normal! <C-Z>
+  " autocmd LocationChange pinboard.in :normal! <C-Z>
   autocmd LocationChange feedly.com :normal! <C-Z>
 
   "load externals
