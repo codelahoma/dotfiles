@@ -110,6 +110,7 @@ Plug 'daylerees/colour-schemes', { 'rtp': 'vim' }
 Plug 'nanotech/jellybeans.vim'
 Plug 'altercation/vim-colors-solarized'
 Plug 'chriskempson/vim-tomorrow-theme'
+Plug 'chriskempson/base16-vim'
 
 
 if s:darwin
@@ -322,7 +323,7 @@ endif
 set modeline
 set modelines=10
 
-colorscheme seoul256
+colorscheme base16-londontube
 "
 
 set t_Co=256
@@ -334,8 +335,8 @@ set background=dark
 let g:pad_dir = '~/Shared/vim-pad'
 
 " set the thesaurus
-set thesaurus=~/.vim/mthesaur.txt
-set dictionary=~/.vim/words
+set thesaurus  =~ /.vim/mthesaur.txt
+set dictionary =~ /.vim/words
 
 " load the plugin and indent settings for the detected filetype
 filetype plugin indent on
@@ -409,6 +410,14 @@ vnoremap <leader>' c''<esc>hpl
 
 " Miscellaneous mappings -------------------- {{{
 
+
+" EasyAlign
+" Start interactive EasyAlign in visual mode (e.g. vip<Enter>)
+vmap <Enter> <Plug>(EasyAlign)
+
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
+
 " for screen.vim, send block to ScreenSend function
 " (eg Scheme interpeter)
 " from http://www.ktaylor.name/2009/11/vim-screen-lisp-programming-environment.html
@@ -435,7 +444,7 @@ nnoremap <silent> g# g#zz
 " nnoremap <c-l> <c-w>l
 
 " Indent guides
-nnoremap <leader>ig :IndentGuidesToggle<cr>
+nnoremap <leader>ig :IndentLinesToggle<cr>
 
 " Give Y a consistent behavior
 nnoremap Y y$
