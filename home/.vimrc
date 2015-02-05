@@ -30,8 +30,8 @@ Plug 'honza/vim-snippets'
 Plug 'majutsushi/tagbar'
 Plug 'mattn/webapi-vim'
 Plug 'mattn/gist-vim'
-" Plug 'scrooloose/nerdtree'
-Plug 'sjl/gundo.vim'
+Plug 'scrooloose/nerdtree'
+" Plug 'sjl/gundo.vim'
 
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-commentary'
@@ -131,6 +131,8 @@ Plug 'TVO--The-Vim-Outliner'
 " github repos
  " gallery: http://daylerees.github.io/
 Plug 'christoomey/vim-tmux-navigator'
+Plug 'Yggdroot/indentLine', {'on': 'IndentLinesToggle'}
+Plug 'mbbill/undotree', {'on': 'UndotreeToggle'}
 " Plug 'roman/golden-ratio'
 " Plug 'nathanaelkane/vim-indent-guides'
 " Plug 'vimoutliner/vimoutliner'
@@ -191,13 +193,12 @@ set hidden
 " Remember more commands and search history
 set history=1000
 
-let EasyMotion_leader_key = '\'
-let mapleader = ','
-let maplocalleader = '\'
+let EasyMotion_leader_key = ','
+let mapleader = ' '
+let maplocalleader = ','
 let $JS_CMD="node"
 set number
 set ruler
-set scrolloff=5
 set tildeop
 set visualbell
 
@@ -219,7 +220,18 @@ set listchars=tab:↠↠,trail:·,eol:↩,extends:>,precedes:<
 set foldlevelstart=0
 set backspace=indent,eol,start
 set numberwidth=5
-set so=14
+set scrolloff=14
+if has('patch-7.3.541')
+  set formatoptions+=j
+endif
+
+" Annoying temporary files
+set backupdir=/tmp//,.
+set directory=/tmp//,.
+if v:version >= 703
+  set undodir=/tmp//,.
+endif
+
 
 " disable sound on errors
 set noerrorbells
@@ -310,35 +322,17 @@ endif
 set modeline
 set modelines=10
 
-" Default color scheme
-" if has('win32') || !has('gui_running')
-" 	colorscheme blackboard
-" else
-" 	colorscheme solarized
-" endif
-"
-colorscheme jellybeans
+colorscheme seoul256
 "
 
 set t_Co=256
-" set background=light
-" colorscheme solarized
 
 set background=dark
-colorscheme jellybeans
-" if !has('gui_running')
-"   colorscheme slate
-" endif
 
 " vim-pad directory
 
 let g:pad_dir = '~/Shared/vim-pad'
 
-"Directories for swp files
-" set backupdir=~/.vim/backup
-" set directory=~/.vim/backup
-" set backupskip=/tmp/*,/private/tmp/*
-"
 " set the thesaurus
 set thesaurus=~/.vim/mthesaur.txt
 set dictionary=~/.vim/words
@@ -454,23 +448,27 @@ nnoremap <silent> <leader>sbd  :Sbd<cr>
 nnoremap <silent> <leader>sbdm :Sbdm<cr>
 " }}}
 
-" operator pending remaps --------------------{{{
-" (i)n and (a)round (n)ext or (l)ast
-onoremap in( :<c-u>normal! f(vi(<cr>
-onoremap il( :<c-u>normal! F)vi(<cr>
-onoremap an( :<c-u>normal! f(va(<cr>
-onoremap al( :<c-u>normal! F)va(<cr>
 
-onoremap in{ :<c-u>normal! f{vi{<cr>
-onoremap il{ :<c-u>normal! F}vi{<cr>
-onoremap an{ :<c-u>normal! f{va{<cr>
-onoremap al{ :<c-u>normal! F}va{<cr>
+" Save
+inoremap <C-s> <C-O>:update<CR>
+nnoremap <C-s> :update<CR>
 
-onoremap in[ :<c-u>normal! f[vi[<cr>
-onoremap il[ :<c-u>normal! F]vi[<cr>
-onoremap an[ :<c-u>normal! f[va[<cr>
-onoremap al[ :<c-u>normal! F]va[<cr>
-" }}}
+" Disable CTRL-A on tmux or on screen
+if $TERM =~ 'screen'
+  nnoremap <C-A> <nop>
+  nnoremap <Leader><C-a> <C-a>
+endif
+
+" Jump List
+nnoremap _ <C-O>
+nnoremap + <C-I>
+
+" <F4> | Tagbar
+if v:version >= 703
+  inoremap <F4> <ESC>:TagbarToggle<cr>
+  nnoremap <F4> :TagbarToggle<cr>
+  let g:tagbar_sort = 0
+endif
 
 " Automatically re-indent on paste -------------------- {{{
 " nnoremap <leader>p p
