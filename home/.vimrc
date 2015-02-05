@@ -175,14 +175,18 @@ command! OrgCaptureFile :call org#OpenCaptureFile()"}}}
 
 " Settings ---------------------------------------- {{{
 set encoding=utf-8
+set autoread
+
 
 " fix brain-dead change to html indenting
 let g:html_indent_inctags = "html,body,head,tbody"
 
 
 " Persist undo history across sessions
-set undofile
 set undodir=~/.vim/undo
+set undofile
+set undolevels=1000
+set undoreload=10000
 
 " Allow backgrounding buffers without writing them, and remember marks/undo
 " for backgrounded buffers
@@ -335,8 +339,8 @@ set background=dark
 let g:pad_dir = '~/Shared/vim-pad'
 
 " set the thesaurus
-set thesaurus  =~ /.vim/mthesaur.txt
-set dictionary =~ /.vim/words
+set thesaurus=~/.vim/mthesaur.txt
+set dictionary=~/.vim/words
 
 " load the plugin and indent settings for the detected filetype
 filetype plugin indent on
@@ -381,25 +385,31 @@ cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<CR>
 " cc still substitutes the line like S would
 nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 
-" Relative numbering for speedy movement -------------------- {{{
-function! NumberToggle()
-  if(&relativenumber == 1)
-    set number
-  else
-    set relativenumber
-  endif
-endfunc
 
-" nnoremap <C-n> :call NumberToggle()<cr>
-" inoremap <C-n> :call NumberToggle()<cr>
-" vnoremap <C-n> :call NumberToggle()<cr>
+" " Relative numbering for speedy movement -------------------- {{{
+" function! NumberToggle()
+"   if(&relativenumber == 1)
+"     set number
+"   else
+"     set relativenumber
+"   endif
+" endfunc
 
-autocmd FocusLost   * :set number
-autocmd FocusGained * :set relativenumber
+" " nnoremap <C-n> :call NumberToggle()<cr>
+" " inoremap <C-n> :call NumberToggle()<cr>
+" " vnoremap <C-n> :call NumberToggle()<cr>
 
-autocmd InsertEnter * :set number
-autocmd InsertLeave * :set relativenumber
-" }}}
+" autocmd FocusLost   * :set number
+" autocmd FocusGained * :set relativenumber
+
+" autocmd InsertEnter * :set number
+" autocmd InsertLeave * :set relativenumber
+" " }}}
+
+" Use hybrid numbering
+set number
+set relativenumber
+
 
 " Surround word or visual selection with single or double quotes --- {{{
 nnoremap <leader>" viw<esc>a"<esc>hbi"<esc>lel
@@ -599,8 +609,8 @@ map <Leader>rt :!ctags --extra=+f -R *<CR><CR>
 nnoremap <c-x>s :w<cr>
 nnoremap <c-x>c :wq<cr>
 
-" " Hide/Show NERDTree
-" nnoremap <f2> :NERDTreeToggle<cr>
+" Hide/Show NERDTree
+nnoremap <Leader>t :NERDTreeToggle<cr>
 
 " }}}
 
