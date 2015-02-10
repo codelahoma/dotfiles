@@ -20,6 +20,7 @@ Plug 'mattn/emmet-vim'
 Plug 'tacahiroy/ctrlp-funky'
 Plug 'bling/vim-airline'
 Plug 'vim-misc'
+Plug 'cespare/vim-sbd'
 Plug 'nblock/vim-dokuwiki'
 Plug 'dogrover/vim-pentadactyl'
 Plug 'khorser/vim-qfnotes'
@@ -43,8 +44,8 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-vinegar'
 Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-dispatch'
 
-Plug 'vim-scripts/Align'
 Plug 'junegunn/vim-easy-align'
 Plug 'junegunn/vim-peekaboo'
 Plug 'junegunn/goyo.vim'
@@ -54,26 +55,22 @@ Plug 'junegunn/seoul256.vim'
 Plug 'junegunn/limelight.vim'
 Plug 'junegunn/vader.vim'
 Plug 'kakkyz81/evervim'
-" Language Additions
-"  Ruby
 
-" Plug 'tpope/vim-haml'
-" Plug 'tpope/vim-rails'
-" Plug 'tpope/vim-rake'
-" Plug 'tpope/vim-rvm'
-" Plug 'vim-ruby/vim-ruby'
+" Language Additions
 
 " Jade templating
 Plug 'jade.vim'
 
 " Javascript
 Plug 'pangloss/vim-javascript'
-" Plug 'jelera/vim-javascript-syntax'
 Plug 'mxw/vim-jsx'
 
 " Coffeescript
 Plug 'kchmck/vim-coffee-script'
 Plug 'mintplant/vim-literate-coffeescript'
+
+" Swift
+Plug 'Keithbsmiley/swift.vim'
 
 " Clojure
 Plug 'https://github.com/tpope/vim-classpath.git'
@@ -81,10 +78,9 @@ Plug 'tpope/vim-fireplace', { 'for': 'clojure'}
 Plug 'kovisoft/paredit', {'for': ['clojure', 'scheme']}
 
 Plug 'https://github.com/kien/rainbow_parentheses.vim.git'
-Plug 'vim-slamhound'
+Plug 'vim-slamhound', {'for': 'clojure'}
 
 Plug 'davidoc/taskpaper.vim'
-" Plug 'zenorocha/dracula-theme'
 
 function! BuildYCM(info)
   " info is a dictionary with 3 fields, passed by Plug
@@ -232,11 +228,25 @@ endif
 
 " Annoying temporary files
 set backupdir=/tmp//,.
-set directory=/tmp//,.
-if v:version >= 703
-  set undodir=/tmp//,.
+if !isdirectory(expand(&backupdir))
+  call mkdir(expand(&backupdir), "p")
 endif
 
+set directory=/tmp//,.
+if !isdirectory(expand(&directory))
+  call mkdir(expand(&directory), "p")
+endif
+
+if v:version >= 703
+  set undodir=/tmp//,.
+  if !isdirectory(expand(&undodir))
+    call mkdir(expand(&undodir), "p")
+  endif
+endif
+
+" Backups
+set backup
+set noswapfile
 
 " disable sound on errors
 set noerrorbells
@@ -427,6 +437,30 @@ vmap <Enter> <Plug>(EasyAlign)
 
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
+
+
+" *** The Two Hand System ***
+" (http://reefpoints.dockyard.com/2013/09/11/vim-staying-on-home-row-via-map.html)
+
+inoremap ;a <ESC>
+inoremap ;d <ESC>:update<CR>
+inoremap ;f <C-O>:update<CR>
+nnoremap ;f :update<CR>
+
+
+" How to boost your Vim productivity
+" http://sheerun.net/2014/03/21/how-to-boost-your-vim-productivity/
+
+nnoremap <silent> <Leader>w :update<CR>
+nnoremap <Leader>o :CtrlP<CR>
+
+vmap <Leader>y "+y
+vmap <Leader>d "+d
+nmap <Leader>p "+p
+nmap <Leader>P "+P
+vmap <Leader>p "+p
+vmap <Leader>P "+P
+
 
 " for screen.vim, send block to ScreenSend function
 " (eg Scheme interpeter)
@@ -708,13 +742,6 @@ augroup END "}}}
 
 
 
-    function! ToggleFoldWithNoHL()
-      if foldlevel('.')
-        normal! za
-      endif
-    endfunction
-
-    nnoremap <silent> <space> :nohlsearch<cr>:call ToggleFoldWithNoHL()<cr>
 
     function! StripWhiteSpace()
       let save_cursor = getpos(".")
@@ -731,24 +758,6 @@ augroup END "}}}
     " Commands -- "{{{
     command! InsertTime :normal a<c-r>=strftime('%F %H:%M')<cr>
     "}}}
-    " UltiSnips configuration"{{{
-    "
-    " source:  http://stackoverflow.com/questions/14896327/ultisnips-and-youcompleteme
-
-    " function! g:UltiSnips_Complete()
-    "   call UltiSnips_ExpandSnippet()
-    "   if g:ulti_expand_res == 0
-    "     if pumvisible()
-    "       return "\<C-n>"
-    "     else
-    "       call UltiSnips_JumpForwards()
-    "       if g:ulti_jump_forwards_res == 0
-    "         return "\<TAB>"
-    "       endif
-    "     endif
-    "   endif
-    "   return ""
-    " endfunction
 
     let g:UltiSnipsExpandTrigger="<c-j>"
 
