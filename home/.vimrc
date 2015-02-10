@@ -43,6 +43,7 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-vinegar'
 Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-dispatch'
 
 Plug 'vim-scripts/Align'
 Plug 'junegunn/vim-easy-align'
@@ -310,10 +311,10 @@ abbreviate ): );
 
 " Font selection
 if has('gui_running')
-  if !has('win32')
-    set guifont=Menlo:h18
-  else
+  if has('win32')
     set guifont=Consolas:h14
+  else
+    set guifont=Menlo:h18
   endif
 
   set go-=T
@@ -327,7 +328,7 @@ endif
 set modeline
 set modelines=10
 
-colorscheme base16-londontube
+colorscheme Tomorrow-Night-Bright
 "
 
 set t_Co=256
@@ -437,6 +438,8 @@ nmap ga <Plug>(EasyAlign)
 
 " No more fat fingering help when I want Esc
 nnoremap <silent> <f1> <esc>
+nnoremap q: :q
+
 
 " keep search pattern at the center of the screen (http://vimbits.com/bits/92)
 nnoremap <silent> n nzz
