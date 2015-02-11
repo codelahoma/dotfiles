@@ -151,25 +151,25 @@ let g:rbpt_colorpairs = [
 
 " Enable rainbow parentheses for all buffers
 augroup rainbow_parentheses
-  au!
-  au VimEnter * RainbowParenthesesActivate
-  au BufEnter * RainbowParenthesesLoadRound
-  au BufEnter * RainbowParenthesesLoadSquare
-  au BufEnter * RainbowParenthesesLoadBraces
+  autocmd!
+  autocmd VimEnter * RainbowParenthesesActivate
+  autocmd BufEnter * RainbowParenthesesLoadRound
+  autocmd BufEnter * RainbowParenthesesLoadSquare
+  autocmd BufEnter * RainbowParenthesesLoadBraces
 augroup END
 
 
 
 
 
-" Org Mode  ----------------------------------------"{{{
-au! BufRead,BufWrite,BufWritePost,BufNewFile *.org
-au BufEnter *.org            call org#SetOrgFileType()
+" Org Mode  ----------------------------------------
+autocmd! BufRead,BufWrite,BufWritePost,BufNewFile *.org
+autocmd BufEnter *.org            call org#SetOrgFileType()
 " let g:org_capture_file = '~/org_files/mycaptures.org'
 command! OrgCapture :call org#CaptureBuffer()
-command! OrgCaptureFile :call org#OpenCaptureFile()"}}}
+command! OrgCaptureFile :call org#OpenCaptureFile()
 
-" Settings ---------------------------------------- {{{
+" Settings ----------------------------------------
 set encoding=utf-8
 set autoread
 
@@ -189,7 +189,7 @@ set undoreload=10000
 set hidden
 
 " Automatically leave insert mode after 'updatetime' (4s by default).
-" au CursorHoldI * stopinsert
+" autocmd CursorHoldI * stopinsert
 
 " Remember more commands and search history
 set history=1000
@@ -354,7 +354,7 @@ set dictionary=~/.vim/words
 
 " load the plugin and indent settings for the detected filetype
 filetype plugin indent on
-" }}}
+"
 "
 
 " Mouse droppings
@@ -365,12 +365,12 @@ set ttymouse=xterm2
 
 let g:localvimrc_sandbox=0
 
-" NERDTree configuration"{{{
+" NERDTree configuration
  " let NERDTreeQuitOnOpen=1
-"}}}
 
 
-" Manage vimrc ---------------------------------------- {{{
+
+" Manage vimrc ----------------------------------------
 if has('win32')
   nnoremap <leader>ev :execute "edit ~/vimfiles/vimrc"<cr>
 else
@@ -378,16 +378,16 @@ else
   nnoremap <leader>elv :execute "edit ./.lvimrc"<cr>
 endif
 nnoremap <leader>sv :source $MYVIMRC<cr>
-" }}}
+"
 
-" netrw-putty config for remote editing on work win32 machine-------------------- {{{
+" netrw-putty config for remote editing on work win32 machine--------------------
 if has('win32')
   let g:netrw_cygwin = 0
   let g:netrw_ssh_cmd = 'plink -batch -T -ssh'
   let g:netrw_scp_cmd = 'pscp -batch -q -scp'
   let g:netrw_sftp_cmd = 'pscp -batch -q -sftp'
 endif
-" }}}
+"
 
 " expands %% to current file's directory in command-line mode
 cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<CR>
@@ -396,7 +396,7 @@ cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<CR>
 nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 
 
-" " Relative numbering for speedy movement -------------------- {{{
+" " Relative numbering for speedy movement --------------------
 " function! NumberToggle()
 "   if(&relativenumber == 1)
 "     set number
@@ -414,21 +414,24 @@ nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 
 " autocmd InsertEnter * :set number
 " autocmd InsertLeave * :set relativenumber
-" " }}}
+" "
 
 " Use hybrid numbering
 set number
 set relativenumber
 
 
-" Surround word or visual selection with single or double quotes --- {{{
+" Surround word or visual selection with single or double quotes ---
 nnoremap <leader>" viw<esc>a"<esc>hbi"<esc>lel
 nnoremap <leader>' viw<esc>a'<esc>hbi'<esc>lel
 vnoremap <leader>" c""<esc>hpl
 vnoremap <leader>' c''<esc>hpl
-" }}}
+"
 
-" Miscellaneous mappings -------------------- {{{
+" Miscellaneous mappings --------------------
+
+" Execute current line (kinda)
+nnoremap <C-x><C-e> yy@"
 
 
 " EasyAlign
@@ -498,10 +501,10 @@ nnoremap Y y$
 " " Toggle NERDTree
 " nnoremap <leader>t :NERDTreeFocus<cr>
 
-" Smart Buffer Delete mappings -------------------- {{{
+" Smart Buffer Delete mappings --------------------
 nnoremap <silent> <leader>sbd  :Sbd<cr>
 nnoremap <silent> <leader>sbdm :Sbdm<cr>
-" }}}
+"
 
 
 " Save
@@ -525,18 +528,18 @@ if v:version >= 703
   let g:tagbar_sort = 0
 endif
 
-" Automatically re-indent on paste -------------------- {{{
+" Automatically re-indent on paste --------------------
 " nnoremap <leader>p p
 " nnoremap <leader>P p
 " nnoremap <leader>p p`[v`]=
 " nnoremap <leader>P P`[v`]=
 " overriding defaults seems to be more trouble than it's worth
-" }}}
+"
 
-" Git --------------------"{{{
-:nnoremap <leader>gs :Gstatus<cr>"}}}
+" Git --------------------
+:nnoremap <leader>gs :Gstatus<cr>
 
-" CtrlP config to replace Gary Bernhardt's Command-T config --- {{{
+" CtrlP config to replace Gary Bernhardt's Command-T config ---
 " from 'File Navigation with Vim'
 " (http://www.destroyallsoftware.com/file-navigation-in-vim.html)
 nnoremap <leader>f :CtrlPCurWD<cr>
@@ -544,7 +547,7 @@ nnoremap <leader>gf :CtrlPCurFile<cr>
 nnoremap <leader>b :CtrlPBuffer<cr>
 nnoremap <leader>m :CtrlPMRUFiles<cr>
 
-" operator pending remaps --------------------{{{
+" operator pending remaps --------------------
 " (i)n and (a)round (n)ext or (l)ast
 onoremap in( :<c-u>normal! f(vi(<cr>
 onoremap il( :<c-u>normal! F)vi(<cr>
@@ -560,7 +563,7 @@ onoremap in[ :<c-u>normal! f[vi[<cr>
 onoremap il[ :<c-u>normal! F]vi[<cr>
 onoremap an[ :<c-u>normal! f[va[<cr>
 onoremap al[ :<c-u>normal! F]va[<cr>
-" }}}
+"
 
 " Custom Rails specific CtrlP mappings
 nnoremap <leader>gv :ClearCtrlPCache<cr>\|:CtrlP app/views<cr>
@@ -572,9 +575,9 @@ nnoremap <leader>gp :ClearCtrlPCache<cr>\|:CtrlP public<cr>
 " I think I prefer to use this shortcut for Git, but I'll keep it here for
 " review at a later date.
 " nnoremap <leader>gs :ClearCtrlPCache<cr>\|:CtrlP public/stylesheets<cr>
-" }}}
+"
 
-" Emacs command line editing" -------------------- {{{
+" Emacs command line editing" --------------------
 
 " start of line
 :cnoremap <C-A>		<Home>
@@ -603,17 +606,22 @@ nnoremap <leader>gp :ClearCtrlPCache<cr>\|:CtrlP public<cr>
 ":cnoremap <Esc><C-B>	<S-Left>
 
 "" forward one word
-":cnoremap <Esc><C-F>	<S-Right>"}}}
+":cnoremap <Esc><C-F>	<S-Right>
 
-" " ex commands are more common than finding the next [tTfF], -------------------- {{{
-" " so let's swap `:` and `;`
-nnoremap ; :
-nnoremap : ;
-vnoremap ; :
-vnoremap : ;
+" swapping back to standard. Now that space is my <leader>, I won't be
+" needing the command line for saving, and the Two Hand Method (see elsewhere
+" in this file) leads with a semi-colon, which means a bare semicolon has to
+" timeout before its mapping kicks in.
+"
+" " " ex commands are more common than finding the next [tTfF], --------------------
+" " " so let's swap `:` and `;`
+" nnoremap ; :
+" nnoremap : ;
+" vnoremap ; :
+" vnoremap : ;
 " This mapping along with mapping ; to : allows for quick save with ;w;
-cnoremap w; w<CR>
-" }}}
+" cnoremap w; w<CR>
+"
 
 " source current file
 nnoremap <leader>sf :source %<cr>
@@ -648,9 +656,9 @@ nnoremap <c-x>c :wq<cr>
 " Hide/Show NERDTree
 nnoremap <Leader>t :NERDTreeToggle<cr>
 
-" }}}
+"
 
-" Burn The Boats ---------------------------------------- {{{
+" Burn The Boats ----------------------------------------
 " inoremap <esc>   <nop>
 nmap  <Up>    <nop>
 nmap  <Down>  <nop>
@@ -658,60 +666,60 @@ vmap  <Up>    <nop>
 vmap  <Down>  <nop>
 noremap  <Left>  <nop>
 noremap  <Right> <nop>
-" }}}
-
-" File Settings -------------------- {{{
 "
-:au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 
-augroup load_us_ycm  "{{{
+" File Settings --------------------
+"
+:autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+
+augroup load_us_ycm
   autocmd!
   autocmd InsertEnter * call plug#load('ultisnips', 'YouCompleteMe')
                      \| call youcompleteme#Enable() | autocmd! load_us_ycm
-augroup END "}}}
+augroup END
 
-    " Real tabs -------------------- {{{
+    " Real tabs --------------------
     augroup real_tabs
       " make and python use real tabs
       autocmd FileType make   set noexpandtab
       autocmd FileType python set noexpandtab
       autocmd BufRead,BufNewFile *.plist set noexpandtab
     augroup END
-    " }}}
-    " Vimscript -------------------- {{{
+    "
+    " Vimscript --------------------
     augroup filetype_vim
       autocmd!
       autocmd FileType vim setlocal foldmethod=marker
     augroup END
-    " }}}
+    "
 
-    " " Jasmine specs --------------"{{{
+    " " Jasmine specs --------------
     " augroup filetype_jasmine
     "   autocmd BufRead,BufNewFile *.spec.js setlocal foldmethod=indent foldlevel=3
     " augroup END
-    " "}}}
+    "
 
-    " Ruby -------------------- {{{
+    " Ruby --------------------
     augroup filetype_ruby
       " Thorfile, Rakefile and Gemfile are Ruby
-      au BufRead,BufNewFile {Gemfile,Rakefile,Thorfile,config.ru}    set ft=ruby
+      autocmd BufRead,BufNewFile {Gemfile,Rakefile,Thorfile,config.ru}    set ft=ruby
     augroup END
-    " }}}
-    " Markdown -------------------- {{{
+    "
+    " Markdown --------------------
     augroup filetype_markdown
       " md, markdown, and mk are markdown and define buffer-local preview
-      au BufRead,BufNewFile *.{md,markdown,mdown,mkd,mkdn} call s:setupMarkup()
+      autocmd BufRead,BufNewFile *.{md,markdown,mdown,mkd,mkdn} call s:setupMarkup()
 
-      au BufRead,BufNewFile *.txt call s:setupWrapping()
-      au BufRead,BufNewFile *.md setlocal ft=markdown
+      autocmd BufRead,BufNewFile *.txt call s:setupWrapping()
+      autocmd BufRead,BufNewFile *.md setlocal ft=markdown
     augroup END
-    " }}}
-    "{{{
+    "
+
     augroup filetype_dokuwiki
       " *.docuwiki.txt files come from pentadactyl + dokuft plugin
-      au BufRead,BufNewFile *.dokuwiki.txt setlocal ft=dokuwiki textwidth=0 wrapmargin=0
+      autocmd BufRead,BufNewFile *.dokuwiki.txt setlocal ft=dokuwiki textwidth=0 wrapmargin=0
     augroup END
-    "}}}
+
     function! s:setupWrapping()
       set wrap
       set wm=2
@@ -722,25 +730,17 @@ augroup END "}}}
       call s:setupWrapping()
       map <buffer> <Leader>p :Mm <CR>
     endfunction
-    " }}}
-    " Git Commits ------------------------- {{{
-    augroup git_commit
-      au BufNewFile,BufRead COMMIT_EDITMSG setlocal spell
-      au BufNewFile,BufRead COMMIT_EDITMSG call feedkeys('ggi', 't')
-    augroup END
 
-    "  }}}
-
-    " augroup CursorLine"{{{
-    "   au!
-    "   au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
-    "   au VimEnter,WinEnter,BufWinEnter * setlocal cursorcolumn
-    "   au WinLeave * setlocal nocursorline
-    "   au WinLeave * setlocal nocursorcolumn
+    " augroup CursorLine
+    "   autocmd!
+    "   autocmd VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+    "   autocmd VimEnter,WinEnter,BufWinEnter * setlocal cursorcolumn
+    "   autocmd WinLeave * setlocal nocursorline
+    "   autocmd WinLeave * setlocal nocursorcolumn
     " augroup END"
-    " }}}
+    "
 
-    " Functions --"{{{
+    " Functions --
 
 
 
@@ -754,16 +754,16 @@ augroup END "}}}
     endfunction
 
     noremap <leader>ss :call StripWhiteSpace()<CR>
-    "}}}
 
 
-    " Commands -- "{{{
+
+    " Commands --
     command! InsertTime :normal a<c-r>=strftime('%F %H:%M')<cr>
-    "}}}
+
 
     let g:UltiSnipsExpandTrigger="<c-j>"
 
-    " au BufEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
+    " autocmd BufEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
     let g:UltiSnipsJumpForwardTrigger="<c-f>"
     let g:UltiSnipsJumpBackwardTrigger="<c-k>"
     let g:UltiSnipsListSnippets="<c-e>"
