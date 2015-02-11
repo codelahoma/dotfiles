@@ -81,6 +81,9 @@ if [[ -f ~/.zshrc.local ]]; then
   source ~/.zshrc.local
 fi
 
+unalias run-help
+autoload run-help
+HELPDIR=/usr/local/share/zsh/help
 
 source "$HOME/.homesick/repos/homeshick/homeshick.sh"
 fpath=($HOME/.homesick/repos/homeshick/completions $fpath)

@@ -30,6 +30,8 @@ Plug 'honza/vim-snippets'
 Plug 'majutsushi/tagbar'
 Plug 'mattn/webapi-vim'
 Plug 'mattn/gist-vim'
+Plug 'Shougo/unite.vim'
+Plug 'Shougo/vimproc.vim', {'do': 'make'}
 Plug 'scrooloose/nerdtree'
 " Plug 'sjl/gundo.vim'
 
@@ -49,7 +51,6 @@ Plug 'junegunn/vim-easy-align'
 Plug 'junegunn/vim-peekaboo'
 Plug 'junegunn/goyo.vim'
 Plug 'junegunn/vim-github-dashboard'
-Plug 'junegunn/vim-xmark', {'do': 'make'}
 Plug 'junegunn/seoul256.vim'
 Plug 'junegunn/limelight.vim'
 Plug 'junegunn/vader.vim'
@@ -674,6 +675,12 @@ augroup END "}}}
     augroup filetype_dokuwiki
       " *.docuwiki.txt files come from pentadactyl + dokuft plugin
       au BufRead,BufNewFile *.dokuwiki.txt setlocal ft=dokuwiki textwidth=0 wrapmargin=0
+    augroup END
+    "}}}
+    "{{{
+    augroup filetype_presentate
+      " *.docuwiki.txt files come from pentadactyl + dokuft plugin
+      au BufRead,BufNewFile *.presentate.com.txt setlocal ft=markdown textwidth=0 wrapmargin=0
     augroup END
     "}}}
     function! s:setupWrapping()
