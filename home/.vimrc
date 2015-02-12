@@ -3,14 +3,13 @@
 " Copy at your own risk.
 "
 " Use Vim settings. Must run before other settings
-set nocompatible
 
+set nocompatible
 set encoding=utf-8
 scriptencoding utf-8
 
 let s:darwin = has('mac')
 
-let g:ft_ignore_pat = '\.org'
 
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
@@ -127,16 +126,10 @@ Plug 'ack.vim'
 Plug 'localvimrc'
 Plug 'errormarker.vim'
 Plug 'AsyncCommand'
-Plug 'TVO--The-Vim-Outliner'
 " github repos
-" gallery: http://daylerees.github.io/
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'Yggdroot/indentLine', {'on': 'IndentLinesToggle'}
 Plug 'mbbill/undotree', {'on': 'UndotreeToggle'}
-" Plug 'roman/golden-ratio'
-" Plug 'nathanaelkane/vim-indent-guides'
-" Plug 'vimoutliner/vimoutliner'
-" Plug 'Puppet-Syntax-Highlighting'
 call plug#end()
 
 
@@ -162,16 +155,6 @@ augroup rainbow_parentheses
 augroup END
 
 
-" Org Mode  ----------------------------------------"{{{
-augroup org_mode
-  autocmd! 
-  autocmd BufRead,BufWrite,BufWritePost,BufNewFile *.org
-  autocmd BufEnter *.org            call org#SetOrgFileType()
-augroup END
-
-" let g:org_capture_file = '~/org_files/mycaptures.org'
-command! OrgCapture :call org#CaptureBuffer()
-command! OrgCaptureFile :call org#OpenCaptureFile()
 
 " Settings ---------------------------------------- {{{
 set autoread
@@ -197,9 +180,9 @@ set hidden
 " Remember more commands and search history
 set history=1000
 
-let EasyMotion_leader_key = ','
-let mapleader = ' '
-let maplocalleader = ','
+let g:EasyMotion_leader_key = '\'
+let g:mapleader = ' '
+let g:maplocalleader = ','
 let $JS_CMD="node"
 set number
 set ruler
@@ -219,7 +202,6 @@ set softtabstop=2
 set expandtab
 set smarttab
 set cindent
-let indent_guides_enable_on_vim_startup = 1
 set listchars=tab:↠↠,trail:·,eol:↩,extends:>,precedes:<
 set foldlevelstart=0
 set backspace=indent,eol,start
@@ -706,6 +688,8 @@ augroup filetype_dokuwiki
   autocmd BufRead,BufNewFile *.dokuwiki.txt setlocal ft=dokuwiki textwidth=0 wrapmargin=0
 augroup END
 
+" Functions --
+
 function! s:setupWrapping()
   set wrap
   set wm=2
@@ -717,26 +701,14 @@ function! s:setupMarkup()
   map <buffer> <Leader>p :Mm <CR>
 endfunction
 
-" augroup CursorLine
-"   autocmd!
-"   autocmd VimEnter,WinEnter,BufWinEnter * setlocal cursorline
-"   autocmd VimEnter,WinEnter,BufWinEnter * setlocal cursorcolumn
-"   autocmd WinLeave * setlocal nocursorline
-"   autocmd WinLeave * setlocal nocursorcolumn
-" augroup END"
-"
-
-" Functions --
-
-
 
 
 function! StripWhiteSpace()
-  let save_cursor = getpos(".")
-  let old_query = getreg('/')
+  let l:save_cursor = getpos(".")
+  let l:old_query = getreg('/')
   :%s/\s\+$//e
-  call setpos('.', save_cursor)
-  call setreg('/', old_query)
+  call setpos('.', l:save_cursor)
+  call setreg('/', l:old_query)
 endfunction
 
 noremap <leader>ss :call StripWhiteSpace()<CR>
