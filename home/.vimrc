@@ -5,6 +5,9 @@
 " Use Vim settings. Must run before other settings
 set nocompatible
 
+set encoding=utf-8
+scriptencoding utf-8
+
 let s:darwin = has('mac')
 
 let g:ft_ignore_pat = '\.org'
@@ -32,7 +35,7 @@ Plug 'majutsushi/tagbar'
 Plug 'mattn/webapi-vim'
 Plug 'mattn/gist-vim'
 Plug 'scrooloose/nerdtree'
-" Plug 'sjl/gundo.vim'
+Plug 'terryma/vim-expand-region'
 
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-commentary'
@@ -126,7 +129,7 @@ Plug 'errormarker.vim'
 Plug 'AsyncCommand'
 Plug 'TVO--The-Vim-Outliner'
 " github repos
- " gallery: http://daylerees.github.io/
+" gallery: http://daylerees.github.io/
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'Yggdroot/indentLine', {'on': 'IndentLinesToggle'}
 Plug 'mbbill/undotree', {'on': 'UndotreeToggle'}
@@ -159,18 +162,18 @@ augroup rainbow_parentheses
 augroup END
 
 
+" Org Mode  ----------------------------------------"{{{
+augroup org_mode
+  autocmd! 
+  autocmd BufRead,BufWrite,BufWritePost,BufNewFile *.org
+  autocmd BufEnter *.org            call org#SetOrgFileType()
+augroup END
 
-
-
-" Org Mode  ----------------------------------------
-autocmd! BufRead,BufWrite,BufWritePost,BufNewFile *.org
-autocmd BufEnter *.org            call org#SetOrgFileType()
 " let g:org_capture_file = '~/org_files/mycaptures.org'
 command! OrgCapture :call org#CaptureBuffer()
 command! OrgCaptureFile :call org#OpenCaptureFile()
 
-" Settings ----------------------------------------
-set encoding=utf-8
+" Settings ---------------------------------------- {{{
 set autoread
 
 
@@ -313,7 +316,7 @@ set statusline+=(%c)                     " column number
 set statusline+=%l                       " Current line
 set statusline+=/                        " Separator
 set statusline+=%L                       " Total Lines
-let g:airline_theme='hybrid'
+let g:airline_theme='powerlineish'
 
 " Abbreviations - fixing my common typos
 abbreviate ): );
@@ -366,7 +369,7 @@ set ttymouse=xterm2
 let g:localvimrc_sandbox=0
 
 " NERDTree configuration
- " let NERDTreeQuitOnOpen=1
+" let NERDTreeQuitOnOpen=1
 
 
 
@@ -396,26 +399,6 @@ cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<CR>
 nnoremap S i<CR><Esc>^mwgk:silent! s/\v +$//<CR>:noh<CR>
 
 
-" " Relative numbering for speedy movement --------------------
-" function! NumberToggle()
-"   if(&relativenumber == 1)
-"     set number
-"   else
-"     set relativenumber
-"   endif
-" endfunc
-
-" " nnoremap <C-n> :call NumberToggle()<cr>
-" " inoremap <C-n> :call NumberToggle()<cr>
-" " vnoremap <C-n> :call NumberToggle()<cr>
-
-" autocmd FocusLost   * :set number
-" autocmd FocusGained * :set relativenumber
-
-" autocmd InsertEnter * :set number
-" autocmd InsertLeave * :set relativenumber
-" "
-
 " Use hybrid numbering
 set number
 set relativenumber
@@ -441,6 +424,9 @@ vmap <Enter> <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
 
+" vim-expand-region
+vmap v <Plug>(expand_region_expand)
+vmap <C-v> <Plug>(expand_region_shrink)
 
 " *** The Two Hand System ***
 " (http://reefpoints.dockyard.com/2013/09/11/vim-staying-on-home-row-via-map.html)
@@ -675,101 +661,101 @@ noremap  <Right> <nop>
 augroup load_us_ycm
   autocmd!
   autocmd InsertEnter * call plug#load('ultisnips', 'YouCompleteMe')
-                     \| call youcompleteme#Enable() | autocmd! load_us_ycm
+        \| call youcompleteme#Enable() | autocmd! load_us_ycm
 augroup END
 
-    " Real tabs --------------------
-    augroup real_tabs
-      " make and python use real tabs
-      autocmd FileType make   set noexpandtab
-      autocmd FileType python set noexpandtab
-      autocmd BufRead,BufNewFile *.plist set noexpandtab
-    augroup END
-    "
-    " Vimscript --------------------
-    augroup filetype_vim
-      autocmd!
-      autocmd FileType vim setlocal foldmethod=marker
-    augroup END
-    "
+" Real tabs --------------------
+augroup real_tabs
+  " make and python use real tabs
+  autocmd FileType make   set noexpandtab
+  autocmd FileType python set noexpandtab
+  autocmd BufRead,BufNewFile *.plist set noexpandtab
+augroup END
+"
+" Vimscript --------------------
+augroup filetype_vim
+  autocmd!
+  autocmd FileType vim setlocal foldmethod=marker
+augroup END
+"
 
-    " " Jasmine specs --------------
-    " augroup filetype_jasmine
-    "   autocmd BufRead,BufNewFile *.spec.js setlocal foldmethod=indent foldlevel=3
-    " augroup END
-    "
+" " Jasmine specs --------------
+" augroup filetype_jasmine
+"   autocmd BufRead,BufNewFile *.spec.js setlocal foldmethod=indent foldlevel=3
+" augroup END
+"
 
-    " Ruby --------------------
-    augroup filetype_ruby
-      " Thorfile, Rakefile and Gemfile are Ruby
-      autocmd BufRead,BufNewFile {Gemfile,Rakefile,Thorfile,config.ru}    set ft=ruby
-    augroup END
-    "
-    " Markdown --------------------
-    augroup filetype_markdown
-      " md, markdown, and mk are markdown and define buffer-local preview
-      autocmd BufRead,BufNewFile *.{md,markdown,mdown,mkd,mkdn} call s:setupMarkup()
+" Ruby --------------------
+augroup filetype_ruby
+  " Thorfile, Rakefile and Gemfile are Ruby
+  autocmd BufRead,BufNewFile {Gemfile,Rakefile,Thorfile,config.ru}    set ft=ruby
+augroup END
+"
+" Markdown --------------------
+augroup filetype_markdown
+  " md, markdown, and mk are markdown and define buffer-local preview
+  autocmd BufRead,BufNewFile *.{md,markdown,mdown,mkd,mkdn} call s:setupMarkup()
 
-      autocmd BufRead,BufNewFile *.txt call s:setupWrapping()
-      autocmd BufRead,BufNewFile *.md setlocal ft=markdown
-    augroup END
-    "
+  autocmd BufRead,BufNewFile *.txt call s:setupWrapping()
+  autocmd BufRead,BufNewFile *.md setlocal ft=markdown
+augroup END
+"
 
-    augroup filetype_dokuwiki
-      " *.docuwiki.txt files come from pentadactyl + dokuft plugin
-      autocmd BufRead,BufNewFile *.dokuwiki.txt setlocal ft=dokuwiki textwidth=0 wrapmargin=0
-    augroup END
+augroup filetype_dokuwiki
+  " *.docuwiki.txt files come from pentadactyl + dokuft plugin
+  autocmd BufRead,BufNewFile *.dokuwiki.txt setlocal ft=dokuwiki textwidth=0 wrapmargin=0
+augroup END
 
-    function! s:setupWrapping()
-      set wrap
-      set wm=2
-      set textwidth=72
-    endfunction
+function! s:setupWrapping()
+  set wrap
+  set wm=2
+  set textwidth=72
+endfunction
 
-    function! s:setupMarkup()
-      call s:setupWrapping()
-      map <buffer> <Leader>p :Mm <CR>
-    endfunction
+function! s:setupMarkup()
+  call s:setupWrapping()
+  map <buffer> <Leader>p :Mm <CR>
+endfunction
 
-    " augroup CursorLine
-    "   autocmd!
-    "   autocmd VimEnter,WinEnter,BufWinEnter * setlocal cursorline
-    "   autocmd VimEnter,WinEnter,BufWinEnter * setlocal cursorcolumn
-    "   autocmd WinLeave * setlocal nocursorline
-    "   autocmd WinLeave * setlocal nocursorcolumn
-    " augroup END"
-    "
+" augroup CursorLine
+"   autocmd!
+"   autocmd VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+"   autocmd VimEnter,WinEnter,BufWinEnter * setlocal cursorcolumn
+"   autocmd WinLeave * setlocal nocursorline
+"   autocmd WinLeave * setlocal nocursorcolumn
+" augroup END"
+"
 
-    " Functions --
-
-
-
-
-    function! StripWhiteSpace()
-      let save_cursor = getpos(".")
-      let old_query = getreg('/')
-      :%s/\s\+$//e
-      call setpos('.', save_cursor)
-      call setreg('/', old_query)
-    endfunction
-
-    noremap <leader>ss :call StripWhiteSpace()<CR>
+" Functions --
 
 
 
-    " Commands --
-    command! InsertTime :normal a<c-r>=strftime('%F %H:%M')<cr>
+
+function! StripWhiteSpace()
+  let save_cursor = getpos(".")
+  let old_query = getreg('/')
+  :%s/\s\+$//e
+  call setpos('.', save_cursor)
+  call setreg('/', old_query)
+endfunction
+
+noremap <leader>ss :call StripWhiteSpace()<CR>
 
 
-    let g:UltiSnipsExpandTrigger="<c-j>"
 
-    " autocmd BufEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
-    let g:UltiSnipsJumpForwardTrigger="<c-f>"
-    let g:UltiSnipsJumpBackwardTrigger="<c-k>"
-    let g:UltiSnipsListSnippets="<c-e>"
-    "}}}
+" Commands --
+command! InsertTime :normal a<c-r>=strftime('%F %H:%M')<cr>
 
-    " Include user's local vim config
-    if filereadable(expand("~/.vimrc.local"))
-      source ~/.vimrc.local
-    endif
+
+let g:UltiSnipsExpandTrigger="<c-j>"
+
+" autocmd BufEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
+let g:UltiSnipsJumpForwardTrigger="<c-f>"
+let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+let g:UltiSnipsListSnippets="<c-e>"
+"}}}
+
+" Include user's local vim config
+if filereadable(expand("~/.vimrc.local"))
+  source ~/.vimrc.local
+endif
