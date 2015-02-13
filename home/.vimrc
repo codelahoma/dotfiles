@@ -35,6 +35,7 @@ Plug 'mattn/webapi-vim'
 Plug 'mattn/gist-vim'
 Plug 'scrooloose/nerdtree'
 Plug 'terryma/vim-expand-region'
+Plug 'blueyed/vim-diminactive'
 
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-commentary'
@@ -416,6 +417,7 @@ vmap <C-v> <Plug>(expand_region_shrink)
 inoremap ;a <ESC>
 inoremap ;d <ESC>:update<CR>
 inoremap ;f <C-O>:update<CR>
+nnoremap ;d :update<CR>
 nnoremap ;f :update<CR>
 
 
