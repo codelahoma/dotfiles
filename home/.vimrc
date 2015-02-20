@@ -160,6 +160,11 @@ augroup END
 " Settings ---------------------------------------- {{{
 set autoread
 
+augroup file_term
+  autocmd!
+  autocmd FocusGained * checktime
+augroup END
+
 
 " fix brain-dead change to html indenting
 let g:html_indent_inctags = "html,body,head,tbody"
