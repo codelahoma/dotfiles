@@ -408,6 +408,10 @@ vnoremap <leader>' c''<esc>hpl
 " Execute current line (kinda)
 nnoremap <C-x><C-e> yy@"
 
+" Format current paragraph
+
+vmap Q gq
+nmap Q gqap
 
 " EasyAlign
 " Start interactive EasyAlign in visual mode (e.g. vip<Enter>)
