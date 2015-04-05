@@ -18,6 +18,8 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 endif
 
 call plug#begin('~/.vim/plugged')
+
+Plug 'kylef/apiblueprint.vim'
 Plug 'mattn/emmet-vim'
 Plug 'tacahiroy/ctrlp-funky'
 Plug 'bling/vim-airline'
@@ -84,6 +86,8 @@ Plug 'https://github.com/kien/rainbow_parentheses.vim.git'
 Plug 'vim-slamhound', {'for': 'clojure'}
 
 Plug 'davidoc/taskpaper.vim'
+
+Plug 'plasticboy/vim-markdown'
 
 function! BuildYCM(info)
   " info is a dictionary with 3 fields, passed by Plug
