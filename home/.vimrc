@@ -494,11 +494,6 @@ nnoremap <silent> <leader>sbdm :Sbdm<cr>
 inoremap <C-s> <C-O>:update<CR>
 nnoremap <C-s> :update<CR>
 
-" Disable CTRL-A on tmux or on screen
-if $TERM =~ 'screen'
-  nnoremap <C-A> <nop>
-  nnoremap <Leader><C-a> <C-a>
-endif
 
 " Jump List
 nnoremap _ <C-O>
