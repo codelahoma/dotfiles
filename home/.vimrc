@@ -38,6 +38,8 @@ Plug 'mattn/gist-vim'
 Plug 'scrooloose/nerdtree'
 Plug 'terryma/vim-expand-region'
 Plug 'blueyed/vim-diminactive'
+Plug 'marijnh/tern_for_vim'
+Plug 'edkolev/tmuxline.vim'
 
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-commentary'
@@ -438,7 +440,7 @@ nnoremap ;f :update<CR>
 " http://sheerun.net/2014/03/21/how-to-boost-your-vim-productivity/
 
 nnoremap <silent> <Leader>w :update<CR>
-nnoremap <Leader>o :CtrlP<CR>
+nnoremap <Leader>o :CtrlPMixed<CR>
 
 vmap <Leader>y "+y
 vmap <Leader>d "+d
@@ -448,25 +450,19 @@ vmap <Leader>p "+p
 vmap <Leader>P "+P
 
 
-" for screen.vim, send block to ScreenSend function
-" (eg Scheme interpeter)
-" from http://www.ktaylor.name/2009/11/vim-screen-lisp-programming-environment.html
-" vnoremap <C-c><C-c> :ScreenSend<cr>
-" nnoremap <C-c><C-c> vip:ScreenSend<cr>
-"
 
 " No more fat fingering help when I want Esc
 nnoremap <silent> <f1> <esc>
 nnoremap q: :q
 
 
-" keep search pattern at the center of the screen (http://vimbits.com/bits/92)
-nnoremap <silent> n nzz
-nnoremap <silent> N Nzz
-nnoremap <silent> * *zz
-nnoremap <silent> # #zz
-nnoremap <silent> g* g*zz
-nnoremap <silent> g# g#zz
+" " keep search pattern at the center of the screen (http://vimbits.com/bits/92)
+" nnoremap <silent> n nzz
+" nnoremap <silent> N Nzz
+" nnoremap <silent> * *zz
+" nnoremap <silent> # #zz
+" nnoremap <silent> g* g*zz
+" nnoremap <silent> g# g#zz
 
 
 " navigate windows
@@ -499,6 +495,13 @@ nnoremap <C-s> :update<CR>
 nnoremap _ <C-O>
 nnoremap + <C-I>
 
+" <F3> | Undotree
+if v:version >= 703
+  inoremap <F3> <ESC>:UndotreeToggle<cr>
+  nnoremap <F3> :UndotreeToggle<cr>
+  let g:tagbar_sort = 0
+endif
+
 " <F4> | Tagbar
 if v:version >= 703
   inoremap <F4> <ESC>:TagbarToggle<cr>
@@ -524,6 +527,7 @@ nnoremap <leader>f :CtrlPCurWD<cr>
 nnoremap <leader>gf :CtrlPCurFile<cr>
 nnoremap <leader>b :CtrlPBuffer<cr>
 nnoremap <leader>m :CtrlPMRUFiles<cr>
+nnoremap <leader>gt :CtrlPTag<cr>
 
 " operator pending remaps --------------------
 " (i)n and (a)round (n)ext or (l)ast
@@ -544,12 +548,12 @@ onoremap al[ :<c-u>normal! F]va[<cr>
 "
 
 " Custom Rails specific CtrlP mappings
-nnoremap <leader>gv :ClearCtrlPCache<cr>\|:CtrlP app/views<cr>
-nnoremap <leader>gc :ClearCtrlPCache<cr>\|:CtrlP app/controllers<cr>
-nnoremap <leader>gm :ClearCtrlPCache<cr>\|:CtrlP app/models<cr>
-nnoremap <leader>gh :ClearCtrlPCache<cr>\|:CtrlP app/helpers<cr>
-nnoremap <leader>gl :ClearCtrlPCache<cr>\|:CtrlP lib<cr>
-nnoremap <leader>gp :ClearCtrlPCache<cr>\|:CtrlP public<cr>
+" nnoremap <leader>gv :ClearCtrlPCache<cr>\|:CtrlP app/views<cr>
+" nnoremap <leader>gc :ClearCtrlPCache<cr>\|:CtrlP app/controllers<cr>
+" nnoremap <leader>gm :ClearCtrlPCache<cr>\|:CtrlP app/models<cr>
+" nnoremap <leader>gh :ClearCtrlPCache<cr>\|:CtrlP app/helpers<cr>
+" nnoremap <leader>gl :ClearCtrlPCache<cr>\|:CtrlP lib<cr>
+" nnoremap <leader>gp :ClearCtrlPCache<cr>\|:CtrlP public<cr>
 " I think I prefer to use this shortcut for Git, but I'll keep it here for
 " review at a later date.
 " nnoremap <leader>gs :ClearCtrlPCache<cr>\|:CtrlP public/stylesheets<cr>
@@ -604,11 +608,11 @@ nnoremap <leader>gp :ClearCtrlPCache<cr>\|:CtrlP public<cr>
 " source current file
 nnoremap <leader>sf :source %<cr>
 
-nnoremap H 0
+" nnoremap H 0
 "nnoremap L $
 nnoremap  <leader><leader> <C-^>
 nnoremap <leader>vp :execute "rightbelow vsplit " . bufname("#")<cr>"
-nnoremap L      :nohlsearch<cr><c-l>
+" nnoremap L      :nohlsearch<cr><c-l>
 
 " always search magically
 nnoremap / /\v
@@ -623,14 +627,9 @@ nnoremap / /\v
 " allow continuous indent adjustment in visual mode
 vnoremap < <gv
 vnoremap > >gv
-" CTags
-map <Leader>rt :!ctags --extra=+f -R *<CR><CR>
 
-" My fingers seem to prefer emacs for saving and quitting
-
-nnoremap <c-x>s :w<cr>
-nnoremap <c-x>c :wq<cr>
-
+" fold functions manually
+nnoremap <Leader>ff f{v%zf
 " Hide/Show NERDTree
 nnoremap <Leader>t :NERDTreeToggle<cr>
 
@@ -652,7 +651,7 @@ noremap  <Right> <nop>
 
 augroup load_us_ycm
   autocmd!
-  autocmd InsertEnter * call plug#load('ultisnips', 'YouCompleteMe')
+  autocmd VimEnter * call plug#load('ultisnips', 'YouCompleteMe')
         \| call youcompleteme#Enable() | autocmd! load_us_ycm
 augroup END
 
