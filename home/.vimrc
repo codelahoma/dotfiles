@@ -38,7 +38,7 @@ Plug 'mattn/gist-vim'
 Plug 'scrooloose/nerdtree'
 Plug 'terryma/vim-expand-region'
 Plug 'blueyed/vim-diminactive'
-" Plug 'marijnh/tern_for_vim'
+Plug 'marijnh/tern_for_vim'
 Plug 'edkolev/tmuxline.vim'
 
 Plug 'tpope/vim-abolish'
