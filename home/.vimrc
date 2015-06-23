@@ -204,6 +204,12 @@ set visualbell
 
 
 syntax on
+
+" Syntastic
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 2
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
 let g:syntastic_javascript_checkers = ['jsxhint']
 
 " Text Formatting
@@ -310,6 +316,9 @@ set statusline+=(%c)                     " column number
 set statusline+=%l                       " Current line
 set statusline+=/                        " Separator
 set statusline+=%L                       " Total Lines
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
 let g:airline_theme='powerlineish'
 
 " Abbreviations - fixing my common typos
