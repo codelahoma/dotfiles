@@ -69,8 +69,10 @@ Plug 'kakkyz81/evervim'
 Plug 'jade.vim'
 
 " Javascript
-Plug 'pangloss/vim-javascript'
-Plug 'mxw/vim-jsx'
+" Plug 'pangloss/vim-javascript'
+Plug 'othree/yajs.vim'
+" Plug 'mxw/vim-jsx'
+
 
 " Coffeescript
 Plug 'kchmck/vim-coffee-script'
@@ -116,6 +118,7 @@ Plug 'nanotech/jellybeans.vim'
 Plug 'altercation/vim-colors-solarized'
 Plug 'chriskempson/vim-tomorrow-theme'
 Plug 'chriskempson/base16-vim'
+Plug 'NLKNguyen/papercolor-theme'
 
 
 if s:darwin
@@ -162,8 +165,8 @@ augroup rainbow_parentheses
 augroup END
 
 
-
-" Settings ---------------------------------------- {{{
+"{{{
+" Settings ---------------------------------------- {{{"}}}
 set autoread
 
 augroup file_term
