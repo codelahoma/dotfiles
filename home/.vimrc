@@ -375,7 +375,7 @@ set ttymouse=xterm2
 let g:localvimrc_sandbox=0
 
 " NERDTree configuration
-" let NERDTreeQuitOnOpen=1
+let NERDTreeQuitOnOpen=1
 
 
 
@@ -454,6 +454,17 @@ nnoremap ;f :update<CR>
 nnoremap <silent> <Leader>w :update<CR>
 nnoremap <Leader>o :CtrlPMixed<CR>
 
+" Super fast CtrlP
+" http://blog.patspam.com/2014/super-fast-ctrlp
+
+let g:ctrlp_user_command = 'ag %s -i --nocolor --nogroup --hidden
+  \ --ignore .git
+  \ --ignore .svn
+  \ --ignore .hg
+  \ --ignore .DS_Store
+  \ --ignore "**/*.pyc"
+  \ -g ""'
+
 vmap <Leader>y "+y
 vmap <Leader>d "+d
 nmap <Leader>p "+p
@@ -490,7 +501,7 @@ nnoremap <leader>ig :IndentLinesToggle<cr>
 nnoremap Y y$
 
 " " Toggle NERDTree
-" nnoremap <leader>t :NERDTreeFocus<cr>
+nnoremap <leader>t :NERDTreeFocus<cr>
 
 " Smart Buffer Delete mappings --------------------
 nnoremap <silent> <leader>sbd  :Sbd<cr>
@@ -643,7 +654,7 @@ vnoremap > >gv
 " fold functions manually
 nnoremap <Leader>ff f{v%zf
 " Hide/Show NERDTree
-nnoremap <Leader>t :NERDTreeToggle<cr>
+" nnoremap <Leader>t :NERDTreeToggle<cr>
 
 "
 
