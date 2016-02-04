@@ -1,0 +1,44 @@
+[user]
+	name = Rod Knowlton
+	email = Rod_Knowlton@hcsc.net
+[core]
+	excludesfile = /Users/rodk/.gitignore_global
+	ui = auto
+[difftool "sourcetree"]
+	cmd = " "
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+
+[merge]
+  tool = mvimdiff
+
+[mergetool "mvimdiff"]
+  cmd = /usr/local/bin/mvimdiff \"$LOCAL\" \"$REMOTE\"  \"$BASE\"  \"$MERGED\"
+  trustExitCode = true
+[color]
+	ui = auto
+[github]
+	user = codelahoma
+[mergetool "opendiff"]
+  cmd = /usr/bin/opendiff $LOCAL $REMOTE -merge $MERGED
+
+[mergetool]
+  keepBackup = false
+[push]
+	default = simple
+
+[alias]
+	last = log -1 HEAD
+  wip = commit -am wip
+	ls = log --graph --abbrev-commit --date=relative  --all --format=\"format:%h (%Cblue%an%Creset,%Cgreen %ad%Creset) %Cred%d%Creset %s\" --stat
+	ctags = !.git/hooks/ctags
+
+; HTTP
+[http]
+  sslVerify
+[http "https://accesschannelsok-repo-mini.tul.hcscint.net"]
+  sslVerify = false
+[init]
+	templatedir = ~/.git_template
