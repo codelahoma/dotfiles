@@ -95,6 +95,12 @@ function fix_dos_git_repos {
   git checkout -f HEAD
 } 
 
+function cksit {
+curl 'https://gateway-auth.hcsctest.net/services/api/bam/authenticate/v1' -H 'Pragma: no-cache' -H 'Origin: http://localhost:3000' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: en-US,en;q=0.8' -H 'User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 7_0 like Mac OS X; en-us) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11A465 Safari/9537.53' -H 'x-env: SIT' -H 'content-type: application/json' -H 'accept: application/json' -H 'Cache-Control: no-cache' -H 'Referer: http://localhost:3000/' -H 'Connection: keep-alive' --data-binary '{"userid":"etbsdonaldgrpsubil","password":"testing1"}' --compressed
+}
 
+function ckuat {
+curl 'https://gateway-auth.hcsctest.net/services/api/bam/authenticate/v1' -H 'Pragma: no-cache' -H 'Origin: http://localhost:3000' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: en-US,en;q=0.8' -H 'User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 7_0 like Mac OS X; en-us) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11A465 Safari/9537.53' -H 'x-env: UAT' -H 'content-type: application/json' -H 'accept: application/json' -H 'Cache-Control: no-cache' -H 'Referer: http://localhost:3000/' -H 'Connection: keep-alive' --data-binary '{"userid":"deadpool1","password":"testing1"}' --compressed
+}
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
