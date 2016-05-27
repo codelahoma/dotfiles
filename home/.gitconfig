@@ -32,7 +32,8 @@
 [alias]
 	last = log -1 HEAD
   wip = commit -am wip
-	ls = log --graph --abbrev-commit --date=relative  --all --format=\"format:%h (%Cblue%an%Creset,%Cgreen %ad%Creset) %Cred%d%Creset %s\" --stat
+	ls = log --graph --abbrev-commit --date=relative  --format=\"format:%h (%Cblue%an%Creset,%Cgreen %ad%Creset) %Cred%d%Creset %s\" --stat
+	lsa = log --graph --abbrev-commit --date=relative  --all --format=\"format:%h (%Cblue%an%Creset,%Cgreen %ad%Creset) %Cred%d%Creset %s\" --stat
 	ctags = !.git/hooks/ctags
 
 ; HTTP
@@ -42,3 +43,5 @@
   sslVerify = false
 [init]
 	templatedir = ~/.git_template
+[commit]
+	template = /Users/rodk/git-commit-template.txt

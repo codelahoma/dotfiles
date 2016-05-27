@@ -72,7 +72,7 @@ Plug 'jade.vim'
 " Javascript
 " Plug 'pangloss/vim-javascript'
 Plug 'othree/yajs.vim'
-" Plug 'mxw/vim-jsx'
+Plug 'mxw/vim-jsx'
 
 
 " Coffeescript
@@ -80,7 +80,8 @@ Plug 'kchmck/vim-coffee-script'
 Plug 'mintplant/vim-literate-coffeescript'
 
 " Swift
-Plug 'Keithbsmiley/swift.vim'
+" Plug 'Keithbsmiley/swift.vim'
+Plug 'swift.vim'
 
 " Clojure
 Plug 'https://github.com/tpope/vim-classpath.git'
@@ -376,7 +377,7 @@ set ttymouse=xterm2
 let g:localvimrc_sandbox=0
 
 " NERDTree configuration
-let NERDTreeQuitOnOpen=1
+" let NERDTreeQuitOnOpen=1
 
 
 
