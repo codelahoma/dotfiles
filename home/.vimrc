@@ -56,7 +56,7 @@ Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-dispatch'
 
 Plug 'junegunn/vim-easy-align'
-Plug 'junegunn/vim-peekaboo'
+" Plug 'junegunn/vim-peekaboo'
 Plug 'junegunn/goyo.vim'
 Plug 'junegunn/vim-github-dashboard'
 Plug 'junegunn/seoul256.vim'
