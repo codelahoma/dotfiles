@@ -19,19 +19,23 @@ endif
 
 call plug#begin('~/.vim/plugged')
 
-Plug 'kylef/apiblueprint.vim'
-Plug 'mattn/emmet-vim'
+" Plug 'kylef/apiblueprint.vim'
+" Plug 'mattn/emmet-vim'
+
+" Navigate by function with Ctrl-P
 Plug 'tacahiroy/ctrlp-funky'
-Plug 'bling/vim-airline'
-Plug 'vim-misc'
-Plug 'cespare/vim-sbd'
-Plug 'nblock/vim-dokuwiki'
-Plug 'dogrover/vim-pentadactyl'
-Plug 'khorser/vim-qfnotes'
+
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+
+Plug 'vim-misc' " dependency for vim-gitgutter
 Plug 'airblade/vim-gitgutter'
-Plug 'Lokaltog/vim-easymotion'
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
+
+" Smart buffer delete - preserve splits and more
+Plug 'cespare/vim-sbd'
+
+Plug 'kien/rainbow_parentheses.vim'
+Plug 'easymotion/vim-easymotion'
 Plug 'majutsushi/tagbar'
 Plug 'mattn/webapi-vim'
 Plug 'mattn/gist-vim'
@@ -40,7 +44,6 @@ Plug 'Shougo/vimproc.vim', {'do': 'make'}
 Plug 'scrooloose/nerdtree'
 Plug 'terryma/vim-expand-region'
 Plug 'blueyed/vim-diminactive'
-Plug 'marijnh/tern_for_vim'
 Plug 'edkolev/tmuxline.vim'
 
 Plug 'tpope/vim-abolish'
@@ -55,16 +58,19 @@ Plug 'tpope/vim-vinegar'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-dispatch'
 
+
 Plug 'junegunn/vim-easy-align'
-" Plug 'junegunn/vim-peekaboo'
+Plug 'junegunn/vim-peekaboo'
 Plug 'junegunn/goyo.vim'
 Plug 'junegunn/vim-github-dashboard'
 Plug 'junegunn/seoul256.vim'
 Plug 'junegunn/limelight.vim'
 Plug 'junegunn/vader.vim'
-Plug 'kakkyz81/evervim'
 
 " Language Additions
+
+" pentadactylrc file
+Plug 'dogrover/vim-pentadactyl'
 
 " Jade templating
 Plug 'jade.vim'
@@ -73,23 +79,22 @@ Plug 'jade.vim'
 " Plug 'pangloss/vim-javascript'
 Plug 'othree/yajs.vim'
 Plug 'mxw/vim-jsx'
+Plug 'marijnh/tern_for_vim'
 
 
 " Coffeescript
 Plug 'kchmck/vim-coffee-script'
-Plug 'mintplant/vim-literate-coffeescript'
 
 " Swift
-" Plug 'Keithbsmiley/swift.vim'
-Plug 'swift.vim'
+Plug 'keith/swift.vim'
 
 " Clojure
-Plug 'https://github.com/tpope/vim-classpath.git'
-Plug 'tpope/vim-fireplace', { 'for': 'clojure'}
-Plug 'kovisoft/paredit', {'for': ['clojure', 'scheme']}
+" Plug 'https://github.com/tpope/vim-classpath.git'
+" Plug 'tpope/vim-fireplace', { 'for': 'clojure'}
+" Plug 'kovisoft/paredit', {'for': ['clojure', 'scheme']}
 
-Plug 'https://github.com/kien/rainbow_parentheses.vim.git'
-Plug 'vim-slamhound', {'for': 'clojure'}
+" Plug 'vim-slamhound', {'for': 'clojure'}
+" Plug 'https://github.com/guns/vim-clojure-static.git'
 
 Plug 'davidoc/taskpaper.vim'
 
@@ -109,6 +114,7 @@ endfunction
 Plug 'SirVer/ultisnips', { 'on': [] }
 Plug 'Valloric/YouCompleteMe', {'on': [], 'do': function('BuildYCM')}
 
+Plug 'honza/vim-snippets'
 
 
 Plug 'Syntastic'
@@ -127,7 +133,6 @@ if s:darwin
   Plug 'rizzatti/dash.vim'
 endif
 
-Plug 'https://github.com/guns/vim-clojure-static.git'
 " vimscripts.org
 
 Plug 'Zenburn'
@@ -182,8 +187,7 @@ let g:html_indent_inctags = "html,body,head,tbody"
 
 
 " Persist undo history across sessions
-set undodir=~/.vim/undo
-set undofile
+set undodir=~/.undo/vim
 set undolevels=1000
 set undoreload=10000
 
@@ -205,8 +209,6 @@ set number
 set ruler
 set tildeop
 set visualbell
-
-
 
 syntax on
 
@@ -264,7 +266,7 @@ set t_vb=
 " Search
 set hlsearch   " highlight all matches
 nohlsearch     " clear off any residual search when sourcing vimrc
-set incsearch  " search as while typing
+set incsearch  " search while typing
 set ignorecase " case insensitive search
 set smartcase  " be case sensitive if search includes caps
 
@@ -348,16 +350,10 @@ endif
 set modeline
 set modelines=10
 
-colorscheme Tomorrow-Night-Bright
-"
-
+colorscheme PaperColor
 set t_Co=256
 
 set background=dark
-
-" vim-pad directory
-
-let g:pad_dir = '~/Shared/vim-pad'
 
 " set the thesaurus
 set thesaurus=~/.vim/mthesaur.txt

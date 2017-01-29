@@ -104,3 +104,5 @@ curl 'https://gateway-auth.hcsctest.net/services/api/bam/authenticate/v1' -H 'Pr
 }
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"

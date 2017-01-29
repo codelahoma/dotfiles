@@ -2,8 +2,8 @@
 
 loadplugins '\.(js|penta)$'
 group user
-  map -count -modes=n ; -builtin <count>:
-  map -count -modes=n : -builtin <count>;
+  " map -count -modes=n ; -builtin <count>:
+  " map -count -modes=n : -builtin <count>;
   map -count -modes=n <Leader>f -builtin <count>:emenu<Space>View.Full<Space>Screen<Return>
   map -count -modes=hints <C-f> <Esc><C-f>g;b
   " map -count -modes=c <C-n> <Tab>
