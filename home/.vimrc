@@ -753,7 +753,6 @@ augroup END "}}}
     " Git Commits ------------------------- {{{
     augroup git_commit
       au BufNewFile,BufRead COMMIT_EDITMSG setlocal spell
-      au BufNewFile,BufRead COMMIT_EDITMSG call feedkeys('ggi', 't')
     augroup END
 
     "  }}}
