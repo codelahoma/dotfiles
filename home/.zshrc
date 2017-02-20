@@ -51,8 +51,6 @@ plugins=(git osx nvm npm common-aliases autojump brew colored-man tmux rvm)
 
 source $ZSH/oh-my-zsh.sh
 
-source $(brew --prefix nvm)/nvm.sh
-
 # User configuration
 
 export PATH=$HOME/bin:/usr/local/bin:/usr/local/opt/coreutils/libexec/gnubin:$PATH
@@ -88,22 +86,7 @@ HELPDIR=/usr/local/share/zsh/help
 source "$HOME/.homesick/repos/homeshick/homeshick.sh"
 fpath=($HOME/.homesick/repos/homeshick/completions $fpath)
 
-function fix_dos_git_repos {
-  git config core.filemode false
-  git config core.autocrlf false
-  rm .git/index
-  git checkout -f HEAD
-}
+export PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
-function cksit {
-curl 'https://gateway-auth.hcsctest.net/services/api/bam/authenticate/v1' -H 'Pragma: no-cache' -H 'Origin: http://localhost:3000' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: en-US,en;q=0.8' -H 'User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 7_0 like Mac OS X; en-us) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11A465 Safari/9537.53' -H 'x-env: SIT' -H 'content-type: application/json' -H 'accept: application/json' -H 'Cache-Control: no-cache' -H 'Referer: http://localhost:3000/' -H 'Connection: keep-alive' --data-binary '{"userid":"etbsdonaldgrpsubil","password":"testing1"}' --compressed
-}
-
-function ckuat {
-curl 'https://gateway-auth.hcsctest.net/services/api/bam/authenticate/v1' -H 'Pragma: no-cache' -H 'Origin: http://localhost:3000' -H 'Accept-Encoding: gzip, deflate' -H 'Accept-Language: en-US,en;q=0.8' -H 'User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 7_0 like Mac OS X; en-us) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11A465 Safari/9537.53' -H 'x-env: UAT' -H 'content-type: application/json' -H 'accept: application/json' -H 'Cache-Control: no-cache' -H 'Referer: http://localhost:3000/' -H 'Connection: keep-alive' --data-binary '{"userid":"deadpool1","password":"testing1"}' --compressed
-}
-
-# PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
-eval "$(rbenv init -)"
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"

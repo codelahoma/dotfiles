@@ -24,7 +24,7 @@ call plug#begin('~/.vim/plugged')
 
 " Navigate by function with Ctrl-P
 Plug 'tacahiroy/ctrlp-funky'
-
+Plug 'pelodelfuego/vim-swoop'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
@@ -99,6 +99,9 @@ Plug 'keith/swift.vim'
 Plug 'davidoc/taskpaper.vim'
 
 Plug 'plasticboy/vim-markdown'
+
+" Plist
+Plug 'darfink/vim-plist'
 
 function! BuildYCM(info)
   " info is a dictionary with 3 fields, passed by Plug
@@ -228,7 +231,7 @@ set expandtab
 set smarttab
 set cindent
 set listchars=tab:↠↠,trail:·,eol:↩,extends:>,precedes:<
-set foldlevelstart=0
+" set foldlevelstart=0
 set backspace=indent,eol,start
 set numberwidth=5
 set scrolloff=14
@@ -444,6 +447,7 @@ inoremap ;d <ESC>:update<CR>
 inoremap ;f <C-O>:update<CR>
 nnoremap ;d :update<CR>
 nnoremap ;f :update<CR>
+nnoremap ;; ;
 
 
 " How to boost your Vim productivity
@@ -716,6 +720,17 @@ augroup END "}}}
     augroup filetype_ruby
       " Thorfile, Rakefile and Gemfile are Ruby
       au BufRead,BufNewFile {Gemfile,Rakefile,Thorfile,config.ru}    set ft=ruby
+    augroup END
+    " }}}
+    " plist -------------------- {{{
+    augroup filetype_plist
+      " MailMate commands are plists
+      " Output operations
+      autocmd BufWriteCmd,FileWriteCmd *.mmCommand call plist#Write()
+
+      " Input operations
+      autocmd BufReadCmd *.mmCommand call plist#Read(1) | call plist#ReadPost()
+      autocmd FileReadCmd *.mmCommand call plist#Read(0) | call plist#SetFiletype()
     augroup END
     " }}}
     " Markdown -------------------- {{{
