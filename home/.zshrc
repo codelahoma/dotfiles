@@ -6,7 +6,7 @@ export PATH=~/bin:/usr/local/share/npm/bin:/usr/local/bin:/usr/local/sbin:/opt/l
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="bureau"
+ZSH_THEME="powerlevel9k/powerlevel9k"
 # ZSH_THEME="robbyrussell"
 
 # Example aliases
@@ -65,6 +65,9 @@ export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
 
 export EDITOR='vim'
 
+autoload zmv
+alias mmv='noglob zmv -W'
+
 autoload edit-command-line
 zle -N edit-command-line
 bindkey '^X^E' edit-command-line
@@ -89,4 +92,4 @@ fpath=($HOME/.homesick/repos/homeshick/completions $fpath)
 export PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
 
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+# test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
