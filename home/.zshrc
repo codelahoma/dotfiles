@@ -11,7 +11,7 @@ ZSH_THEME="powerlevel9k/powerlevel9k"
 
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+alias ohmyzsh="vim ~/.oh-my-zsh"
 
 # Set to this to use case-sensitive completion
 # CASE_SENSITIVE="true"
@@ -47,7 +47,7 @@ ZSH_THEME="powerlevel9k/powerlevel9k"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git osx nvm npm common-aliases autojump brew colored-man tmux rvm)
+plugins=(git fasd osx nvm npm common-aliases brew colored-man tmux rvm)
 
 source $ZSH/oh-my-zsh.sh
 
