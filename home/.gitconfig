@@ -39,9 +39,3 @@
 ; HTTP
 [http]
   sslVerify
-[http "https://accesschannelsok-repo-mini.tul.hcscint.net"]
-  sslVerify = false
-[init]
-	templatedir = ~/.git_template
-[commit]
-	template = /Users/rodk/git-commit-template.txt
