@@ -28,7 +28,7 @@ Plug 'pelodelfuego/vim-swoop'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
-Plug 'vim-misc' " dependency for vim-gitgutter
+" Plug 'xlox/vim-misc' " dependency for vim-gitgutter
 Plug 'airblade/vim-gitgutter'
 
 " Smart buffer delete - preserve splits and more
@@ -73,7 +73,7 @@ Plug 'junegunn/vader.vim'
 Plug 'dogrover/vim-pentadactyl'
 
 " Jade templating
-Plug 'jade.vim'
+Plug 'digitaltoad/vim-pug'
 
 " Javascript
 " Plug 'pangloss/vim-javascript'
@@ -109,7 +109,7 @@ function! BuildYCM(info)
   " - status: 'installed', 'updated', or 'unchanged'
   " - force: set on PlugInstall! or PlugUpdate!
   if a:info.status == 'installed' || a:info.force
-    !./install.sh
+    !./install.py
   endif
 endfunction
 
@@ -120,7 +120,7 @@ Plug 'Valloric/YouCompleteMe', {'on': [], 'do': function('BuildYCM')}
 Plug 'honza/vim-snippets'
 
 
-Plug 'Syntastic'
+Plug 'vim-syntastic/syntastic'
 Plug 'jiangmiao/auto-pairs'
 
 " The look
@@ -138,14 +138,15 @@ endif
 
 " vimscripts.org
 
-Plug 'Zenburn'
-Plug 'ZoomWin'
-Plug 'ctrlp.vim'
-Plug 'dbext.vim'
-Plug 'ack.vim'
-Plug 'localvimrc'
-Plug 'errormarker.vim'
-Plug 'AsyncCommand'
+Plug 'jnurmine/Zenburn'
+Plug 'codelahoma/ZoomWin'
+Plug 'kien/ctrlp.vim'
+Plug 'codelahoma/dbext.vim'
+" Plug 'ack.vim'
+Plug 'mhinz/vim-grepper'
+Plug 'embear/vim-localvimrc'
+Plug 'codelahoma/errormarker.vim'
+Plug 'idbrii/AsyncCommand'
 " github repos
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'Yggdroot/indentLine', {'on': 'IndentLinesToggle'}
