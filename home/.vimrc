@@ -45,6 +45,7 @@ Plug 'scrooloose/nerdtree'
 Plug 'terryma/vim-expand-region'
 Plug 'blueyed/vim-diminactive'
 Plug 'edkolev/tmuxline.vim'
+Plug 'direnv/direnv.vim'
 
 Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-commentary'
@@ -70,10 +71,10 @@ Plug 'junegunn/vader.vim'
 " Language Additions
 
 " pentadactylrc file
-Plug 'dogrover/vim-pentadactyl'
+" Plug 'dogrover/vim-pentadactyl'
 
-" Jade templating
-Plug 'digitaltoad/vim-pug'
+" " Jade templating
+" Plug 'digitaltoad/vim-pug'
 
 " Javascript
 " Plug 'pangloss/vim-javascript'

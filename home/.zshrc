@@ -1,13 +1,15 @@
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
 
-export PATH=~/bin:/usr/local/share/npm/bin:/usr/local/bin:/usr/local/sbin:/opt/local/bin:/opt/local/sbin:~/Library/Android/sdk/tools:~/Library/Android/sdk/platform-tools:$PATH
+export PATH=~/bin:/usr/local/bin:/usr/local/sbin:/opt/local/bin:/opt/local/sbin:~/Library/Android/sdk/tools:~/Library/Android/sdk/platform-tools:$PATH
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
 ZSH_THEME="powerlevel9k/powerlevel9k"
 # ZSH_THEME="robbyrussell"
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context newline dir rbenv virtualenv pyenv vcs)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status nvm swift_version root_indicator background_jobs history time)
 
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
@@ -47,7 +49,7 @@ alias ohmyzsh="vim ~/.oh-my-zsh"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git fasd osx nvm npm common-aliases brew colored-man tmux rvm)
+plugins=(git fasd osx nvm npm common-aliases brew colored-man tmux rvm virtualenvwrapper pyenv)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -87,11 +89,6 @@ bindkey '^X^E' edit-command-line
 
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
-
-if [[ -f ~/.zshrc.local ]]; then
-  source ~/.zshrc.local
-fi
-
 unalias run-help
 autoload run-help
 HELPDIR=/usr/local/share/zsh/help
@@ -101,5 +98,38 @@ fpath=($HOME/.homesick/repos/homeshick/completions $fpath)
 
 export PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
+if which swiftenv > /dev/null; then eval "$(swiftenv init -)"; fi
 
-# test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+export WORKON_HOME=~/.virtualenvs
+source /usr/local/bin/virtualenvwrapper.sh
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+
+# place this after nvm initialization!
+autoload -U add-zsh-hook
+load-nvmrc() {
+  local node_version="$(nvm version)"
+  local nvmrc_path="$(nvm_find_nvmrc)"
+
+  if [ -n "$nvmrc_path" ]; then
+    local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
+
+    if [ "$nvmrc_node_version" = "N/A" ]; then
+      nvm install
+    elif [ "$nvmrc_node_version" != "$node_version" ]; then
+      nvm use
+    fi
+  elif [ "$node_version" != "$(nvm version default)" ]; then
+    echo "Reverting to nvm default version"
+    nvm use default
+  fi
+}
+add-zsh-hook chpwd load-nvmrc
+load-nvmrc
+
+eval "$(direnv hook zsh)"
+
+if [[ -f ~/.zshrc.local ]]; then
+  source ~/.zshrc.local
+fi
