@@ -89,6 +89,9 @@ Plug 'kchmck/vim-coffee-script'
 " Swift
 Plug 'keith/swift.vim'
 
+" Python
+Plug 'python-mode/python-mode'
+
 " Clojure
 " Plug 'https://github.com/tpope/vim-classpath.git'
 " Plug 'tpope/vim-fireplace', { 'for': 'clojure'}
