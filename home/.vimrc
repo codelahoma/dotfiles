@@ -68,6 +68,7 @@ Plug 'junegunn/seoul256.vim'
 Plug 'junegunn/limelight.vim'
 Plug 'junegunn/vader.vim'
 
+
 " Language Additions
 
 " pentadactylrc file
@@ -107,20 +108,9 @@ Plug 'plasticboy/vim-markdown'
 " Plist
 Plug 'darfink/vim-plist'
 
-function! BuildYCM(info)
-  " info is a dictionary with 3 fields, passed by Plug
-  " - name: name of the plugin
-  " - status: 'installed', 'updated', or 'unchanged'
-  " - force: set on PlugInstall! or PlugUpdate!
-  if a:info.status == 'installed' || a:info.force
-    !./install.py
-  endif
-endfunction
-
-" Load on nothing
-Plug 'SirVer/ultisnips', { 'on': [] }
-Plug 'Valloric/YouCompleteMe', {'on': [], 'do': function('BuildYCM')}
-
+Plug 'MarcWeber/vim-addon-mw-utils'
+Plug 'tomtom/tlib_vim'
+Plug 'garbas/vim-snipmate'
 Plug 'honza/vim-snippets'
 
 
@@ -155,6 +145,16 @@ Plug 'idbrii/AsyncCommand'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'Yggdroot/indentLine', {'on': 'IndentLinesToggle'}
 Plug 'mbbill/undotree', {'on': 'UndotreeToggle'}
+
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
+let g:deoplete#enable_at_startup = 1
+
 call plug#end()
 
 
@@ -191,10 +191,11 @@ augroup END
 
 
 " fix brain-dead change to html indenting
-let g:html_indent_inctags = "html,body,head,tbody"
+let g:html_indent_inctags = "html,body,head,tbody,div"
 
 
 " Persist undo history across sessions
+set undofile
 set undodir=~/.undo/vim
 set undolevels=1000
 set undoreload=10000
@@ -255,12 +256,12 @@ if !isdirectory(expand(&directory))
   call mkdir(expand(&directory), "p")
 endif
 
-if v:version >= 703
-  set undodir=/tmp//,.
-  if !isdirectory(expand(&undodir))
-    call mkdir(expand(&undodir), "p")
-  endif
-endif
+" if v:version >= 703
+"   set undodir=/tmp//,.
+"   if !isdirectory(expand(&undodir))
+"     call mkdir(expand(&undodir), "p")
+"   endif
+" endif
 
 " Backups
 set backup
@@ -381,7 +382,7 @@ set ttymouse=xterm2
 let g:localvimrc_sandbox=0
 
 " NERDTree configuration
-" let NERDTreeQuitOnOpen=1
+let NERDTreeQuitOnOpen=1
 
 
 
@@ -389,8 +390,7 @@ let g:localvimrc_sandbox=0
 if has('win32')
   nnoremap <leader>ev :execute "edit ~/vimfiles/vimrc"<cr>
 else
-  nnoremap <leader>ev :execute "tabedit " . resolve($MYVIMRC)<cr>
-  nnoremap <leader>elv :execute "edit ./.lvimrc"<cr>
+  nnoremap <leader>ev :execute "edit " . resolve($MYVIMRC)<cr>
 endif
 nnoremap <leader>sv :source $MYVIMRC<cr>
 "
@@ -592,33 +592,33 @@ onoremap al[ :<c-u>normal! F]va[<cr>
 " Emacs command line editing" --------------------
 
 " start of line
-:cnoremap <C-A>		<Home>
+:cnoremap <C-A>   <Home>
 
 " back one character
-:cnoremap <C-B>		<Left>
+:cnoremap <C-B>   <Left>
 
 " delete character under cursor
 " rk: I'd rather be able to expand help topics
-" :cnoremap <C-D>		<Del>
+" :cnoremap <C-D>   <Del>
 
 " end of line
-:cnoremap <C-E>		<End>
+:cnoremap <C-E>   <End>
 
 " forward one character
-:cnoremap <C-F>		<Right>
+:cnoremap <C-F>   <Right>
 
 " recall newer command-line
-:cnoremap <C-N>		<Down>
+:cnoremap <C-N>   <Down>
 
 " recall previous (older) command-line
-:cnoremap <C-P>		<Up>
+:cnoremap <C-P>   <Up>
 
 " rk: I don't like the way these slow down escaping from command mode
 "" back one word
-":cnoremap <Esc><C-B>	<S-Left>
+":cnoremap <Esc><C-B> <S-Left>
 
 "" forward one word
-":cnoremap <Esc><C-F>	<S-Right>
+":cnoremap <Esc><C-F> <S-Right>
 
 " swapping back to standard. Now that space is my <leader>, I won't be
 " needing the command line for saving, and the Two Hand Method (see elsewhere
@@ -679,143 +679,141 @@ noremap  <Right> <nop>
 "
 :autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 
-augroup load_us_ycm
-  autocmd!
-  autocmd VimEnter * call plug#load('ultisnips', 'YouCompleteMe')
-        \| call youcompleteme#Enable() | autocmd! load_us_ycm
-augroup END
+" augroup load_us_ycm
+"   autocmd!
+"   autocmd VimEnter * call plug#load('ultisnips', 'YouCompleteMe')
+"         \| call youcompleteme#Enable() | autocmd! load_us_ycm
+" augroup END
 
-" Real tabs --------------------
+" Real tabs -------------------- {{{
 augroup real_tabs
   " make and python use real tabs
   autocmd FileType make   set noexpandtab
   autocmd FileType python set noexpandtab
   autocmd BufRead,BufNewFile *.plist set noexpandtab
 augroup END
-"
-" Vimscript --------------------
+" }}}
+" Vimscript -------------------- {{{
 augroup filetype_vim
   autocmd!
-  autocmd InsertEnter * call plug#load('ultisnips', 'YouCompleteMe')
-                     \| call youcompleteme#Enable() | autocmd! load_us_ycm
-augroup END "}}}
+  autocmd FileType vim setlocal foldmethod=marker
+augroup END
+" }}}
 
-    " Real tabs -------------------- {{{
-    augroup real_tabs
-      " make and python use real tabs
-      autocmd FileType make   set noexpandtab
-      autocmd FileType python set noexpandtab
-      autocmd BufRead,BufNewFile *.plist set noexpandtab
-    augroup END
-    " }}}
-    " Vimscript -------------------- {{{
-    augroup filetype_vim
-      autocmd!
-      autocmd FileType vim setlocal foldmethod=marker
-    augroup END
-    " }}}
+" " Jasmine specs --------------"{{{
+" augroup filetype_jasmine
+"   autocmd BufRead,BufNewFile *.spec.js setlocal foldmethod=indent foldlevel=3
+" augroup END
+" "}}}
 
-    " " Jasmine specs --------------"{{{
-    " augroup filetype_jasmine
-    "   autocmd BufRead,BufNewFile *.spec.js setlocal foldmethod=indent foldlevel=3
-    " augroup END
-    " "}}}
+" Ruby -------------------- {{{
+augroup filetype_ruby
+  " Thorfile, Rakefile and Gemfile are Ruby
+  au BufRead,BufNewFile {Gemfile,Rakefile,Thorfile,config.ru}    set ft=ruby
+augroup END
+" }}}
+" plist -------------------- {{{
+augroup filetype_plist
+  " MailMate commands are plists
+  " Output operations
+  autocmd BufWriteCmd,FileWriteCmd *.mmCommand call plist#Write()
 
-    " Ruby -------------------- {{{
-    augroup filetype_ruby
-      " Thorfile, Rakefile and Gemfile are Ruby
-      au BufRead,BufNewFile {Gemfile,Rakefile,Thorfile,config.ru}    set ft=ruby
-    augroup END
-    " }}}
-    " plist -------------------- {{{
-    augroup filetype_plist
-      " MailMate commands are plists
-      " Output operations
-      autocmd BufWriteCmd,FileWriteCmd *.mmCommand call plist#Write()
+  " Input operations
+  autocmd BufReadCmd *.mmCommand call plist#Read(1) | call plist#ReadPost()
+  autocmd FileReadCmd *.mmCommand call plist#Read(0) | call plist#SetFiletype()
+augroup END
+" }}}
+" Markdown -------------------- {{{
+augroup filetype_markdown
+  " md, markdown, and mk are markdown and define buffer-local preview
+  au BufRead,BufNewFile *.{md,markdown,mdown,mkd,mkdn} call s:setupMarkup()
 
-      " Input operations
-      autocmd BufReadCmd *.mmCommand call plist#Read(1) | call plist#ReadPost()
-      autocmd FileReadCmd *.mmCommand call plist#Read(0) | call plist#SetFiletype()
-    augroup END
-    " }}}
-    " Markdown -------------------- {{{
-    augroup filetype_markdown
-      " md, markdown, and mk are markdown and define buffer-local preview
-      au BufRead,BufNewFile *.{md,markdown,mdown,mkd,mkdn} call s:setupMarkup()
+  au BufRead,BufNewFile *.txt call s:setupWrapping()
+  au BufRead,BufNewFile *.md setlocal ft=markdown
+augroup END
+" }}}
+"{{{
+augroup filetype_dokuwiki
+  " *.docuwiki.txt files come from pentadactyl + dokuft plugin
+  au BufRead,BufNewFile *.dokuwiki.txt setlocal ft=dokuwiki textwidth=0 wrapmargin=0
+augroup END
+"}}}
+"{{{
+augroup filetype_presentate
+  " *.docuwiki.txt files come from pentadactyl + dokuft plugin
+  au BufRead,BufNewFile *.presentate.com.txt setlocal ft=markdown textwidth=0 wrapmargin=0
+augroup END
+"}}}
+function! s:setupWrapping()
+  set wrap
+  set wm=2
+  set textwidth=72
+endfunction
 
-      au BufRead,BufNewFile *.txt call s:setupWrapping()
-      au BufRead,BufNewFile *.md setlocal ft=markdown
-    augroup END
-    " }}}
-    "{{{
-    augroup filetype_dokuwiki
-      " *.docuwiki.txt files come from pentadactyl + dokuft plugin
-      au BufRead,BufNewFile *.dokuwiki.txt setlocal ft=dokuwiki textwidth=0 wrapmargin=0
-    augroup END
-    "}}}
-    "{{{
-    augroup filetype_presentate
-      " *.docuwiki.txt files come from pentadactyl + dokuft plugin
-      au BufRead,BufNewFile *.presentate.com.txt setlocal ft=markdown textwidth=0 wrapmargin=0
-    augroup END
-    "}}}
-    function! s:setupWrapping()
-      set wrap
-      set wm=2
-      set textwidth=72
-    endfunction
+function! s:setupMarkup()
+  call s:setupWrapping()
+  map <buffer> <Leader>p :Mm <CR>
+endfunction
+" }}}
+" Git Commits ------------------------- {{{
+augroup git_commit
+  au BufNewFile,BufRead COMMIT_EDITMSG setlocal spell
+augroup END
 
-    function! s:setupMarkup()
-      call s:setupWrapping()
-      map <buffer> <Leader>p :Mm <CR>
-    endfunction
-    " }}}
-    " Git Commits ------------------------- {{{
-    augroup git_commit
-      au BufNewFile,BufRead COMMIT_EDITMSG setlocal spell
-    augroup END
+"  }}}
 
-    "  }}}
+" augroup CursorLine"{{{
+"   au!
+"   au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+"   au VimEnter,WinEnter,BufWinEnter * setlocal cursorcolumn
+"   au WinLeave * setlocal nocursorline
+"   au WinLeave * setlocal nocursorcolumn
+" augroup END"
+" }}}
 
-    " augroup CursorLine"{{{
-    "   au!
-    "   au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
-    "   au VimEnter,WinEnter,BufWinEnter * setlocal cursorcolumn
-    "   au WinLeave * setlocal nocursorline
-    "   au WinLeave * setlocal nocursorcolumn
-    " augroup END"
-    " }}}
-
-    " Functions --"{{{
+" Functions --"{{{
 
 
 
 
-    function! StripWhiteSpace()
-      let save_cursor = getpos(".")
-      let old_query = getreg('/')
-      :%s/\s\+$//e
-      call setpos('.', save_cursor)
-      call setreg('/', old_query)
-    endfunction
+function! StripWhiteSpace()
+  let save_cursor = getpos(".")
+  let old_query = getreg('/')
+  :%s/\s\+$//e
+  call setpos('.', save_cursor)
+  call setreg('/', old_query)
+endfunction
 
-    noremap <leader>ss :call StripWhiteSpace()<CR>
-    "}}}
+noremap <leader>ss :call StripWhiteSpace()<CR>
+"}}}
 
 
-    " Commands -- "{{{
-    command! InsertTime :normal a<c-r>=strftime('%F %H:%M')<cr>
-    "}}}
+" Commands -- "{{{
+command! InsertTime :normal a<c-r>=strftime('%F %H:%M')<cr>
+"}}}
 
-    let g:UltiSnipsExpandTrigger="<c-j>"
+let g:UltiSnipsExpandTrigger="<c-j>"
 
-    " au BufEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
-    let g:UltiSnipsJumpForwardTrigger="<c-f>"
-    let g:UltiSnipsJumpBackwardTrigger="<c-k>"
-    let g:UltiSnipsListSnippets="<c-e>"
-    "}}}
+" au BufEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
+let g:UltiSnipsJumpForwardTrigger="<c-f>"
+let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+let g:UltiSnipsListSnippets="<c-e>"
+"}}}
 
-    " Include user's local vim config
-    if filereadable(expand("~/.vimrc.local"))
-      source ~/.vimrc.local
-    endif
+" Include user's local vim config
+if filereadable(expand("~/.vimrc.local"))
+  source ~/.vimrc.local
+endif
+
+python3 << EOF
+import vim
+import git
+def is_git_repo():
+  try:
+    _ = git.Repo('.', search_parent_directories=True).git_dir
+    return "1"
+  except:
+    return "0"
+vim.command("let g:pymode_rope = " + is_git_repo())
+EOF
+
