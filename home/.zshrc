@@ -8,7 +8,7 @@ export PATH=~/bin:/usr/local/bin:/usr/local/sbin:/opt/local/bin:/opt/local/sbin:
 # time that oh-my-zsh is loaded.
 ZSH_THEME="powerlevel9k/powerlevel9k"
 # ZSH_THEME="robbyrussell"
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context newline dir rbenv virtualenv pyenv vcs)
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir rbenv pyenv vcs)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status nvm swift_version root_indicator background_jobs history time)
 
 # Example aliases
