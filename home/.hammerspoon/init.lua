@@ -10,6 +10,9 @@ spoon.ReloadConfiguration:start()
 -- Music Controls
 local spotify = hs.spotify
 hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
+hotkey.bind(magic, 'p', spotify.playpause)
+hotkey.bind(magic, 'n', spotify.next)
+hotkey.bind(magic, 'b', spotify.previous)
 
 
 function applicationWatcher(appName, eventType, appObject)
