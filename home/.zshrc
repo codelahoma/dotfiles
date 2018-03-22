@@ -8,8 +8,8 @@ export PATH=~/bin:/usr/local/bin:/usr/local/sbin:/opt/local/bin:/opt/local/sbin:
 # time that oh-my-zsh is loaded.
 ZSH_THEME="powerlevel9k/powerlevel9k"
 # ZSH_THEME="robbyrussell"
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir rbenv pyenv vcs)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status nvm swift_version root_indicator background_jobs history time)
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir pyenv)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status rvm nvm swift_version root_indicator background_jobs history time vcs)
 
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
@@ -49,7 +49,7 @@ alias ohmyzsh="vim ~/.oh-my-zsh"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git fasd osx nvm npm common-aliases brew colored-man tmux rvm virtualenvwrapper pyenv)
+plugins=( brew colored-man-pages command-not-found common-aliases django docker-compose docker fasd git github npm nvm osx pyenv rvm tmux virtualenvwrapper)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -128,8 +128,11 @@ load-nvmrc() {
 add-zsh-hook chpwd load-nvmrc
 load-nvmrc
 
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
 eval "$(direnv hook zsh)"
 
 if [[ -f ~/.zshrc.local ]]; then
   source ~/.zshrc.local
 fi
+
