@@ -3,6 +3,9 @@ local hyper = {"cmd","alt","ctrl","shift"}
 local magic = {"cmd","alt","ctrl"}
 local application = hs.application
 local hotkey = hs.hotkey
+local grid = hs.grid
+
+hotkey.bind(hyper, 'space', grid.show)
 
 hs.loadSpoon("ReloadConfiguration")
 table.insert(spoon.ReloadConfiguration.watch_paths, '~/.homesick/repos/dotfiles/home/.hammerspoon')
