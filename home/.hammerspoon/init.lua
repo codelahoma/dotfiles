@@ -5,6 +5,7 @@ local application = hs.application
 local hotkey = hs.hotkey
 
 hs.loadSpoon("ReloadConfiguration")
+table.insert(spoon.ReloadConfiguration.watch_paths, '~/.homesick/repos/dotfiles/home/.hammerspoon')
 spoon.ReloadConfiguration:start()
 
 -- Music Controls
