@@ -17,10 +17,23 @@ if empty(glob('~/.vim/autoload/plug.vim'))
   autocmd VimEnter * PlugInstall
 endif
 
-call plug#begin('~/.vim/plugged')
+call plug#begin('~/.vim/bundle')
+
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
+let g:deoplete#enable_at_startup = 1
+
+Plug 'Shougo/neosnippet.vim'
+Plug 'Shougo/neosnippet-snippets'
+Plug 'SevereOverfl0w/deoplete-github'
 
 " Plug 'kylef/apiblueprint.vim'
-" Plug 'mattn/emmet-vim'
+Plug 'mattn/emmet-vim'
 
 " Navigate by function with Ctrl-P
 Plug 'tacahiroy/ctrlp-funky'
@@ -67,7 +80,16 @@ Plug 'junegunn/vim-github-dashboard'
 Plug 'junegunn/seoul256.vim'
 Plug 'junegunn/limelight.vim'
 Plug 'junegunn/vader.vim'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
+" Angular
+
+Plug 'burnettk/vim-angular'
+Plug 'matthewsimo/angular-vim-snippets'
+Plug 'othree/javascript-libraries-syntax.vim'
+Plug 'claco/jasmine.vim'
+Plug 'othree/jspc.vim'
+Plug 'carlitux/deoplete-ternjs'
 
 " Language Additions
 
@@ -81,7 +103,7 @@ Plug 'junegunn/vader.vim'
 " Plug 'pangloss/vim-javascript'
 Plug 'othree/yajs.vim'
 Plug 'mxw/vim-jsx'
-Plug 'marijnh/tern_for_vim'
+Plug 'ternjs/tern_for_vim'
 
 
 " Coffeescript
@@ -110,7 +132,7 @@ Plug 'darfink/vim-plist'
 
 Plug 'MarcWeber/vim-addon-mw-utils'
 Plug 'tomtom/tlib_vim'
-Plug 'garbas/vim-snipmate'
+" Plug 'garbas/vim-snipmate'
 Plug 'honza/vim-snippets'
 
 
@@ -146,17 +168,30 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'Yggdroot/indentLine', {'on': 'IndentLinesToggle'}
 Plug 'mbbill/undotree', {'on': 'UndotreeToggle'}
 
-if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-  Plug 'Shougo/deoplete.nvim'
-  Plug 'roxma/nvim-yarp'
-  Plug 'roxma/vim-hug-neovim-rpc'
-endif
-let g:deoplete#enable_at_startup = 1
 
 call plug#end()
 
+" Deoplete config
+let g:deoplete#omni#functions = {}
+let g:deoplete#omni#functions.javascript = [ 'tern#Complete', 'jspc#omni' ]
+
+let g:deoplete#sources = {}
+let g:deoplete#sources.gitcommit=['github']
+let g:deoplete#sources.neosnippet=['neosnippet']
+
+let g:deoplete#keyword_patterns = {}
+let g:deoplete#keyword_patterns.gitcommit = '.+'
+
+let g:deoplete#omni#input_patterns = {}
+call deoplete#util#set_pattern( 
+    \ g:deoplete#omni#input_patterns,
+    \'gitcommit', [g:deoplete#keyword_patterns.gitcommit] )
+
+" Neosnippet
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
+let g:neosnippet#snippets_directory='~/.vim/bundle/vim-snippets/snippets'
 
 "  Parentheses colours using Solarized
 let g:rbpt_colorpairs = [
@@ -472,13 +507,15 @@ let g:ctrlp_user_command = 'ag %s -i --nocolor --nogroup --hidden
   \ --ignore "**/*.pyc"
   \ -g ""'
 
+
+" use leader to (y)ank, (d)elete, or (p)aste to/from system clipboard{{{
 vmap <Leader>y "+y
 vmap <Leader>d "+d
 nmap <Leader>p "+p
 nmap <Leader>P "+P
 vmap <Leader>p "+p
 vmap <Leader>P "+P
-
+"}}}
 
 
 " No more fat fingering help when I want Esc
@@ -521,10 +558,6 @@ inoremap <C-s> <C-O>:update<CR>
 nnoremap <C-s> :update<CR>
 
 
-" Jump List
-nnoremap _ <C-O>
-nnoremap + <C-I>
-
 " <F3> | Undotree
 if v:version >= 703
   inoremap <F3> <ESC>:UndotreeToggle<cr>
@@ -550,7 +583,7 @@ endif
 " Git --------------------
 :nnoremap <leader>gs :Gstatus<cr>
 
-" CtrlP config to replace Gary Bernhardt's Command-T config ---
+" CtrlP config to replace Gary Bernhardt's Command-T config ---{{{
 " from 'File Navigation with Vim'
 " (http://www.destroyallsoftware.com/file-navigation-in-vim.html)
 nnoremap <leader>f :CtrlPCurWD<cr>
@@ -558,8 +591,9 @@ nnoremap <leader>gf :CtrlPCurFile<cr>
 nnoremap <leader>b :CtrlPBuffer<cr>
 nnoremap <leader>m :CtrlPMRUFiles<cr>
 nnoremap <leader>gt :CtrlPTag<cr>
+"}}}
 
-" operator pending remaps --------------------
+" operator pending remaps --------------------{{{
 " (i)n and (a)round (n)ext or (l)ast
 onoremap in( :<c-u>normal! f(vi(<cr>
 onoremap il( :<c-u>normal! F)vi(<cr>
@@ -575,9 +609,9 @@ onoremap in[ :<c-u>normal! f[vi[<cr>
 onoremap il[ :<c-u>normal! F]vi[<cr>
 onoremap an[ :<c-u>normal! f[va[<cr>
 onoremap al[ :<c-u>normal! F]va[<cr>
-"
+"}}}
 
-" Custom Rails specific CtrlP mappings
+" Custom Rails specific CtrlP mappings{{{
 " nnoremap <leader>gv :ClearCtrlPCache<cr>\|:CtrlP app/views<cr>
 " nnoremap <leader>gc :ClearCtrlPCache<cr>\|:CtrlP app/controllers<cr>
 " nnoremap <leader>gm :ClearCtrlPCache<cr>\|:CtrlP app/models<cr>
@@ -587,9 +621,9 @@ onoremap al[ :<c-u>normal! F]va[<cr>
 " I think I prefer to use this shortcut for Git, but I'll keep it here for
 " review at a later date.
 " nnoremap <leader>gs :ClearCtrlPCache<cr>\|:CtrlP public/stylesheets<cr>
-"
+"}}}
 
-" Emacs command line editing" --------------------
+" Emacs command line editing" --------------------{{{
 
 " start of line
 :cnoremap <C-A>   <Home>
@@ -619,6 +653,7 @@ onoremap al[ :<c-u>normal! F]va[<cr>
 
 "" forward one word
 ":cnoremap <Esc><C-F> <S-Right>
+"}}}
 
 " swapping back to standard. Now that space is my <leader>, I won't be
 " needing the command line for saving, and the Two Hand Method (see elsewhere
@@ -642,30 +677,18 @@ nnoremap <leader>sf :source %<cr>
 "nnoremap L $
 nnoremap  <leader><leader> <C-^>
 nnoremap <leader>vp :execute "rightbelow vsplit " . bufname("#")<cr>"
-" nnoremap L      :nohlsearch<cr><c-l>
 
 " always search magically
 nnoremap / /\v
 
-" grep in current directory for word under cursor
-" nnoremap <leader>g :silent execute "grep! -R " . shellescape("<cWORD>") . " ."<cr>:copen<cr>
-
-" remap ESC to home key combo for super fastness
-" (mapped in both directions so you can just mash 'em!)
-" inoremap kj <esc>
-" inoremap jk <esc>
-" allow continuous indent adjustment in visual mode
+" allow continuous indent adjustment in visual mode{{{
 vnoremap < <gv
-vnoremap > >gv
+vnoremap > >gv"}}}
 
 " fold functions manually
 nnoremap <Leader>ff f{v%zf
-" Hide/Show NERDTree
-" nnoremap <Leader>t :NERDTreeToggle<cr>
 
-"
-
-" Burn The Boats ----------------------------------------
+" Burn The Boats ----------------------------------------{{{
 " inoremap <esc>   <nop>
 nmap  <Up>    <nop>
 nmap  <Down>  <nop>
@@ -673,17 +696,18 @@ vmap  <Up>    <nop>
 vmap  <Down>  <nop>
 noremap  <Left>  <nop>
 noremap  <Right> <nop>
-"
+"}}}
 
 " File Settings --------------------
 "
-:autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+augroup restore_cursor"{{{
+	autocmd BufReadPost *
+		 \ if line("'\"") > 1 && line("'\"") <= line("$") && &ft !~# 'commit'
+		 \ |   exe "normal! g`\""
+		 \ | endif
 
-" augroup load_us_ycm
-"   autocmd!
-"   autocmd VimEnter * call plug#load('ultisnips', 'YouCompleteMe')
-"         \| call youcompleteme#Enable() | autocmd! load_us_ycm
-" augroup END
+augroup END
+"}}}
 
 " Real tabs -------------------- {{{
 augroup real_tabs
@@ -732,18 +756,14 @@ augroup filetype_markdown
   au BufRead,BufNewFile *.md setlocal ft=markdown
 augroup END
 " }}}
-"{{{
+
+" DocuWiki ---{{{
 augroup filetype_dokuwiki
   " *.docuwiki.txt files come from pentadactyl + dokuft plugin
   au BufRead,BufNewFile *.dokuwiki.txt setlocal ft=dokuwiki textwidth=0 wrapmargin=0
 augroup END
 "}}}
-"{{{
-augroup filetype_presentate
-  " *.docuwiki.txt files come from pentadactyl + dokuft plugin
-  au BufRead,BufNewFile *.presentate.com.txt setlocal ft=markdown textwidth=0 wrapmargin=0
-augroup END
-"}}}
+
 function! s:setupWrapping()
   set wrap
   set wm=2
@@ -755,6 +775,7 @@ function! s:setupMarkup()
   map <buffer> <Leader>p :Mm <CR>
 endfunction
 " }}}
+
 " Git Commits ------------------------- {{{
 augroup git_commit
   au BufNewFile,BufRead COMMIT_EDITMSG setlocal spell
@@ -762,14 +783,6 @@ augroup END
 
 "  }}}
 
-" augroup CursorLine"{{{
-"   au!
-"   au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
-"   au VimEnter,WinEnter,BufWinEnter * setlocal cursorcolumn
-"   au WinLeave * setlocal nocursorline
-"   au WinLeave * setlocal nocursorcolumn
-" augroup END"
-" }}}
 
 " Functions --"{{{
 
@@ -792,19 +805,12 @@ noremap <leader>ss :call StripWhiteSpace()<CR>
 command! InsertTime :normal a<c-r>=strftime('%F %H:%M')<cr>
 "}}}
 
-let g:UltiSnipsExpandTrigger="<c-j>"
-
-" au BufEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
-let g:UltiSnipsJumpForwardTrigger="<c-f>"
-let g:UltiSnipsJumpBackwardTrigger="<c-k>"
-let g:UltiSnipsListSnippets="<c-e>"
-"}}}
-
 " Include user's local vim config
 if filereadable(expand("~/.vimrc.local"))
   source ~/.vimrc.local
 endif
 
+" helper for pymode{{{
 python3 << EOF
 import vim
 import git
@@ -816,4 +822,4 @@ def is_git_repo():
     return "0"
 vim.command("let g:pymode_rope = " + is_git_repo())
 EOF
-
+"}}}
