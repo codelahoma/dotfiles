@@ -5,6 +5,7 @@ local application = hs.application
 local hotkey = hs.hotkey
 local grid = hs.grid
 
+grid.setGrid('8x4')
 hotkey.bind(hyper, 'space', grid.show)
 
 hs.loadSpoon("ReloadConfiguration")
