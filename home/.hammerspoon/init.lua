@@ -5,7 +5,17 @@ local application = hs.application
 local hotkey = hs.hotkey
 local grid = hs.grid
 
-grid.setGrid('8x4')
+grid.setGrid('6x6')
+-- grid.setGrid('4x4','1920x1200')
+grid.ui.textSize = 100
+grid.HINTS = {
+  {'a','b','c','d','e','f'},
+  {'g','h','i','j','k','l'},
+  {'m','n','o','p','q','r'},
+  {'s','t','u','v','w','x'},
+  {'y','z',';',',','.','8'},
+  {'9','0','1','2','3','4'}
+}
 hotkey.bind(hyper, 'space', grid.show)
 
 hs.loadSpoon("ReloadConfiguration")
