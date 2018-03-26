@@ -71,6 +71,7 @@ Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-vinegar'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-dispatch'
+Plug 'tpope/vim-rhubarb'
 
 
 Plug 'junegunn/vim-easy-align'
