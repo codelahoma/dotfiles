@@ -714,7 +714,7 @@ augroup END
 augroup real_tabs
   " make and python use real tabs
   autocmd FileType make   set noexpandtab
-  autocmd FileType python set noexpandtab
+  " autocmd FileType python set noexpandtab
   autocmd BufRead,BufNewFile *.plist set noexpandtab
 augroup END
 " }}}
