@@ -6,7 +6,7 @@ ZSH=$HOME/.oh-my-zsh
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
 if [ -n "$INSIDE_EMACS" ]; then
-    export ZSH_THEME="cordial"
+    export ZSH_THEME="lambda-mod"
 else
     export ZSH_THEME="powerlevel9k/powerlevel9k"
     export POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir pyenv)
