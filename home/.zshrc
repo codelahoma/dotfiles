@@ -1,15 +1,19 @@
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
 
-export PATH=~/bin:/usr/local/bin:/usr/local/sbin:/opt/local/bin:/opt/local/sbin:~/Library/Android/sdk/tools:~/Library/Android/sdk/platform-tools:$PATH
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="powerlevel9k/powerlevel9k"
+if [ -n "$INSIDE_EMACS" ]; then
+    export ZSH_THEME="cordial"
+else
+    export ZSH_THEME="powerlevel9k/powerlevel9k"
+    export POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir pyenv)
+    export POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status rvm nvm swift_version root_indicator background_jobs history time vcs)
+fi
+
 # ZSH_THEME="robbyrussell"
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir pyenv)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status rvm nvm swift_version root_indicator background_jobs history time vcs)
 
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
@@ -49,24 +53,11 @@ alias ohmyzsh="vim ~/.oh-my-zsh"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=( brew colored-man-pages command-not-found common-aliases django docker-compose docker fasd git github npm nvm osx pyenv rvm tmux virtualenvwrapper)
+plugins=( brew colored-man-pages command-not-found common-aliases django docker-compose docker fasd git github npm nvm osx pyenv rvm tmux )
 
 source $ZSH/oh-my-zsh.sh
 
 
-# Locale
-export LANG="en_US.UTF-8"
-export LC_COLLATE="en_US.UTF-8"
-export LC_CTYPE="en_US.UTF-8"
-export LC_MESSAGES="en_US.UTF-8"
-export LC_MONETARY="en_US.UTF-8"
-export LC_NUMERIC="en_US.UTF-8"
-export LC_TIME="en_US.UTF-8"
-export LC_ALL="en_US.UTF-8"
-# User configuration
-
-export PATH=$HOME/bin:/usr/local/bin:/usr/local/opt/coreutils/libexec/gnubin:$PATH
-export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
 
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
@@ -75,7 +66,7 @@ export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
 #   export EDITOR='mvim'
 # fi
 
-export EDITOR='vim'
+# export EDITOR='vim'
 
 autoload zmv
 alias mmv='noglob zmv -W'
@@ -96,14 +87,13 @@ HELPDIR=/usr/local/share/zsh/help
 source "$HOME/.homesick/repos/homeshick/homeshick.sh"
 fpath=($HOME/.homesick/repos/homeshick/completions $fpath)
 
-export PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
 if which swiftenv > /dev/null; then eval "$(swiftenv init -)"; fi
 
-export WORKON_HOME=~/.virtualenvs
-source /usr/local/bin/virtualenvwrapper.sh
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
+# export WORKON_HOME=~/.virtualenvs
+# source /usr/local/bin/virtualenvwrapper.sh
+# export PYENV_ROOT="$HOME/.pyenv"
+# export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 
 # place this after nvm initialization!
