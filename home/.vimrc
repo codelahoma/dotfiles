@@ -47,6 +47,7 @@ Plug 'airblade/vim-gitgutter'
 " Smart buffer delete - preserve splits and more
 Plug 'cespare/vim-sbd'
 
+Plug 'ruanyl/vim-gh-line'
 Plug 'kien/rainbow_parentheses.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'majutsushi/tagbar'
@@ -812,6 +813,8 @@ if filereadable(expand("~/.vimrc.local"))
 endif
 
 " helper for pymode{{{
+let g:pymode_breakpoint = 0
+
 python3 << EOF
 import vim
 import git
