@@ -104,10 +104,9 @@ values."
 
      (shell :variables
             shell-default-shell 'multi-term
-            shell-default-term-shell "/bin/zsh")
-     ;; (shell :variables
-     ;;        shell-default-height 30
-     ;;        shell-default-position 'bottom)
+            shell-default-term-shell "/bin/zsh"
+            shell-default-height 50
+            shell-default-position 'bottom)
 
      syntax-checking
      version-control
@@ -177,7 +176,7 @@ values."
    ;; directory. A string value must be a path to an image format supported
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
-   dotspacemacs-startup-banner 'official
+   dotspacemacs-startup-banner 'random
    ;; List of items to show in startup buffer or an association list of
    ;; the form `(list-type . list-size)`. If nil then it is disabled.
    ;; Possible values for list-type are:
@@ -185,7 +184,8 @@ values."
    ;; List sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
    dotspacemacs-startup-lists '((recents . 5)
-                                (projects . 7))
+                                (projects . 7)
+                                (todos . 5))
    ;; True if the home buffer should respond to resize events.
    dotspacemacs-startup-buffer-responsive t
    ;; Default major mode of the scratch buffer (default `text-mode')
@@ -194,6 +194,8 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
+                         solarized-light
+                         solarized-dark
                          naquadah
                          organic-green
                          sanityinc-tomorrow-bright
@@ -333,7 +335,7 @@ values."
    ;;                       text-mode
    ;;   :size-limit-kb 1000)
    ;; (default nil)
-   dotspacemacs-line-numbers nil
+   dotspacemacs-line-numbers 'relative
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'evil
@@ -364,7 +366,7 @@ values."
    ;; `trailing' to delete only the whitespace at end of lines, `changed'to
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
    ;; (default nil)
-   dotspacemacs-whitespace-cleanup nil
+   dotspacemacs-whitespace-cleanup 'trailing
    ))
 
 (defun dotspacemacs/user-init ()
@@ -385,10 +387,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
             (lambda ()
               (setq term-buffer-maximum-size 10000)))
 
-  (setq ropemacs-enable-shortcuts nil)
-  (setq ropemacs-local-prefix "C-c C-p")
-  (require 'pymacs)
-  (pymacs-load "ropemacs" "rope-")
+  ;; (setq ropemacs-enable-shortcuts nil)
+  ;; (setq ropemacs-local-prefix "C-c C-p")
+  ;; (require 'pymacs)
+  ;; (pymacs-load "ropemacs" "rope-")
 
   )
 
