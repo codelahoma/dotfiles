@@ -416,6 +416,7 @@ you should place your code here."
 
   (load "~/.slack_auth.el")
 
+  (setq projectile-enable-caching t)
   (with-eval-after-load 'org
     ;; Org config goes here
     ;;
