@@ -397,7 +397,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
 This function is called at the very end of Spacemacs initialization after
 layers configuration.
 This is the place where most of your configurations should be done. Unless it is
-explicitly specified that a variable should be set before a package is loades,
+explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   (setq max-specpdl-size 6000)
 
