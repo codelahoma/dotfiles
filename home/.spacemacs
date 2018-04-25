@@ -389,7 +389,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; (setq ropemacs-local-prefix "C-c C-p")
   ;; (require 'pymacs)
   ;; (pymacs-load "ropemacs" "rope-")
-  (setq sql-mysql-login-params (append sql-mysql-login-params '(port)))
 
   )
 
@@ -450,6 +449,10 @@ you should place your code here."
 
   (add-hook 'spacemacs-post-theme-change-hook
             'rk-bump-mode-fonts)
+
+  (with-eval-after-load 'sql-mode
+    (setq sql-mysql-login-params (append sql-mysql-login-params '(port)))
+    )
 
   (with-eval-after-load 'coffee-mode
     (add-hook 'coffee-mode-hook
