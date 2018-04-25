@@ -2,7 +2,7 @@
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
 (defun save-framegeometry ()
-  "Gets the current frame's geometry and saves to ~/.emacs.d/framegeometry."
+  "Gets the current frame's geometry and saves to ~/.emacs.d/private/framegeometry."
   (let (
         (framegeometry-left (frame-parameter (selected-frame) 'left))
         (framegeometry-top (frame-parameter (selected-frame) 'top))
@@ -37,7 +37,7 @@
 (defun load-framegeometry ()
   "Loads ~/.emacs.d/framegeometry which should load the previous frame's
 geometry."
-  (let ((framegeometry-file (expand-file-name "~/.emacs.d/framegeometry")))
+  (let ((framegeometry-file (expand-file-name "~/.emacs.d/private/framegeometry")))
     (when (file-readable-p framegeometry-file)
       (load-file framegeometry-file)))
   )
