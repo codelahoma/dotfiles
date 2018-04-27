@@ -1,46 +1,6 @@
 ;; -*- mode: emacs-lisp -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
-(defun save-framegeometry ()
-  "Gets the current frame's geometry and saves to ~/.emacs.d/private/framegeometry."
-  (let (
-        (framegeometry-left (frame-parameter (selected-frame) 'left))
-        (framegeometry-top (frame-parameter (selected-frame) 'top))
-        (framegeometry-width (frame-parameter (selected-frame) 'width))
-        (framegeometry-height (frame-parameter (selected-frame) 'height))
-        (framegeometry-file (expand-file-name "~/.emacs.d/private/framegeometry"))
-        )
-
-    (when (not (number-or-marker-p framegeometry-left))
-      (setq framegeometry-left 0))
-    (when (not (number-or-marker-p framegeometry-top))
-      (setq framegeometry-top 0))
-    (when (not (number-or-marker-p framegeometry-width))
-      (setq framegeometry-width 0))
-    (when (not (number-or-marker-p framegeometry-height))
-      (setq framegeometry-height 0))
-
-    (with-temp-buffer
-      (insert
-       ";;; This is the previous emacs frame's geometry.\n"
-       ";;; Last generated " (current-time-string) ".\n"
-       "(setq initial-frame-alist\n"
-       "      '(\n"
-       (format "        (top . %d)\n" (max framegeometry-top 0))
-       (format "        (left . %d)\n" (max framegeometry-left 0))
-       (format "        (width . %d)\n" (max framegeometry-width 0))
-       (format "        (height . %d)))\n" (max framegeometry-height 0)))
-      (when (file-writable-p framegeometry-file)
-        (write-file framegeometry-file))))
-  )
-
-(defun load-framegeometry ()
-  "Loads ~/.emacs.d/framegeometry which should load the previous frame's
-geometry."
-  (let ((framegeometry-file (expand-file-name "~/.emacs.d/private/framegeometry")))
-    (when (file-readable-p framegeometry-file)
-      (load-file framegeometry-file)))
-  )
 
 (defun dotspacemacs/layers ()
   "Configuration Layers declaration.
@@ -92,7 +52,7 @@ values."
      helm
      slack
      w3m
-     xkcd
+    xkcd
      docker
      django
      (auto-completion :variables
@@ -115,6 +75,8 @@ values."
      syntax-checking
      version-control
      themes-megapack
+
+     rk-layout
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -374,13 +336,6 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
-  ;; Restore Frame size and location, if we are using gui emacs
-  (if window-system
-      (progn
-        (add-hook 'after-init-hook 'load-framegeometry)
-        (add-hook 'kill-emacs-hook 'save-framegeometry))
-    )
-
   (add-hook 'term-mode-hook
             (lambda ()
               (setq term-buffer-maximum-size 100000)))
@@ -409,9 +364,11 @@ you should place your code here."
            ;; TODO: Change to use variables here. However, got error:
            ;; (Spacemacs) Error in dotspacemacs/user-config: Wrong type argument: stringp, pd-blue
            (mode-line :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
+           (mode-line-buffer-id :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
            (powerline-active1 :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
            (powerline-active2 :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
            (mode-line-inactive :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
+           (mode-line-buffer-id-inactive :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
            (powerline-inactive1 :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
            (powerline-inactive2 :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
            ;; Make a really prominent helm selection line.
@@ -425,9 +382,11 @@ you should place your code here."
            ;; TODO: Change to use variables here. However, got error:
            ;; (Spacemacs) Error in dotspacemacs/user-config: Wrong type argument: stringp, pd-blue
            (mode-line :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
+           (mode-line-buffer-id :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
            (powerline-active1 :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
            (powerline-active2 :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
            (mode-line-inactive :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
+           (mode-line-buffer-id-inactive :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
            (powerline-inactive1 :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
            (powerline-inactive2 :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
            ;; Make a really prominent helm selection line.
@@ -448,7 +407,7 @@ you should place your code here."
   (setq create-lockfiles nil)
 
 
-  (load "~/.slack_auth.el")
+  ;; (load "~/.slack_auth.el")
 
   (setq projectile-enable-caching t)
 
@@ -529,19 +488,39 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(exec-path-from-shell-check-startup-files nil)
+ '(ansi-color-faces-vector
+   [default default default italic underline success warning error])
+ '(cua-global-mark-cursor-color "#2aa198")
+ '(cua-normal-cursor-color "#839496")
+ '(cua-overwrite-cursor-color "#b58900")
+ '(cua-read-only-cursor-color "#859900")
+ '(evil-want-Y-yank-to-eol t)
+ '(highlight-symbol-colors
+   (--map
+    (solarized-color-blend it "#002b36" 0.25)
+    (quote
+     ("#b58900" "#2aa198" "#dc322f" "#6c71c4" "#859900" "#cb4b16" "#268bd2"))))
+ '(highlight-symbol-foreground-color "#93a1a1")
+ '(hl-bg-colors
+   (quote
+    ("#7B6000" "#8B2C02" "#990A1B" "#93115C" "#3F4D91" "#00629D" "#00736F" "#546E00")))
+ '(hl-fg-colors
+   (quote
+    ("#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36")))
+ '(nrepl-message-colors
+   (quote
+    ("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4")))
  '(package-selected-packages
    (quote
-    (sqlup-mode sql-indent gmail-message-mode ham-mode html-to-markdown flymd edit-server helm-gtags ggtags ranger editorconfig org-jira helm-w3m w3m yaml-mode ox-reveal emoji-cheat-sheet-plus company-emoji ox-twbs ox-gfm yasnippet-snippets zenburn-theme zen-and-art-theme xkcd white-sand-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme slack emojify circe oauth2 websocket seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme magit-gh-pulls madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme github-search github-clone github-browse-file gist gh marshal logito pcache ht gandalf-theme flatui-theme flatland-theme farmhouse-theme exotica-theme espresso-theme dracula-theme dockerfile-mode docker tablist docker-tramp django-theme darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme xterm-color shell-pop multi-term eshell-z eshell-prompt-extras esh-help web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern tern coffee-mode helm-company helm-c-yasnippet git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck diff-hl company-statistics company-anaconda company auto-yasnippet yasnippet auto-dictionary ac-ispell auto-complete lua-mode reveal-in-osx-finder pbcopy osx-trash osx-dictionary launchctl yapfify smeargle pyvenv pytest pyenv-mode py-isort pony-mode pip-requirements orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mmm-mode markdown-toc markdown-mode magit-gitflow live-py-mode hy-mode dash-functional htmlize helm-pydoc helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md evil-magit magit magit-popup git-commit ghub let-alist with-editor cython-mode anaconda-mode pythonic ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
- '(sql-connection-alist
-   (quote
-    (("docker"
-      (sql-product
-       (quote mysql))
-      (sql-user "django")
-      (sql-database "summit_esp")
-      (sql-server "127.0.0.1")
-      (sql-port 3307))))))
+    (sql-indent ranger jira-markup-mode gmail-message-mode ham-mode html-to-markdown flymd edit-server yasnippet-snippets yaml-mode slack emojify circe oauth2 websocket pony-mode ox-twbs ox-reveal ox-gfm org-jira magit-gh-pulls helm-w3m w3m github-search github-clone github-browse-file gist gh marshal logito pcache ht editorconfig dockerfile-mode docker tablist docker-tramp request-deferred multi clojure-snippets clj-refactor inflections edn paredit peg cider-eval-sexp-fu cider queue clojure-mode winum white-sand-theme powerline rebecca-theme org-category-capture org-mime lua-mode helm-spotify-plus exotica-theme ghub ag avy dash-functional tern iedit f goto-chg skewer-mode simple-httpd markdown-mode deferred haml-mode multiple-cursors dash s xterm-color shell-pop multi-term git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter flycheck-pos-tip pos-tip flycheck eshell-z eshell-prompt-extras esh-help diff-hl packed smartparens highlight evil yasnippet projectile alert magit-popup async vimrc-mode dactyl-mode ws-butler web-mode use-package ujelly-theme tao-theme swift-mode persp-mode orgit org org-download neotree moe-theme jazz-theme info+ hide-comnt helm-projectile helm-flx grandshell-theme gitattributes-mode evil-surround evil-mc evil-matchit evil-escape company-sourcekit apropospriate-theme alect-themes autothemer company helm helm-core magit git-commit with-editor request hydra js2-mode zonokai-theme zenburn-theme zen-and-art-theme xkcd xcode-mode window-numbering which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen underwater-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spotify spacemacs-theme spaceline spacegray-theme sourcekit soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode seti-theme scss-mode sass-mode reverse-theme reveal-in-osx-finder restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme pug-mode professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme pcre2el pbcopy pastels-on-dark-theme paradox osx-trash osx-dictionary organic-green-theme org-wunderlist org-projectile org-present org-pomodoro org-plus-contrib org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme naquadah-theme mustang-theme move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum livid-mode linum-relative link-hint light-soap-theme less-css-mode launchctl json-mode js2-refactor js-doc jbeans-theme jasminejs-mode ir-black-theme inkpot-theme indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-spotify helm-mode-manager helm-make helm-gitignore helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme gotham-theme google-translate golden-ratio gnuplot gitconfig-mode git-timemachine git-messenger git-link gh-md gandalf-theme flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme emoji-cheat-sheet-plus emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme diminish deft dash-at-point darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-web company-tern company-statistics company-emoji column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized coffee-mode clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bind-key badwolf-theme auto-yasnippet auto-highlight-symbol auto-compile anti-zenburn-theme ample-zen-theme ample-theme aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+ '(paradox-github-token t)
+ '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#073642" 0.2))
+ '(term-default-bg-color "#002b36")
+ '(term-default-fg-color "#839496")
+ '(xterm-color-names
+   ["#073642" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#eee8d5"])
+ '(xterm-color-names-bright
+   ["#002b36" "#cb4b16" "#586e75" "#657b83" "#839496" "#6c71c4" "#93a1a1" "#fdf6e3"]))
 ;; (custom-set-faces
 ;;  ;; custom-set-faces was added by Custom.
 ;;  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -553,4 +532,4 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((t (:background nil)))))
