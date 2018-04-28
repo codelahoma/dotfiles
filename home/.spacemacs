@@ -438,10 +438,7 @@ you should place your code here."
     ;;
     '(require 'ox-gfm nil t)
     (setq org-jira-working-dir "~/Dropbox/org/")
-    (setq org-agenda-files (list "~/Dropbox/org/work.org"
-                                 "~/Dropbox/org/home.org"
-                                 "~/Dropbox/org/refile-beorg.org"
-                                 "~/Dropbox/org/SK.org"))
+    (setq org-agenda-files ("~/Dropbox/org/"))
 
     (global-set-key "\C-cb" 'org-switchb)
     (setq jiralib-url "https://summitesp.atlassian.net")
