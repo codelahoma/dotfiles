@@ -90,10 +90,6 @@ fpath=($HOME/.homesick/repos/homeshick/completions $fpath)
 
 if which swiftenv > /dev/null; then eval "$(swiftenv init -)"; fi
 
-# export WORKON_HOME=~/.virtualenvs
-# source /usr/local/bin/virtualenvwrapper.sh
-# export PYENV_ROOT="$HOME/.pyenv"
-# export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 
 # place this after nvm initialization!
@@ -125,4 +121,3 @@ eval "$(direnv hook zsh)"
 if [[ -f ~/.zshrc.local ]]; then
   source ~/.zshrc.local
 fi
-
