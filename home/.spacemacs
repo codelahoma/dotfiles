@@ -56,15 +56,11 @@ values."
      docker
      django
      (auto-completion :variables
-                      auto-completion-enable-snippets-in-popup t)
+                      auto-completion-enable-snippets-in-popup t
+                      auto-completion-enable-help-tooltip t)
      ;; better-defaults
      git
      github
-     (org :variables
-          org-enable-github-support t
-          org-enable-bootstrap-support t
-          org-enable-reveal-js-support t)
-
      (shell :variables
             shell-default-shell 'multi-term
             shell-default-term-shell "/bin/zsh"
@@ -77,6 +73,7 @@ values."
      themes-megapack
 
      rk-layout
+     rk-org
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -84,7 +81,6 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(
                                       yasnippet-snippets
-                                      org-jira
                                       edit-server
                                       editorconfig
                                       jira-markup-mode
@@ -434,16 +430,6 @@ you should place your code here."
     (add-hook 'coffee-mode-hook
               'editorconfig-apply t))
 
-  (with-eval-after-load 'org
-    ;; Org config goes here
-    ;;
-    '(require 'ox-gfm nil t)
-    (setq org-jira-working-dir "~/Dropbox/org/")
-    (setq org-agenda-files ("~/Dropbox/org/"))
-
-    (global-set-key "\C-cb" 'org-switchb)
-    (setq jiralib-url "https://summitesp.atlassian.net")
-    )
 
   (with-eval-after-load 'magit
     (require 'magit-gh-pulls)

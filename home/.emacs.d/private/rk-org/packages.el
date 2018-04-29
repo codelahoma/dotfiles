@@ -30,7 +30,9 @@
 ;;; Code:
 
 (defconst rk-org-packages
-  '()
+  '(
+  org-jira
+  )
   "The list of Lisp packages required by the rk-org layer.
 
 Each entry is either:
@@ -56,7 +58,11 @@ Each entry is either:
         `./local/PACKAGE/PACKAGE.el'
 
       - A list beginning with the symbol `recipe' is a melpa
-        recipe.  See: https://github.com/milkypostman/melpa#recipe-format")
+        recipe.  See: https://github.com/milkypostman/melpa#recipe-format"
+)
 
+(defun rk-org/init-org-jira ()
+    (use-package org-jira
+    :defer t))
 
 ;;; packages.el ends here
