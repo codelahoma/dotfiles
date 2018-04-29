@@ -81,7 +81,6 @@ end
 hotkey.bind(hyper, "i", appLauncher('iTerm'))
 hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
 hotkey.bind(hyper, "o", appLauncher('Slack'))
-hotkey.bind(hyper, "f", appLauncher('Firefox'))
 hotkey.bind(hyper, "j", appLauncher('Emacs'))
 
 hs.alert.show("Config Loaded")
