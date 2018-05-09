@@ -31,7 +31,8 @@
 
 (defconst rk-org-packages
   '(
-  org-jira
+    org-jira
+    (org-protocol :location built-in)
   )
   "The list of Lisp packages required by the rk-org layer.
 
@@ -62,7 +63,11 @@ Each entry is either:
 )
 
 (defun rk-org/init-org-jira ()
-    (use-package org-jira
-    :defer t))
+    (use-package org-jira))
 
+(defun rk-org/init-org-protocol ()
+  (use-package org-protocol
+    :defer t
+    :commands (org-protocol-capture org-protocol-create))
+  (server-start))
 ;;; packages.el ends here
