@@ -1,7 +1,6 @@
 (with-eval-after-load 'org
   ;; Org config goes here
   ;;
-  (require 'ox-gfm nil t)
 
   (add-to-list 'org-modules 'org-protocol)
   (setq org-jira-working-dir "~/Dropbox/org/")
