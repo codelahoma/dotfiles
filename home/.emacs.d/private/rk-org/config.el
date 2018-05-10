@@ -14,17 +14,20 @@
 
   (setq org-directory "~/Dropbox/org/")
   (setq org-capture-templates `(
-                                ("t" "Todo" entry (file+headline ,(concat org-directory "notes.org") "Inbox")
+                                ("t" "Todo" entry (file+headline ,(concat org-directory "inbox.org") "INBOX")
                                  "* TODO %?\n  %i\n  %a")
                                 ("j" "Journal" entry (file+datetree ,(concat org-directory "journal.org"))
                                  "* %?\nEntered on %U\n  %i\n  %a")
-                                ("p" "Protocol" entry (file+headline ,(concat org-directory "notes.org") "Inbox")
+                                ("p" "Protocol" entry (file+headline ,(concat org-directory "inbox.org") "INBOX")
                                  "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?")
-                                ("L" "Protocol Link" entry (file+headline ,(concat org-directory "notes.org") "Inbox")
+                                ("L" "Protocol Link" entry (file+headline ,(concat org-directory "inbox.org") "INBOX")
                                  "* %? [[%:link][%:description]] \nCaptured On: %U")
                                 ))
 
   (global-set-key "\C-cb" 'org-switchb)
+
+  (setq org-startup-indented t)
+
   (setq jiralib-url "https://summitesp.atlassian.net")
 
   ;; Refiling refinements
