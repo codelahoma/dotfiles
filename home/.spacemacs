@@ -83,6 +83,7 @@ values."
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(
+                                      helm-dash
                                       yasnippet-snippets
                                       edit-server
                                       editorconfig
@@ -355,7 +356,17 @@ you should place your code here."
   (setq max-specpdl-size 6000)
   (global-company-mode)
   (setq browse-url-browser-function 'eww-browse-url)
-
+  (setq helm-dash-common-docsets
+        '(
+          "AngularJS"
+          "Bash"
+          "Django"
+          "Emacs Lisp"
+          "MySQL"
+          "Python 2"
+          "Python 3"
+          "django-rest-framework-3.7.7"
+          ))
 
   (setq theming-modifications
         '((solarized-dark

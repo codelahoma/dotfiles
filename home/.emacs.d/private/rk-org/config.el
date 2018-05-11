@@ -27,6 +27,7 @@
   (global-set-key "\C-cb" 'org-switchb)
 
   (setq org-startup-indented t)
+  (add-to-list 'org-file-apps '(directory . emacs))
 
   (setq jiralib-url "https://summitesp.atlassian.net")
 
