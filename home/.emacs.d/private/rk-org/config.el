@@ -4,7 +4,7 @@
 
   (add-to-list 'org-modules 'org-protocol)
   (setq org-jira-working-dir "~/Dropbox/org/")
-  (setq org-agenda-files  (list "~/Dropbox/org/" "~/summit/summit-knowledge/.rodk/"))
+  (setq org-agenda-files  (append (list "~/Dropbox/org/") (file-expand-wildcards "~/summit/*/.rodk")))
 
   (defun transform-square-brackets-to-round-ones(string-to-transform)
     "Transforms [ into ( and ] into ), other chars left unchanged."
