@@ -16,7 +16,7 @@ grid.HINTS = {
   {'y','z',';',',','.','8'},
   {'9','0','1','2','3','4'}
 }
-hotkey.bind(hyper, 'space', grid.show)
+hotkey.bind(hyper, '8', grid.show)
 
 hs.loadSpoon("ReloadConfiguration")
 table.insert(spoon.ReloadConfiguration.watch_paths, '~/.homesick/repos/dotfiles/home/.hammerspoon')
