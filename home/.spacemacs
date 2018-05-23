@@ -31,6 +31,8 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     swift
+     vimscript
      (sql :variables
           sql-capitalize-words t)
      html
