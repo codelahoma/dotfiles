@@ -37,7 +37,8 @@ values."
      javascript ;; includes Coffeescript support
      lua
      markdown
-     python
+     (python :variables
+             python-test-runner 'pytest)
      emacs-lisp
      ruby
      yaml
