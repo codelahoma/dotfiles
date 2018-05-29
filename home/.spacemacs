@@ -357,7 +357,7 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   (setq max-specpdl-size 6000)
-  (global-company-mode)
+  ;; (global-company-mode)
   (setq browse-url-browser-function 'eww-browse-url)
   (setq helm-dash-common-docsets
         '(
