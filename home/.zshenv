@@ -6,7 +6,6 @@ export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
 
 # for virutalenvwrapper
 export WORKON_HOME=~/Envs
-export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 # Locale
 export LANG="en_US.UTF-8"
@@ -21,9 +20,6 @@ export LC_ALL="en_US.UTF-8"
 
 export TERM=xterm-256color
 
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init -)"
-fi
 
 # Set NVM_DIR if it isn't already defined
 [[ -z "$NVM_DIR" ]] && export NVM_DIR="$HOME/.nvm"

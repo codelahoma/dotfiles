@@ -10,7 +10,7 @@ if [ -n "$INSIDE_EMACS" ]; then
 else
     export ZSH_THEME="powerlevel9k/powerlevel9k"
     export POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(anaconda context dir)
-    export POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status rvm nvm swift_version root_indicator background_jobs history time vcs)
+    export POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs history time vcs)
 fi
 
 # ZSH_THEME="robbyrussell"
@@ -53,7 +53,7 @@ alias ohmyzsh="vim ~/.oh-my-zsh"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=( brew colored-man-pages command-not-found common-aliases django docker-compose docker fasd git github npm nvm osx pyenv rvm tmux virtualenv)
+plugins=( brew colored-man-pages command-not-found common-aliases django docker-compose docker emacs fasd git github npm nvm osx rvm tmux virtualenv)
 
 source $ZSH/oh-my-zsh.sh
 
