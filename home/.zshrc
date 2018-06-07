@@ -90,8 +90,6 @@ fpath=($HOME/.homesick/repos/homeshick/completions $fpath)
 
 if which swiftenv > /dev/null; then eval "$(swiftenv init -)"; fi
 
-eval "$(pyenv init -)"
-
 # place this after nvm initialization!
 autoload -U add-zsh-hook
 load-nvmrc() {

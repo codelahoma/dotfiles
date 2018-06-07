@@ -6,7 +6,7 @@ export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
 
 # for virutalenvwrapper
 export WORKON_HOME=~/Envs
-export PATH="$PYENV_ROOT/bin:$PATH"
+
 # Locale
 export LANG="en_US.UTF-8"
 export LC_COLLATE="en_US.UTF-8"
