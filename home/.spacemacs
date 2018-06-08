@@ -344,6 +344,15 @@ before packages are loaded. If you are unsure, you should try in setting them in
             (lambda ()
               (setq term-buffer-maximum-size 100000)))
 
+  (add-hook 'nxml-mode-hook (lambda() (hs-minor-mode 1)))
+
+  (add-to-list 'hs-special-modes-alist
+               '(nxml-mode
+                 "<!--\\|<[^/>]*[^/]>" ;; regexp for start block
+                 "-->\\|</[^/>]*[^/]>" ;; regexp for end block
+                 "<!--"
+                 nxml-forward-element
+                 nil))
   ;; (setq ropemacs-enable-shortcuts nil)
   ;; (setq ropemacs-local-prefix "C-c C-p")
   ;; (require 'pymacs)
