@@ -5,16 +5,15 @@ local application = hs.application
 local hotkey = hs.hotkey
 local grid = hs.grid
 
-grid.setGrid('6x6')
+grid.setGrid('7x5')
 -- grid.setGrid('4x4','1920x1200')
 grid.ui.textSize = 100
 grid.HINTS = {
-  {'a','b','c','d','e','f'},
-  {'g','h','i','j','k','l'},
-  {'m','n','o','p','q','r'},
-  {'s','t','u','v','w','x'},
-  {'y','z',';',',','.','8'},
-  {'9','0','1','2','3','4'}
+  {'a','b','c','d','e','f', '1'},
+  {'g','h','i','j','k','l', '2'},
+  {'m','n','o','p','q','r', '8'},
+  {'s','t','u','v','w','x','9'},
+  {'y','z',';',',','.','0','\\'}
 }
 hotkey.bind(hyper, '8', grid.show)
 
