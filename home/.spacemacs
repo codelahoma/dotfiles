@@ -353,6 +353,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
                  "<!--"
                  nxml-forward-element
                  nil))
+
+  (load-file "/Users/rodk/.emacs.d/private/local/narrow-indirect.el")
+
   ;; (setq ropemacs-enable-shortcuts nil)
   ;; (setq ropemacs-local-prefix "C-c C-p")
   ;; (require 'pymacs)
