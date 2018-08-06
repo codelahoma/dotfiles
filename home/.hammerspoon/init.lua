@@ -95,6 +95,7 @@ end
 
 
 hotkey.bind(hyper, "e", appLauncher('Finder'))
+hotkey.bind(hyper, "f", appLauncher('JIRA SI Board'))
 hotkey.bind(hyper, "i", appLauncher('iTerm'))
 hotkey.bind(hyper, "j", appLauncher('/usr/local/opt/emacs-plus/Emacs.app'))
 hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
@@ -102,6 +103,6 @@ hotkey.bind(hyper, "l", appLauncher('LibreOffice'))
 hotkey.bind(hyper, "m", appLauncher('Mail'))
 hotkey.bind(hyper, "o", appLauncher('Slack'))
 hotkey.bind(hyper, "p", appLauncher('Postman'))
-hotkey.bind(hyper, "s", appLauncher('SoapUI'))
+hotkey.bind(hyper, ";", appLauncher('Spotify'))
 
 hs.alert.show("Config Loaded")
