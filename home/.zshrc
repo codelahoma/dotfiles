@@ -9,8 +9,8 @@ if [ -n "$INSIDE_EMACS" ]; then
     export ZSH_THEME="lambda-mod"
 else
     export ZSH_THEME="powerlevel9k/powerlevel9k"
-    export POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(virtualenv context dir)
-    export POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs history time vcs)
+    export POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(vcs newline virtualenv context dir)
+    export POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs history time)
 fi
 
 # ZSH_THEME="robbyrussell"
