@@ -53,7 +53,7 @@ alias ohmyzsh="vim ~/.oh-my-zsh"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=( brew colored-man-pages command-not-found common-aliases django docker-compose docker emacs fasd git github npm nvm osx rvm tmux virtualenv)
+plugins=( brew colored-man-pages common-aliases django docker-compose docker emacs fasd git github npm  osx tmux virtualenv)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -90,27 +90,8 @@ fpath=($HOME/.homesick/repos/homeshick/completions $fpath)
 
 if which swiftenv > /dev/null; then eval "$(swiftenv init -)"; fi
 
-# place this after nvm initialization!
-autoload -U add-zsh-hook
-load-nvmrc() {
-  local node_version="$(nvm version)"
-  local nvmrc_path="$(nvm_find_nvmrc)"
-
-  if [ -n "$nvmrc_path" ]; then
-    local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
-
-    if [ "$nvmrc_node_version" = "N/A" ]; then
-      nvm install
-    elif [ "$nvmrc_node_version" != "$node_version" ]; then
-      nvm use
-    fi
-  elif [ "$node_version" != "$(nvm version default)" ]; then
-    echo "Reverting to nvm default version"
-    nvm use default
-  fi
-}
-add-zsh-hook chpwd load-nvmrc
-load-nvmrc
+alias loadrvm='[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"'
+alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"'
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
