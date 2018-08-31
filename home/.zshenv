@@ -4,8 +4,8 @@ export PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
 
 
-# for virutalenvwrapper
-export WORKON_HOME=~/Envs
+# # for virutalenvwrapper
+# export WORKON_HOME=~/Envs
 
 # Locale
 export LANG="en_US.UTF-8"
@@ -20,6 +20,11 @@ export LC_ALL="en_US.UTF-8"
 
 export TERM=xterm-256color
 
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
 
 # Set NVM_DIR if it isn't already defined
 [[ -z "$NVM_DIR" ]] && export NVM_DIR="$HOME/.nvm"
+if command -v pyenv 1>/dev/null 2>&1; then  eval "$(pyenv init -)";fi
+
+if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
