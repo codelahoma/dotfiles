@@ -104,7 +104,7 @@ hotkey.bind(hyper, "m", appLauncher('Mail'))
 hotkey.bind(hyper, "o", appLauncher('Slack'))
 hotkey.bind(hyper, "p", appLauncher('Postman'))
 hotkey.bind(hyper, ";", appLauncher('Spotify'))
-hotkey.bind(hyper, "1", appLauncher('1Password 6'))
+hotkey.bind(hyper, "1", appLauncher('1Password 7'))
 hotkey.bind(hyper, "s", appLauncher('Skype for Business'))
 
 hs.alert.show("Config Loaded")
