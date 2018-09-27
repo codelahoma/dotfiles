@@ -26,10 +26,13 @@
 
   (global-set-key "\C-cb" 'org-switchb)
 
-  (setq org-startup-indented t)
+  ;; (setq org-startup-indented t)
   (add-to-list 'org-file-apps '(directory . emacs))
 
+  ;; Org-Jira
   (setq jiralib-url "https://summitesp.atlassian.net")
+  (setq org-jira-use-status-as-todo t)
+
 
   ;; Refiling refinements
   ;; source: https://blog.aaronbieber.com/2017/03/19/organizing-notes-with-refile.html
@@ -38,6 +41,15 @@
   (setq org-refile-use-outline-path 'file)
   (setq org-outline-path-complete-in-steps nil)
   (setq org-refile-allow-creating-parent-nodes 'confirm)
+  (setq org-clock-persist 'history)
+  (org-clock-persistence-insinuate)
+
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "|" "DONE(d)")
+          (sequence "Backlog(b)" "In Progress(i!)" "Waiting(w@\!)" "Code Complete(c!)" "Changes Requested(f!/!)" "|" "QA(q!)" "Released(r!)" "Closed(x@)")
+          (sequence "Meeting(m)" "|" "Cancelled(l@)")))
+
+  (setq org-catch-invisible-edits t)
 
   (org-babel-do-load-languages
    'org-babel-load-languages
