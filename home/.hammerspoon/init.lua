@@ -93,7 +93,7 @@ local function appLauncher(app)
   end
 end
 
-
+hotkey.bind(hyper, "d", appLauncher('Firefox Developer Edition'))
 hotkey.bind(hyper, "e", appLauncher('Finder'))
 hotkey.bind(hyper, "f", appLauncher('JIRA SI Board'))
 hotkey.bind(hyper, "i", appLauncher('iTerm'))

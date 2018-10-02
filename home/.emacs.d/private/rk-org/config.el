@@ -46,8 +46,8 @@
 
   (setq org-todo-keywords
         '((sequence "TODO(t)" "|" "DONE(d)")
-          (sequence "Backlog(b)" "In Progress(i!)" "Waiting(w@\!)" "Code Complete(c!)" "Changes Requested(f!/!)" "|" "QA(q!)" "Released(r!)" "Closed(x@)")
-          (sequence "Meeting(m)" "|" "Cancelled(l@)")))
+          (sequence "BACKLOG(b)" "IN-PROGRESS(i!)" "WAITING(w@\!)" "CODE-COMPLETE(c!)" "CHANGES-REQUESTED(f!/!)" "|" "QA(q!)" "RELEASED(r!)" "CLOSED(x@)")
+          (sequence "MEETING(m)" "|" "CANCELLED(l@)")))
 
   (setq org-catch-invisible-edits t)
 
