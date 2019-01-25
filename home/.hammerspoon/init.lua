@@ -93,16 +93,22 @@ local function appLauncher(app)
   end
 end
 
+local function focusMail()
+  hs.window.find('Outlook Web App'):focus()
+end
+
 hotkey.bind(hyper, "d", appLauncher('Firefox Developer Edition'))
 hotkey.bind(hyper, "e", appLauncher('Finder'))
-hotkey.bind(hyper, "f", appLauncher('JIRA SI Board'))
+hotkey.bind(hyper, "f", appLauncher('Firefox'))
+hotkey.bind(hyper, "g", appLauncher('JIRA SI Board'))
 hotkey.bind(hyper, "i", appLauncher('iTerm'))
 hotkey.bind(hyper, "j", appLauncher('/usr/local/opt/emacs-plus/Emacs.app'))
 hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
 hotkey.bind(hyper, "l", appLauncher('LibreOffice'))
-hotkey.bind(hyper, "m", appLauncher('Mail'))
+hotkey.bind(hyper, "m", focusMail)
 hotkey.bind(hyper, "o", appLauncher('Slack'))
 hotkey.bind(hyper, "p", appLauncher('Postman'))
+hotkey.bind(hyper, "t", appLauncher('Tweetbot'))
 hotkey.bind(hyper, ";", appLauncher('Spotify'))
 hotkey.bind(hyper, "1", appLauncher('1Password 7'))
 hotkey.bind(hyper, "s", appLauncher('Skype for Business'))

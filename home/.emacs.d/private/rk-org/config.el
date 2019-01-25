@@ -17,7 +17,7 @@
                                 ("t" "Todo" entry (file+headline ,(concat org-directory "inbox.org") "INBOX")
                                  "* TODO %?\n  %i\n  %a")
                                 ("j" "Journal" entry (file+datetree ,(concat org-directory "journal.org"))
-                                 "* %?\nEntered on %U\n  %i\n  %a")
+                                 "* %?\nEntered on %U\n  %i\n  %a" :unnarrowed t)
                                 ("p" "Protocol" entry (file+headline ,(concat org-directory "inbox.org") "INBOX")
                                  "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?")
                                 ("L" "Protocol Link" entry (file+headline ,(concat org-directory "inbox.org") "INBOX")
