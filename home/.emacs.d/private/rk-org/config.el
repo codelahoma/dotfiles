@@ -3,6 +3,7 @@
   ;;
 
   (add-to-list 'org-modules 'org-protocol)
+  (add-to-list 'org-modules 'org-tempo)
   (setq org-jira-working-dir "~/Dropbox/org/")
   (setq org-agenda-files  (append (list "~/Dropbox/org/") (file-expand-wildcards "~/summit/*/.rodk")))
 

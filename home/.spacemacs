@@ -33,10 +33,9 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(react
+   '(
      csv
      swift
-     vimscript
      (sql :variables
           sql-capitalize-words t)
      html
@@ -51,15 +50,16 @@ This function should only modify configuration layer settings."
              python-test-runner 'pytest
              python-backend 'lsp)
      ipython-notebook
-     hy
-     java
      emacs-lisp
      ruby
      yaml
      lsp
-
      command-log
      restclient
+     (elfeed :variables
+             elfeed-db-directory "~/Dropbox/elfeed/"
+             rmh-elfeed-org-files (list "~/Dropbox/org/elfeed.org"))
+
      vinegar
      ;; (colors :variables colors-colorize-identifiers 'all)
      emoji
@@ -70,7 +70,6 @@ This function should only modify configuration layer settings."
           osx-command-as nil)
      chrome
      helm
-     slack
      pdf
      xkcd
      docker
@@ -93,6 +92,8 @@ This function should only modify configuration layer settings."
      (version-control :variables
                       version-control-diff-side 'left)
      themes-megapack
+     multiple-cursors
+     treemacs
 
      rk-layout
      rk-org
@@ -204,8 +205,10 @@ It should only modify the values of Spacemacs settings."
    ;; section of the documentation for details on available variables.
    ;; (default 'vim)
    dotspacemacs-editing-style 'vim
-   ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
-   dotspacemacs-verbose-loading t
+
+   ;; If non-nil output loading progress in `*Messages*' buffer. (default nil)
+   dotspacemacs-verbose-loading nil
+
    ;; Specify the startup banner. Default value is `official', it displays
    ;; the official spacemacs logo. An integer value is the index of text
    ;; banner, `random' chooses a random text banner in `core/banners'
@@ -264,17 +267,22 @@ It should only modify the values of Spacemacs settings."
    ;; The key used for Emacs commands (M-x) (after pressing on the leader key).
    ;; (default "SPC")
    dotspacemacs-emacs-command-key "SPC"
+
    ;; The key used for Vim Ex commands (default ":")
    dotspacemacs-ex-command-key ":"
+
    ;; The leader key accessible in `emacs state' and `insert state'
    ;; (default "M-m")
    dotspacemacs-emacs-leader-key "M-m"
+
    ;; Major mode leader key is a shortcut key which is the equivalent of
    ;; pressing `<leader> m`. Set it to `nil` to disable it. (default ",")
    dotspacemacs-major-mode-leader-key ","
+
    ;; Major mode leader key accessible in `emacs state' and `insert state'.
    ;; (default "C-M-m")
    dotspacemacs-major-mode-emacs-leader-key "C-M-m"
+
    ;; These variables control whether separate commands are bound in the GUI to
    ;; the key pairs C-i, TAB and C-m, RET.
    ;; Setting it to a non-nil value, allows for separate commands under <C-i>
@@ -305,11 +313,13 @@ It should only modify the values of Spacemacs settings."
    ;; literally to avoid performance issues. Opening a file literally means that
    ;; no major mode or minor modes are active. (default is 1)
    dotspacemacs-large-file-size 1
+
    ;; Location where to auto-save files. Possible values are `original' to
    ;; auto-save the file in-place, `cache' to auto-save the file to another
    ;; file stored in the cache directory and `nil' to disable auto-saving.
    ;; (default 'cache)
    dotspacemacs-auto-save-file-location 'cache
+
    ;; Maximum number of rollback slots to keep in the cache. (default 5)
    dotspacemacs-max-rollback-slots 5
 
@@ -317,9 +327,11 @@ It should only modify the values of Spacemacs settings."
    ;; paste something, pressing `C-j' and `C-k' several times cycles through the
    ;; elements in the `kill-ring'. (default nil)
    dotspacemacs-enable-paste-transient-state nil
+
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
    ;; the commands bound to the current keystroke sequence. (default 0.4)
    dotspacemacs-which-key-delay 0.4
+
    ;; Which-key frame position. Possible values are `right', `bottom' and
    ;; `right-then-bottom'. right-then-bottom tries to display the frame to the
    ;; right; if there is insufficient space it displays it at the bottom.
@@ -370,6 +382,7 @@ It should only modify the values of Spacemacs settings."
    ;; scrolling overrides the default behavior of Emacs which recenters point
    ;; when it reaches the top or bottom of the screen. (default t)
    dotspacemacs-smooth-scrolling t
+
    ;; Control line numbers activation.
    ;; If set to `t' or `relative' line numbers are turned on in all `prog-mode' and
    ;; `text-mode' derivatives. If set to `relative', line numbers are relative.
@@ -396,13 +409,16 @@ It should only modify the values of Spacemacs settings."
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'evil
-   ;; If non-nil smartparens-strict-mode will be enabled in programming modes.
+
+   ;; If non-nil `smartparens-strict-mode' will be enabled in programming modes.
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode nil
+
    ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
    ;; over any automatically added closing parenthesis, bracket, quote, etc…
    ;; This can be temporary disabled by pressing `C-q' before `)'. (default nil)
-   dotspacemacs-smart-closing-parenthesis t
+   dotspacemacs-smart-closing-parenthesis nil
+
    ;; Select a scope to highlight delimiters. Possible values are `any',
    ;; `current', `all' or `nil'. Default is `all' (highlight any scope and
    ;; emphasis the current one). (default 'all)
@@ -410,6 +426,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non nil, advise quit functions to keep server open when quitting.
    ;; (default nil)
    dotspacemacs-persistent-server nil
+
    ;; List of search tool executable names. Spacemacs uses the first installed
    ;; tool of the list. Supported tools are `rg', `ag', `pt', `ack' and `grep'.
    ;; (default '("rg" "ag" "pt" "ack" "grep"))
@@ -613,7 +630,7 @@ you should place your code here."
   (setq create-lockfiles nil)
 
 
-  (load "~/Dropbox/emacs/.slack_auth.el")
+  ;; (load "~/Dropbox/emacs/.slack_auth.el")
 
   (setq projectile-enable-caching t)
 
@@ -649,46 +666,44 @@ you should place your code here."
   (setq flymd-browser-open-function 'my-flymd-browser-function)
 
   (with-eval-after-load 'magit
-    (require 'magit-gh-pulls)
-    (require 'magit-lfs)
-    (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
+    (require 'magit-lfs))
 
-  (with-eval-after-load 'slack
-    ;; (add-hook 'slack-mode-hook #'emojify-mode)
+  ;; (with-eval-after-load 'slack
+  ;;   ;; (add-hook 'slack-mode-hook #'emojify-mode)
 
-    (with-eval-after-load 'tracking
-      (define-key tracking-mode-map [f11]
-        #'tracking-next-buffer))
+  ;;   (with-eval-after-load 'tracking
+  ;;     (define-key tracking-mode-map [f11]
+  ;;       #'tracking-next-buffer))
 
-    (setq slack-buffer-create-on-notify t)
-    ;; (defun slack-user-status (id team) "")
+  ;;   (setq slack-buffer-create-on-notify t)
+  ;;   ;; (defun slack-user-status (id team) "")
 
-    ;; (defun endless/-author-at (pos)
-    ;;   (replace-regexp-in-string
-    ;;    (rx "\n" (* anything)) ""
-    ;;    (or (get-text-property pos 'lui-raw-text) "")))
+  ;;   ;; (defun endless/-author-at (pos)
+  ;;   ;;   (replace-regexp-in-string
+  ;;   ;;    (rx "\n" (* anything)) ""
+  ;;   ;;    (or (get-text-property pos 'lui-raw-text) "")))
 
-    ;; (defun endless/-remove-slack-author ()
-    ;;   "Remove author here if it's the same as above."
-    ;;   (let ((author-here (endless/-author-at (point)))
-    ;;         (author-above (endless/-author-at (1- (point)))))
-    ;;     (when (and (looking-at-p (regexp-quote author-here))
-    ;;                (equal author-here author-above))
-    ;;       (delete-region (1- (point))
-    ;;                      (1+ (line-end-position))))))
+  ;;   ;; (defun endless/-remove-slack-author ()
+  ;;   ;;   "Remove author here if it's the same as above."
+  ;;   ;;   (let ((author-here (endless/-author-at (point)))
+  ;;   ;;         (author-above (endless/-author-at (1- (point)))))
+  ;;   ;;     (when (and (looking-at-p (regexp-quote author-here))
+  ;;   ;;                (equal author-here author-above))
+  ;;   ;;       (delete-region (1- (point))
+  ;;   ;;                      (1+ (line-end-position))))))
 
-    ;; (defun endless/remove-slack-author-hook ()
-    ;;   "For usage in `lui-pre-output-hook'."
-    ;;   (when (derived-mode-p 'slack-mode)
-    ;;     (save-excursion
-    ;;       (goto-char (point-min))
-    ;;       (save-restriction
-    ;;         (widen)
-    ;;         (endless/-remove-slack-author)))))
+  ;;   ;; (defun endless/remove-slack-author-hook ()
+  ;;   ;;   "For usage in `lui-pre-output-hook'."
+  ;;   ;;   (when (derived-mode-p 'slack-mode)
+  ;;   ;;     (save-excursion
+  ;;   ;;       (goto-char (point-min))
+  ;;   ;;       (save-restriction
+  ;;   ;;         (widen)
+  ;;   ;;         (endless/-remove-slack-author)))))
 
-    ;; (add-hook 'lui-pre-output-hook
-    ;;           #'endless/remove-slack-author-hook)
-    )
+  ;;   ;; (add-hook 'lui-pre-output-hook
+  ;;   ;;           #'endless/remove-slack-author-hook)
+  ;;   )
 
   (defun lsp-set-cfg ()
     (let ((lsp-cfg '(:pyls (:configurationSources ("flake8")))))
@@ -737,7 +752,7 @@ This function is called while dumping Spacemacs configuration. You can
 `require' or `load' the libraries of your choice that will be included
 in the dump."
   (load-file "/Users/rodk/.emacs.d/private/local/narrow-indirect.el")
-  (load "~/Dropbox/emacs/.slack_auth.el")
+  ;; (load "~/Dropbox/emacs/.slack_auth.el")
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -993,7 +1008,7 @@ static char *gnus-pointer[] = {
     ("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4")))
  '(package-selected-packages
    (quote
-    (treemacs-projectile treemacs-evil treemacs pfuture forge closql emacsql-sqlite emacsql yapfify pytest pyenv-mode py-isort live-py-mode helm-pydoc cython-mode pip-requirements hy-mode anaconda-mode pythonic atomic-chrome magit-lfs pipenv csv-mode wsd-mode evil-commentary imenu-list company-anaconda rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv rake minitest chruby bundler inf-ruby company-quickhelp pyvenv sql-indent ranger jira-markup-mode gmail-message-mode ham-mode html-to-markdown flymd edit-server yasnippet-snippets yaml-mode slack emojify circe oauth2 websocket pony-mode ox-twbs ox-reveal ox-gfm org-jira magit-gh-pulls helm-w3m w3m github-search github-clone github-browse-file gist gh marshal logito pcache ht editorconfig dockerfile-mode docker tablist docker-tramp request-deferred multi clojure-snippets clj-refactor inflections edn paredit peg cider-eval-sexp-fu cider queue clojure-mode winum white-sand-theme powerline rebecca-theme org-category-capture org-mime lua-mode helm-spotify-plus exotica-theme ghub ag avy dash-functional tern iedit f goto-chg skewer-mode simple-httpd markdown-mode deferred haml-mode multiple-cursors dash s xterm-color shell-pop multi-term git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter flycheck-pos-tip pos-tip flycheck eshell-z eshell-prompt-extras esh-help diff-hl packed smartparens highlight evil yasnippet projectile alert magit-popup async vimrc-mode dactyl-mode ws-butler web-mode use-package ujelly-theme tao-theme swift-mode persp-mode orgit org org-download neotree moe-theme jazz-theme info+ hide-comnt helm-projectile helm-flx grandshell-theme gitattributes-mode evil-surround evil-mc evil-matchit evil-escape company-sourcekit apropospriate-theme alect-themes autothemer company helm helm-core magit git-commit with-editor request hydra js2-mode zonokai-theme zenburn-theme zen-and-art-theme xkcd xcode-mode window-numbering which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen underwater-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spotify spacemacs-theme spaceline spacegray-theme sourcekit soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode seti-theme scss-mode sass-mode reverse-theme reveal-in-osx-finder restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme pug-mode professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme pcre2el pbcopy pastels-on-dark-theme paradox osx-trash osx-dictionary organic-green-theme org-wunderlist org-projectile org-present org-pomodoro org-plus-contrib org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme naquadah-theme mustang-theme move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum livid-mode linum-relative link-hint light-soap-theme less-css-mode launchctl json-mode js2-refactor js-doc jbeans-theme jasminejs-mode ir-black-theme inkpot-theme indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-spotify helm-mode-manager helm-make helm-gitignore helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme gotham-theme google-translate golden-ratio gnuplot gitconfig-mode git-timemachine git-messenger git-link gh-md gandalf-theme flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme emoji-cheat-sheet-plus emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme diminish deft dash-at-point darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-web company-tern company-statistics company-emoji column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized coffee-mode clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bind-key badwolf-theme auto-yasnippet auto-highlight-symbol auto-compile anti-zenburn-theme ample-zen-theme ample-theme aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+    (writeroom-mode doom-modeline swiper ivy yapfify pytest pyenv-mode py-isort live-py-mode helm-pydoc cython-mode pip-requirements hy-mode anaconda-mode pythonic atomic-chrome magit-lfs pipenv csv-mode wsd-mode evil-commentary imenu-list company-anaconda rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv rake minitest chruby bundler inf-ruby company-quickhelp pyvenv sql-indent ranger jira-markup-mode gmail-message-mode ham-mode html-to-markdown flymd edit-server yasnippet-snippets yaml-mode slack emojify circe oauth2 websocket pony-mode ox-twbs ox-reveal ox-gfm org-jira magit-gh-pulls helm-w3m w3m github-search github-clone github-browse-file gist gh marshal logito pcache ht editorconfig dockerfile-mode docker tablist docker-tramp request-deferred multi clojure-snippets clj-refactor inflections edn paredit peg cider-eval-sexp-fu cider queue clojure-mode winum white-sand-theme powerline rebecca-theme org-category-capture org-mime lua-mode helm-spotify-plus exotica-theme ghub ag avy dash-functional tern iedit f goto-chg skewer-mode simple-httpd markdown-mode deferred haml-mode multiple-cursors dash s xterm-color shell-pop multi-term git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter flycheck-pos-tip pos-tip flycheck eshell-z eshell-prompt-extras esh-help diff-hl packed smartparens highlight evil yasnippet projectile alert magit-popup async vimrc-mode dactyl-mode ws-butler web-mode use-package ujelly-theme tao-theme swift-mode persp-mode orgit org org-download neotree moe-theme jazz-theme info+ hide-comnt helm-projectile helm-flx grandshell-theme gitattributes-mode evil-surround evil-mc evil-matchit evil-escape company-sourcekit apropospriate-theme alect-themes autothemer company helm helm-core magit git-commit with-editor request hydra js2-mode zonokai-theme zenburn-theme zen-and-art-theme xkcd xcode-mode window-numbering which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen underwater-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spotify spacemacs-theme spaceline spacegray-theme sourcekit soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode seti-theme scss-mode sass-mode reverse-theme reveal-in-osx-finder restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme pug-mode professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme pcre2el pbcopy pastels-on-dark-theme paradox osx-trash osx-dictionary organic-green-theme org-wunderlist org-projectile org-present org-pomodoro org-plus-contrib org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme naquadah-theme mustang-theme move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum livid-mode linum-relative link-hint light-soap-theme less-css-mode launchctl json-mode js2-refactor js-doc jbeans-theme jasminejs-mode ir-black-theme inkpot-theme indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-spotify helm-mode-manager helm-make helm-gitignore helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme gotham-theme google-translate golden-ratio gnuplot gitconfig-mode git-timemachine git-messenger git-link gh-md gandalf-theme flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme emoji-cheat-sheet-plus emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme diminish deft dash-at-point darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-web company-tern company-statistics company-emoji column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized coffee-mode clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bind-key badwolf-theme auto-yasnippet auto-highlight-symbol auto-compile anti-zenburn-theme ample-zen-theme ample-theme aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(paradox-github-token t)
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
