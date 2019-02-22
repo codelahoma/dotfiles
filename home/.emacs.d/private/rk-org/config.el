@@ -57,4 +57,10 @@
    '((emacs-lisp . t)
      (http . t)
      (python . t)))
+
+  ;; Fix mangling of org-structure-template-alist by ox-reveal
+  (setq org-structure-template-alist
+        (append (cdr org-structure-template-alist)
+                (list '("n" . "notes"))))
+
   )
