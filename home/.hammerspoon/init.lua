@@ -24,7 +24,17 @@ hs.loadSpoon("ReloadConfiguration")
 table.insert(spoon.ReloadConfiguration.watch_paths, '~/.homesick/repos/dotfiles/home/.hammerspoon')
 spoon.ReloadConfiguration:start()
 
--- Music Controls
+hs.loadSpoon("SpoonInstall")
+spoon.SpoonInstall.use_syncinstall = true
+
+Install = spoon.SpoonInstall
+
+-- Install:andUse("KSheet",
+--                {
+--                  hotkeys = {
+--                    toggle = { hyper, "/" }
+-- }})
+
 hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
 hotkey.bind(magic, 'p', spotify.playpause)
 hotkey.bind(magic, 'n', function() spotify.next(); spotify.displayCurrentTrack() end)
@@ -48,9 +58,9 @@ local caffeine = hs.menubar.new()
 
 local function setCaffeineDisplay(state)
   if state then
-    caffeine:setTitle("AWAKE")
+    caffeine:setIcon("caffeine-on.pdf")
   else
-    caffeine:setTitle("SLEEPY")
+    caffeine:setIcon("caffeine-off.pdf")
   end
 end
 
@@ -79,7 +89,7 @@ local function appLauncher(app)
 end
 
 local function focusMail()
-  hs.window.find('Outlook Web App'):focus()
+  window.find('Outlook Web App'):focus()
 end
 
 hotkey.bind(hyper, "d", appLauncher('Firefox Developer Edition'))
@@ -99,5 +109,6 @@ hotkey.bind(hyper, "t", appLauncher('Tweetbot'))
 hotkey.bind(hyper, "0", centerOnMainDisplay)
 hotkey.bind(hyper, "1", appLauncher('1Password 7'))
 hotkey.bind(hyper, ";", appLauncher('Spotify'))
+hotkey.bind(hyper, "return", appLauncher('OmniFocus'))
 
 hs.alert.show("Config Loaded")

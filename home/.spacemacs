@@ -514,6 +514,27 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
   (load-file "/Users/rodk/.emacs.d/private/local/narrow-indirect.el")
 
+  (defun apply-function-to-region (fn)
+    "Apply a function to a region."
+    (interactive "Function to apply to region: ")
+    (save-excursion
+      (let* ((beg (region-beginning))
+             (end (region-end))
+             (resulting-text
+              (funcall fn
+                       (buffer-substring-no-properties beg end))))
+        (kill-region beg end)
+        (insert resulting-text))))
+
+  (defun sort-csv (txt)
+    "Sort a comma separated string."
+    (mapconcat 'identity
+               (sort (split-string txt ",") 'string< ) ","))
+
+  (defun sort-csv-region ()
+    "Sort a region of comma separated text."
+    (interactive)
+    (apply-function-to-region 'sort-csv))
   )
 
 (defun dotspacemacs/user-config ()
