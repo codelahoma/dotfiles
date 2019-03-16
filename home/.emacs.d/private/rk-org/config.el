@@ -4,6 +4,7 @@
 
   (add-to-list 'org-modules 'org-protocol)
   (add-to-list 'org-modules 'org-tempo)
+  (add-to-list 'org-modules 'ox-jira)
   (setq org-jira-working-dir "~/Dropbox/org/")
   (setq org-agenda-files  (append (list "~/Dropbox/org/") (file-expand-wildcards "~/summit/*/.rodk")))
 
@@ -60,7 +61,7 @@
 
   ;; Fix mangling of org-structure-template-alist by ox-reveal
   (setq org-structure-template-alist
-        (append (cdr org-structure-template-alist)
-                (list '("n" . "notes"))))
+        (delete-duplicates(append (cdr org-structure-template-alist)
+                                  (list '("n" . "notes")))))
 
   )
