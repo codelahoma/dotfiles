@@ -65,6 +65,7 @@ This function should only modify configuration layer settings."
      emoji
      theming
      ibuffer
+     spell-checking
      imenu-list
      (osx :variables
           osx-command-as nil)
