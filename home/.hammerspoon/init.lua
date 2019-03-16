@@ -88,10 +88,6 @@ local function appLauncher(app)
   end
 end
 
-local function focusMail()
-  window.find('Outlook Web App'):focus()
-end
-
 hotkey.bind(hyper, "d", appLauncher('Firefox Developer Edition'))
 hotkey.bind(hyper, "e", appLauncher('Finder'))
 hotkey.bind(hyper, "f", appLauncher('Firefox'))
@@ -100,7 +96,7 @@ hotkey.bind(hyper, "i", appLauncher('iTerm'))
 hotkey.bind(hyper, "j", appLauncher('/usr/local/opt/emacs-plus/Emacs.app'))
 hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
 hotkey.bind(hyper, "l", appLauncher('LibreOffice'))
-hotkey.bind(hyper, "m", focusMail)
+hotkey.bind(hyper, "m", appLauncher('MailMate'))
 hotkey.bind(hyper, "n", appLauncher('Messages'))
 hotkey.bind(hyper, "o", appLauncher('Slack'))
 hotkey.bind(hyper, "p", appLauncher('Postman'))
