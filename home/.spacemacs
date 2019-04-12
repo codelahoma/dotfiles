@@ -65,7 +65,9 @@ This function should only modify configuration layer settings."
      emoji
      theming
      ibuffer
-     spell-checking
+     (spell-checking :variables
+                     spell-checking-enable-by-default nil
+                     enable-flyspell-auto-completion t)
      imenu-list
      (osx :variables
           osx-command-as nil)
@@ -106,6 +108,7 @@ This function should only modify configuration layer settings."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(
                                       atomic-chrome
+                                      brutalist-theme
                                       direnv
                                       edit-server
                                       editorconfig
@@ -582,6 +585,8 @@ you should place your code here."
 
   (when (string= system-type "darwin")
     (setq dired-use-ls-dired nil))
+
+  (setq vc-handled-backends (delq 'Git vc-handled-backends))
 
   (setq helm-dash-common-docsets
         '(
