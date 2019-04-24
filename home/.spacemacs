@@ -271,7 +271,8 @@ It should only modify the values of Spacemacs settings."
 
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Iosevka"
+   ;; dotspacemacs-default-font '("Iosevka"
+   dotspacemacs-default-font '("Iosevka Nerd Font"
                                :size 16
                                :weight normal
                                :width normal)
@@ -578,6 +579,81 @@ before packages are loaded. If you are unsure, you should try in setting them in
     "Sort a region of comma separated text."
     (interactive)
     (apply-function-to-region 'sort-csv))
+
+  (defun copy-lines-matching-re (re)
+    "find all lines matching the regexp RE in the current buffer
+putting the matching lines in a buffer named *matching*"
+    (interactive "sRegexp to match: ")
+    (let ((result-buffer (get-buffer-create "*matching*")))
+      (with-current-buffer result-buffer 
+        (erase-buffer))
+      (save-match-data 
+        (save-excursion
+          (goto-char (point-min))
+          (while (re-search-forward re nil t)
+            (princ (buffer-substring-no-properties (line-beginning-position) 
+                                                   (line-beginning-position 2))
+                   result-buffer))))
+      (pop-to-buffer result-buffer)))
+
+  (defun xah-title-case-region-or-line (@begin @end)
+    "Title case text between nearest brackets, or current line, or text selection.
+  Capitalize first letter of each word, except words like {to, of, the, a, in, or, and, …}. If a word already contains cap letters such as HTTP, URL, they are left as is.
+
+  When called in a elisp program, *begin *end are region boundaries.
+  URL `http://ergoemacs.org/emacs/elisp_title_case_text.html'
+  Version 2017-01-11"
+    (interactive
+    (if (use-region-p)
+        (list (region-beginning) (region-end))
+      (let (
+            $p1
+            $p2
+            ($skipChars "^\"<>(){}[]“”‘’‹›«»「」『』【】〖〗《》〈〉〔〕"))
+        (progn
+          (skip-chars-backward $skipChars (line-beginning-position))
+          (setq $p1 (point))
+          (skip-chars-forward $skipChars (line-end-position))
+          (setq $p2 (point)))
+        (list $p1 $p2))))
+    (let* (
+          ($strPairs [
+                      [" A " " a "]
+                      [" And " " and "]
+                      [" At " " at "]
+                      [" As " " as "]
+                      [" By " " by "]
+                      [" Be " " be "]
+                      [" Into " " into "]
+                      [" In " " in "]
+                      [" Is " " is "]
+                      [" It " " it "]
+                      [" For " " for "]
+                      [" Of " " of "]
+                      [" Or " " or "]
+                      [" On " " on "]
+                      [" Via " " via "]
+                      [" The " " the "]
+                      [" That " " that "]
+                      [" To " " to "]
+                      [" Vs " " vs "]
+                      [" With " " with "]
+                      [" From " " from "]
+                      ["'S " "'s "]
+                      ["'T " "'t "]
+                      ]))
+      (save-excursion
+        (save-restriction
+          (narrow-to-region @begin @end)
+          (upcase-initials-region (point-min) (point-max))
+          (let ((case-fold-search nil))
+            (mapc
+            (lambda ($x)
+              (goto-char (point-min))
+              (while
+                  (search-forward (aref $x 0) nil t)
+                (replace-match (aref $x 1) "FIXEDCASE" "LITERAL")))
+            $strPairs))))))
   )
 
 (defun dotspacemacs/user-config ()
@@ -593,6 +669,9 @@ you should place your code here."
 
   (when (string= system-type "darwin")
     (setq dired-use-ls-dired nil))
+
+  (fset 'org-jira-red
+        (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item '([70 124 119 118 102 124 98 102 32 104 99 123 123 123 99 111 108 111 114 40 114 101 100 44 18 34 41 125 125 125 tab escape] 0 "%d") arg)))
 
   (setq vc-handled-backends (delq 'Git vc-handled-backends))
 
