@@ -29,11 +29,22 @@ spoon.SpoonInstall.use_syncinstall = true
 
 Install = spoon.SpoonInstall
 
--- Install:andUse("KSheet",
---                {
---                  hotkeys = {
---                    toggle = { hyper, "/" }
--- }})
+Install:andUse("MouseCircle",
+               {
+                 config = {
+                   color = hs.drawing.color.osx_red,
+                 },
+                 hotkeys = {
+                   show = { hyper, "b" }
+}})
+
+spoon.SpoonInstall:andUse("Seal",
+                          { hotkeys = { show = { hyper, "u" } },
+                            fn = function(s)
+                              s:loadPlugins({"apps", "calc", "safari_bookmarks"})
+                            end,
+                            start = true,
+})
 
 hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
 hotkey.bind(magic, 'p', spotify.playpause)
@@ -54,7 +65,7 @@ hotkey.bind(magic, 'b', function() spotify.previous(); spotify.displayCurrentTra
 -- appWatcher:start()
 
 
-local caffeine = hs.menubar.new()
+caffeine = hs.menubar.new()
 
 local function setCaffeineDisplay(state)
   if state then
@@ -88,6 +99,7 @@ local function appLauncher(app)
   end
 end
 
+hotkey.bind(hyper, "c", hs.toggleConsole)
 hotkey.bind(hyper, "d", appLauncher('Firefox Developer Edition'))
 hotkey.bind(hyper, "e", appLauncher('Finder'))
 hotkey.bind(hyper, "f", appLauncher('Firefox'))
@@ -99,6 +111,7 @@ hotkey.bind(hyper, "l", appLauncher('LibreOffice'))
 hotkey.bind(hyper, "m", appLauncher('MailMate'))
 hotkey.bind(hyper, "n", appLauncher('Messages'))
 hotkey.bind(hyper, "o", appLauncher('Slack'))
+hotkey.bind(hyper, "r", hs.reload)
 hotkey.bind(hyper, "s", appLauncher('Skype for Business'))
 hotkey.bind(hyper, "t", appLauncher('Tweetbot'))
 hotkey.bind(hyper, "0", centerOnMainDisplay)
@@ -106,4 +119,10 @@ hotkey.bind(hyper, "1", appLauncher('1Password 7'))
 hotkey.bind(hyper, ";", appLauncher('Spotify'))
 hotkey.bind(hyper, "return", appLauncher('OmniFocus'))
 
+local localfile = hs.configdir .. "/init-local.lua"
+if hs.fs.attributes(localfile) then
+  dofile(localfile)
+end
+
+hs.ipc.cliInstall()
 hs.alert.show("Config Loaded")
