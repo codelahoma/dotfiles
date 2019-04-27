@@ -51,7 +51,25 @@ hotkey.bind(magic, 'p', spotify.playpause)
 hotkey.bind(magic, 'n', function() spotify.next(); spotify.displayCurrentTrack() end)
 hotkey.bind(magic, 'b', function() spotify.previous(); spotify.displayCurrentTrack() end)
 
+function initKSheet()
+  Install:andUse('KSheet')
+  local shouldShow = true
 
+  function toggleKSheet()
+    if shouldShow then
+      spoon.KSheet:show()
+      shouldShow = false 
+    else
+      spoon.KSheet:hide()
+      shouldShow = true
+    end
+  end
+
+  return toggleKSheet
+end
+
+local ksheet = initKSheet()
+hotkey.bind(magic, 'm', ksheet)
 -- -- What was I doing here?
 -- function applicationWatcher(appName, eventType, appObject)
 --   if (eventType == application.watcher.activated) then
