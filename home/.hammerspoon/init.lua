@@ -41,7 +41,17 @@ Install:andUse("MouseCircle",
 spoon.SpoonInstall:andUse("Seal",
                           { hotkeys = { show = { hyper, "u" } },
                             fn = function(s)
-                              s:loadPlugins({"apps", "calc", "safari_bookmarks"})
+                              s:loadPlugins({"apps", "calc", "safari_bookmarks", "useractions"})
+                              s.plugins.useractions.actions = {
+                                ["Restart Hammerspoon"] = { fn = hs.reload },
+                                ["Pick me up"] = {
+                                  fn = hs.fnutils.partial(hs.alert.show, "Looking fine today!")
+                                },
+                                ["Hammerspoon docs webpage"] = {
+                                  url = "http://hammerspoon.org/docs/",
+                                  icon = hs.image.imageFromName(hs.image.systemImageNames.ApplicationIcon)
+                                }
+                              }
                             end,
                             start = true,
 })
@@ -129,6 +139,7 @@ hotkey.bind(hyper, "l", appLauncher('LibreOffice'))
 hotkey.bind(hyper, "m", appLauncher('MailMate'))
 hotkey.bind(hyper, "n", appLauncher('Messages'))
 hotkey.bind(hyper, "o", appLauncher('Slack'))
+hotkey.bind(hyper, "p", appLauncher('Preview'))
 hotkey.bind(hyper, "r", hs.reload)
 hotkey.bind(hyper, "s", appLauncher('Skype for Business'))
 hotkey.bind(hyper, "t", appLauncher('Tweetbot'))
