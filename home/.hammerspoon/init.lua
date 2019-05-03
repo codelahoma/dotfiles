@@ -41,7 +41,17 @@ Install:andUse("MouseCircle",
 spoon.SpoonInstall:andUse("Seal",
                           { hotkeys = { show = { hyper, "u" } },
                             fn = function(s)
-                              s:loadPlugins({"apps", "calc", "safari_bookmarks"})
+                              s:loadPlugins({"apps", "calc", "safari_bookmarks", "useractions"})
+                              s.plugins.useractions.actions = {
+                                ["Restart Hammerspoon"] = { fn = hs.reload },
+                                ["Pick me up"] = {
+                                  fn = hs.fnutils.partial(hs.alert.show, "Looking fine today!")
+                                },
+                                ["Hammerspoon docs webpage"] = {
+                                  url = "http://hammerspoon.org/docs/",
+                                  icon = hs.image.imageFromName(hs.image.systemImageNames.ApplicationIcon)
+                                }
+                              }
                             end,
                             start = true,
 })
@@ -51,7 +61,25 @@ hotkey.bind(magic, 'p', spotify.playpause)
 hotkey.bind(magic, 'n', function() spotify.next(); spotify.displayCurrentTrack() end)
 hotkey.bind(magic, 'b', function() spotify.previous(); spotify.displayCurrentTrack() end)
 
+function initKSheet()
+  Install:andUse('KSheet')
+  local shouldShow = true
 
+  function toggleKSheet()
+    if shouldShow then
+      spoon.KSheet:show()
+      shouldShow = false 
+    else
+      spoon.KSheet:hide()
+      shouldShow = true
+    end
+  end
+
+  return toggleKSheet
+end
+
+local ksheet = initKSheet()
+hotkey.bind(magic, 'm', ksheet)
 -- -- What was I doing here?
 -- function applicationWatcher(appName, eventType, appObject)
 --   if (eventType == application.watcher.activated) then
@@ -111,6 +139,7 @@ hotkey.bind(hyper, "l", appLauncher('LibreOffice'))
 hotkey.bind(hyper, "m", appLauncher('MailMate'))
 hotkey.bind(hyper, "n", appLauncher('Messages'))
 hotkey.bind(hyper, "o", appLauncher('Slack'))
+hotkey.bind(hyper, "p", appLauncher('Preview'))
 hotkey.bind(hyper, "r", hs.reload)
 hotkey.bind(hyper, "s", appLauncher('Skype for Business'))
 hotkey.bind(hyper, "t", appLauncher('Tweetbot'))
