@@ -9,6 +9,7 @@ local screen = hs.screen
 local spotify = hs.spotify
 
 grid.setGrid('7x5')
+grid.setMargins({0,0})
 -- grid.setGrid('4x4','1920x1200')
 grid.ui.textSize = 100
 grid.HINTS = {
