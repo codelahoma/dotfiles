@@ -57,7 +57,8 @@
    'org-babel-load-languages
    '((emacs-lisp . t)
      (http . t)
-     (python . t)))
+     (python . t)
+     (R . t)))
 
   ;; Fix mangling of org-structure-template-alist by ox-reveal
   (setq org-structure-template-alist
