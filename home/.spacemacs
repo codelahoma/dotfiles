@@ -33,7 +33,7 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(nginx
+   '(
      csv
      swift
      (sql :variables
@@ -60,8 +60,8 @@ This function should only modify configuration layer settings."
             c-c++-backend 'rtags
             c-c++-default-mode-for-headers 'c++-mode)
      (plantuml :variables
-               plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar"
-               org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2018.12/libexec/plantuml.jar")
+               plantuml-jar-path "/usr/local/Cellar/plantuml/1.2019.5/libexec/plantuml.jar"
+               org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2019.5/libexec/plantuml.jar")
 
      command-log
      restclient
