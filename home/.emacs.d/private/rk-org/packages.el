@@ -31,7 +31,6 @@
 
 (defconst rk-org-packages
   '(
-    org-jira
     ox-jira
     (org-protocol :location built-in)
   )
@@ -62,9 +61,6 @@ Each entry is either:
       - A list beginning with the symbol `recipe' is a melpa
         recipe.  See: https://github.com/milkypostman/melpa#recipe-format"
 )
-
-(defun rk-org/init-org-jira ()
-    (use-package org-jira))
 
 (defun rk-org/init-ox-jira ()
   (use-package ox-jira))

@@ -25,6 +25,9 @@ hs.loadSpoon("ReloadConfiguration")
 table.insert(spoon.ReloadConfiguration.watch_paths, '~/.homesick/repos/dotfiles/home/.hammerspoon')
 spoon.ReloadConfiguration:start()
 
+local anycomplete = require "anycomplete/anycomplete"
+anycomplete.registerDefaultBindings()
+
 hs.loadSpoon("SpoonInstall")
 spoon.SpoonInstall.use_syncinstall = true
 
@@ -93,6 +96,18 @@ hotkey.bind(magic, 'm', ksheet)
 -- local appWatcher = application.watcher.new(applicationWatcher)
 -- appWatcher:start()
 
+-- modal keybindings
+-- create a modal keybinding object called "modal" (yes, could have picked a nicer name...)
+
+modal = hs.hotkey.modal.new({"ctrl", "shift"}, "h", " Going Modal! ")
+
+-- in this example, Ctrl+Shift+h triggers this keybinding mode, which will allow us to use the ones defined below. A nice touch for usability: This also offers to show a message.
+
+-- I recommend having this one at all times: Bind the escape key to exit keybinding mode:
+modal:bind("", "escape", " not this time...", nil, function() modal:exit() end, nil)
+
+-- An example binding I find useful: Type today's date in ISO format.
+modal:bind("","d", "today", nil, function() hs.eventtap.keyStrokes(os.date("%F")) modal:exit() end, nil)
 
 caffeine = hs.menubar.new()
 
@@ -132,7 +147,7 @@ hotkey.bind(hyper, "c", hs.toggleConsole)
 hotkey.bind(hyper, "d", appLauncher('Firefox Developer Edition'))
 hotkey.bind(hyper, "e", appLauncher('Finder'))
 hotkey.bind(hyper, "f", appLauncher('Firefox'))
-hotkey.bind(hyper, "g", appLauncher('JIRA SI Board'))
+hotkey.bind(hyper, "h", appLauncher('VMware Horizon Client'))
 hotkey.bind(hyper, "i", appLauncher('iTerm'))
 hotkey.bind(hyper, "j", appLauncher('/usr/local/opt/emacs-plus/Emacs.app'))
 hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
@@ -141,9 +156,11 @@ hotkey.bind(hyper, "m", appLauncher('MailMate'))
 hotkey.bind(hyper, "n", appLauncher('Messages'))
 hotkey.bind(hyper, "o", appLauncher('Slack'))
 hotkey.bind(hyper, "p", appLauncher('Preview'))
+hotkey.bind(hyper, "q", appLauncher('qutebrowser'))
 hotkey.bind(hyper, "r", hs.reload)
 hotkey.bind(hyper, "s", appLauncher('Skype for Business'))
 hotkey.bind(hyper, "t", appLauncher('Tweetbot'))
+hotkey.bind(hyper, "u", appLauncher('Visual Studio Code - Insiders'))
 hotkey.bind(hyper, "0", centerOnMainDisplay)
 hotkey.bind(hyper, "1", appLauncher('1Password 7'))
 hotkey.bind(hyper, ";", appLauncher('Spotify'))
