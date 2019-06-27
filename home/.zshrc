@@ -168,7 +168,7 @@ source $ZSH/oh-my-zsh.sh
 #   export EDITOR='mvim'
 # fi
 
-# export EDITOR='vim'
+export EDITOR='emacsclient -nw'
 
 autoload zmv
 alias mmv='noglob zmv -W'
