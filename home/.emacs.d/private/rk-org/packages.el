@@ -31,7 +31,6 @@
 
 (defconst rk-org-packages
   '(
-    ox-jira
     (org-protocol :location built-in)
   )
   "The list of Lisp packages required by the rk-org layer.
@@ -62,8 +61,6 @@ Each entry is either:
         recipe.  See: https://github.com/milkypostman/melpa#recipe-format"
 )
 
-(defun rk-org/init-ox-jira ()
-  (use-package ox-jira))
 
 (defun rk-org/init-org-protocol ()
   (use-package org-protocol
