@@ -18,7 +18,7 @@ export LC_TIME="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 # User configuration
 export TERM=xterm-256color
-
+export SAVEHIST=50000
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 

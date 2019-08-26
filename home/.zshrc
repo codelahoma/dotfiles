@@ -109,8 +109,11 @@ else
     POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX="%F{blue}\u256D\u2500%f"
     POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%F{blue}\u2570\uf460%f "
     POWERLEVEL9K_CUSTOM_BATTERY_STATUS="prompt_zsh_battery_level"
+    POWERLEVEL9K_CUSTOM_INTERNET_STATUS="zsh_internet_signal"
+    POWERLEVEL9K_CUSTOM_INTERNET_STATUS_BACKGROUND="gray"
+
     POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(time newline context os_icon custom_battery_status ssh root_indicator dir vcs)
-    POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time  status pyenv)
+    POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time  status pyenv custom_internet_status)
     HIST_STAMPS="mm/dd/yyyy"
     DISABLE_UPDATE_PROMPT=true
 fi
@@ -159,7 +162,7 @@ plugins=( brew colored-man-pages common-aliases django docker-compose docker pye
 
 source $ZSH/oh-my-zsh.sh
 
-
+unsetopt nomatch
 
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
