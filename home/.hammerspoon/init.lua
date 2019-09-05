@@ -8,18 +8,21 @@ local window = hs.window
 local screen = hs.screen
 local spotify = hs.spotify
 
-grid.setGrid('7x5')
+grid.setGrid('9x6')
 grid.setMargins({0,0})
 -- grid.setGrid('4x4','1920x1200')
 grid.ui.textSize = 100
-grid.HINTS = {
-  {'a','b','c','d','e','f', '1'},
-  {'g','h','i','j','k','l', '2'},
-  {'m','n','o','p','q','r', '8'},
-  {'s','t','u','v','w','x','9'},
-  {'y','z',';',',','.','0','\\'}
-}
+-- grid.HINTS = {
+--   {'a','b','c','d','e','f', '1'},
+--   {'g','h','i','j','k','l', '2'},
+--   {'m','n','o','p','q','r', '8'},
+--   {'s','t','u','v','w','x','9'},
+--   {'y','z',';',',','.','0','='}
+-- }
 hotkey.bind(hyper, '8', grid.show)
+
+hs.hints.style = 'vimperator'
+hotkey.bind(hyper, '9', hs.hints.windowHints)
 
 hs.loadSpoon("ReloadConfiguration")
 table.insert(spoon.ReloadConfiguration.watch_paths, '~/.homesick/repos/dotfiles/home/.hammerspoon')
@@ -151,8 +154,8 @@ hotkey.bind(hyper, "h", appLauncher('VMware Horizon Client'))
 hotkey.bind(hyper, "i", appLauncher('iTerm'))
 hotkey.bind(hyper, "j", appLauncher('/usr/local/opt/emacs-plus/Emacs.app'))
 hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
-hotkey.bind(hyper, "l", appLauncher('LibreOffice'))
-hotkey.bind(hyper, "m", appLauncher('MailMate'))
+-- hotkey.bind(hyper, "l", appLauncher('LibreOffice'))
+hotkey.bind(hyper, "m", appLauncher('Microsoft Outlook'))
 hotkey.bind(hyper, "n", appLauncher('Messages'))
 hotkey.bind(hyper, "o", appLauncher('Slack'))
 hotkey.bind(hyper, "p", appLauncher('Postman'))
