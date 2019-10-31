@@ -5,10 +5,13 @@ ZSH=$HOME/.oh-my-zsh
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+ITERM2_SQUELCH_MARK=1
+
 if [ -n "$INSIDE_EMACS" ]; then
     export ZSH_THEME="lambda-mod"
 else
-    export ZSH_THEME="powerlevel9k/powerlevel9k"
+    export ZSH_THEME="powerlevel10k/powerlevel10k"
     # export POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(vcs newline pyenv context dir)
     # export POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs history time)
     POWERLEVEL9K_MODE='nerdfont-complete'
@@ -111,9 +114,10 @@ else
     POWERLEVEL9K_CUSTOM_BATTERY_STATUS="prompt_zsh_battery_level"
     POWERLEVEL9K_CUSTOM_INTERNET_STATUS="zsh_internet_signal"
     POWERLEVEL9K_CUSTOM_INTERNET_STATUS_BACKGROUND="gray"
+    POWERLEVEL9K_CUSTOM_ITERM_MARK="iterm2_prompt_mark"
 
-    POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(time newline context os_icon custom_battery_status ssh root_indicator dir vcs)
-    POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time  status pyenv custom_internet_status)
+    POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(custom_iterm_mark time newline context os_icon custom_battery_status ssh root_indicator dir vcs)
+    POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time pyenv custom_internet_status)
     HIST_STAMPS="mm/dd/yyyy"
     DISABLE_UPDATE_PROMPT=true
 fi
@@ -206,5 +210,4 @@ if [[ -f ~/.zshrc.local ]]; then
   source ~/.zshrc.local
 fi
 
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 

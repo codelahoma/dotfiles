@@ -1,6 +1,6 @@
 PATH="/Users/rodk/.local/bin:~/bin:/usr/local/bin:/usr/local/sbin:/opt/local/bin:/opt/local/sbin:~/usr/local/opt/coreutils/libexec/gnubin:/Library/Android/sdk/tools:~/Library/Android/sdk/platform-tools:$PATH"
 export PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
-export PATH="/usr/local/opt/qt@5.5/bin:$PATH"
+export PATH="/Users/rodk/bin:/usr/local/opt/qt@5.5/bin:$PATH"
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
 
 

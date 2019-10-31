@@ -34,6 +34,7 @@ This function should only modify configuration layer settings."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     spacemacs-modeline
      csv
      swift
      (sql :variables
@@ -70,7 +71,9 @@ This function should only modify configuration layer settings."
              rmh-elfeed-org-files (list "~/Dropbox/org/elfeed.org"))
 
      vinegar
-     ;; (colors :variables colors-colorize-identifiers 'all)
+     (colors :variables
+             colors-enable-nyan-cat-progress-bar (display-graphic-p)
+             colors-colorize-identifiers 'variables)
      emoji
      theming
      ibuffer
@@ -88,14 +91,16 @@ This function should only modify configuration layer settings."
      django
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t
-                      auto-completion-enable-help-tooltip t)
+                      auto-completion-enable-help-tooltip t
+                      auto-completion-enable-sort-by-usage t
+                      auto-completion-use-company-box t)
      better-defaults
      git
      github
      evil-commentary
      (shell :variables
             shell-default-shell 'multi-term
-            shell-default-term-shell "/bin/zsh" 
+            shell-default-term-shell "/bin/zsh"
             shell-default-height 50
             shell-default-position 'bottom)
 
@@ -106,6 +111,7 @@ This function should only modify configuration layer settings."
      themes-megapack
      multiple-cursors
      treemacs
+     ;; neotree
      bm
 
      rk-layout
@@ -123,6 +129,7 @@ This function should only modify configuration layer settings."
                                       edit-server
                                       editorconfig
                                       eink-theme
+                                      evil-easymotion
                                       github-review
                                       helm-cscope
                                       helm-dash
@@ -144,7 +151,11 @@ This function should only modify configuration layer settings."
    dotspacemacs-frozen-packages '()
 
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(
+                                    ;; all-the-icons
+                                    ;; spaceline
+                                    ;; spaceline-all-the-icons
+                                    )
 
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -167,7 +178,7 @@ It should only modify the values of Spacemacs settings."
    ;; to compile Emacs 27 from source following the instructions in file
    ;; EXPERIMENTAL.org at to root of the git repository.
    ;; (default nil)
-   dotspacemacs-enable-emacs-pdumper t
+   dotspacemacs-enable-emacs-pdumper nil
 
    ;; File path pointing to emacs 27.1 executable compiled with support
    ;; for the portable dumper (this is currently the branch pdumper).
@@ -262,9 +273,14 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
+                         doom-molokai
+                         misterioso
+                         subatomic
+                         material
+                         leuven
+                         doom-one
                          alect-black
                          lush
-                         material
                          grandshell
                          doom-dracula
                          light-blue
@@ -279,7 +295,7 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(all-the-icons :separator wave :separator-scale 1.5)
+   dotspacemacs-mode-line-theme '(spacemacs :separator slant :separator-scale 1.725)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -289,6 +305,7 @@ It should only modify the values of Spacemacs settings."
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    ;; dotspacemacs-default-font '("Iosevka"
    dotspacemacs-default-font '("Inconsolata Nerd Font"
+                               :powerline-scale 1.2
                                :size 18
                                :weight normal
                                :width normal)
@@ -555,9 +572,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
   ;; (define-derived-mode anaconda-view-mode special-mode "Anaconda-View")
   (add-to-list 'configuration-layer-elpa-archives '("melpa-stable" . "stable.melpa.org/packages/"))
-  (add-to-list 'package-pinned-packages '(spaceline . "melpa-stable"))
-  (add-to-list 'package-pinned-packages '(spaceline-all-the-icons . "melpa-stable"))
-  (add-to-list 'package-pinned-packages '(all-the-icons . "melpa-stable"))
+  ;; (add-to-list 'package-pinned-packages '(spaceline . "melpa-stable"))
+  ;; (add-to-list 'package-pinned-packages '(spaceline-all-the-icons . "melpa-stable"))
+  ;; (add-to-list 'package-pinned-packages '(all-the-icons . "melpa-stable"))
 
   (with-eval-after-load 'direnv
     (direnv-mode))
@@ -575,6 +592,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
                  "<!--"
                  nxml-forward-element
                  nil))
+
+  (defun codelahoma/insert-random-uid ()
+    (interactive)
+    (shell-command "printf %s \"$(uuidgen)\"" t))
 
   (defun codelahoma/switch-node-version ()
     (let (dir (projectile-project-root))
@@ -612,13 +633,13 @@ before packages are loaded. If you are unsure, you should try in setting them in
 putting the matching lines in a buffer named *matching*"
     (interactive "sRegexp to match: ")
     (let ((result-buffer (get-buffer-create "*matching*")))
-      (with-current-buffer result-buffer 
+      (with-current-buffer result-buffer
         (erase-buffer))
-      (save-match-data 
+      (save-match-data
         (save-excursion
           (goto-char (point-min))
           (while (re-search-forward re nil t)
-            (princ (buffer-substring-no-properties (line-beginning-position) 
+            (princ (buffer-substring-no-properties (line-beginning-position)
                                                    (line-beginning-position 2))
                    result-buffer))))
       (pop-to-buffer result-buffer)))
@@ -690,9 +711,13 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-  (when (display-graphic-p)
-    (set-face-attribute 'default nil :family "Inconsolata Nerd Font")
-    (set-face-attribute 'default nil :height 180))
+
+  (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+  (use-package evil-easymotion
+    :init (evilem-default-keybindings "\\"))
+
+  (setq avy-all-windows nil)
+
   (setq max-specpdl-size 6000)
   (setq lsp-message-project-root-warning t)
   ;; (setq javascript-backend 'tern)
@@ -723,80 +748,6 @@ you should place your code here."
           ;; "django-rest-framework-3.8.2"
           ))
 
-  (setq theming-modifications
-        '((alect-black
-           ;; Provide a sort of "on-off" modeline whereby the current buffer has a nice
-           ;; bright blue background, and all the others are in cream.
-           ;; TODO: Change to use variables here. However, got error:
-           ;; (Spacemacs) Error in dotspacemacs/user-config: Wrong type argument: stringp, pd-blue
-           (mode-line :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-           (mode-line-buffer-id :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-           (powerline-active1 :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-           (powerline-active2 :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-           (mode-line-inactive :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-           (mode-line-buffer-id-inactive :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-           (powerline-inactive1 :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-           (powerline-inactive2 :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-           ;; Make a really prominent helm selection line.
-           (helm-selection :foreground "white" :background "red" :inverse-video nil)
-           ;; See comment above about dotspacemacs-colorize-cursor-according-to-state.
-           (cursor :background "#b58900")
-           )
-          (solarized-dark
-           ;; Provide a sort of "on-off" modeline whereby the current buffer has a nice
-           ;; bright blue background, and all the others are in cream.
-           ;; TODO: Change to use variables here. However, got error:
-           ;; (Spacemacs) Error in dotspacemacs/user-config: Wrong type argument: stringp, pd-blue
-           (mode-line :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-           (mode-line-buffer-id :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-           (powerline-active1 :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-           (powerline-active2 :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-           (mode-line-inactive :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-           (mode-line-buffer-id-inactive :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-           (powerline-inactive1 :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-           (powerline-inactive2 :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-           ;; Make a really prominent helm selection line.
-           (helm-selection :foreground "white" :background "red" :inverse-video nil)
-           ;; See comment above about dotspacemacs-colorize-cursor-according-to-state.
-           (cursor :background "#b58900")
-           )
-          (alect-light
-           ;; Provide a sort of "on-off" modeline whereby the current buffer has a nice
-           ;; bright blue background, and all the others are in cream.
-           ;; TODO: Change to use variables here. However, got error:
-           ;; (Spacemacs) Error in dotspacemacs/user-config: Wrong type argument: stringp, pd-blue
-           (mode-line :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-           (mode-line-buffer-id :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-           (powerline-active1 :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-           (powerline-active2 :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-           (mode-line-inactive :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-           (mode-line-buffer-id-inactive :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-           (powerline-inactive1 :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-           (powerline-inactive2 :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-           ;; Make a really prominent helm selection line.
-           (helm-selection :foreground "white" :background "red" :inverse-video nil)
-           ;; See comment above about dotspacemacs-colorize-cursor-according-to-state.
-           (cursor :background "#b58900")
-           )
-          (solarized-light
-           ;; Provide a sort of "on-off" modeline whereby the current buffer has a nice
-           ;; bright blue background, and all the others are in cream.
-           ;; TODO: Change to use variables here. However, got error:
-           ;; (Spacemacs) Error in dotspacemacs/user-config: Wrong type argument: stringp, pd-blue
-           (mode-line :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-           (mode-line-buffer-id :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-           (powerline-active1 :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-           (powerline-active2 :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-           (mode-line-inactive :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-           (mode-line-buffer-id-inactive :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-           (powerline-inactive1 :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-           (powerline-inactive2 :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-           ;; Make a really prominent helm selection line.
-           (helm-selection :foreground "white" :background "red" :inverse-video nil)
-           ;; See comment above about dotspacemacs-colorize-cursor-according-to-state.
-           (cursor :background "#b58900")
-           )))
-
   (setq-default git-magit-status-fullscreen t)
 
   (setq helm-ag-base-command "/usr/local/bin/ag --vimgrep")
@@ -812,20 +763,21 @@ you should place your code here."
   ;; (load "~/Dropbox/emacs/.slack_auth.el")
 
   (setq projectile-enable-caching t)
+  (set-face-attribute 'mode-line nil :height 1.08)
 
-  (defun rk-bump-mode-fonts()
-    "Increase the mode-line font sizes for my old eyes"
-    (let ((faces '(mode-line
-                   mode-line-buffer-id
-                   mode-line-emphasis
-                   mode-line-highlight
-                   mode-line-inactive)))
-      (mapc
-       (lambda (face) (set-face-attribute face nil :font "Inconsolata for Powerline-18"))
-       faces)))
+  ;; (defun rk-bump-mode-fonts()
+  ;;   "Increase the mode-line font sizes for my old eyes"
+  ;;   (let ((faces '(mode-line
+  ;;                  mode-line-buffer-id
+  ;;                  mode-line-emphasis
+  ;;                  mode-line-highlight
+  ;;                  mode-line-inactive)))
+  ;;     (mapc
+  ;;      (lambda (face) (set-face-attribute face nil :font "Inconsolata for Powerline-18"))
+  ;;      faces)))
 
-  (add-hook 'spacemacs-post-theme-change-hook
-            'rk-bump-mode-fonts)
+  ;; (add-hook 'spacemacs-post-theme-change-hook
+  ;;           'rk-bump-mode-fonts)
 
   (with-eval-after-load 'sql-mode
     (setq sql-mysql-login-params (append sql-mysql-login-params '(port)))
@@ -924,7 +876,7 @@ you should place your code here."
 
    ;; ;; replace flake8 with new chaining one from above
    ;; (setq flycheck-checkers (cons 'python-flake8-chain (delq 'python-flake8 flycheck-checkers)))
-  (set-frame-font "-*-Inconsolata Nerd Font-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1")
+  ;; (set-frame-font "-*-Inconsolata Nerd Font-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1")
   )
 
 (defun dotspacemacs/user-load ()
@@ -937,152 +889,6 @@ in the dump."
   ;; (load "~/Dropbox/emacs/.slack_auth.el")
   )
 
-;; Do not write anything past this comment. This is where Emacs will
-;; auto-generate custom variable definitions.
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-faces-vector
-   [default default default italic underline success warning error])
- '(blink-cursor-mode nil)
- '(column-number-mode t)
- '(compilation-message-face 'default)
- '(cua-global-mark-cursor-color "#2aa198")
- '(cua-normal-cursor-color "#839496")
- '(cua-overwrite-cursor-color "#b58900")
- '(cua-read-only-cursor-color "#859900")
- '(diary-entry-marker 'font-lock-variable-name-face)
- '(emms-mode-line-icon-image-cache
-   '(image :type xpm :ascent center :data "/* XPM */
-static char *note[] = {
-/* width height num_colors chars_per_pixel */
-\"    10   11        2            1\",
-/* colors */
-\". c #1ba1a1\",
-\"# c None s None\",
-/* pixels */
-\"###...####\",
-\"###.#...##\",
-\"###.###...\",
-\"###.#####.\",
-\"###.#####.\",
-\"#...#####.\",
-\"....#####.\",
-\"#..######.\",
-\"#######...\",
-\"######....\",
-\"#######..#\" };"))
- '(evil-want-Y-yank-to-eol t)
- '(exec-path-from-shell-arguments '("-l"))
- '(fci-rule-color "#eee8d5" t)
- '(gnus-logo-colors '("#4c8383" "#bababa") t)
- '(gnus-mode-line-image-cache
-   '(image :type xpm :ascent center :data "/* XPM */
-static char *gnus-pointer[] = {
-/* width height num_colors chars_per_pixel */
-\"    18    13        2            1\",
-/* colors */
-\". c #1ba1a1\",
-\"# c None s None\",
-/* pixels */
-\"##################\",
-\"######..##..######\",
-\"#####........#####\",
-\"#.##.##..##...####\",
-\"#...####.###...##.\",
-\"#..###.######.....\",
-\"#####.########...#\",
-\"###########.######\",
-\"####.###.#..######\",
-\"######..###.######\",
-\"###....####.######\",
-\"###..######.######\",
-\"###########.######\" };") t)
- '(highlight-changes-colors '("#d33682" "#6c71c4"))
- '(highlight-symbol-colors
-   (--map
-    (solarized-color-blend it "#002b36" 0.25)
-    '("#b58900" "#2aa198" "#dc322f" "#6c71c4" "#859900" "#cb4b16" "#268bd2")))
- '(highlight-symbol-foreground-color "#93a1a1")
- '(highlight-tail-colors
-   '(("#eee8d5" . 0)
-     ("#B4C342" . 20)
-     ("#69CABF" . 30)
-     ("#69B7F0" . 50)
-     ("#DEB542" . 60)
-     ("#F2804F" . 70)
-     ("#F771AC" . 85)
-     ("#eee8d5" . 100)))
- '(hl-bg-colors
-   '("#7B6000" "#8B2C02" "#990A1B" "#93115C" "#3F4D91" "#00629D" "#00736F" "#546E00"))
- '(hl-fg-colors
-   '("#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36"))
- '(hl-paren-colors '("#2aa198" "#b58900" "#268bd2" "#6c71c4" "#859900") t)
- '(magit-diff-use-overlays nil)
- '(nrepl-message-colors
-   '("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4"))
- '(package-selected-packages
-   '(ob-http elfeed-goodies ein unfill s3ed restclient-helm plantuml-mode spinner ox-jira log4e gntp ob-restclient ob-async nvm nginx-mode mwim madhat2r-theme ibuffer-projectile lv parent-mode dash-docs gitignore-mode github-review treepy graphql fuzzy flyspell-popup flyspell-correct-helm flyspell-correct pkg-info epl flx transient anzu undo-tree ess-smart-equals ess-R-data-view ctable ess julia-mode elfeed-web elfeed-org ace-jump-mode noflet elfeed eink-theme polymode json-snatcher json-reformat disaster direnv web-completion-data company-restclient restclient know-your-http-well company-c-headers command-log-mode cmake-mode clang-format brutalist-theme bind-map auto-dictionary auto-complete popup yapfify pytest pyenv-mode py-isort live-py-mode helm-pydoc cython-mode pip-requirements hy-mode anaconda-mode pythonic atomic-chrome magit-lfs pipenv csv-mode wsd-mode evil-commentary imenu-list company-anaconda rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv rake minitest chruby bundler inf-ruby company-quickhelp pyvenv sql-indent ranger jira-markup-mode gmail-message-mode ham-mode html-to-markdown flymd edit-server yasnippet-snippets yaml-mode slack emojify circe oauth2 websocket pony-mode ox-twbs ox-reveal ox-gfm org-jira magit-gh-pulls helm-w3m w3m github-search github-clone github-browse-file gist gh marshal logito pcache ht editorconfig dockerfile-mode docker tablist docker-tramp request-deferred multi clojure-snippets clj-refactor inflections edn paredit peg cider-eval-sexp-fu cider queue clojure-mode winum white-sand-theme powerline rebecca-theme org-category-capture org-mime lua-mode helm-spotify-plus exotica-theme ghub ag avy dash-functional tern iedit f goto-chg skewer-mode simple-httpd markdown-mode deferred haml-mode multiple-cursors dash s xterm-color shell-pop multi-term git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter flycheck-pos-tip pos-tip flycheck eshell-z eshell-prompt-extras esh-help diff-hl packed smartparens highlight evil yasnippet projectile alert magit-popup async vimrc-mode dactyl-mode ws-butler web-mode use-package ujelly-theme tao-theme swift-mode persp-mode orgit org org-download neotree moe-theme jazz-theme info+ hide-comnt helm-projectile helm-flx grandshell-theme gitattributes-mode evil-surround evil-mc evil-matchit evil-escape company-sourcekit apropospriate-theme alect-themes autothemer company helm helm-core magit git-commit with-editor request hydra js2-mode zonokai-theme zenburn-theme zen-and-art-theme xkcd xcode-mode window-numbering which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen underwater-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spotify spacemacs-theme spaceline spacegray-theme sourcekit soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode seti-theme scss-mode sass-mode reverse-theme reveal-in-osx-finder restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme pug-mode professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme pcre2el pbcopy pastels-on-dark-theme paradox osx-trash osx-dictionary organic-green-theme org-wunderlist org-projectile org-present org-pomodoro org-plus-contrib org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme naquadah-theme mustang-theme move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum livid-mode linum-relative link-hint light-soap-theme less-css-mode launchctl json-mode js2-refactor js-doc jbeans-theme jasminejs-mode ir-black-theme inkpot-theme indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-spotify helm-mode-manager helm-make helm-gitignore helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme gotham-theme google-translate golden-ratio gnuplot gitconfig-mode git-timemachine git-messenger git-link gh-md gandalf-theme flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme emoji-cheat-sheet-plus emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme diminish deft dash-at-point darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-web company-tern company-statistics company-emoji column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized coffee-mode clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bind-key badwolf-theme auto-yasnippet auto-highlight-symbol auto-compile anti-zenburn-theme ample-zen-theme ample-theme aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))
- '(paradox-github-token t)
- '(pos-tip-background-color "#eee8d5")
- '(pos-tip-foreground-color "#586e75")
- '(powerline-default-separator "utf-8")
- '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#073642" 0.2))
- '(term-default-bg-color "#002b36")
- '(term-default-fg-color "#839496")
- '(tool-bar-mode nil)
- '(vc-annotate-background nil)
- '(vc-annotate-background-mode nil)
- '(vc-annotate-color-map
-   '((20 . "#dc322f")
-     (40 . "#c85d17")
-     (60 . "#be730b")
-     (80 . "#b58900")
-     (100 . "#a58e00")
-     (120 . "#9d9100")
-     (140 . "#959300")
-     (160 . "#8d9600")
-     (180 . "#859900")
-     (200 . "#669b32")
-     (220 . "#579d4c")
-     (240 . "#489e65")
-     (260 . "#399f7e")
-     (280 . "#2aa198")
-     (300 . "#2898af")
-     (320 . "#2793ba")
-     (340 . "#268fc6")
-     (360 . "#268bd2")))
- '(vc-annotate-very-old-color nil)
- '(weechat-color-list
-   '(unspecified "#fdf6e3" "#eee8d5" "#990A1B" "#dc322f" "#546E00" "#859900" "#7B6000" "#b58900" "#00629D" "#268bd2" "#93115C" "#d33682" "#00736F" "#2aa198" "#657b83" "#839496"))
- '(xterm-color-names
-   ["#073642" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#eee8d5"])
- '(xterm-color-names-bright
-   ["#002b36" "#cb4b16" "#586e75" "#657b83" "#839496" "#6c71c4" "#93a1a1" "#fdf6e3"]))
-;; (custom-set-faces
-;;  ;; custom-set-faces was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  '(default ((((class color) (min-colors 65535)) (:background "#262B2C" :foreground "#eeeeec")) (((class color) (min-colors 256)) (:background "color-234" :foreground "color-255")) (((class color) (min-colors 88)) (:background "color-80" :foreground "color-87")) (t (:background "black" :foreground "white")))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:background nil))))
- '(cursor ((t (:background "#b58900"))))
- '(helm-selection ((t (:foreground "white" :background "red" :inverse-video nil))))
- '(mode-line ((t (:foreground "#e9e2cb" :background "#2075c7" :inverse-video nil))))
- '(mode-line-buffer-id ((t (:foreground "#e9e2cb" :background "#2075c7" :inverse-video nil))))
- '(mode-line-buffer-id-inactive ((t (:foreground "#2075c7" :background "#e9e2cb" :inverse-video nil))))
- '(mode-line-inactive ((t (:foreground "#2075c7" :background "#e9e2cb" :inverse-video nil))))
- '(powerline-active1 ((t (:foreground "#e9e2cb" :background "#2075c7" :inverse-video nil))))
- '(powerline-active2 ((t (:foreground "#e9e2cb" :background "#2075c7" :inverse-video nil))))
- '(powerline-inactive1 ((t (:foreground "#2075c7" :background "#e9e2cb" :inverse-video nil))))
- '(powerline-inactive2 ((t (:foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)))))
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
 This is an auto-generated function, do not modify its content directly, use
@@ -1197,26 +1003,19 @@ static char *gnus-pointer[] = {
  '(jdee-db-requested-breakpoint-face-colors (cons "#1E2029" "#50fa7b"))
  '(jdee-db-spec-breakpoint-face-colors (cons "#1E2029" "#565761"))
  '(magit-diff-use-overlays nil)
- '(main-line-color1 "#1E1E1E")
- '(main-line-color2 "#111111")
- '(main-line-separator-style 'chamfer)
  '(nrepl-message-colors
    '("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4"))
  '(objed-cursor-color "#ff5555")
  '(package-selected-packages
-   '(salt-mode helm-cscope xcscope lsp-origami origami nginx-mode yapfify pytest pyenv-mode py-isort live-py-mode helm-pydoc cython-mode pip-requirements hy-mode anaconda-mode pythonic atomic-chrome magit-lfs pipenv csv-mode wsd-mode evil-commentary imenu-list company-anaconda rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv rake minitest chruby bundler inf-ruby company-quickhelp pyvenv sql-indent ranger jira-markup-mode gmail-message-mode ham-mode html-to-markdown flymd edit-server yasnippet-snippets yaml-mode slack emojify circe oauth2 websocket pony-mode ox-twbs ox-reveal ox-gfm org-jira magit-gh-pulls helm-w3m w3m github-search github-clone github-browse-file gist gh marshal logito pcache ht editorconfig dockerfile-mode docker tablist docker-tramp request-deferred multi clojure-snippets clj-refactor inflections edn paredit peg cider-eval-sexp-fu cider queue clojure-mode winum white-sand-theme powerline rebecca-theme org-category-capture org-mime lua-mode helm-spotify-plus exotica-theme ghub ag avy dash-functional tern iedit f goto-chg skewer-mode simple-httpd markdown-mode deferred haml-mode multiple-cursors dash s xterm-color shell-pop multi-term git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter flycheck-pos-tip pos-tip flycheck eshell-z eshell-prompt-extras esh-help diff-hl packed smartparens highlight evil yasnippet projectile alert magit-popup async vimrc-mode dactyl-mode ws-butler web-mode use-package ujelly-theme tao-theme swift-mode persp-mode orgit org org-download neotree moe-theme jazz-theme info+ hide-comnt helm-projectile helm-flx grandshell-theme gitattributes-mode evil-surround evil-mc evil-matchit evil-escape company-sourcekit apropospriate-theme alect-themes autothemer company helm helm-core magit git-commit with-editor request hydra js2-mode zonokai-theme zenburn-theme zen-and-art-theme xkcd xcode-mode window-numbering which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen underwater-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spotify spacemacs-theme spaceline spacegray-theme sourcekit soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode seti-theme scss-mode sass-mode reverse-theme reveal-in-osx-finder restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme pug-mode professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme pcre2el pbcopy pastels-on-dark-theme paradox osx-trash osx-dictionary organic-green-theme org-wunderlist org-projectile org-present org-pomodoro org-plus-contrib org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme naquadah-theme mustang-theme move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum livid-mode linum-relative link-hint light-soap-theme less-css-mode launchctl json-mode js2-refactor js-doc jbeans-theme jasminejs-mode ir-black-theme inkpot-theme indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-spotify helm-mode-manager helm-make helm-gitignore helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme gotham-theme google-translate golden-ratio gnuplot gitconfig-mode git-timemachine git-messenger git-link gh-md gandalf-theme flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme emoji-cheat-sheet-plus emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme diminish deft dash-at-point darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-web company-tern company-statistics company-emoji column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized coffee-mode clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bind-key badwolf-theme auto-yasnippet auto-highlight-symbol auto-compile anti-zenburn-theme ample-zen-theme ample-theme aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))
+   '(let-alist package-lint-flymake rainbow-mode rainbow-identifiers color-identifiers-mode salt-mode helm-cscope xcscope lsp-origami origami nginx-mode yapfify pytest pyenv-mode py-isort live-py-mode helm-pydoc cython-mode pip-requirements hy-mode anaconda-mode pythonic atomic-chrome magit-lfs pipenv csv-mode wsd-mode evil-commentary imenu-list company-anaconda rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv rake minitest chruby bundler inf-ruby company-quickhelp pyvenv sql-indent ranger jira-markup-mode gmail-message-mode ham-mode html-to-markdown flymd edit-server yasnippet-snippets yaml-mode slack emojify circe oauth2 websocket pony-mode ox-twbs ox-reveal ox-gfm org-jira magit-gh-pulls helm-w3m w3m github-search github-clone github-browse-file gist gh marshal logito pcache ht editorconfig dockerfile-mode docker tablist docker-tramp request-deferred multi clojure-snippets clj-refactor inflections edn paredit peg cider-eval-sexp-fu cider queue clojure-mode winum white-sand-theme powerline rebecca-theme org-category-capture org-mime lua-mode helm-spotify-plus exotica-theme ghub ag avy dash-functional tern iedit f goto-chg skewer-mode simple-httpd markdown-mode deferred haml-mode multiple-cursors dash s xterm-color shell-pop multi-term git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter flycheck-pos-tip pos-tip flycheck eshell-z eshell-prompt-extras esh-help diff-hl packed smartparens highlight evil yasnippet projectile alert magit-popup async vimrc-mode dactyl-mode ws-butler web-mode use-package ujelly-theme tao-theme swift-mode persp-mode orgit org org-download neotree moe-theme jazz-theme info+ hide-comnt helm-projectile helm-flx grandshell-theme gitattributes-mode evil-surround evil-mc evil-matchit evil-escape company-sourcekit apropospriate-theme alect-themes autothemer company helm helm-core magit git-commit with-editor request hydra js2-mode zonokai-theme zenburn-theme zen-and-art-theme xkcd xcode-mode window-numbering which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen underwater-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spotify spacemacs-theme spaceline spacegray-theme sourcekit soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode seti-theme scss-mode sass-mode reverse-theme reveal-in-osx-finder restart-emacs rainbow-delimiters railscasts-theme quelpa purple-haze-theme pug-mode professional-theme popwin planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme pcre2el pbcopy pastels-on-dark-theme paradox osx-trash osx-dictionary organic-green-theme org-wunderlist org-projectile org-present org-pomodoro org-plus-contrib org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme naquadah-theme mustang-theme move-text monokai-theme monochrome-theme molokai-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum livid-mode linum-relative link-hint light-soap-theme less-css-mode launchctl json-mode js2-refactor js-doc jbeans-theme jasminejs-mode ir-black-theme inkpot-theme indent-guide ido-vertical-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-spotify helm-mode-manager helm-make helm-gitignore helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme gotham-theme google-translate golden-ratio gnuplot gitconfig-mode git-timemachine git-messenger git-link gh-md gandalf-theme flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme emoji-cheat-sheet-plus emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme diminish deft dash-at-point darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme company-web company-tern company-statistics company-emoji column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized coffee-mode clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bind-key badwolf-theme auto-yasnippet auto-highlight-symbol auto-compile anti-zenburn-theme ample-zen-theme ample-theme aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))
  '(paradox-github-token t)
  '(pdf-view-midnight-colors '("#655370" . "#fbf8ef"))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
- '(powerline-color1 "#1E1E1E")
- '(powerline-color2 "#111111")
- '(powerline-default-separator "utf-8")
- '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#073642" 0.2))
  '(term-default-bg-color "#002b36")
  '(term-default-fg-color "#839496")
  '(tool-bar-mode nil)
- '(vc-annotate-background nil)
+ '(vc-annotate-background t)
  '(vc-annotate-background-mode nil)
  '(vc-annotate-color-map
    '((20 . "#dc322f")
@@ -1249,15 +1048,6 @@ static char *gnus-pointer[] = {
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:background nil))))
  '(cursor ((t (:background "#b58900"))))
- '(helm-selection ((t (:foreground "white" :background "red" :inverse-video nil))))
- '(mode-line ((t (:foreground "#e9e2cb" :background "#2075c7" :inverse-video nil))))
- '(mode-line-buffer-id ((t (:foreground "#e9e2cb" :background "#2075c7" :inverse-video nil))))
- '(mode-line-buffer-id-inactive ((t (:foreground "#2075c7" :background "#e9e2cb" :inverse-video nil))))
- '(mode-line-inactive ((t (:foreground "#2075c7" :background "#e9e2cb" :inverse-video nil))))
- '(powerline-active1 ((t (:foreground "#e9e2cb" :background "#2075c7" :inverse-video nil))))
- '(powerline-active2 ((t (:foreground "#e9e2cb" :background "#2075c7" :inverse-video nil))))
- '(powerline-inactive1 ((t (:foreground "#2075c7" :background "#e9e2cb" :inverse-video nil))))
- '(powerline-inactive2 ((t (:foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)))))
+ '(helm-selection ((t (:foreground "white" :background "red" :inverse-video nil)))))
 )
