@@ -12,70 +12,71 @@ if [ -n "$INSIDE_EMACS" ]; then
     export ZSH_THEME="lambda-mod"
 else
     export ZSH_THEME="powerlevel10k/powerlevel10k"
+    # export ZSH_THEME="wedisagree"
     # export POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(vcs newline pyenv context dir)
     # export POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs history time)
     POWERLEVEL9K_MODE='nerdfont-complete'
 
     # Please only use this battery segment if you have material icons in your nerd font (or font)
     # Otherwise, use the font awesome one in "User Segments"
-    prompt_zsh_battery_level() {
-        local percentage1=`pmset -g ps  |  sed -n 's/.*[[:blank:]]+*\(.*%\).*/\1/p'`
-        local percentage=`echo "${percentage1//\%}"`
-        local color='%F{red}'
-        local symbol="\uf00d"
-        pmset -g ps | grep "discharging" > /dev/null
-        if [ $? -eq 0 ]; then
-            local charging="false";
-        else
-            local charging="true";
-        fi
-        if [ $percentage -le 20 ]
-        then symbol='\uf579' ; color='%F{red}' ;
-             #10%
-        elif [ $percentage -gt 19 ] && [ $percentage -le 30 ]
-        then symbol="\uf57a" ; color='%F{red}' ;
-             #20%
-        elif [ $percentage -gt 29 ] && [ $percentage -le 40 ]
-        then symbol="\uf57b" ; color='%F{yellow}' ;
-             #35%
-        elif [ $percentage -gt 39 ] && [ $percentage -le 50 ]
-        then symbol="\uf57c" ; color='%F{yellow}' ;
-             #45%
-        elif [ $percentage -gt 49 ] && [ $percentage -le 60 ]
-        then symbol="\uf57d" ; color='%F{blue}' ;
-             #55%
-        elif [ $percentage -gt 59 ] && [ $percentage -le 70 ]
-        then symbol="\uf57e" ; color='%F{blue}' ;
-             #65%
-        elif [ $percentage -gt 69 ] && [ $percentage -le 80 ]
-        then symbol="\uf57f" ; color='%F{blue}' ;
-             #75%
-        elif [ $percentage -gt 79 ] && [ $percentage -le 90 ]
-        then symbol="\uf580" ; color='%F{blue}' ;
-             #85%
-        elif [ $percentage -gt 89 ] && [ $percentage -le 99 ]
-        then symbol="\uf581" ; color='%F{blue}' ;
-             #85%
-        elif [ $percentage -gt 98 ]
-        then symbol="\uf578" ; color='%F{green}' ;
-             #100%
-        fi
-        if [ $charging = "true" ];
-        then color='%F{green}'; if [ $percentage -gt 98 ]; then symbol='\uf584'; fi
-        fi
-        echo -n "%{$color%}$symbol" ;
-    }
+    # prompt_zsh_battery_level() {
+    #     local percentage1=`pmset -g ps  |  sed -n 's/.*[[:blank:]]+*\(.*%\).*/\1/p'`
+    #     local percentage=`echo "${percentage1//\%}"`
+    #     local color='%F{red}'
+    #     local symbol="\uf00d"
+    #     pmset -g ps | grep "discharging" > /dev/null
+    #     if [ $? -eq 0 ]; then
+    #         local charging="false";
+    #     else
+    #         local charging="true";
+    #     fi
+    #     if [ $percentage -le 20 ]
+    #     then symbol='\uf579' ; color='%F{red}' ;
+    #          #10%
+    #     elif [ $percentage -gt 19 ] && [ $percentage -le 30 ]
+    #     then symbol="\uf57a" ; color='%F{red}' ;
+    #          #20%
+    #     elif [ $percentage -gt 29 ] && [ $percentage -le 40 ]
+    #     then symbol="\uf57b" ; color='%F{yellow}' ;
+    #          #35%
+    #     elif [ $percentage -gt 39 ] && [ $percentage -le 50 ]
+    #     then symbol="\uf57c" ; color='%F{yellow}' ;
+    #          #45%
+    #     elif [ $percentage -gt 49 ] && [ $percentage -le 60 ]
+    #     then symbol="\uf57d" ; color='%F{blue}' ;
+    #          #55%
+    #     elif [ $percentage -gt 59 ] && [ $percentage -le 70 ]
+    #     then symbol="\uf57e" ; color='%F{blue}' ;
+    #          #65%
+    #     elif [ $percentage -gt 69 ] && [ $percentage -le 80 ]
+    #     then symbol="\uf57f" ; color='%F{blue}' ;
+    #          #75%
+    #     elif [ $percentage -gt 79 ] && [ $percentage -le 90 ]
+    #     then symbol="\uf580" ; color='%F{blue}' ;
+    #          #85%
+    #     elif [ $percentage -gt 89 ] && [ $percentage -le 99 ]
+    #     then symbol="\uf581" ; color='%F{blue}' ;
+    #          #85%
+    #     elif [ $percentage -gt 98 ]
+    #     then symbol="\uf578" ; color='%F{green}' ;
+    #          #100%
+    #     fi
+    #     if [ $charging = "true" ];
+    #     then color='%F{green}'; if [ $percentage -gt 98 ]; then symbol='\uf584'; fi
+    #     fi
+    #     echo -n "%{$color%}$symbol" ;
+    # }
 
-    zsh_internet_signal(){
-        local color
-        local symbol="\uf7ba"
-        if ifconfig en0 | grep inactive &> /dev/null; then
-            color="%F{red}"
-        else
-            color="%F{blue}"
-        fi
-        echo -n "%{$color%}$symbol "
-    }
+    # zsh_internet_signal(){
+    #     local color
+    #     local symbol="\uf7ba"
+    #     if ifconfig en0 | grep inactive &> /dev/null; then
+    #         color="%F{red}"
+    #     else
+    #         color="%F{blue}"
+    #     fi
+    #     echo -n "%{$color%}$symbol "
+    # }
 
     POWERLEVEL9K_PROMPT_ON_NEWLINE=true
     POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
@@ -111,9 +112,9 @@ else
     POWERLEVEL9K_VCS_COMMIT_ICON="\uf417"
     POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX="%F{blue}\u256D\u2500%f"
     POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%F{blue}\u2570\uf460%f "
-    POWERLEVEL9K_CUSTOM_BATTERY_STATUS="prompt_zsh_battery_level"
-    POWERLEVEL9K_CUSTOM_INTERNET_STATUS="zsh_internet_signal"
-    POWERLEVEL9K_CUSTOM_INTERNET_STATUS_BACKGROUND="gray"
+    # POWERLEVEL9K_CUSTOM_BATTERY_STATUS="prompt_zsh_battery_level"
+    # POWERLEVEL9K_CUSTOM_INTERNET_STATUS="zsh_internet_signal"
+    # POWERLEVEL9K_CUSTOM_INTERNET_STATUS_BACKGROUND="gray"
     POWERLEVEL9K_CUSTOM_ITERM_MARK="iterm2_prompt_mark"
 
     POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(custom_iterm_mark time newline context os_icon custom_battery_status ssh root_indicator dir vcs)
@@ -162,7 +163,7 @@ alias ohmyzsh="emacsclient -n ~/.oh-my-zsh"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=( brew colored-man-pages common-aliases django docker-compose docker pyenv fasd git github npm  osx virtualenv)
+plugins=( brew colored-man-pages common-aliases django docker-compose docker iterm2 pyenv fasd git github npm  osx virtualenv)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -179,6 +180,8 @@ export EDITOR='emacsclient -nw'
 
 autoload zmv
 alias mmv='noglob zmv -W'
+alias le='open -a /usr/local/opt/emacs-plus/Emacs.app'
+alias -g C='| wc -l'
 
 autoload edit-command-line
 zle -N edit-command-line
@@ -202,6 +205,10 @@ if which swiftenv > /dev/null; then eval "$(swiftenv init -)"; fi
 alias loadrvm='[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"'
 alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"'
 
+NVM_DIR=~/.nvm
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 eval "$(direnv hook zsh)"
@@ -210,4 +217,5 @@ if [[ -f ~/.zshrc.local ]]; then
   source ~/.zshrc.local
 fi
 
-
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

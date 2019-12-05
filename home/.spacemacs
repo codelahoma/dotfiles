@@ -37,8 +37,9 @@ This function should only modify configuration layer settings."
      spacemacs-modeline
      csv
      swift
-     (sql :variables
-          sql-capitalize-words t)
+     sql
+     ;; (sql :variables
+     ;;      sql-capitalize-words t)
      html
      javascript ;; includes Coffeescript support
      coffeescript
@@ -155,6 +156,9 @@ This function should only modify configuration layer settings."
                                     ;; all-the-icons
                                     ;; spaceline
                                     ;; spaceline-all-the-icons
+                                    ;; forge
+                                    ;; closql
+                                    ;; ghub
                                     )
 
    ;; Defines the behaviour of Spacemacs when installing packages.
