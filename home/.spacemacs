@@ -94,16 +94,19 @@ This function should only modify configuration layer settings."
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-enable-help-tooltip t
                       auto-completion-enable-sort-by-usage t
+                      auto-completion-complete-with-key-sequence "jk"
                       auto-completion-use-company-box t)
      better-defaults
      git
      github
      evil-commentary
      (shell :variables
-            shell-default-shell 'multi-term
+            shell-default-shell 'vterm
             shell-default-term-shell "/bin/zsh"
             shell-default-height 50
-            shell-default-position 'bottom)
+            shell-default-position 'bottom
+            shell-enable-smart-eshell t
+            close-window-with-terminal t)
 
      ranger
      syntax-checking
