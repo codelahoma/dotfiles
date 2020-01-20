@@ -182,6 +182,10 @@ autoload zmv
 alias mmv='noglob zmv -W'
 alias le='open -a /usr/local/opt/emacs-plus/Emacs.app'
 alias -g C='| wc -l'
+alias hl='highlight -O xterm256'
+alias -g HL='|highlight -O xterm256 -'
+alias xmlf='xmllint --format '
+
 
 autoload edit-command-line
 zle -N edit-command-line
