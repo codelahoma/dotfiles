@@ -1416,7 +1416,7 @@
       "Dynamic Profile Parent Name": "erp-dev",
       "Name": "erp-docker-test",
       "Guid": "059FA199-360E-4744-8F83-FC52C13EA337",
-      "Initial Text": "until script/test -w; do;sleep 1;done"
+        "Initial Text": "watchexec -e py 'script/test --tb=short --ff'"
     },
     {
       "Dynamic Profile Parent Name": "erp-dev",

@@ -146,6 +146,7 @@ local function appLauncher(app)
   end
 end
 
+hotkey.bind(hyper, "b", appLauncher('Kindle'))
 hotkey.bind(hyper, "c", hs.toggleConsole)
 hotkey.bind(hyper, "d", appLauncher('Firefox Developer Edition'))
 hotkey.bind(hyper, "e", appLauncher('Finder'))

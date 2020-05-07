@@ -35,6 +35,10 @@
   (setq jiralib-url "https://summitesp.atlassian.net")
   (setq org-jira-use-status-as-todo t)
 
+  ;; Org-Journal
+  (setq org-journal-dir "~/Dropbox/org/journal/")
+
+
 
   ;; Refiling refinements
   ;; source: https://blog.aaronbieber.com/2017/03/19/organizing-notes-with-refile.html

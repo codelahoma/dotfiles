@@ -163,7 +163,7 @@ alias ohmyzsh="emacsclient -n ~/.oh-my-zsh"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=( brew colored-man-pages common-aliases django docker-compose docker iterm2 pyenv fasd git github npm  osx virtualenv)
+plugins=( brew colored-man-pages common-aliases django docker-compose docker iterm2 pyenv fasd git github npm  osx virtualenv wakatime)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -185,7 +185,7 @@ alias -g C='| wc -l'
 alias hl='highlight -O xterm256'
 alias -g HL='|highlight -O xterm256 -'
 alias xmlf='xmllint --format '
-
+alias susalt='ssh saltmaster-3 sudo salt'
 
 autoload edit-command-line
 zle -N edit-command-line
@@ -206,13 +206,6 @@ fpath=($HOME/.homesick/repos/homeshick/completions $fpath)
 
 if which swiftenv > /dev/null; then eval "$(swiftenv init -)"; fi
 
-alias loadrvm='[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"'
-alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"'
-
-NVM_DIR=~/.nvm
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 eval "$(direnv hook zsh)"
@@ -223,3 +216,14 @@ fi
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+export DISPLAY_MAC=`ifconfig en0 | grep "inet " | cut -d " " -f2`:0
+
+function startx() {
+	  if [ -z "$(ps -ef|grep XQuartz|grep -v grep)" ] ; then
+	      open -a XQuartz
+        socat TCP-LISTEN:6000,reuseaddr,fork UNIX-CLIENT:\"$DISPLAY\" &
+	  fi
+}
+
+alias dgui='docker run -e DISPLAY=$DISPLAY_MAC -it'
