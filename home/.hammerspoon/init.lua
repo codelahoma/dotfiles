@@ -110,7 +110,8 @@ modal = hs.hotkey.modal.new({"ctrl", "shift"}, "h", " Going Modal! ")
 modal:bind("", "escape", " not this time...", nil, function() modal:exit() end, nil)
 
 -- An example binding I find useful: Type today's date in ISO format.
-modal:bind("","d", "today", nil, function() hs.eventtap.keyStrokes(os.date("%F")) modal:exit() end, nil)
+modal:bind("", "d", "today", nil, function() hs.eventtap.keyStrokes(os.date("%F")) modal:exit() end, nil)
+-- modal.bind("", "c", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") model:exit() end, nil)
 
 caffeine = hs.menubar.new()
 
@@ -165,8 +166,8 @@ hotkey.bind(hyper, "r", hs.reload)
 -- hotkey.bind(hyper, "s", appLauncher('Stickies'))
 hotkey.bind(hyper, "s", appLauncher('Skype for Business'))
 hotkey.bind(hyper, "t", appLauncher('Tweetbot'))
-hotkey.bind(hyper, "u", appLauncher('Microsoft OneNote'))
-hotkey.bind(hyper, "v", appLauncher('Copied'))
+-- hotkey.bind(hyper, "u", appLauncher('Microsoft OneNote'))
+-- hotkey.bind(hyper, "v", appLauncher('Paste'))
 -- hotkey.bind(hyper, "u", appLauncher('Visual Studio Code - Insiders'))
 hotkey.bind(hyper, "0", centerOnMainDisplay)
 hotkey.bind(hyper, "1", appLauncher('1Password 7'))
