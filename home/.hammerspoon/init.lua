@@ -86,23 +86,8 @@ function initKSheet()
 end
 
 local ksheet = initKSheet()
-hotkey.bind(magic, 'm', ksheet)
--- -- What was I doing here?
--- function applicationWatcher(appName, eventType, appObject)
---   if (eventType == application.watcher.activated) then
---     if (appName == "Finder") then
---       -- Bring all Finder windows forward when one gets activated
---       appObject:selectMenuItem({"Window", "Bring All to Front"})
---     end
---   end
--- end
--- local appWatcher = application.watcher.new(applicationWatcher)
--- appWatcher:start()
 
--- modal keybindings
--- create a modal keybinding object called "modal" (yes, could have picked a nicer name...)
-
-modal = hs.hotkey.modal.new({"ctrl", "shift"}, "h", " Going Modal! ")
+modal = hs.hotkey.modal.new(hyper, "n", " Going Modal! ")
 
 -- in this example, Ctrl+Shift+h triggers this keybinding mode, which will allow us to use the ones defined below. A nice touch for usability: This also offers to show a message.
 
@@ -110,10 +95,15 @@ modal = hs.hotkey.modal.new({"ctrl", "shift"}, "h", " Going Modal! ")
 modal:bind("", "escape", " not this time...", nil, function() modal:exit() end, nil)
 
 -- An example binding I find useful: Type today's date in ISO format.
-modal:bind("", "d", "today", nil, function() hs.eventtap.keyStrokes(os.date("%F")) modal:exit() end, nil)
--- modal.bind("", "c", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") model:exit() end, nil)
+-- modal:bind("", "d", "today", nil, function() hs.eventtap.keyStrokes(os.date("%F")) modal:exit() end, nil)
+modal:bind("", "a", "activity", nil, function() application.launchOrFocus("Activity Monitor") modal:exit() end, nil)
+modal:bind("", "d", "dash", nil, function() application.launchOrFocus("Dash") modal:exit() end, nil)
+modal:bind("", "m", "menu", nil, function() ksheet() modal:exit() end, nil)
+modal:bind("", "p", "postman", nil, function() application.launchOrFocus("Postman") modal:exit() end, nil)
+modal:bind("", "v", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") modal:exit() end, nil)
 
 caffeine = hs.menubar.new()
+hs.caffeinate.set("system", true, false)
 
 local function setCaffeineDisplay(state)
   if state then
@@ -124,12 +114,12 @@ local function setCaffeineDisplay(state)
 end
 
 local function caffeineClicked()
-  setCaffeineDisplay(hs.caffeinate.toggle("displayIdle"))
+  setCaffeineDisplay(hs.caffeinate.toggle("system"))
 end
 
 if caffeine then
   caffeine:setClickCallback(caffeineClicked)
-  setCaffeineDisplay(hs.caffeinate.get("displayIdle"))
+  setCaffeineDisplay(hs.caffeinate.get("system"))
 end
 
 -- center current window on big screen, if present
@@ -147,27 +137,34 @@ local function appLauncher(app)
   end
 end
 
+local function pasteLauncher()
+  return function()
+    hs.eventtap.keyStroke({"cmd", "shift"}, "v")
+  end
+end
+
 hotkey.bind(hyper, "b", appLauncher('Kindle'))
 hotkey.bind(hyper, "c", hs.toggleConsole)
-hotkey.bind(hyper, "d", appLauncher('Firefox Developer Edition'))
+hotkey.bind(hyper, "d", appLauncher('Dash'))
 hotkey.bind(hyper, "e", appLauncher('Finder'))
 hotkey.bind(hyper, "f", appLauncher('Firefox'))
 hotkey.bind(hyper, "h", appLauncher('VMware Horizon Client'))
 hotkey.bind(hyper, "i", appLauncher('iTerm'))
-hotkey.bind(hyper, "j", appLauncher('/usr/local/opt/emacs-plus/Emacs.app'))
+hotkey.bind(hyper, "j", appLauncher('/usr/local/opt/emacs-plus@27/Emacs.app'))
 hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
 -- hotkey.bind(hyper, "l", appLauncher('LibreOffice'))
-hotkey.bind(hyper, "m", appLauncher('Microsoft Outlook'))
-hotkey.bind(hyper, "n", appLauncher('Messages'))
+hotkey.bind(hyper, "m", appLauncher('Microsoft Edge'))
+-- hotkey.bind(hyper, "n", appLauncher('Messages'))
 hotkey.bind(hyper, "o", appLauncher('Slack'))
-hotkey.bind(hyper, "p", appLauncher('Postman'))
+hotkey.bind(hyper, "p", appLauncher('Pycharm'))
+
 hotkey.bind(hyper, "q", appLauncher('qutebrowser'))
 hotkey.bind(hyper, "r", hs.reload)
 -- hotkey.bind(hyper, "s", appLauncher('Stickies'))
 hotkey.bind(hyper, "s", appLauncher('Skype for Business'))
-hotkey.bind(hyper, "t", appLauncher('Tweetbot'))
+-- hotkey.bind(hyper, "t", appLauncher('Microsoft Teams'))
 -- hotkey.bind(hyper, "u", appLauncher('Microsoft OneNote'))
--- hotkey.bind(hyper, "v", appLauncher('Paste'))
+hotkey.bind(hyper, "v", pasteLauncher())
 -- hotkey.bind(hyper, "u", appLauncher('Visual Studio Code - Insiders'))
 hotkey.bind(hyper, "0", centerOnMainDisplay)
 hotkey.bind(hyper, "1", appLauncher('1Password 7'))
