@@ -64,10 +64,15 @@ spoon.SpoonInstall:andUse("Seal",
 })
 
 hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
-hotkey.bind(magic, 'p', spotify.playpause)
-hotkey.bind(magic, 'n', function() spotify.next(); spotify.displayCurrentTrack() end)
-hotkey.bind(magic, 'b', function() spotify.previous(); spotify.displayCurrentTrack() end)
+-- hotkey.bind(magic, 'p', spotify.playpause)
+-- hotkey.bind(magic, 'n', function() spotify.next(); spotify.displayCurrentTrack() end)
+-- hotkey.bind(magic, 'b', function() spotify.previous(); spotify.displayCurrentTrack() end)
 
+-- Install:andUse("KSheet",
+--                {
+--                  hotkeys = {
+--                    toggle = { hyper, "/"}
+-- }})
 function initKSheet()
   Install:andUse('KSheet')
   local shouldShow = true
