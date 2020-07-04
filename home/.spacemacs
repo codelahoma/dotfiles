@@ -968,13 +968,40 @@ you should place your code here."
 
 
   (load-framegeometry)
+  (spacemacs/declare-prefix "oc" "copy")
   (spacemacs/set-leader-keys "ocl" 'avy-copy-line)
   (spacemacs/set-leader-keys "ocp" 'forge-copy-url-at-point-as-kill)
+
+  (spacemacs/declare-prefix "ox" "text")
   (spacemacs/set-leader-keys "oxt" 'xah-title-case-region-or-line)
+
+  (spacemacs/declare-prefix "ob" "buffer")
   (spacemacs/set-leader-keys "obn" 'spacemacs/new-empty-buffer)
-  (spacemacs/set-leader-keys "oef" (lambda (flycheck-select-checker 'python-flake8)))
+
+  (spacemacs/declare-prefix "oo" "org")
   (spacemacs/set-leader-keys "oos" 'org-save-all-org-buffers)
 
+  (spacemacs/declare-prefix "ooj" "jira")
+  (spacemacs/declare-prefix "oojp" "projects")
+  (spacemacs/declare-prefix "ooji" "issues")
+  (spacemacs/declare-prefix "oojs" "subtasks")
+  (spacemacs/declare-prefix "oojc" "comments")
+  (spacemacs/declare-prefix "oojt" "todos")
+  (spacemacs/set-leader-keys
+    "oojpg" 'org-jira-get-projects
+    "oojib" 'org-jira-browse-issue
+    "oojig" 'org-jira-get-issues
+    "oojih" 'org-jira-get-issues-headonly
+    "oojif" 'org-jira-get-issues-from-filter-headonly
+    "oojiu" 'org-jira-update-issue
+    "oojiw" 'org-jira-progress-issue
+    "oojir" 'org-jira-refresh-issue
+    "oojic" 'org-jira-create-issue
+    "oojiy" 'org-jira-copy-current-issue-key
+    "oojsc" 'org-jira-create-subtask
+    "oojsg" 'org-jira-get-subtasks
+    "oojcu" 'org-jira-update-comment
+    "oojtj" 'org-jira-todo-to-jira)
   )
 
 (defun dotspacemacs/user-load ()
