@@ -186,7 +186,8 @@ alias hl='highlight -O xterm256'
 alias -g HL='|highlight -O xterm256 -'
 alias xmlf='xmllint --format '
 alias susalt='ssh saltmaster-3 sudo salt'
-
+alias ss="script/stop && script/start -d && script/attach --tail=100 &"
+alias ssd="script-docker/stop && script-docker/start -d && script-docker/attach --tail=100 &"
 autoload edit-command-line
 zle -N edit-command-line
 bindkey '^X^E' edit-command-line
