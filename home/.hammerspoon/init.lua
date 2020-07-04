@@ -103,8 +103,10 @@ modal:bind("", "escape", " not this time...", nil, function() modal:exit() end, 
 -- modal:bind("", "d", "today", nil, function() hs.eventtap.keyStrokes(os.date("%F")) modal:exit() end, nil)
 modal:bind("", "a", "activity", nil, function() application.launchOrFocus("Activity Monitor") modal:exit() end, nil)
 modal:bind("", "d", "dash", nil, function() application.launchOrFocus("Dash") modal:exit() end, nil)
+modal:bind("", "e", "excel", nil, function() application.launchOrFocus("Excel") modal:exit() end, nil)
 modal:bind("", "m", "menu", nil, function() ksheet() modal:exit() end, nil)
 modal:bind("", "p", "postman", nil, function() application.launchOrFocus("Postman") modal:exit() end, nil)
+modal:bind("", "s", "spark", nil, function() application.launchOrFocus("Spark") modal:exit() end, nil)
 modal:bind("", "v", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") modal:exit() end, nil)
 
 caffeine = hs.menubar.new()
