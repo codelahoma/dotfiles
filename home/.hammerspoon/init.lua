@@ -79,6 +79,28 @@ if machine == "codelahoma-mbp" then
   hotkey.bind(hyper, ";", appLauncher('Spotify'))
 end
 
+if machine == "codelahoma" then
+  hotkey.bind(hyper, "b", appLauncher('Kindle'))
+  hotkey.bind(hyper, "c", hs.toggleConsole)
+  hotkey.bind(hyper, "d", appLauncher('Dash'))
+  hotkey.bind(hyper, "e", appLauncher('Finder'))
+  hotkey.bind(hyper, "f", appLauncher('Firefox'))
+  hotkey.bind(hyper, "h", appLauncher('VMware Horizon Client'))
+  hotkey.bind(hyper, "i", appLauncher('iTerm'))
+  hotkey.bind(hyper, "j", appLauncher('/usr/local/opt/emacs-plus@27/Emacs.app'))
+  hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
+  hotkey.bind(hyper, "m", appLauncher('Microsoft Edge'))
+  hotkey.bind(hyper, "o", appLauncher('Slack'))
+  hotkey.bind(hyper, "p", appLauncher('Pycharm'))
+  hotkey.bind(hyper, "q", appLauncher('qutebrowser'))
+  hotkey.bind(hyper, "r", hs.reload)
+  hotkey.bind(hyper, "s", appLauncher('Skype for Business'))
+  hotkey.bind(hyper, "v", pasteLauncher())
+  hotkey.bind(hyper, "0", centerOnMainDisplay)
+  hotkey.bind(hyper, "1", appLauncher('1Password 7'))
+  hotkey.bind(hyper, ";", appLauncher('Spotify'))
+end
+
 function initKSheet()
   Install:andUse('KSheet')
   local shouldShow = true
