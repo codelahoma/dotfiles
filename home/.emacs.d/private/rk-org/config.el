@@ -61,8 +61,12 @@
    'org-babel-load-languages
    '((emacs-lisp . t)
      (http . t)
+     (lua . t)
      (python . t)
      (R . t)))
+  (setq org-confirm-babel-evaluate nil
+        org-src-fontify-natively t
+        org-src-tab-acts-natively t)
 
   ;; Fix mangling of org-structure-template-alist by ox-reveal
   (setq org-structure-template-alist
