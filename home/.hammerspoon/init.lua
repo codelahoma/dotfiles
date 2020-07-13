@@ -9,12 +9,13 @@ hs.logger.defaultLogLevel = "info"
 hyper = {"cmd","alt","ctrl","shift"}
 magic = {"cmd","alt","ctrl"}
 
-app = hs.application
+application = hs.application
 hotkey = hs.hotkey
 grid = hs.grid
 window = hs.window
 screen = hs.screen
 spotify = hs.spotify
+machine = hs.host.localizedName()
 
 hs.loadSpoon("SpoonInstall")
 
@@ -32,6 +33,12 @@ Install:andUse("WindowGrid",
 
 hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
 
+Install:andUse("ReloadConfiguration",
+               {
+               start = true
+               }
+)
+
 local function centerOnMainDisplay()
   local bigScreen = screen.find('LG Ultra HD')
   if bigScreen then
@@ -41,7 +48,10 @@ end
 
 local function appLauncher(app)
   return function()
-    application.launchOrFocus(app)
+    local launched = application.launchOrFocus(app) 
+    if not launched then
+      application.launchOrFocusByBundleID(app)
+    end
   end
 end
 
@@ -51,55 +61,57 @@ local function pasteLauncher()
   end
 end
 
-hotkey.bind(hyper, "b", appLauncher('Kindle'))
-hotkey.bind(hyper, "c", hs.toggleConsole)
-hotkey.bind(hyper, "d", appLauncher('Dash'))
-hotkey.bind(hyper, "e", appLauncher('Finder'))
-hotkey.bind(hyper, "i", appLauncher('iTerm'))
-hotkey.bind(hyper, "j", appLauncher('Emacs.app'))
-hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
-hotkey.bind(hyper, "m", appLauncher('Spark'))
-hotkey.bind(hyper, "o", appLauncher('Slack'))
-hotkey.bind(hyper, "r", hs.reload)
-hotkey.bind(hyper, "v", pasteLauncher())
-hotkey.bind(hyper, "0", centerOnMainDisplay)
-hotkey.bind(hyper, "1", appLauncher('1Password 7'))
-hotkey.bind(hyper, ";", appLauncher('Spotify'))
+if machine == "codelahoma-mbp" then
+  hotkey.bind(hyper, "b", appLauncher('com.brave.Browser'))
+  hotkey.bind(hyper, "c", hs.toggleConsole)
+  hotkey.bind(hyper, "d", appLauncher('Dash'))
+  hotkey.bind(hyper, "e", appLauncher('Finder'))
+  hotkey.bind(hyper, "i", appLauncher('iTerm'))
+  hotkey.bind(hyper, "j", appLauncher('Emacs.app'))
+  hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
+  hotkey.bind(hyper, "m", appLauncher('Spark'))
+  hotkey.bind(hyper, "o", appLauncher('Slack'))
+  hotkey.bind(hyper, "r", hs.reload)
+  hotkey.bind(hyper, "v", pasteLauncher())
+  hotkey.bind(hyper, "0", centerOnMainDisplay)
+  hotkey.bind(hyper, "1", appLauncher('1Password 7'))
+  hotkey.bind(hyper, ";", appLauncher('Spotify'))
+end
 
 function initKSheet()
-    Install:andUse('KSheet')
-    local shouldShow = true
+  Install:andUse('KSheet')
+  local shouldShow = true
 
-    function toggleKSheet()
-      if shouldShow then
-        spoon.KSheet:show()
-        shouldShow = false 
-      else
-        spoon.KSheet:hide()
-        shouldShow = true
-      end
+  function toggleKSheet()
+    if shouldShow then
+      spoon.KSheet:show()
+      shouldShow = false 
+    else
+      spoon.KSheet:hide()
+      shouldShow = true
     end
-
-    return toggleKSheet
   end
 
+  return toggleKSheet
+end
+
 local ksheet = initKSheet()
-  modal = hs.hotkey.modal.new(hyper, "n", " Going Modal! ")
+modal = hs.hotkey.modal.new(hyper, "n", " Going Modal! ")
 
-  -- in this example, Ctrl+Shift+h triggers this keybinding mode, which will allow us to use the ones defined below. A nice touch for usability: This also offers to show a message.
+-- in this example, Ctrl+Shift+h triggers this keybinding mode, which will allow us to use the ones defined below. A nice touch for usability: This also offers to show a message.
 
-  -- I recommend having this one at all times: Bind the escape key to exit keybinding mode:
-  modal:bind("", "escape", " not this time...", nil, function() modal:exit() end, nil)
+-- I recommend having this one at all times: Bind the escape key to exit keybinding mode:
+modal:bind("", "escape", " not this time...", nil, function() modal:exit() end, nil)
 
-  -- An example binding I find useful: Type today's date in ISO format.
-  -- modal:bind("", "d", "today", nil, function() hs.eventtap.keyStrokes(os.date("%F")) modal:exit() end, nil)
-  modal:bind("", "a", "activity", nil, function() application.launchOrFocus("Activity Monitor") modal:exit() end, nil)
-  modal:bind("", "d", "dash", nil, function() application.launchOrFocus("Dash") modal:exit() end, nil)
-  modal:bind("", "e", "excel", nil, function() application.launchOrFocus("Excel") modal:exit() end, nil)
-  modal:bind("", "m", "menu", nil, function() ksheet() modal:exit() end, nil)
-  modal:bind("", "p", "postman", nil, function() application.launchOrFocus("Postman") modal:exit() end, nil)
-  modal:bind("", "s", "spark", nil, function() application.launchOrFocus("Spark") modal:exit() end, nil)
-  modal:bind("", "v", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") modal:exit() end, nil)
+-- An example binding I find useful: Type today's date in ISO format.
+-- modal:bind("", "d", "today", nil, function() hs.eventtap.keyStrokes(os.date("%F")) modal:exit() end, nil)
+modal:bind("", "a", "activity", nil, function() application.launchOrFocus("Activity Monitor") modal:exit() end, nil)
+modal:bind("", "d", "dash", nil, function() application.launchOrFocus("Dash") modal:exit() end, nil)
+modal:bind("", "e", "excel", nil, function() application.launchOrFocus("Excel") modal:exit() end, nil)
+modal:bind("", "m", "menu", nil, function() ksheet() modal:exit() end, nil)
+modal:bind("", "p", "postman", nil, function() application.launchOrFocus("Postman") modal:exit() end, nil)
+modal:bind("", "s", "spark", nil, function() application.launchOrFocus("Spark") modal:exit() end, nil)
+modal:bind("", "v", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") modal:exit() end, nil)
 
 caffeine = hs.menubar.new()
 hs.caffeinate.set("system", true, false)

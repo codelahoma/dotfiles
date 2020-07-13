@@ -19,9 +19,10 @@
 - [[#spoon-management][Spoon Management]]
 - [[#window-and-screen-manipulation][Window and Screen Manipulation]]
 - [[#global-key-bindings][Global Key Bindings]]
+- [[#reload-config-on-changes][Reload Config on Changes]]
 - [[#fast-navigation-to-core-apps][Fast navigation to core apps]]
   - [[#helper-functions][Helper Functions]]
-  - [[#bindings][Bindings]]
+  - [[#home-bindings][Home Bindings]]
 - [[#hotkey-model-madness][Hotkey Model Madness]]
 - [[#caffeinate][Caffeinate]]
 - [[#load-local-config][Load Local Config]]
@@ -45,12 +46,13 @@ Define my primary modifier combinations,  =hyper= and =magic=
 Abbreviations for frequently used modules
 
 #+begin_src lua
-  app = hs.application
+  application = hs.application
   hotkey = hs.hotkey
   grid = hs.grid
   window = hs.window
   screen = hs.screen
   spotify = hs.spotify
+  machine = hs.host.localizedName()
 #+end_src
 
 * Spoon Management 
@@ -95,6 +97,15 @@ What's playing?
   hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
 #+end_src
 
+* Reload Config on Changes
+
+#+begin_src lua
+  Install:andUse("ReloadConfiguration",
+                 {
+                 start = true
+                 }
+  )
+#+end_src
 
 * Fast navigation to core apps 
 
@@ -109,10 +120,13 @@ What's playing?
 
   local function appLauncher(app)
     return function()
-      application.launchOrFocus(app)
+      local launched = application.launchOrFocus(app) 
+      if not launched then
+        application.launchOrFocusByBundleID(app)
+      end
     end
   end
-  
+
   local function pasteLauncher()
     return function()
       hs.eventtap.keyStroke({"cmd", "shift"}, "v")
@@ -120,10 +134,14 @@ What's playing?
   end
 #+end_src
 
-** Bindings
+#+RESULTS:
+
+** Home Bindings
+
 
 #+begin_src lua
-  hotkey.bind(hyper, "b", appLauncher('Kindle'))
+if machine == "codelahoma-mbp" then
+  hotkey.bind(hyper, "b", appLauncher('com.brave.Browser'))
   hotkey.bind(hyper, "c", hs.toggleConsole)
   hotkey.bind(hyper, "d", appLauncher('Dash'))
   hotkey.bind(hyper, "e", appLauncher('Finder'))
@@ -137,6 +155,7 @@ What's playing?
   hotkey.bind(hyper, "0", centerOnMainDisplay)
   hotkey.bind(hyper, "1", appLauncher('1Password 7'))
   hotkey.bind(hyper, ";", appLauncher('Spotify'))
+end
 #+end_src
 
 * Hotkey Model Madness
@@ -159,7 +178,7 @@ What's playing?
     return toggleKSheet
   end
 
-local ksheet = initKSheet()
+  local ksheet = initKSheet()
   modal = hs.hotkey.modal.new(hyper, "n", " Going Modal! ")
 
   -- in this example, Ctrl+Shift+h triggers this keybinding mode, which will allow us to use the ones defined below. A nice touch for usability: This also offers to show a message.
