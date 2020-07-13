@@ -42,7 +42,12 @@ This function should only modify configuration layer settings."
      html
      javascript ;; includes Coffeescript support
      coffeescript
-     lua
+     (lua :variables
+          lua-backend 'lsp-emmy
+          lua-lsp-emmy-jar-path "~/.emacs.d/EmmyLua-LS-all.jar" ; default path
+          lua-lsp-emmy-java-path "java"                         ; default path
+          lua-lsp-emmy-enable-file-watchers t)                  ; enabled default
+
      markdown
      (csharp :variables csharp-backend 'lsp)
      lsp
