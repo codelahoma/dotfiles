@@ -102,6 +102,7 @@ What's playing?
 #+begin_src lua
   Install:andUse("ReloadConfiguration",
                  {
+                 watch_paths = { '~/.homesick/repos/dotfiles/home/.hammerspoon' },
                  start = true
                  }
   )

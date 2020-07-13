@@ -35,6 +35,7 @@ hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
 
 Install:andUse("ReloadConfiguration",
                {
+               watch_paths = { '~/.homesick/repos/dotfiles/home/.hammerspoon' },
                start = true
                }
 )
