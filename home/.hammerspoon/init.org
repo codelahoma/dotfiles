@@ -101,12 +101,9 @@ What's playing?
 * Reload Config on Changes
 
 #+begin_src lua
-  Install:andUse("ReloadConfiguration",
-                 {
-                 watch_paths = { '~/.homesick/repos/dotfiles/home/.hammerspoon' },
-                 start = true
-                 }
-  )
+  hs.loadSpoon("ReloadConfiguration")
+  table.insert(spoon.ReloadConfiguration.watch_paths, '~/.homesick/repos/dotfiles/home/.hammerspoon')
+  spoon.ReloadConfiguration:start()
 #+end_src
 
 * Fast navigation to core apps 

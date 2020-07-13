@@ -33,12 +33,9 @@ Install:andUse("WindowGrid",
 
 hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
 
-Install:andUse("ReloadConfiguration",
-               {
-               watch_paths = { '~/.homesick/repos/dotfiles/home/.hammerspoon' },
-               start = true
-               }
-)
+hs.loadSpoon("ReloadConfiguration")
+table.insert(spoon.ReloadConfiguration.watch_paths, '~/.homesick/repos/dotfiles/home/.hammerspoon')
+spoon.ReloadConfiguration:start()
 
 local function centerOnMainDisplay()
   local bigScreen = screen.find('LG Ultra HD')
