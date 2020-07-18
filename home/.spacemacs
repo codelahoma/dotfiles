@@ -881,7 +881,7 @@ you should place your code here."
           ;; "django-rest-framework-3.8.2"
           ))
 
-  (setq-default git-magit-status-fullscreen t)
+  ;; (setq-default git-magit-status-fullscreen t)
 
   (setq helm-ag-base-command "/usr/local/bin/ag --vimgrep")
 
