@@ -19,7 +19,6 @@
 - [[#spoon-management][Spoon Management]]
 - [[#window-and-screen-manipulation][Window and Screen Manipulation]]
 - [[#global-key-bindings][Global Key Bindings]]
-- [[#reload-config-on-changes][Reload Config on Changes]]
 - [[#fast-navigation-to-core-apps][Fast navigation to core apps]]
   - [[#helper-functions][Helper Functions]]
   - [[#home-bindings][Home Bindings]]
@@ -107,12 +106,8 @@ What's playing?
   hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
 #+end_src
 
-* Reload Config on Changes
 
 #+begin_src lua
-  hs.loadSpoon("ReloadConfiguration")
-  table.insert(spoon.ReloadConfiguration.watch_paths, '~/.homesick/repos/dotfiles/home/.hammerspoon')
-  spoon.ReloadConfiguration:start()
   Install:andUse("KSheet", {
                    hotkeys = {
                      toggle = { hyper, "-" }

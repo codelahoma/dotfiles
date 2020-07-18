@@ -41,9 +41,6 @@ hs.grid.HINTS = {
 
 hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
 
-hs.loadSpoon("ReloadConfiguration")
-table.insert(spoon.ReloadConfiguration.watch_paths, '~/.homesick/repos/dotfiles/home/.hammerspoon')
-spoon.ReloadConfiguration:start()
 Install:andUse("KSheet", {
                  hotkeys = {
                    toggle = { hyper, "-" }
