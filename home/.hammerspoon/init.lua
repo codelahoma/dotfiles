@@ -24,12 +24,20 @@ spoon.SpoonInstall.use_syncinstall = true
 Install=spoon.SpoonInstall
 
 Install:andUse("WindowGrid",
-               {
-                 config = { gridGeometries = { { "8x6", "3840x2160"}, { "6x4" } } },
-                 hotkeys = {show_grid = {hyper, "8"}},
-                 start = true
-               }
+                {
+                  config = { gridGeometries = { { "8x5", "3840x2160"}, { "6x4" } } },
+                  hotkeys = {show_grid = {hyper, "8"}},
+                  start = true
+                }
 )
+
+hs.grid.HINTS = {
+  {'a', 's', 'd', 'f', 'f6', 'f7', 'f8', 'f9'},
+  {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i'},
+  {'1', '2', '3', '4', '5', '6', '7', '8'},
+  {'z', 'x', 'c', 'v', 'n', 'm', ',', '.'},
+  {'f1', 'f2', 'f3', 'f4', 'j', 'k', 'l', ';'},
+}
 
 hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
 
