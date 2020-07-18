@@ -36,6 +36,11 @@ hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
 hs.loadSpoon("ReloadConfiguration")
 table.insert(spoon.ReloadConfiguration.watch_paths, '~/.homesick/repos/dotfiles/home/.hammerspoon')
 spoon.ReloadConfiguration:start()
+Install:andUse("KSheet", {
+                 hotkeys = {
+                   toggle = { hyper, "-" }
+                 }
+})
 
 local function centerOnMainDisplay()
   local bigScreen = screen.find('LG Ultra HD')
@@ -98,24 +103,6 @@ if machine == "codelahoma" then
   hotkey.bind(hyper, ";", appLauncher('Spotify'))
 end
 
-function initKSheet()
-  Install:andUse('KSheet')
-  local shouldShow = true
-
-  function toggleKSheet()
-    if shouldShow then
-      spoon.KSheet:show()
-      shouldShow = false 
-    else
-      spoon.KSheet:hide()
-      shouldShow = true
-    end
-  end
-
-  return toggleKSheet
-end
-
-local ksheet = initKSheet()
 modal = hs.hotkey.modal.new(hyper, "n", " Going Modal! ")
 
 -- in this example, Ctrl+Shift+h triggers this keybinding mode, which will allow us to use the ones defined below. A nice touch for usability: This also offers to show a message.
@@ -128,7 +115,6 @@ modal:bind("", "escape", " not this time...", nil, function() modal:exit() end, 
 modal:bind("", "a", "activity", nil, function() application.launchOrFocus("Activity Monitor") modal:exit() end, nil)
 modal:bind("", "d", "dash", nil, function() application.launchOrFocus("Dash") modal:exit() end, nil)
 modal:bind("", "e", "excel", nil, function() application.launchOrFocus("Excel") modal:exit() end, nil)
-modal:bind("", "m", "menu", nil, function() ksheet() modal:exit() end, nil)
 modal:bind("", "p", "postman", nil, function() application.launchOrFocus("Postman") modal:exit() end, nil)
 modal:bind("", "s", "spark", nil, function() application.launchOrFocus("Spark") modal:exit() end, nil)
 modal:bind("", "v", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") modal:exit() end, nil)
