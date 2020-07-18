@@ -60,7 +60,7 @@ This function should only modify configuration layer settings."
              python-lsp-server 'mspyls
              python-lsp-git-root "~/github/python-language-server"
              python-formatter 'black
-             ;; python-format-on-save t
+             python-format-on-save t
              )
      ipython-notebook
      emacs-lisp
@@ -1028,7 +1028,7 @@ you should place your code here."
     "oojsg" 'org-jira-get-subtasks
     "oojcu" 'org-jira-update-comment
     "oojtj" 'org-jira-todo-to-jira)
-  )
+ )
 
 (defun dotspacemacs/user-load ()
   "Library to load while dumping.
