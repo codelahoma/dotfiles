@@ -56,9 +56,12 @@ end
 
 local function appLauncher(app)
   return function()
-    local launched = application.launchOrFocus(app) 
+    launched = application.launchOrFocus(app) 
     if not launched then
-      application.launchOrFocusByBundleID(app)
+      launched = application.launchOrFocusByBundleID(app)
+    end
+    if not launched then
+          hs.alert(app .. " not found")
     end
   end
 end
@@ -87,14 +90,14 @@ if machine == "codelahoma-mbp" then
 end
 
 if machine == "codelahoma" then
-  hotkey.bind(hyper, "b", appLauncher('Kindle'))
+  hotkey.bind(hyper, "b", appLauncher('Books'))
   hotkey.bind(hyper, "c", hs.toggleConsole)
   hotkey.bind(hyper, "d", appLauncher('Dash'))
   hotkey.bind(hyper, "e", appLauncher('Finder'))
   hotkey.bind(hyper, "f", appLauncher('Firefox'))
   hotkey.bind(hyper, "h", appLauncher('VMware Horizon Client'))
   hotkey.bind(hyper, "i", appLauncher('iTerm'))
-  hotkey.bind(hyper, "j", appLauncher('/usr/local/opt/emacs-plus@27/Emacs.app'))
+  hotkey.bind(hyper, "j", appLauncher('/Applications/Emacs.app'))
   hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
   hotkey.bind(hyper, "m", appLauncher('Microsoft Edge'))
   hotkey.bind(hyper, "o", appLauncher('Slack'))
@@ -103,6 +106,7 @@ if machine == "codelahoma" then
   hotkey.bind(hyper, "r", hs.reload)
   hotkey.bind(hyper, "s", appLauncher('Skype for Business'))
   hotkey.bind(hyper, "v", pasteLauncher())
+  hotkey.bind(hyper, "y", appLauncher('Summit Jira'))
   hotkey.bind(hyper, "0", centerOnMainDisplay)
   hotkey.bind(hyper, "1", appLauncher('1Password 7'))
   hotkey.bind(hyper, ";", appLauncher('Spotify'))
@@ -119,7 +123,8 @@ modal:bind("", "escape", " not this time...", nil, function() modal:exit() end, 
 -- modal:bind("", "d", "today", nil, function() hs.eventtap.keyStrokes(os.date("%F")) modal:exit() end, nil)
 modal:bind("", "a", "activity", nil, function() application.launchOrFocus("Activity Monitor") modal:exit() end, nil)
 modal:bind("", "d", "dash", nil, function() application.launchOrFocus("Dash") modal:exit() end, nil)
-modal:bind("", "e", "excel", nil, function() application.launchOrFocus("Excel") modal:exit() end, nil)
+modal:bind("", "e", "excel", nil, function() application.launchOrFocus("Microsoft Excel") modal:exit() end, nil)
+modal:bind("", "j", "JIRA", nil, function() application.launchOrFocus("Summit Jira") modal:exit() end, nil)
 modal:bind("", "p", "postman", nil, function() application.launchOrFocus("Postman") modal:exit() end, nil)
 modal:bind("", "s", "spark", nil, function() application.launchOrFocus("Spark") modal:exit() end, nil)
 modal:bind("", "v", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") modal:exit() end, nil)
