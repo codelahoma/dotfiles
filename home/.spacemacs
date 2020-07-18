@@ -980,6 +980,10 @@ you should place your code here."
 
   (setq js2-strict-missing-semi-warning nil)
 
+  (defun rk/reset-hammerspoon ()
+    (interactive)
+    (shell-command "hs -c \"hs.reload()\""))
+
 
   (load-framegeometry)
   (spacemacs/declare-prefix "oc" "copy")
@@ -991,6 +995,9 @@ you should place your code here."
 
   (spacemacs/declare-prefix "ob" "buffer")
   (spacemacs/set-leader-keys "obn" 'spacemacs/new-empty-buffer)
+
+  (spacemacs/declare-prefix "oh" "Hammerspoon")
+  (spacemacs/set-leader-keys "ohr" 'rk/reset-hammerspoon)
 
   (spacemacs/declare-prefix "oo" "org")
   (spacemacs/set-leader-keys "oos" 'org-save-all-org-buffers)
