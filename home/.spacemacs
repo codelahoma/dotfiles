@@ -159,9 +159,8 @@ This function should only modify configuration layer settings."
                                       eink-theme
                                       evil-easymotion
                                       github-review
-                                      ;; helm-cscope
+                                      fold-this
                                       jira-markup-mode
-                                      ;; magit-lfs
                                       nvm
                                       ob-async
                                       org-jira
@@ -989,6 +988,12 @@ you should place your code here."
   (spacemacs/declare-prefix "oc" "copy")
   (spacemacs/set-leader-keys "ocl" 'avy-copy-line)
   (spacemacs/set-leader-keys "ocp" 'forge-copy-url-at-point-as-kill)
+
+  (spacemacs/declare-prefix "of" "folding")
+  (spacemacs/set-leader-keys
+    "off" 'fold-this
+    "ofm" 'fold-this-all
+    "ofr" 'fold-this-unfold-all)
 
   (spacemacs/declare-prefix "ox" "text")
   (spacemacs/set-leader-keys "oxt" 'xah-title-case-region-or-line)
