@@ -412,7 +412,7 @@
         "Blue Component": 0,
         "Red Component": 0
       },
-      "Rows": 25,
+      "Rows": 50,
       "Ansi 11 Color": {
         "Green Component": 1,
         "Blue Component": 0.3333333432674408,
@@ -686,7 +686,7 @@
         "Blue Component": 1,
         "Red Component": 0.3333333432674408
       },
-      "Window Type": 2,
+      "Window Type": 8,
       "Use Bright Bold": true,
       "Has Hotkey": true,
       "HotKey Modifier Activation": 0,
@@ -778,7 +778,7 @@
         "Blue Component": 1,
         "Red Component": 1
       },
-      "Columns": 80,
+      "Columns": 100,
       "HotKey Alternate Shortcuts": [],
       "Visual Bell": true,
       "Custom Directory": "No",
