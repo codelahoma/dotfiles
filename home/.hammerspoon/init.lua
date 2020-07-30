@@ -60,6 +60,14 @@ local function appLauncher(app)
     if not launched then
       launched = application.launchOrFocusByBundleID(app)
     end
+
+    wonkyAppsThatFocusButReturnFalse = {'iTerm'}
+    for _, v in ipairs(wonkyAppsThatFocusButReturnFalse) do
+       if v == app then
+          return
+       end
+    end
+
     if not launched then
           hs.alert(app .. " not found")
     end

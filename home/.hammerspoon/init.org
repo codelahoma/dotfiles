@@ -135,6 +135,14 @@ The KSheet spoon provides for showing the keybindings for the currently active a
       if not launched then
         launched = application.launchOrFocusByBundleID(app)
       end
+
+      wonkyAppsThatFocusButReturnFalse = {'iTerm'}
+      for _, v in ipairs(wonkyAppsThatFocusButReturnFalse) do
+         if v == app then
+            return
+         end
+      end
+
       if not launched then
             hs.alert(app .. " not found")
       end
