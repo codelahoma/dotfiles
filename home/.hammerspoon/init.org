@@ -78,7 +78,7 @@ This is just a shortcut to make the declarations below look more readable, i.e. 
 
 * Window and Screen Manipulation
 
-The [[http://www.hammerspoon.org/Spoons/WindowGrid.html][WindowGrid]] spoon sets up a key binding (=Hyper-g= here) to overlay a grid that allows resizing windows by specifying their opposite corners.
+The [[http://www.hammerspoon.org/Spoons/WindowGrid.html][WindowGrid]] spoon sets up a key binding (=Hyper-8= here) to overlay a grid that allows resizing windows by specifying their opposite corners.
 
 #+begin_src lua
   Install:andUse("WindowGrid",
@@ -90,13 +90,21 @@ The [[http://www.hammerspoon.org/Spoons/WindowGrid.html][WindowGrid]] spoon sets
   )
 
   hs.grid.HINTS = {
-    {'a', 's', 'd', 'f', 'f6', 'f7', 'f8', 'f9'},
-    {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i'},
-    {'1', '2', '3', '4', '5', '6', '7', '8'},
-    {'z', 'x', 'c', 'v', 'n', 'm', ',', '.'},
-    {'f1', 'f2', 'f3', 'f4', 'j', 'k', 'l', ';'},
+   {'a', 's', 'd', 'f', '6', '7', '8', '0'}, 
+   {'w', 'e', 'r', 't', 'z', 'x', '=', '9'}, 
+   {'b', 'g', 'q', 'v', 'y', 'u', 'i', 'o'}, 
+   {'1', 'p', '/', 'c', 'n', 'm', '.', '-'}, 
+   {'5', '2', '3', '4', 'j', 'k', 'l', ';'}, 
   }
 
+#+end_src
+
+[[http://www.hammerspoon.org/Spoons/WindowHalfsAndThirds.html][WindowHalfsandThirds]] provides quick movement/resizing to halfs and thirds, as well as undo, center, grow, and shrink.
+
+#+begin_src lua
+  Install:andUse("WindowHalfsAndThirds", {
+                    config = { use_frame_correctness = true}
+  })
 #+end_src
 
 * Global Key Bindings
