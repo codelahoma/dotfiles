@@ -32,12 +32,16 @@ Install:andUse("WindowGrid",
 )
 
 hs.grid.HINTS = {
-  {'a', 's', 'd', 'f', 'f6', 'f7', 'f8', 'f9'},
-  {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i'},
-  {'1', '2', '3', '4', '5', '6', '7', '8'},
-  {'z', 'x', 'c', 'v', 'n', 'm', ',', '.'},
-  {'f1', 'f2', 'f3', 'f4', 'j', 'k', 'l', ';'},
+ {'a', 's', 'd', 'f', '6', '7', '8', '0'}, 
+ {'w', 'e', 'r', 't', 'z', 'x', '=', '9'}, 
+ {'b', 'g', 'q', 'v', 'y', 'u', 'i', 'o'}, 
+ {'1', 'p', '/', 'c', 'n', 'm', '.', '-'}, 
+ {'5', '2', '3', '4', 'j', 'k', 'l', ';'}, 
 }
+
+Install:andUse("WindowHalfsAndThirds", {
+                  config = { use_frame_correctness = true}
+})
 
 hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
 
@@ -120,22 +124,44 @@ if machine == "codelahoma" then
   hotkey.bind(hyper, ";", appLauncher('Spotify'))
 end
 
-modal = hs.hotkey.modal.new(hyper, "n", " Going Modal! ")
+menuModal = hs.hotkey.modal.new(hyper, "n")
+menuModal.alertUID = ""
+menuModal.alertText = [[
+Modal Menu
+----------
+a - Activity Monitor
+d - Dash
+e - Excel
+j - JIRA
+p - Postman
+s - Spark
+v - Paste
+
+ESC - exit
+]]
+
+function menuModal:entered()
+   self.alertUID = hs.alert(self.alertText, "forever")
+end
+
+function menuModal:exited()
+   hs.alert.closeSpecific(self.alertUID)
+end
 
 -- in this example, Ctrl+Shift+h triggers this keybinding mode, which will allow us to use the ones defined below. A nice touch for usability: This also offers to show a message.
 
 -- I recommend having this one at all times: Bind the escape key to exit keybinding mode:
-modal:bind("", "escape", " not this time...", nil, function() modal:exit() end, nil)
+menuModal:bind("", "escape", " not this time...", nil, function() menuModal:exit() end, nil)
 
 -- An example binding I find useful: Type today's date in ISO format.
--- modal:bind("", "d", "today", nil, function() hs.eventtap.keyStrokes(os.date("%F")) modal:exit() end, nil)
-modal:bind("", "a", "activity", nil, function() application.launchOrFocus("Activity Monitor") modal:exit() end, nil)
-modal:bind("", "d", "dash", nil, function() application.launchOrFocus("Dash") modal:exit() end, nil)
-modal:bind("", "e", "excel", nil, function() application.launchOrFocus("Microsoft Excel") modal:exit() end, nil)
-modal:bind("", "j", "JIRA", nil, function() application.launchOrFocus("Summit Jira") modal:exit() end, nil)
-modal:bind("", "p", "postman", nil, function() application.launchOrFocus("Postman") modal:exit() end, nil)
-modal:bind("", "s", "spark", nil, function() application.launchOrFocus("Spark") modal:exit() end, nil)
-modal:bind("", "v", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") modal:exit() end, nil)
+-- menuModal:bind("", "d", "today", nil, function() hs.eventtap.keyStrokes(os.date("%F")) menuModal:exit() end, nil)
+menuModal:bind("", "a", "activity", nil, function() application.launchOrFocus("Activity Monitor") menuModal:exit() end, nil)
+menuModal:bind("", "d", "dash", nil, function() application.launchOrFocus("Dash") menuModal:exit() end, nil)
+menuModal:bind("", "e", "excel", nil, function() application.launchOrFocus("Microsoft Excel") menuModal:exit() end, nil)
+menuModal:bind("", "j", "JIRA", nil, function() application.launchOrFocus("Summit Jira") menuModal:exit() end, nil)
+menuModal:bind("", "p", "postman", nil, function() application.launchOrFocus("Postman") menuModal:exit() end, nil)
+menuModal:bind("", "s", "spark", nil, function() application.launchOrFocus("Spark") menuModal:exit() end, nil)
+menuModal:bind("", "v", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") menuModal:exit() end, nil)
 
 caffeine = hs.menubar.new()
 hs.caffeinate.set("system", true, false)
