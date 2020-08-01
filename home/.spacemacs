@@ -625,6 +625,18 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; (add-to-list 'package-pinned-packages '(spaceline . "melpa-stable"))
   ;; (add-to-list 'package-pinned-packages '(spaceline-all-the-icons . "melpa-stable"))
   ;; (add-to-list 'package-pinned-packages '(all-the-icons . "melpa-stable"))
+  (defun markdown-html (buffer)
+    (princ (with-current-buffer buffer
+             (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
+           (current-buffer)))
+
+(defun markdown-preview-like-god ()
+  (interactive)
+  (impatient-mode 1)
+  (setq imp-user-filter #'markdown-html)
+  (cl-incf imp-last-state)
+  (imp--notify-clients))
+
   (defun rk-after-jump
       (evil-scroll-line-to-center)
     (evil-first-non-blank)
