@@ -140,7 +140,7 @@ This function should only modify configuration layer settings."
      ;;       dash-docs-docset-newpath "~/.docsets")
 
      (wakatime :variables
-               wakatime-api-key "b35ed1bd-7a53-4581-ba6c-ce295fbd7e30"
+               wakatime-api-key "c3241a98-9066-4792-87de-163047db98b3"
                wakatime-cli-path "/Users/rodk/.pyenv/shims/wakatime")
 
      rk-layout
