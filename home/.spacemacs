@@ -84,6 +84,7 @@ This function should only modify configuration layer settings."
      (colors :variables
              colors-colorize-identifiers 'variables)
      emoji
+     slack
      theming
      ibuffer
      (spell-checking :variables
@@ -895,7 +896,7 @@ you should place your code here."
     (flycheck-select-checker 'python-flake8))
 
 
-  ;; (load "~/Dropbox/emacs/.slack_auth.el")
+  (load "~/Dropbox/emacs/.slack_auth.el")
 
   (setq projectile-enable-caching t)
   (set-face-attribute 'mode-line nil :height 1.08)
@@ -932,42 +933,42 @@ you should place your code here."
   (setq flymd-browser-open-function 'my-flymd-browser-function)
 
 
-  ;; (with-eval-after-load 'slack
-  ;;   ;; (add-hook 'slack-mode-hook #'emojify-mode)
+  (with-eval-after-load 'slack
+    (add-hook 'slack-mode-hook #'emojify-mode)
 
-  ;;   (with-eval-after-load 'tracking
-  ;;     (define-key tracking-mode-map [f11]
-  ;;       #'tracking-next-buffer))
+    (with-eval-after-load 'tracking
+      (define-key tracking-mode-map [f11]
+        #'tracking-next-buffer))
 
-  ;;   (setq slack-buffer-create-on-notify t)
-  ;;   ;; (defun slack-user-status (id team) "")
+    (setq slack-buffer-create-on-notify t)
+    ;; (defun slack-user-status (id team) "")
 
-  ;;   ;; (defun endless/-author-at (pos)
-  ;;   ;;   (replace-regexp-in-string
-  ;;   ;;    (rx "\n" (* anything)) ""
-  ;;   ;;    (or (get-text-property pos 'lui-raw-text) "")))
+    ;; (defun endless/-author-at (pos)
+    ;;   (replace-regexp-in-string
+    ;;    (rx "\n" (* anything)) ""
+    ;;    (or (get-text-property pos 'lui-raw-text) "")))
 
-  ;;   ;; (defun endless/-remove-slack-author ()
-  ;;   ;;   "Remove author here if it's the same as above."
-  ;;   ;;   (let ((author-here (endless/-author-at (point)))
-  ;;   ;;         (author-above (endless/-author-at (1- (point)))))
-  ;;   ;;     (when (and (looking-at-p (regexp-quote author-here))
-  ;;   ;;                (equal author-here author-above))
-  ;;   ;;       (delete-region (1- (point))
-  ;;   ;;                      (1+ (line-end-position))))))
+    ;; (defun endless/-remove-slack-author ()
+    ;;   "Remove author here if it's the same as above."
+    ;;   (let ((author-here (endless/-author-at (point)))
+    ;;         (author-above (endless/-author-at (1- (point)))))
+    ;;     (when (and (looking-at-p (regexp-quote author-here))
+    ;;                (equal author-here author-above))
+    ;;       (delete-region (1- (point))
+    ;;                      (1+ (line-end-position))))))
 
-  ;;   ;; (defun endless/remove-slack-author-hook ()
-  ;;   ;;   "For usage in `lui-pre-output-hook'."
-  ;;   ;;   (when (derived-mode-p 'slack-mode)
-  ;;   ;;     (save-excursion
-  ;;   ;;       (goto-char (point-min))
-  ;;   ;;       (save-restriction
-  ;;   ;;         (widen)
-  ;;   ;;         (endless/-remove-slack-author)))))
+    ;; (defun endless/remove-slack-author-hook ()
+    ;;   "For usage in `lui-pre-output-hook'."
+    ;;   (when (derived-mode-p 'slack-mode)
+    ;;     (save-excursion
+    ;;       (goto-char (point-min))
+    ;;       (save-restriction
+    ;;         (widen)
+    ;;         (endless/-remove-slack-author)))))
 
-  ;;   ;; (add-hook 'lui-pre-output-hook
-  ;;   ;;           #'endless/remove-slack-author-hook)
-  ;;   )
+    ;; (add-hook 'lui-pre-output-hook
+    ;;           #'endless/remove-slack-author-hook)
+    )
 
   ;; (defun lsp-set-cfg ()
   ;;   (let ((lsp-cfg '(:pyls (:configurationSources ("flake8")))))
