@@ -178,13 +178,13 @@ if machine == "codelahoma-mbp" then
   hotkey.bind(hyper, "i", appLauncher('iTerm'))
   hotkey.bind(hyper, "j", appLauncher('Emacs.app'))
   hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
-  hotkey.bind(hyper, "m", appLauncher('Spark'))
   hotkey.bind(hyper, "o", appLauncher('Slack'))
   hotkey.bind(hyper, "r", hs.reload)
+  hotkey.bind(hyper, "s", appLauncher('Spark'))
   hotkey.bind(hyper, "v", pasteLauncher())
   hotkey.bind(hyper, "0", centerOnMainDisplay)
   hotkey.bind(hyper, "1", appLauncher('1Password 7'))
-  hotkey.bind(hyper, ";", appLauncher('Spotify'))
+  hotkey.bind(hyper, "u", appLauncher('Spotify'))
 end
 #+end_src
 
