@@ -23,6 +23,9 @@ spoon.SpoonInstall.use_syncinstall = true
 
 Install=spoon.SpoonInstall
 
+menuHammer = hs.loadSpoon("MenuHammer")
+menuHammer:enter()
+
 Install:andUse("WindowGrid",
                 {
                   config = { gridGeometries = { { "8x5", "3840x2160"}, { "6x4" } } },
@@ -139,6 +142,7 @@ v - Paste
 
 ESC - exit
 ]]
+
 
 function menuModal:entered()
    self.alertUID = hs.alert(self.alertText, "forever")
