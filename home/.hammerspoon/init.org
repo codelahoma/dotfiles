@@ -76,6 +76,13 @@ This is just a shortcut to make the declarations below look more readable, i.e. 
   Install=spoon.SpoonInstall
 #+end_src
 
+Load MenuHammer directly because it's not in a repository yet.
+
+#+begin_src lua
+  menuHammer = hs.loadSpoon("MenuHammer")
+  menuHammer:enter()
+#+end_src
+
 * Window and Screen Manipulation
 
 The [[http://www.hammerspoon.org/Spoons/WindowGrid.html][WindowGrid]] spoon sets up a key binding (=Hyper-8= here) to overlay a grid that allows resizing windows by specifying their opposite corners.
@@ -233,6 +240,7 @@ end
 
   ESC - exit
   ]]
+
 
   function menuModal:entered()
      self.alertUID = hs.alert(self.alertText, "forever")
