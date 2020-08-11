@@ -42,10 +42,6 @@ hs.grid.HINTS = {
  {'5', '2', '3', '4', 'j', 'k', 'l', ';'}, 
 }
 
-Install:andUse("WindowHalfsAndThirds", {
-                  config = { use_frame_correctness = true}
-})
-
 hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
 
 Install:andUse("KSheet", {
