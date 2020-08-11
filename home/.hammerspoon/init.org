@@ -106,13 +106,6 @@ The [[http://www.hammerspoon.org/Spoons/WindowGrid.html][WindowGrid]] spoon sets
 
 #+end_src
 
-[[http://www.hammerspoon.org/Spoons/WindowHalfsAndThirds.html][WindowHalfsandThirds]] provides quick movement/resizing to halfs and thirds, as well as undo, center, grow, and shrink.
-
-#+begin_src lua
-  Install:andUse("WindowHalfsAndThirds", {
-                    config = { use_frame_correctness = true}
-  })
-#+end_src
 
 * Global Key Bindings
 
