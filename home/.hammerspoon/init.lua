@@ -42,6 +42,43 @@ hs.grid.HINTS = {
  {'5', '2', '3', '4', 'j', 'k', 'l', ';'}, 
 }
 
+-- DefaultBrowser = "com.brave.Browser.dev"
+DefaultBrowser = "com.google.Chrome"
+JiraApp = "org.epichrome.eng.SummitJIRA"
+-- WikiApp = "org.epichrome.eng.Wiki"
+-- CollabApp = DefaultBrowser
+-- SmcaApp = DefaultBrowser
+-- OpsGenieApp = DefaultBrowser
+AWSConsoleApp = "org.epichrome.eng.AWSConsole"
+
+Install:andUse("URLDispatcher",
+               {
+                 config = {
+                   url_patterns = {
+                     { "https?://summitesp.atlassian.net",          JiraApp },
+                     -- { "https?://issue.swisscom.com",         JiraApp },
+                     -- { "https?://jira.swisscom.com",          JiraApp },
+                     -- { "https?://wiki.swisscom.com",          WikiApp },
+                     -- { "https?://collaboration.swisscom.com", CollabApp },
+                     -- { "https?://smca.swisscom.com",          SmcaApp },
+                     -- { "https?://app.opsgenie.com",           OpsGenieApp },
+                     -- { "https?://app.eu.opsgenie.com",        OpsGenieApp },
+                     -- { "msteams:",                            "com.microsoft.teams" }
+                   },
+                   url_redir_decoders = {
+                   --   { "Office 365 safelinks check",
+                   --     "https://eur03.safelinks.protection.outlook.com/(.*)\\?url=(.-)&.*",
+                   --     "%2" },
+                     { "MS Teams URLs",
+                       "(https://teams.microsoft.com.*)", "msteams:%1", true }
+                   },
+                   default_handler = DefaultBrowser
+                 },
+                 start = true,
+                 --                   loglevel = 'debug'
+               }
+)
+
 hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
 
 Install:andUse("KSheet", {
@@ -129,6 +166,8 @@ menuModal.alertText = [[
 Modal Menu
 ----------
 a - Activity Monitor
+b - Brave Browser Dev
+c - AWS Console
 d - Dash
 e - Excel
 j - JIRA
@@ -156,6 +195,8 @@ menuModal:bind("", "escape", " not this time...", nil, function() menuModal:exit
 -- An example binding I find useful: Type today's date in ISO format.
 -- menuModal:bind("", "d", "today", nil, function() hs.eventtap.keyStrokes(os.date("%F")) menuModal:exit() end, nil)
 menuModal:bind("", "a", "activity", nil, function() application.launchOrFocus("Activity Monitor") menuModal:exit() end, nil)
+menuModal:bind("", "b", "Brave Browser Dev", nil, function() application.launchOrFocus("Brave Browser Dev") menuModal:exit() end, nil)
+menuModal:bind("", "c", "AWS Console", nil, function() application.launchOrFocus("AWS Console") menuModal:exit() end, nil)
 menuModal:bind("", "d", "dash", nil, function() application.launchOrFocus("Dash") menuModal:exit() end, nil)
 menuModal:bind("", "e", "excel", nil, function() application.launchOrFocus("Microsoft Excel") menuModal:exit() end, nil)
 menuModal:bind("", "j", "JIRA", nil, function() application.launchOrFocus("Summit Jira") menuModal:exit() end, nil)

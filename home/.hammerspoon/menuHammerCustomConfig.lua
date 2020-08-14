@@ -9,7 +9,7 @@ menuShowInFullscreen = false
 
 -- If enabled, a menu bar item will appear that shows what menu is currently being displayed or
 -- "idle" if no menu is open.
-showMenuBarItem = false
+showMenuBarItem = true
 
 -- The number of seconds that a hotkey alert will stay on screen.
 -- 0 = alerts are disabled.
@@ -36,7 +36,7 @@ askpassLocation = "/usr/local/bin/ssh-askpass"
 menuNumberOfColumns = 5
 
 -- The minimum number of rows to show in menus
-menuMinNumberOfRows = 4
+menuMinNumberOfRows = 3
 
 -- The height of menu rows in pixels
 menuRowHeight = 20
@@ -47,12 +47,20 @@ menuOuterPadding = 50
 ----------------------------------------------------------------------------------------------------
 ----------------------------------------- Font options ---------------------------------------------
 ----------------------------------------------------------------------------------------------------
-logger.i("setting up font options")
 -- The font to apply to menu items.
-menuItemFont = "Hack"
+menuItemFont = "Menlo"
 
 -- The font size to apply to menu items.
 menuItemFontSize = 16
+
+if hs.screen.mainScreen():currentMode().w > 2000 then
+  menuItemFontSize = 24
+  menuRowHeight = 50
+  menuMinNumberOfRows = 3
+  menuNumberOfColumns = 8
+else
+  menuItemFontSize = 16
+end
 
 -- The text alignment to apply to menu items.
 menuItemTextAlign = "left"
@@ -118,7 +126,7 @@ menuItemColors = {
 -- Key bindings
 
 -- The hotkey that will enable/disable MenuHammer
-menuHammerToggleKey = {{"cmd", "shift", "ctrl"}, "Q"}
+menuHammerToggleKey = {{ "alt", "cmd", "ctrl" }, "Q"}
 
 -- Menu Prefixes
 menuItemPrefix = {
@@ -140,38 +148,35 @@ menuKeyItemSeparator = ": "
 ----------------------------------------------------------------------------------------------------
 
 -- Menus
-local mainMenu = "mainMenu"
+local mainMenu = "Main Menu"
 
 -- Help menu
-local helpMenu = "helpMenu"
+local helpMenu = "Help Menu"
 
 -- Applications Menus
-local applicationMenu = "applicationMenu"
-local utilitiesMenu = "utilitiesMenu"
+local applicationMenu = "Application Menu"
+local utilitiesMenu = "Utilities Menu"
 
 -- Browser menus
-local browserMenu = "browserMenu"
+local browserMenu = "Browser Menu"
 
 -- Documents menu
-local documentsMenu = "documentsMenu"
+local documentsMenu = "Documents Menu"
 
 -- Finder menu
-local finderMenu = "finderMenu"
-
--- Games menu
-local gamesMenu = "gamesMenu"
+local finderMenu = "Finder Menu"
 
 -- Hammerspoon menu
-local hammerspoonMenu = "hammerspoonMenu"
+local hammerspoonMenu = "Hammerspoon Menu"
 
 -- Help menu
-local helpMenu = "helpMenu"
+local helpMenu = "Help Menu"
 
 -- Layout menu
-local layoutMenu = "layoutMenu"
+local layoutMenu = "Layout Menu"
 
 -- Media menu
-local mediaMenu = "mediaMenu"
+local mediaMenu = "Media Menu"
 
 -- Resolution menu
 local resolutionMenu = "resolutionMenu"
@@ -191,6 +196,9 @@ local toggleMenu = "toggleMenu"
 -- Window menu
 local resizeMenu = "resizeMenu"
 
+-- constants shortcuts
+local action = cons.act
+local entry_type = cons.cat
 menuHammerMenuList = {
 
     ------------------------------------------------------------------------------------------------
@@ -200,50 +208,68 @@ menuHammerMenuList = {
         parentMenu = nil,
         menuHotkey = {{'alt', 'cmd', 'shift', 'ctrl'}, 'space'},
         menuItems = {
-            {cons.cat.submenu, 'shift', '/', 'Help', {
-                {cons.act.menu, helpMenu}
+            {entry_type.submenu, 'shift', '/', 'Help', {
+                {action.menu, helpMenu}
             }},
-            {cons.cat.submenu, '', 'A', 'Applications', {
-                {cons.act.menu, applicationMenu}
+            {entry_type.submenu, '', 'A', 'Applications', {
+                {action.menu, applicationMenu}
             }},
-            {cons.cat.submenu, '', 'B', 'Browser', {
-                {cons.act.menu, browserMenu}
+            {entry_type.submenu, '', 'B', 'Browser', {
+                {action.menu, browserMenu}
             }},
-            {cons.cat.submenu, '', 'D', 'Documents', {
-                 {cons.act.menu, documentsMenu}
+            {entry_type.submenu, '', 'D', 'Documents', {
+                 {action.menu, documentsMenu}
             }},
-            {cons.cat.submenu, '', 'F', 'Finder', {
-                {cons.act.menu, finderMenu}
+            {entry_type.submenu, '', 'F', 'Finder', {
+                {action.menu, finderMenu}
             }},
-            {cons.cat.submenu, '', 'G', 'Games', {
-                 {cons.act.menu, gamesMenu}
+            {entry_type.submenu, '', 'H', 'Hammerspoon', {
+                {action.menu, hammerspoonMenu}
             }},
-            {cons.cat.submenu, '', 'H', 'Hammerspoon', {
-                {cons.act.menu, hammerspoonMenu}
+            {entry_type.action, '', 'I', "iTerm", {
+               {action.launcher, 'iTerm'}
             }},
-            {cons.cat.submenu, '', 'L', 'Layouts', {
-                 {cons.act.menu, layoutMenu}
+            {entry_type.action, '', 'J', "Emacs", {
+               {action.launcher, '/Applications/Emacs.app'}
             }},
-            {cons.cat.submenu, '', 'M', 'Media Controls', {
-                {cons.act.menu, mediaMenu}
+            {entry_type.action, '', 'K', "Chrome", {
+               {action.launcher, 'com.google.chrome'}
             }},
-            {cons.cat.submenu, '', 'R', 'Resolution', {
-                {cons.act.menu, resolutionMenu}
+            {entry_type.action, '', 'O', "Slack", {
+               {action.launcher, 'Slack'}
             }},
-            {cons.cat.submenu, '', 'S', 'System Preferences', {
-                {cons.act.menu, systemMenu}
+            {entry_type.action, '', ';', "Spotify", {
+               {action.launcher, 'Spotify'}
             }},
-            {cons.cat.submenu, '', 'T', 'Toggles', {
-                 {cons.act.menu, toggleMenu}
+            {entry_type.submenu, '', 'L', 'Layouts', {
+                 {action.menu, layoutMenu}
             }},
-            {cons.cat.submenu, '', 'X', 'Text', {
-                 {cons.act.menu, textMenu}
+            {entry_type.action, '', 'M', "Microsoft Edge", {
+               {action.launcher, 'Microsoft Edge'}
             }},
-            {cons.cat.submenu, '', '/', 'Scripts', {
-                 {cons.act.menu, scriptsMenu}
+            {entry_type.submenu, 'shift', 'M', 'Media Controls', {
+                {action.menu, mediaMenu}
             }},
-            {cons.cat.action, '', 'space', "Spotlight", {
-                {cons.act.keycombo, {'cmd'}, 'space'}
+            {entry_type.submenu, '', 'R', 'Resolution', {
+                {action.menu, resolutionMenu}
+            }},
+            {entry_type.action, '', 'S', "Skype for Business", {
+               {action.launcher, 'Skype for Business'}
+            }},
+            {entry_type.submenu, 'shift', 'S', 'System Preferences', {
+                {action.menu, systemMenu}
+            }},
+            {entry_type.submenu, '', 'T', 'Toggles', {
+                 {action.menu, toggleMenu}
+            }},
+            {entry_type.submenu, '', 'X', 'Text', {
+                 {action.menu, textMenu}
+            }},
+            {entry_type.submenu, '', '/', 'Scripts', {
+                 {action.menu, scriptsMenu}
+            }},
+            {entry_type.action, '', 'space', "Alfred 3", {
+                {action.launcher, 'Alfred 3'}
             }},
         }
     },
@@ -251,7 +277,7 @@ menuHammerMenuList = {
     ------------------------------------------------------------------------------------------------
     -- Help Menu
     ------------------------------------------------------------------------------------------------
-    helpMenu = {
+    [helpMenu] = {
         parentMenu = mainMenu,
         menuHotkey = nil,
         menuItems = {
@@ -271,36 +297,36 @@ menuHammerMenuList = {
     ------------------------------------------------------------------------------------------------
     -- Application Menu
     ------------------------------------------------------------------------------------------------
-    applicationMenu = {
+    [applicationMenu] = {
         parentMenu = mainMenu,
         menuHotkey = {{'cmd', 'alt', 'ctrl'}, 'a'},
         menuItems = {
+            {cons.cat.action, '', 'E', "Finder", {
+              {cons.act.launcher, 'Finder'}
+            }},
+            {cons.cat.action, '', 'I', "iTerm", {
+               {cons.act.launcher, 'iTerm'}
+            }},
             {cons.cat.action, '', 'J', "Emacs", {
-                {cons.act.launcher, 'Emacs'}
+               {cons.act.launcher, '/Applications/Emacs.app'}
             }},
             {cons.cat.action, '', 'K', "Chrome", {
                 {cons.act.launcher, 'com.google.chrome'}
             }},
-            {cons.cat.action, '', 'E', "Finder", {
-                {cons.act.launcher, 'Finder'}
+            {cons.cat.action, '', 'O', "Slack", {
+               {cons.act.launcher, 'Slack'}
             }},
-            {cons.cat.action, '', 'H', "Firefox", {
-                {cons.act.launcher, 'Firefox'}
+            {cons.cat.action, '', 'M', "Microsoft Edge", {
+                {cons.act.launcher, 'Microsoft Edge'}
             }},
-            {cons.cat.action, '', 'I', "iTerm", {
-                {cons.act.launcher, 'iTerm'}
+            {cons.cat.action, '', 'N', "Messages", {
+               {cons.act.launcher, 'Messages'}
             }},
-            {cons.cat.action, '', 'L', "Sublime Text", {
-                {cons.act.launcher, 'Sublime Text'}
+            {cons.cat.action, '', 'S', "Skype for Business", {
+                {cons.act.launcher, 'Skype for Business'}
             }},
-            {cons.cat.action, '', 'M', "MacVim", {
-                {cons.act.launcher, 'MacVim'}
-            }},
-            {cons.cat.action, '', 'S', "Safari", {
-                {cons.act.launcher, 'Safari'}
-            }},
-            {cons.cat.action, '', 'T', "Terminal", {
-                {cons.act.launcher, 'Terminal'}
+            {cons.cat.action, '', ';', "Spotify", {
+                {cons.act.launcher, 'Spotify'}
             }},
             {cons.cat.submenu, '', 'U', 'Utilities', {
                 {cons.act.menu, utilitiesMenu}
@@ -314,7 +340,7 @@ menuHammerMenuList = {
     ------------------------------------------------------------------------------------------------
     -- Utilities Menu
     ------------------------------------------------------------------------------------------------
-    utilitiesMenu = {
+    [utilitiesMenu] = {
         parentMenu = applicationMenu,
         menuHotkey = nil,
         menuItems = {
@@ -345,7 +371,7 @@ menuHammerMenuList = {
     ------------------------------------------------------------------------------------------------
     -- Browser Menu
     ------------------------------------------------------------------------------------------------
-    browserMenu = {
+    [browserMenu] = {
         parentMenu = mainMenu,
         meunHotkey = nil,
         menuItems = {
@@ -421,7 +447,7 @@ menuHammerMenuList = {
     ------------------------------------------------------------------------------------------------
     -- Finder Menu
     ------------------------------------------------------------------------------------------------
-    finderMenu = {
+    [finderMenu] = {
         parentMenu = mainMenu,
         menuHotkey = nil,
         menuItems = {
@@ -492,26 +518,11 @@ menuHammerMenuList = {
         }
     },
 
-    ------------------------------------------------------------------------------------------------
-    -- Games Menu
-    ------------------------------------------------------------------------------------------------
-    [gamesMenu] = {
-        parentMenu = applicationMenu,
-        menuHotkey = nil,
-        menuItems = {
-            {cons.cat.action, '', 'G', "GOG Galaxy", {
-                 {cons.act.launcher, 'GOG Galaxy'}
-            }},
-            {cons.cat.action, '', 'S', "Steam", {
-                 {cons.act.launcher, 'Steam'}
-            }},
-        }
-    },
 
     ------------------------------------------------------------------------------------------------
     -- Hammerspoon Menu
     ------------------------------------------------------------------------------------------------
-    hammerspoonMenu = {
+    [hammerspoonMenu] = {
         parentMenu = mainMenu,
         menuHotkey = nil,
         menuItems = {
@@ -541,23 +552,50 @@ menuHammerMenuList = {
         parentMenu = mainMenu,
         menuHotkey = nil,
         menuItems = {
-            {cons.cat.action, '', 'E', "Split Safari/Music", {
-                 {cons.act.func, function()
-                      -- See Hammerspoon layout documentation for more info on this
-                      local mainScreen = hs.screen{x=0,y=0}
-                      hs.layout.apply({
-                              {"Safari", nil, mainScreen, hs.layout.left50, nil, nil},
-                              {"Music", nil, mainScreen, hs.layout.right50, nil, nil},
-                      })
-                 end }
-            }},
+          {cons.cat.action, '', 'E', "Every Day Carry", {
+             {cons.act.func, function()
+                -- See Hammerspoon layout documentation for more info on this
+                local mainScreen = hs.screen{x=0,y=0}
+                local nw60 = hs.geometry.new(0, 0, 0.25, 0.6)
+                local sw40 = hs.geometry.new(0, 0.6, 0.25, 0.4)
+                local mid50 = hs.geometry.new(0.25, 0, 0.5, 1)
+                applications = {"Google Chrome", "Microsoft Edge", "Slack", "iTerm2", "/Applications/Emacs.app"}
+                for _, app in ipairs(applications) do
+                  hs.application.launchOrFocus(app)
+                end
+                local layout = {
+                  {"Google Chrome", nil, mainScreen, nw60, nil, nil},
+                  {"Microsoft Edge", nil, mainScreen, mid50, nil, nil},
+                  {"Slack", nil, mainScreen, sw40, nil, nil},
+                  {"Emacs", nil, mainScreen, mid50, nil, nil},
+                  {"iTerm2", nil, mainScreen, hs.layout.right25, nil, nil},
+                }
+                hs.layout.apply(layout)
+             end }
+          }},
+          {cons.cat.action, '', 'D', "Dev Ops", {
+             {cons.act.func, function()
+                -- See Hammerspoon layout documentation for more info on this
+                local mainScreen = hs.screen{x=0,y=0}
+                local nw60 = hs.geometry.new(0, 0, 0.25, 0.6)
+                local sw40 = hs.geometry.new(0, 0.6, 0.25, 0.4)
+                local mid50 = hs.geometry.new(0.25, 0, 0.5, 1)
+                hs.layout.apply({
+                    {"Google Chrome", nil, mainScreen, nw60, nil, nil},
+                    {"Microsoft Edge", nil, mainScreen, nw60, nil, nil},
+                    {"Slack", nil, mainScreen, sw40, nil, nil},
+                    {"Emacs", nil, mainScreen, mid50, nil, nil},
+                    {"iTerm2", nil, mainScreen, hs.layout.right25, nil, nil},
+                })
+             end }
+          }},
         }
     },
 
     ------------------------------------------------------------------------------------------------
     -- Media Menu
     ------------------------------------------------------------------------------------------------
-    mediaMenu = {
+    [mediaMenu] = {
         parentMenu = mainMenu,
         menuHotkey = nil,
         menuItems = {
@@ -592,19 +630,9 @@ menuHammerMenuList = {
     },
 
     ------------------------------------------------------------------------------------------------
-    -- Open Files Menu
-    ------------------------------------------------------------------------------------------------
-    openFilesMenu = {
-        parentMenu = mainMenu,
-        menuHotkey = nil,
-        menuItems = {
-        }
-    },
-
-    ------------------------------------------------------------------------------------------------
     -- Resolution Menu
     ------------------------------------------------------------------------------------------------
-    resolutionMenu = {
+    [resolutionMenu] = {
         parentMenu = mainMenu,
         menuHotkey = nil,
         menuItems = resolutionMenuItems
@@ -623,7 +651,7 @@ menuHammerMenuList = {
     ------------------------------------------------------------------------------------------------
     -- System Menu
     ------------------------------------------------------------------------------------------------
-    systemMenu = {
+    [systemMenu] = {
         parentMenu = mainMenu,
         menuHotkey = nil,
         menuItems = {
