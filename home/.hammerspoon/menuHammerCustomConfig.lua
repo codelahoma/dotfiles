@@ -3,9 +3,24 @@
 --- You should make any changes there and regenerate it from Emacs org-mode using C-c C-v t
 
 --- Local Variables
+local action = cons.act
+local entry_type = cons.cat
 -- Main Menu
 local mainMenu = "Main Menu"
-logger = hs.logger.new('menuHammer')
+local helpMenu = "Help Menu"
+local applicationMenu = "Application Menu"
+local utilitiesMenu = "Utilities Menu"
+local browserMenu = "Browser Menu"
+local documentsMenu = "Documents Menu"
+local finderMenu = "Finder Menu"
+local hammerspoonMenu = "Hammerspoon Menu"
+local layoutMenu = "Layout Menu"
+local mediaMenu = "Media Menu"
+local resolutionMenu = "Resolution Menu"
+local systemMenu = "System Menu"
+local textMenu = "Text Menu"
+local toggleMenu = "Toggle Menu"
+local logger = hs.logger.new('menuHammer')
 
 -- Preferences
 menuShowInFullscreen = true
@@ -136,588 +151,475 @@ end
 
 
 -- Menu Definitions
-
--- Help menu
-local helpMenu = "Help Menu"
-
--- Applications Menus
-local applicationMenu = "Application Menu"
-local utilitiesMenu = "Utilities Menu"
-
--- Browser menus
-local browserMenu = "Browser Menu"
-
--- Documents menu
-local documentsMenu = "Documents Menu"
-
--- Finder menu
-local finderMenu = "Finder Menu"
-
--- Hammerspoon menu
-local hammerspoonMenu = "Hammerspoon Menu"
-
--- Help menu
-local helpMenu = "Help Menu"
-
--- Layout menu
-local layoutMenu = "Layout Menu"
-
--- Media menu
-local mediaMenu = "Media Menu"
-
--- Resolution menu
-local resolutionMenu = "resolutionMenu"
-
--- Scripts menu
-local scriptsMenu = "scriptsMenu"
-
--- System menus
-local systemMenu = "systemMenu"
-
--- Text menu
-local textMenu = "textMenu"
-
--- Toggles menu
-local toggleMenu = "toggleMenu"
-
--- Window menu
-local resizeMenu = "resizeMenu"
-
--- constants shortcuts
-local action = cons.act
-local entry_type = cons.cat
 menuHammerMenuList = {
-
-    ------------------------------------------------------------------------------------------------
-    -- Main Menu
-    ------------------------------------------------------------------------------------------------
-    [mainMenu] = {
-        parentMenu = nil,
-        menuHotkey = {{'alt', 'cmd', 'shift', 'ctrl'}, 'space'},
-        menuItems = {
-            {entry_type.submenu, 'shift', '/', 'Help', {
-                {action.menu, helpMenu}
-            }},
-            {entry_type.submenu, '', 'A', 'Applications', {
-                {action.menu, applicationMenu}
-            }},
-            {entry_type.submenu, '', 'B', 'Browser', {
-                {action.menu, browserMenu}
-            }},
-            {entry_type.submenu, '', 'D', 'Documents', {
-                 {action.menu, documentsMenu}
-            }},
-            {entry_type.submenu, '', 'F', 'Finder', {
-                {action.menu, finderMenu}
-            }},
-            {entry_type.submenu, '', 'H', 'Hammerspoon', {
-                {action.menu, hammerspoonMenu}
-            }},
-            {entry_type.action, '', 'I', "iTerm", {
-               {action.launcher, 'iTerm'}
-            }},
-            {entry_type.action, '', 'J', "Emacs", {
-               {action.launcher, '/Applications/Emacs.app'}
-            }},
-            {entry_type.action, '', 'K', "Chrome", {
-               {action.launcher, 'com.google.chrome'}
-            }},
-            {entry_type.action, '', 'O', "Slack", {
-               {action.launcher, 'Slack'}
-            }},
-            {entry_type.action, '', ';', "Spotify", {
-               {action.launcher, 'Spotify'}
-            }},
-            {entry_type.submenu, '', 'L', 'Layouts', {
-                 {action.menu, layoutMenu}
-            }},
-            {entry_type.action, '', 'M', "Microsoft Edge", {
-               {action.launcher, 'Microsoft Edge'}
-            }},
-            {entry_type.submenu, 'shift', 'M', 'Media Controls', {
-                {action.menu, mediaMenu}
-            }},
-            {entry_type.submenu, '', 'R', 'Resolution', {
-                {action.menu, resolutionMenu}
-            }},
-            {entry_type.action, '', 'S', "Skype for Business", {
-               {action.launcher, 'Skype for Business'}
-            }},
-            {entry_type.submenu, 'shift', 'S', 'System Preferences', {
-                {action.menu, systemMenu}
-            }},
-            {entry_type.submenu, '', 'T', 'Toggles', {
-                 {action.menu, toggleMenu}
-            }},
-            {entry_type.submenu, '', 'X', 'Text', {
-                 {action.menu, textMenu}
-            }},
-            {entry_type.submenu, '', '/', 'Scripts', {
-                 {action.menu, scriptsMenu}
-            }},
-            {entry_type.action, '', 'space', "Alfred", {
-               {action.launcher, 'com.runningwithcrayons.Alfred'}
-            }},
-        }
-    },
-
-    ------------------------------------------------------------------------------------------------
-    -- Help Menu
-    ------------------------------------------------------------------------------------------------
-    [helpMenu] = {
-        parentMenu = mainMenu,
-        menuHotkey = nil,
-        menuItems = {
-            {cons.cat.action, '', 'H', "Hammerspoon Manual", {
-                {cons.act.func, function()
-                      hs.doc.hsdocs.forceExternalBrowser(true)
-                      hs.doc.hsdocs.moduleEntitiesInSidebar(true)
-                      hs.doc.hsdocs.help()
-                end }
-            }},
-            {cons.cat.action, '', 'M', "MenuHammer Documentation", {
-                {cons.act.openurl, 'https://github.com/FryJay/MenuHammer'},
-            }},
-        }
-    },
-
-    ------------------------------------------------------------------------------------------------
-    -- Application Menu
-    ------------------------------------------------------------------------------------------------
-    [applicationMenu] = {
-        parentMenu = mainMenu,
-        menuHotkey = {{'cmd', 'alt', 'ctrl'}, 'a'},
-        menuItems = {
-            {cons.cat.action, '', 'E', "Finder", {
+  ------------------------------------------------------------------------------------------------
+  -- Main Menu
+  ------------------------------------------------------------------------------------------------
+  [mainMenu] = {
+      parentMenu = nil,
+      menuHotkey = {{'alt', 'cmd', 'shift', 'ctrl'}, 'space'},
+      menuItems = {
+          {entry_type.submenu, 'shift', '/', 'Help', {
+              {action.menu, helpMenu}
+          }},
+          {entry_type.submenu, '', 'A', 'Applications', {
+              {action.menu, applicationMenu}
+          }},
+          {entry_type.submenu, '', 'B', 'Browser', {
+              {action.menu, browserMenu}
+          }},
+          {entry_type.submenu, '', 'D', 'Documents', {
+               {action.menu, documentsMenu}
+          }},
+          {entry_type.submenu, '', 'F', 'Finder', {
+              {action.menu, finderMenu}
+          }},
+          {entry_type.submenu, '', 'H', 'Hammerspoon', {
+              {action.menu, hammerspoonMenu}
+          }},
+          {entry_type.action, '', 'I', "iTerm", {
+             {action.launcher, 'iTerm'}
+          }},
+          {entry_type.action, '', 'J', "Emacs", {
+             {action.launcher, '/Applications/Emacs.app'}
+          }},
+          {entry_type.action, '', 'K', "Chrome", {
+             {action.launcher, 'com.google.chrome'}
+          }},
+          {entry_type.submenu, '', 'L', 'Layouts', {
+               {action.menu, layoutMenu}
+          }},
+          {entry_type.action, '', 'M', "Microsoft Edge", {
+             {action.launcher, 'Microsoft Edge'}
+          }},
+          {entry_type.submenu, 'shift', 'M', 'Media Controls', {
+              {action.menu, mediaMenu}
+          }},
+          {entry_type.action, '', 'O', "Slack", {
+             {action.launcher, 'Slack'}
+          }},
+          {entry_type.submenu, '', 'R', 'Resolution', {
+              {action.menu, resolutionMenu}
+          }},
+          {entry_type.action, '', 'S', "Skype for Business", {
+             {action.launcher, 'Skype for Business'}
+          }},
+          {entry_type.submenu, 'shift', 'S', 'System Preferences', {
+              {action.menu, systemMenu}
+          }},
+          {entry_type.submenu, '', 'T', 'Toggles', {
+               {action.menu, toggleMenu}
+          }},
+          {entry_type.submenu, '', 'X', 'Text', {
+               {action.menu, textMenu}
+          }},
+          {entry_type.action, '', ';', "Spotify", {
+             {action.launcher, 'Spotify'}
+          }},
+          {entry_type.action, '', 'space', "Alfred", {
+             {action.launcher, 'com.runningwithcrayons.Alfred'}
+          }},
+      }
+  },
+  ------------------------------------------------------------------------------------------------
+  -- Help Menu
+  ------------------------------------------------------------------------------------------------
+  [helpMenu] = {
+      parentMenu = mainMenu,
+      menuHotkey = nil,
+      menuItems = {
+          {cons.cat.action, '', 'H', "Hammerspoon Manual", {
+              {cons.act.func, function()
+                    hs.doc.hsdocs.forceExternalBrowser(true)
+                    hs.doc.hsdocs.moduleEntitiesInSidebar(true)
+                    hs.doc.hsdocs.help()
+              end }
+          }},
+          {cons.cat.action, '', 'M', "MenuHammer Documentation", {
+              {cons.act.openurl, 'https://github.com/FryJay/MenuHammer'},
+          }},
+      }
+  },
+  [applicationMenu] = {
+      parentMenu = mainMenu,
+      menuHotkey = {{'cmd', 'alt', 'ctrl'}, 'a'},
+      menuItems = {
+          {cons.cat.action, '', 'E', "Finder", {
+            {cons.act.launcher, 'Finder'}
+          }},
+          {cons.cat.action, '', 'I', "iTerm", {
+             {cons.act.launcher, 'iTerm'}
+          }},
+          {cons.cat.action, '', 'J', "Emacs", {
+             {cons.act.launcher, '/Applications/Emacs.app'}
+          }},
+          {cons.cat.action, '', 'K', "Chrome", {
+              {cons.act.launcher, 'com.google.chrome'}
+          }},
+          {cons.cat.action, '', 'O', "Slack", {
+             {cons.act.launcher, 'Slack'}
+          }},
+          {cons.cat.action, '', 'M', "Microsoft Edge", {
+              {cons.act.launcher, 'Microsoft Edge'}
+          }},
+          {cons.cat.action, '', 'N', "Messages", {
+             {cons.act.launcher, 'Messages'}
+          }},
+          {cons.cat.action, '', 'S', "Skype for Business", {
+              {cons.act.launcher, 'Skype for Business'}
+          }},
+          {cons.cat.action, '', ';', "Spotify", {
+              {cons.act.launcher, 'Spotify'}
+          }},
+          {cons.cat.submenu, '', 'U', 'Utilities', {
+              {cons.act.menu, utilitiesMenu}
+          }},
+          {cons.cat.action, '', 'X', "Xcode", {
+              {cons.act.launcher, 'Xcode'}
+          }},
+      }
+  },
+  [utilitiesMenu] = {
+      parentMenu = applicationMenu,
+      menuHotkey = nil,
+      menuItems = {
+          {cons.cat.action, '', 'A', "Activity Monitor", {
+              {cons.act.launcher, 'Activity Monitor'}
+          }},
+          {cons.cat.action, 'shift', 'A', "Airport Utility", {
+              {cons.act.launcher, 'Airport Utility'}
+          }},
+          {cons.cat.action, '', 'C', "Console", {
+              {cons.act.launcher, 'Console'}
+          }},
+          {cons.cat.action, '', 'D', "Disk Utility", {
+              {cons.act.launcher, 'Disk Utility'}
+          }},
+          {cons.cat.action, '', 'K', "Keychain Access", {
+              {cons.act.launcher, 'Keychain Access'}
+          }},
+          {cons.cat.action, '', 'S', "System Information", {
+              {cons.act.launcher, 'System Information'}
+          }},
+          {cons.cat.action, '', 'T', "Terminal", {
+              {cons.act.launcher, 'Terminal'}
+          }},
+      }
+  },
+  [browserMenu] = {
+      parentMenu = mainMenu,
+      meunHotkey = nil,
+      menuItems = {
+          {cons.cat.action, '', 'C', "Chrome", {
+              {cons.act.launcher, 'Google Chrome'}
+          }},
+          {cons.cat.action, '', 'F', "Firefox", {
+              {cons.act.launcher, 'Firefox'}
+          }},
+          {cons.cat.action, '', 'M', 'Movie Lookup',
+           {
+               {cons.act.userinput,
+                "movieLookup",
+                "Movie Lookup",
+                "Enter search criteria"},
+               {cons.act.openurl,
+                "http://www.google.com/search?q=@@movieLookup@@%20film%20site:wikipedia.org&meta=&btnI"
+               },
+               {cons.act.openurl,
+                "http://www.google.com/search?q=@@movieLookup@@%20site:imdb.com&meta=&btnI"
+               },
+               {cons.act.openurl,
+                "http://www.google.com/search?q=@@movieLookup@@%20site:rottentomatoes.com&meta=&btnI"
+               },
+          }},
+          {cons.cat.action, '', 'S', "Safari", {
+              {cons.act.launcher, 'Safari'}
+          }},
+      }
+  },
+  [documentsMenu] = {
+      parentMenu = mainMenu,
+      menuHotkey = nil,
+      menuItems = {
+          {cons.cat.action, '', 'C', '.config', {
+               {cons.act.launcher, 'Finder'},
+               {cons.act.keycombo, {'cmd', 'shift'}, 'g'},
+               {cons.act.typetext, '~/.config\n'},
+          }},
+          {cons.cat.action, '', 'D', 'Google Drive (local)', {
+               {cons.act.launcher, 'Finder'},
+               {cons.act.keycombo, {'cmd', 'shift'}, 'g'},
+               {cons.act.typetext, '~/Google Drive\n'},
+          }},
+          {cons.cat.action, 'shift', 'D', "Google Drive (online)", {
+               {cons.act.openurl, "https://drive.google.com/" },
+          }},
+          {cons.cat.action, '', 'I', 'iCloud Drive (local)', {
+               {cons.act.launcher, 'Finder'},
+               {cons.act.keycombo, {'cmd', 'shift'}, 'i'},
+          }},
+          {cons.cat.action, '', 'H', 'Hammerspoon', {
+               {cons.act.launcher, 'Finder'},
+               {cons.act.keycombo, {'cmd', 'shift'}, 'g'},
+               {cons.act.typetext, '~/.hammerspoon\n'},
+          }},
+          {cons.cat.action, '', 'M', 'MenuHammer Custom Config', {
+               {cons.act.openfile, "~/.hammerspoon/menuHammerCustomConfig.lua"},
+          }},
+          {cons.cat.action, 'shift', 'M', 'MenuHammer Default Config', {
+               {cons.act.openfile, "~/.hammerspoon/Spoons/MenuHammer.spoon/MenuConfigDefaults.lua"},
+          }},
+          {cons.cat.action, 'shift', 'H', 'Hammerspoon init.lua', {
+               {cons.act.openfile, "~/.hammerspoon/init.lua"},
+          }},
+      }
+  },
+  [finderMenu] = {
+      parentMenu = mainMenu,
+      menuHotkey = nil,
+      menuItems = {
+          {cons.cat.action, '', 'A', 'Applications Folder', {
+              {cons.act.launcher, 'Finder'},
+              {cons.act.keycombo, {'cmd', 'shift'}, 'a'},
+          }},
+          {cons.cat.action, 'shift', 'A', 'Airdrop', {
+              {cons.act.launcher, 'Finder'},
+              {cons.act.keycombo, {'cmd', 'shift'}, 'r'},
+          }},
+          {cons.cat.action, '', 'C', 'Computer', {
+              {cons.act.launcher, 'Finder'},
+              {cons.act.keycombo, {'cmd', 'shift'}, 'c'},
+          }},
+          {cons.cat.action, '', 'D', 'Desktop', {
+              {cons.act.launcher, 'Finder'},
+              {cons.act.keycombo, {'cmd', 'shift'}, 'd'},
+          }},
+          {cons.cat.action, 'shift', 'D', 'Downloads', {
+              {cons.act.launcher, 'Finder'},
+              {cons.act.keycombo, {'cmd', 'alt'}, 'l'},
+          }},
+          {cons.cat.action, '', 'F', "Finder", {
               {cons.act.launcher, 'Finder'}
-            }},
-            {cons.cat.action, '', 'I', "iTerm", {
-               {cons.act.launcher, 'iTerm'}
-            }},
-            {cons.cat.action, '', 'J', "Emacs", {
-               {cons.act.launcher, '/Applications/Emacs.app'}
-            }},
-            {cons.cat.action, '', 'K', "Chrome", {
-                {cons.act.launcher, 'com.google.chrome'}
-            }},
-            {cons.cat.action, '', 'O', "Slack", {
-               {cons.act.launcher, 'Slack'}
-            }},
-            {cons.cat.action, '', 'M', "Microsoft Edge", {
-                {cons.act.launcher, 'Microsoft Edge'}
-            }},
-            {cons.cat.action, '', 'N', "Messages", {
-               {cons.act.launcher, 'Messages'}
-            }},
-            {cons.cat.action, '', 'S', "Skype for Business", {
-                {cons.act.launcher, 'Skype for Business'}
-            }},
-            {cons.cat.action, '', ';', "Spotify", {
-                {cons.act.launcher, 'Spotify'}
-            }},
-            {cons.cat.submenu, '', 'U', 'Utilities', {
-                {cons.act.menu, utilitiesMenu}
-            }},
-            {cons.cat.action, '', 'X', "Xcode", {
-                {cons.act.launcher, 'Xcode'}
-            }},
-        }
-    },
-
-    ------------------------------------------------------------------------------------------------
-    -- Utilities Menu
-    ------------------------------------------------------------------------------------------------
-    [utilitiesMenu] = {
-        parentMenu = applicationMenu,
-        menuHotkey = nil,
-        menuItems = {
-            {cons.cat.action, '', 'A', "Activity Monitor", {
-                {cons.act.launcher, 'Activity Monitor'}
-            }},
-            {cons.cat.action, 'shift', 'A', "Airport Utility", {
-                {cons.act.launcher, 'Airport Utility'}
-            }},
-            {cons.cat.action, '', 'C', "Console", {
-                {cons.act.launcher, 'Console'}
-            }},
-            {cons.cat.action, '', 'D', "Disk Utility", {
-                {cons.act.launcher, 'Disk Utility'}
-            }},
-            {cons.cat.action, '', 'K', "Keychain Access", {
-                {cons.act.launcher, 'Keychain Access'}
-            }},
-            {cons.cat.action, '', 'S', "System Information", {
-                {cons.act.launcher, 'System Information'}
-            }},
-            {cons.cat.action, '', 'T', "Terminal", {
-                {cons.act.launcher, 'Terminal'}
-            }},
-        }
-    },
-
-    ------------------------------------------------------------------------------------------------
-    -- Browser Menu
-    ------------------------------------------------------------------------------------------------
-    [browserMenu] = {
-        parentMenu = mainMenu,
-        meunHotkey = nil,
-        menuItems = {
-            {cons.cat.action, '', 'C', "Chrome", {
-                {cons.act.launcher, 'Google Chrome'}
-            }},
-            {cons.cat.action, '', 'F', "Firefox", {
-                {cons.act.launcher, 'Firefox'}
-            }},
-            {cons.cat.action, '', 'M', 'Movie Lookup',
-             {
-                 {cons.act.userinput,
-                  "movieLookup",
-                  "Movie Lookup",
-                  "Enter search criteria"},
-                 {cons.act.openurl,
-                  "http://www.google.com/search?q=@@movieLookup@@%20film%20site:wikipedia.org&meta=&btnI"
-                 },
-                 {cons.act.openurl,
-                  "http://www.google.com/search?q=@@movieLookup@@%20site:imdb.com&meta=&btnI"
-                 },
-                 {cons.act.openurl,
-                  "http://www.google.com/search?q=@@movieLookup@@%20site:rottentomatoes.com&meta=&btnI"
-                 },
-            }},
-            {cons.cat.action, '', 'S', "Safari", {
-                {cons.act.launcher, 'Safari'}
-            }},
-        }
-    },
-
-    ------------------------------------------------------------------------------------------------
-    -- Documents Menu
-    ------------------------------------------------------------------------------------------------
-    [documentsMenu] = {
-        parentMenu = mainMenu,
-        menuHotkey = nil,
-        menuItems = {
-            {cons.cat.action, '', 'C', '.config', {
-                 {cons.act.launcher, 'Finder'},
-                 {cons.act.keycombo, {'cmd', 'shift'}, 'g'},
-                 {cons.act.typetext, '~/.config\n'},
-            }},
-            {cons.cat.action, '', 'D', 'Google Drive (local)', {
-                 {cons.act.launcher, 'Finder'},
-                 {cons.act.keycombo, {'cmd', 'shift'}, 'g'},
-                 {cons.act.typetext, '~/Google Drive\n'},
-            }},
-            {cons.cat.action, 'shift', 'D', "Google Drive (online)", {
-                 {cons.act.openurl, "https://drive.google.com/" },
-            }},
-            {cons.cat.action, '', 'I', 'iCloud Drive (local)', {
-                 {cons.act.launcher, 'Finder'},
-                 {cons.act.keycombo, {'cmd', 'shift'}, 'i'},
-            }},
-            {cons.cat.action, '', 'H', 'Hammerspoon', {
-                 {cons.act.launcher, 'Finder'},
-                 {cons.act.keycombo, {'cmd', 'shift'}, 'g'},
-                 {cons.act.typetext, '~/.hammerspoon\n'},
-            }},
-            {cons.cat.action, '', 'M', 'MenuHammer Custom Config', {
-                 {cons.act.openfile, "~/.hammerspoon/menuHammerCustomConfig.lua"},
-            }},
-            {cons.cat.action, 'shift', 'M', 'MenuHammer Default Config', {
-                 {cons.act.openfile, "~/.hammerspoon/Spoons/MenuHammer.spoon/MenuConfigDefaults.lua"},
-            }},
-            {cons.cat.action, 'shift', 'H', 'Hammerspoon init.lua', {
-                 {cons.act.openfile, "~/.hammerspoon/init.lua"},
-            }},
-        }
-    },
-
-    ------------------------------------------------------------------------------------------------
-    -- Finder Menu
-    ------------------------------------------------------------------------------------------------
-    [finderMenu] = {
-        parentMenu = mainMenu,
-        menuHotkey = nil,
-        menuItems = {
-            {cons.cat.action, '', 'A', 'Applications Folder', {
-                {cons.act.launcher, 'Finder'},
-                {cons.act.keycombo, {'cmd', 'shift'}, 'a'},
-            }},
-            {cons.cat.action, 'shift', 'A', 'Airdrop', {
-                {cons.act.launcher, 'Finder'},
-                {cons.act.keycombo, {'cmd', 'shift'}, 'r'},
-            }},
-            {cons.cat.action, '', 'C', 'Computer', {
-                {cons.act.launcher, 'Finder'},
-                {cons.act.keycombo, {'cmd', 'shift'}, 'c'},
-            }},
-            {cons.cat.action, '', 'D', 'Desktop', {
-                {cons.act.launcher, 'Finder'},
-                {cons.act.keycombo, {'cmd', 'shift'}, 'd'},
-            }},
-            {cons.cat.action, 'shift', 'D', 'Downloads', {
-                {cons.act.launcher, 'Finder'},
-                {cons.act.keycombo, {'cmd', 'alt'}, 'l'},
-            }},
-            {cons.cat.action, '', 'F', "Finder", {
-                {cons.act.launcher, 'Finder'}
-            }},
-            {cons.cat.action, '', 'G', 'Go to Folder...', {
-                {cons.act.launcher, 'Finder'},
-                {cons.act.keycombo, {'cmd', 'shift'}, 'g'},
-            }},
-            {cons.cat.action, '', 'H', 'Home', {
-                {cons.act.launcher, 'Finder'},
-                {cons.act.keycombo, {'cmd', 'shift'}, 'h'},
-            }},
-            {cons.cat.action, 'shift', 'H', 'Hammerspoon', {
-                {cons.act.launcher, 'Finder'},
-                {cons.act.keycombo, {'cmd', 'shift'}, 'g'},
-                {cons.act.typetext, '~/.hammerspoon\n'},
-            }},
-            {cons.cat.action, '', 'I', 'iCloud Drive', {
-                {cons.act.launcher, 'Finder'},
-                {cons.act.keycombo, {'cmd', 'shift'}, 'i'},
-            }},
-            {cons.cat.action, '', 'K', 'Connect to Server...', {
-                {cons.act.launcher, 'Finder'},
-                {cons.act.keycombo, {'cmd'}, 'K'},
-            }},
-            {cons.cat.action, '', 'L', 'Library', {
-                {cons.act.launcher, 'Finder'},
-                {cons.act.keycombo, {'cmd', 'shift'}, 'l'},
-            }},
-            {cons.cat.action, '', 'N', 'Network', {
-                {cons.act.launcher, 'Finder'},
-                {cons.act.keycombo, {'cmd', 'shift'}, 'k'},
-            }},
-            {cons.cat.action, '', 'O', 'Documents', {
-                {cons.act.launcher, 'Finder'},
-                {cons.act.keycombo, {'cmd', 'shift'}, 'o'},
-            }},
-            {cons.cat.action, '', 'R', 'Recent', {
-                {cons.act.launcher, 'Finder'},
-                {cons.act.keycombo, {'cmd', 'shift'}, 'f'},
-            }},
-            {cons.cat.action, '', 'U', 'Utilities', {
-                {cons.act.launcher, 'Finder'},
-                {cons.act.keycombo, {'cmd', 'shift'}, 'u'},
-            }},
-        }
-    },
-
-
-    ------------------------------------------------------------------------------------------------
-    -- Hammerspoon Menu
-    ------------------------------------------------------------------------------------------------
-    [hammerspoonMenu] = {
-        parentMenu = mainMenu,
-        menuHotkey = nil,
-        menuItems = {
-            {cons.cat.action, '', 'C', "Hammerspoon Console", {
-                {cons.act.func, function() hs.toggleConsole() end }
-            }},
-            {cons.cat.action, '', 'H', "Hammerspoon Manual", {
-                {cons.act.func, function()
-                      hs.doc.hsdocs.forceExternalBrowser(true)
-                      hs.doc.hsdocs.moduleEntitiesInSidebar(true)
-                      hs.doc.hsdocs.help()
-                end }
-            }},
-            {cons.cat.action, '', 'R', "Reload Hammerspoon", {
-                {cons.act.func, function() hs.reload() end }
-            }},
-            {cons.cat.action, '', 'Q', "Quit Hammerspoon", {
-                {cons.act.func, function() os.exit() end }
-            }},
-        }
-    },
-
-    ------------------------------------------------------------------------------------------------
-    -- Layout Menu
-    ------------------------------------------------------------------------------------------------
-    [layoutMenu] = {
-        parentMenu = mainMenu,
-        menuHotkey = nil,
-        menuItems = {
-          {cons.cat.action, '', 'E', "Every Day Carry", {
-             {cons.act.func, function()
-                -- See Hammerspoon layout documentation for more info on this
-                local mainScreen = hs.screen{x=0,y=0}
-                local nw60 = hs.geometry.new(0, 0, 0.25, 0.6)
-                local sw40 = hs.geometry.new(0, 0.6, 0.25, 0.4)
-                local mid50 = hs.geometry.new(0.25, 0, 0.5, 1)
-                applications = {"Google Chrome",  "Slack", "iTerm2", "/Applications/Emacs.app"}
-                for _, app in ipairs(applications) do
-                  hs.application.launchOrFocus(app)
-                end
-                local layout = {
+          }},
+          {cons.cat.action, '', 'G', 'Go to Folder...', {
+              {cons.act.launcher, 'Finder'},
+              {cons.act.keycombo, {'cmd', 'shift'}, 'g'},
+          }},
+          {cons.cat.action, '', 'H', 'Home', {
+              {cons.act.launcher, 'Finder'},
+              {cons.act.keycombo, {'cmd', 'shift'}, 'h'},
+          }},
+          {cons.cat.action, 'shift', 'H', 'Hammerspoon', {
+              {cons.act.launcher, 'Finder'},
+              {cons.act.keycombo, {'cmd', 'shift'}, 'g'},
+              {cons.act.typetext, '~/.hammerspoon\n'},
+          }},
+          {cons.cat.action, '', 'I', 'iCloud Drive', {
+              {cons.act.launcher, 'Finder'},
+              {cons.act.keycombo, {'cmd', 'shift'}, 'i'},
+          }},
+          {cons.cat.action, '', 'K', 'Connect to Server...', {
+              {cons.act.launcher, 'Finder'},
+              {cons.act.keycombo, {'cmd'}, 'K'},
+          }},
+          {cons.cat.action, '', 'L', 'Library', {
+              {cons.act.launcher, 'Finder'},
+              {cons.act.keycombo, {'cmd', 'shift'}, 'l'},
+          }},
+          {cons.cat.action, '', 'N', 'Network', {
+              {cons.act.launcher, 'Finder'},
+              {cons.act.keycombo, {'cmd', 'shift'}, 'k'},
+          }},
+          {cons.cat.action, '', 'O', 'Documents', {
+              {cons.act.launcher, 'Finder'},
+              {cons.act.keycombo, {'cmd', 'shift'}, 'o'},
+          }},
+          {cons.cat.action, '', 'R', 'Recent', {
+              {cons.act.launcher, 'Finder'},
+              {cons.act.keycombo, {'cmd', 'shift'}, 'f'},
+          }},
+          {cons.cat.action, '', 'U', 'Utilities', {
+              {cons.act.launcher, 'Finder'},
+              {cons.act.keycombo, {'cmd', 'shift'}, 'u'},
+          }},
+      }
+  }
+  ,
+  [hammerspoonMenu] = {
+    parentMenu = mainMenu,
+    menuHotkey = nil,
+    menuItems = {
+      {cons.cat.action, '', 'C', "Hammerspoon Console", {
+         {cons.act.func, function() hs.toggleConsole() end }
+      }},
+      {cons.cat.action, '', 'H', "Hammerspoon Manual", {
+         {cons.act.func, function()
+            hs.doc.hsdocs.forceExternalBrowser(true)
+            hs.doc.hsdocs.moduleEntitiesInSidebar(true)
+            hs.doc.hsdocs.help()
+         end }
+      }},
+      {cons.cat.action, '', 'R', "Reload Hammerspoon", {
+         {cons.act.func, function() hs.reload() end }
+      }},
+      {cons.cat.action, '', 'Q', "Quit Hammerspoon", {
+         {cons.act.func, function() os.exit() end }
+      }},
+    }
+  },
+  [layoutMenu] = {
+      parentMenu = mainMenu,
+      menuHotkey = nil,
+      menuItems = {
+        {cons.cat.action, '', 'E', "Every Day Carry", {
+           {cons.act.func, function()
+              -- See Hammerspoon layout documentation for more info on this
+              local mainScreen = hs.screen{x=0,y=0}
+              local nw60 = hs.geometry.new(0, 0, 0.25, 0.6)
+              local sw40 = hs.geometry.new(0, 0.6, 0.25, 0.4)
+              local mid50 = hs.geometry.new(0.25, 0, 0.5, 1)
+              applications = {"Google Chrome",  "Slack", "iTerm2", "/Applications/Emacs.app"}
+              for _, app in ipairs(applications) do
+                hs.application.launchOrFocus(app)
+              end
+              local layout = {
+                {"Google Chrome", nil, mainScreen, nw60, nil, nil},
+                {"Slack", nil, mainScreen, sw40, nil, nil},
+                {"Emacs", nil, mainScreen, mid50, nil, nil},
+                {"iTerm2", nil, mainScreen, hs.layout.right25, nil, nil},
+              }
+              hs.layout.apply(layout)
+           end }
+        }},
+        {cons.cat.action, '', 'D', "Dev Ops", {
+           {cons.act.func, function()
+              -- See Hammerspoon layout documentation for more info on this
+              local mainScreen = hs.screen{x=0,y=0}
+              local nw60 = hs.geometry.new(0, 0, 0.25, 0.6)
+              local sw40 = hs.geometry.new(0, 0.6, 0.25, 0.4)
+              local mid50 = hs.geometry.new(0.25, 0, 0.5, 1)
+              hs.layout.apply({
                   {"Google Chrome", nil, mainScreen, nw60, nil, nil},
+                  {"Microsoft Edge", nil, mainScreen, nw60, nil, nil},
                   {"Slack", nil, mainScreen, sw40, nil, nil},
                   {"Emacs", nil, mainScreen, mid50, nil, nil},
                   {"iTerm2", nil, mainScreen, hs.layout.right25, nil, nil},
-                }
-                hs.layout.apply(layout)
-             end }
+              })
+           end }
+        }},
+      }
+  },
+  [mediaMenu] = {
+      parentMenu = mainMenu,
+      menuHotkey = nil,
+      menuItems = {
+          {cons.cat.action, '', 'A', "Music", {
+              {cons.act.launcher, "Music"}
           }},
-          {cons.cat.action, '', 'D', "Dev Ops", {
-             {cons.act.func, function()
-                -- See Hammerspoon layout documentation for more info on this
-                local mainScreen = hs.screen{x=0,y=0}
-                local nw60 = hs.geometry.new(0, 0, 0.25, 0.6)
-                local sw40 = hs.geometry.new(0, 0.6, 0.25, 0.4)
-                local mid50 = hs.geometry.new(0.25, 0, 0.5, 1)
-                hs.layout.apply({
-                    {"Google Chrome", nil, mainScreen, nw60, nil, nil},
-                    {"Microsoft Edge", nil, mainScreen, nw60, nil, nil},
-                    {"Slack", nil, mainScreen, sw40, nil, nil},
-                    {"Emacs", nil, mainScreen, mid50, nil, nil},
-                    {"iTerm2", nil, mainScreen, hs.layout.right25, nil, nil},
-                })
-             end }
+          {cons.cat.action, '', 'H', "Previous Track", {
+              {cons.act.mediakey, "previous"}
           }},
-        }
-    },
-
-    ------------------------------------------------------------------------------------------------
-    -- Media Menu
-    ------------------------------------------------------------------------------------------------
-    [mediaMenu] = {
-        parentMenu = mainMenu,
-        menuHotkey = nil,
-        menuItems = {
-            {cons.cat.action, '', 'A', "Music", {
-                {cons.act.launcher, "Music"}
-            }},
-            {cons.cat.action, '', 'H', "Previous Track", {
-                {cons.act.mediakey, "previous"}
-            }},
-            {cons.cat.action, '', 'J', "Volume Down", {
-                {cons.act.mediakey, "volume", -10}
-            }},
-            {cons.cat.action, '', 'K', "Volume Up", {
-                {cons.act.mediakey, "volume", 10}
-            }},
-            {cons.cat.action, '', 'L', "Next Track", {
-                {cons.act.mediakey, "next"}
-            }},
-            {cons.cat.action, '', 'X', "Mute/Unmute", {
-                {cons.act.mediakey, "mute"}
-            }},
-            {cons.cat.action, '', 'S', "Play/Pause", {
-                {cons.act.mediakey, "playpause"}
-            }},
-            {cons.cat.action, '', 'I', "Brightness Down", {
-                {cons.act.mediakey, "brightness", -10}
-            }},
-            {cons.cat.action, '', 'O', "Brightness Up", {
-                {cons.act.mediakey, "brightness", 10}
-            }},
-        }
-    },
-
-    ------------------------------------------------------------------------------------------------
-    -- Resolution Menu
-    ------------------------------------------------------------------------------------------------
-    [resolutionMenu] = {
-        parentMenu = mainMenu,
-        menuHotkey = nil,
-        menuItems = resolutionMenuItems
-    },
-
-    ------------------------------------------------------------------------------------------------
-    -- Scripts Menu
-    ------------------------------------------------------------------------------------------------
-    [scriptsMenu] = {
-        parentMenu = mainMenu,
-        menuHotkey = nil,
-        menuItems = {
-        }
-    },
-
-    ------------------------------------------------------------------------------------------------
-    -- System Menu
-    ------------------------------------------------------------------------------------------------
-    [systemMenu] = {
-        parentMenu = mainMenu,
-        menuHotkey = nil,
-        menuItems = {
-            {cons.cat.action, 'shift', 'F', "Force Quit Frontmost App", {
-                {cons.act.system, cons.sys.forcequit},
-            }},
-            {cons.cat.action, '', 'L', "Lock Screen", {
-                {cons.act.system, cons.sys.lockscreen},
-            }},
-            {cons.cat.action, 'shift', 'R', "Restart System", {
-                {cons.act.system, cons.sys.restart, true},
-            }},
-            {cons.cat.action, '', 'S', "Start Screensaver", {
-                {cons.act.system, cons.sys.screensaver},
-            }},
-            {cons.cat.action, 'shift', 'S', "Shutdown System", {
-                {cons.act.system, cons.sys.shutdown, true},
-            }},
-            {cons.cat.action, '', 'Q', 'Logout', {
-                {cons.act.system, cons.sys.logout}
-            }},
-            {cons.cat.action, 'shift', 'Q', 'Logout Immediately', {
-                {cons.act.system, cons.sys.logoutnow},
-            }},
-            {cons.cat.action, '', 'U', "Switch User", {
-                {cons.act.system, cons.sys.switchuser, true},
-            }},
-            {cons.cat.action, '', 'V', 'Activity Monitor', {
-                {cons.act.launcher, 'Activity Monitor'},
-            }},
-            {cons.cat.action, '', 'X', 'System Preferences', {
-                {cons.act.launcher, 'System Preferences'},
-            }},
-        }
-    },
-
-    ------------------------------------------------------------------------------------------------
-    -- Text Menu
-    ------------------------------------------------------------------------------------------------
-    [textMenu] = {
-        parentMenu = mainMenu,
-        menuHotkey = nil,
-        menuItems = {
-            {cons.cat.action, '', 'C', 'Remove clipboard format', {
-                 {cons.act.func, function()
-                      local pasteboardContents = hs.pasteboard.getContents()
-                      hs.pasteboard.setContents(pasteboardContents)
-                 end },
-            }},
-            {cons.cat.action, '', 'E', 'Empty the clipboard', {
-                 {cons.act.func, function() hs.pasteboard.setContents("") end}
-            }},
-            {cons.cat.action, '', 'T', 'Type clipboard contents', {
-                 {cons.act.typetext, "@@mhClipboardText@@"}
-            }},
-        }
-    },
-
-    ------------------------------------------------------------------------------------------------
-    -- Toggle menu
-    ------------------------------------------------------------------------------------------------
-    [toggleMenu] = {
-        parentMenu = mainMenu,
-        menuHotkey = nil,
-        menuItems = {
-            {cons.cat.action, '', 'C', "Caffeine", {
-                 {cons.act.func, function() toggleCaffeine() end }
-            }},
-            {cons.cat.action, '', 'D', "Hide/Show Dock", {
-                 {cons.act.keycombo, {'cmd', 'alt'}, 'd'}
-            }},
-            {cons.cat.action, '', 'S', "Start Screensaver", {
-                 {cons.act.system, cons.sys.screensaver},
-            }},
-            {cons.cat.action, 'shift', 'W', "Disable wi-fi", {
-                 {cons.act.func, function() hs.wifi.setPower(false) end }
-            }},
-            {cons.cat.action, '', 'W', "Enable wi-fi", {
-                 {cons.act.func, function() hs.wifi.setPower(true) end }
-            }},
-        }
-    },
+          {cons.cat.action, '', 'J', "Volume Down", {
+              {cons.act.mediakey, "volume", -10}
+          }},
+          {cons.cat.action, '', 'K', "Volume Up", {
+              {cons.act.mediakey, "volume", 10}
+          }},
+          {cons.cat.action, '', 'L', "Next Track", {
+              {cons.act.mediakey, "next"}
+          }},
+          {cons.cat.action, '', 'X', "Mute/Unmute", {
+              {cons.act.mediakey, "mute"}
+          }},
+          {cons.cat.action, '', 'S', "Play/Pause", {
+              {cons.act.mediakey, "playpause"}
+          }},
+          {cons.cat.action, '', 'I', "Brightness Down", {
+              {cons.act.mediakey, "brightness", -10}
+          }},
+          {cons.cat.action, '', 'O', "Brightness Up", {
+              {cons.act.mediakey, "brightness", 10}
+          }},
+      }
+  },
+  [resolutionMenu] = {
+    parentMenu = mainMenu,
+    menuHotkey = nil,
+    menuItems = resolutionMenuItems
+  },
+  [systemMenu] = {
+      parentMenu = mainMenu,
+      menuHotkey = nil,
+      menuItems = {
+          {cons.cat.action, 'shift', 'F', "Force Quit Frontmost App", {
+              {cons.act.system, cons.sys.forcequit},
+          }},
+          {cons.cat.action, '', 'L', "Lock Screen", {
+              {cons.act.system, cons.sys.lockscreen},
+          }},
+          {cons.cat.action, 'shift', 'R', "Restart System", {
+              {cons.act.system, cons.sys.restart, true},
+          }},
+          {cons.cat.action, '', 'S', "Start Screensaver", {
+              {cons.act.system, cons.sys.screensaver},
+          }},
+          {cons.cat.action, 'shift', 'S', "Shutdown System", {
+              {cons.act.system, cons.sys.shutdown, true},
+          }},
+          {cons.cat.action, '', 'Q', 'Logout', {
+              {cons.act.system, cons.sys.logout}
+          }},
+          {cons.cat.action, 'shift', 'Q', 'Logout Immediately', {
+              {cons.act.system, cons.sys.logoutnow},
+          }},
+          {cons.cat.action, '', 'U', "Switch User", {
+              {cons.act.system, cons.sys.switchuser, true},
+          }},
+          {cons.cat.action, '', 'V', 'Activity Monitor', {
+              {cons.act.launcher, 'Activity Monitor'},
+          }},
+          {cons.cat.action, '', 'X', 'System Preferences', {
+              {cons.act.launcher, 'System Preferences'},
+          }},
+      }
+  },
+  [textMenu] = {
+    parentMenu = mainMenu,
+    menuHotkey = nil,
+    menuItems = {
+      {cons.cat.action, '', 'C', 'Remove clipboard format', {
+         {cons.act.func, function()
+            local pasteboardContents = hs.pasteboard.getContents()
+            hs.pasteboard.setContents(pasteboardContents)
+         end },
+      }},
+      {cons.cat.action, '', 'E', 'Empty the clipboard', {
+         {cons.act.func, function() hs.pasteboard.setContents("") end}
+      }},
+      {cons.cat.action, '', 'T', 'Type clipboard contents', {
+         {cons.act.typetext, "@@mhClipboardText@@"}
+      }},
+    }
+  },
+  [toggleMenu] = {
+    parentMenu = mainMenu,
+    menuHotkey = nil,
+    menuItems = {
+      {cons.cat.action, '', 'C', "Caffeine", {
+         {cons.act.func, function() toggleCaffeine() end }
+      }},
+      {cons.cat.action, '', 'D', "Hide/Show Dock", {
+         {cons.act.keycombo, {'cmd', 'alt'}, 'd'}
+      }},
+      {cons.cat.action, '', 'S', "Start Screensaver", {
+         {cons.act.system, cons.sys.screensaver},
+      }},
+      {cons.cat.action, 'shift', 'W', "Disable wi-fi", {
+         {cons.act.func, function() hs.wifi.setPower(false) end }
+      }},
+      {cons.cat.action, '', 'W', "Enable wi-fi", {
+         {cons.act.func, function() hs.wifi.setPower(true) end }
+      }},
+    }
+  },
 }
