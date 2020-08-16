@@ -3,8 +3,8 @@
 --- You should make any changes there and regenerate it from Emacs org-mode using C-c C-v t
 
 --- Local Variables
-local action = cons.act
-local entry_type = cons.cat
+action = cons.act
+entry_type = cons.cat
 -- Main Menu
 local mainMenu = "Main Menu"
 local helpMenu = "Help Menu"
@@ -148,7 +148,36 @@ if hs.screen.mainScreen():name() == "LG Ultra HD" then
 end
 
 -- Helper Functions
+local function submenu(modifier, key, description, menu, ...)
+  additional_actions = {...}
+  return {entry_type.submenu, modifier, key, description, {
+            {action.menu, menu}, table.unpack(additional_actions)
+  }}
+end
 
+function launcher(modifier, key, description, app, ...)
+  additional_actions = {...}
+  return {entry_type.action, modifier, key, description, {
+            {action.launcher, app}, table.unpack(additional_actions)
+  }}
+end
+
+local function func(modifier, key, description, func)
+  return {entry_type.action, modifier, key, description, {
+            {action.func, func}
+  }}
+end
+
+local function url_opener(modifier, key, description, url)
+  return {entry_type.action, modifier, key, description, {
+            {action.openurl, url}
+  }}
+end
+function hammerspoonManual()
+  hs.doc.hsdocs.forceExternalBrowser(true)
+  hs.doc.hsdocs.moduleEntitiesInSidebar(true)
+  hs.doc.hsdocs.help()
+end
 
 -- Menu Definitions
 menuHammerMenuList = {
@@ -159,151 +188,74 @@ menuHammerMenuList = {
       parentMenu = nil,
       menuHotkey = {{'alt', 'cmd', 'shift', 'ctrl'}, 'space'},
       menuItems = {
-          {entry_type.submenu, 'shift', '/', 'Help', {
-              {action.menu, helpMenu}
-          }},
-          {entry_type.submenu, '', 'A', 'Applications', {
-              {action.menu, applicationMenu}
-          }},
-          {entry_type.submenu, '', 'B', 'Browser', {
-              {action.menu, browserMenu}
-          }},
-          {entry_type.submenu, '', 'D', 'Documents', {
-               {action.menu, documentsMenu}
-          }},
-          {entry_type.submenu, '', 'F', 'Finder', {
-              {action.menu, finderMenu}
-          }},
-          {entry_type.submenu, '', 'H', 'Hammerspoon', {
-              {action.menu, hammerspoonMenu}
-          }},
-          {entry_type.action, '', 'I', "iTerm", {
-             {action.launcher, 'iTerm'}
-          }},
-          {entry_type.action, '', 'J', "Emacs", {
-             {action.launcher, '/Applications/Emacs.app'}
-          }},
-          {entry_type.action, '', 'K', "Chrome", {
-             {action.launcher, 'com.google.chrome'}
-          }},
-          {entry_type.submenu, '', 'L', 'Layouts', {
-               {action.menu, layoutMenu}
-          }},
-          {entry_type.action, '', 'M', "Microsoft Edge", {
-             {action.launcher, 'Microsoft Edge'}
-          }},
-          {entry_type.submenu, 'shift', 'M', 'Media Controls', {
-              {action.menu, mediaMenu}
-          }},
-          {entry_type.action, '', 'O', "Slack", {
-             {action.launcher, 'Slack'}
-          }},
-          {entry_type.submenu, '', 'R', 'Resolution', {
-              {action.menu, resolutionMenu}
-          }},
-          {entry_type.action, '', 'S', "Skype for Business", {
-             {action.launcher, 'Skype for Business'}
-          }},
-          {entry_type.submenu, 'shift', 'S', 'System Preferences', {
-              {action.menu, systemMenu}
-          }},
-          {entry_type.submenu, '', 'T', 'Toggles', {
-               {action.menu, toggleMenu}
-          }},
-          {entry_type.submenu, '', 'X', 'Text', {
-               {action.menu, textMenu}
-          }},
-          {entry_type.action, '', ';', "Spotify", {
-             {action.launcher, 'Spotify'}
-          }},
-          {entry_type.action, '', 'space', "Alfred", {
-             {action.launcher, 'com.runningwithcrayons.Alfred'}
-          }},
+          submenu('shift', '/',     'Help',               helpMenu),
+          submenu('',      'A',     'Applications',       applicationMenu),
+          submenu('',      'B',     'Browser',            browserMenu),
+          submenu('',      'D',     'Documents',          documentsMenu),
+          submenu('',      'F',     'Finder',             finderMenu),
+          submenu('',      'H',     'Hammerspoon',        hammerspoonMenu),
+  
+          launcher('',     'I',     'iTerm',              'iTerm'),
+          launcher('',     'J',     'Emacs',              '/Applications/Emacs.app'),
+          launcher('',     'K',     'Chrome',             'com.google.chrome'),
+  
+          submenu('',      'L',     'Layouts',            layoutMenu),
+  
+          launcher('',     'M',     'Microsoft Edge',     'Microsoft Edge'),
+  
+          submenu('shift', 'M',     'Media Controls',     mediaMenu),
+  
+          launcher('',     'O',     'Slack',              'Slack'),
+  
+          submenu('',      'R',     'Resolution',         resolutionMenu),
+  
+          launcher('',     'S',     'Skype for Business', 'Skype for Business'),
+  
+          submenu('shift', 'S',     'System Preferences', systemMenu),
+          submenu('',      'T',     'Toggles',            toggleMenu),
+          submenu('',      'X',     'Text',               textMenu),
+  
+          launcher('',     ';',     'Spotify',            'Spotify'),
+          launcher('',     'space', 'Alfred',             'com.runningwithcrayons.Alfred'),
       }
   },
-  ------------------------------------------------------------------------------------------------
-  -- Help Menu
-  ------------------------------------------------------------------------------------------------
   [helpMenu] = {
       parentMenu = mainMenu,
       menuHotkey = nil,
       menuItems = {
-          {cons.cat.action, '', 'H', "Hammerspoon Manual", {
-              {cons.act.func, function()
-                    hs.doc.hsdocs.forceExternalBrowser(true)
-                    hs.doc.hsdocs.moduleEntitiesInSidebar(true)
-                    hs.doc.hsdocs.help()
-              end }
-          }},
-          {cons.cat.action, '', 'M', "MenuHammer Documentation", {
-              {cons.act.openurl, 'https://github.com/FryJay/MenuHammer'},
-          }},
+        func('', 'H', 'Hammerspoon Manual', hammerspoonManual),
+        url_opener('', 'M', 'MenuHammer Documentation', 'https://github.com/FryJay/MenuHammer'),
       }
   },
   [applicationMenu] = {
       parentMenu = mainMenu,
       menuHotkey = {{'cmd', 'alt', 'ctrl'}, 'a'},
       menuItems = {
-          {cons.cat.action, '', 'E', "Finder", {
-            {cons.act.launcher, 'Finder'}
-          }},
-          {cons.cat.action, '', 'I', "iTerm", {
-             {cons.act.launcher, 'iTerm'}
-          }},
-          {cons.cat.action, '', 'J', "Emacs", {
-             {cons.act.launcher, '/Applications/Emacs.app'}
-          }},
-          {cons.cat.action, '', 'K', "Chrome", {
-              {cons.act.launcher, 'com.google.chrome'}
-          }},
-          {cons.cat.action, '', 'O', "Slack", {
-             {cons.act.launcher, 'Slack'}
-          }},
-          {cons.cat.action, '', 'M', "Microsoft Edge", {
-              {cons.act.launcher, 'Microsoft Edge'}
-          }},
-          {cons.cat.action, '', 'N', "Messages", {
-             {cons.act.launcher, 'Messages'}
-          }},
-          {cons.cat.action, '', 'S', "Skype for Business", {
-              {cons.act.launcher, 'Skype for Business'}
-          }},
-          {cons.cat.action, '', ';', "Spotify", {
-              {cons.act.launcher, 'Spotify'}
-          }},
-          {cons.cat.submenu, '', 'U', 'Utilities', {
-              {cons.act.menu, utilitiesMenu}
-          }},
-          {cons.cat.action, '', 'X', "Xcode", {
-              {cons.act.launcher, 'Xcode'}
-          }},
+        launcher('', 'E', 'Finder', 'Finder'),
+        launcher('', 'I', 'iTerm', 'iTerm'),
+        launcher('', 'J', 'Emacs', '/Applications/Emacs.app'),
+        launcher('', 'K', 'Chrome', 'com.google.chrome'),
+        launcher('', 'O', 'Slack', 'Slack'),
+        launcher('', 'M', 'Microsoft Edge', 'Microsoft Edge'),
+        launcher('', 'N', 'Messages', 'Messages'),
+        launcher('', 'S', 'Skype for Business', 'Skype for Business'),
+        launcher('', ';', 'Spotify', 'Spotify'),
+        launcher('', 'X', 'Xcode', 'Xcode'),
+  
+        submenu('', 'U', 'Utilities', utilitiesMenu),
       }
   },
   [utilitiesMenu] = {
       parentMenu = applicationMenu,
       menuHotkey = nil,
       menuItems = {
-          {cons.cat.action, '', 'A', "Activity Monitor", {
-              {cons.act.launcher, 'Activity Monitor'}
-          }},
-          {cons.cat.action, 'shift', 'A', "Airport Utility", {
-              {cons.act.launcher, 'Airport Utility'}
-          }},
-          {cons.cat.action, '', 'C', "Console", {
-              {cons.act.launcher, 'Console'}
-          }},
-          {cons.cat.action, '', 'D', "Disk Utility", {
-              {cons.act.launcher, 'Disk Utility'}
-          }},
-          {cons.cat.action, '', 'K', "Keychain Access", {
-              {cons.act.launcher, 'Keychain Access'}
-          }},
-          {cons.cat.action, '', 'S', "System Information", {
-              {cons.act.launcher, 'System Information'}
-          }},
-          {cons.cat.action, '', 'T', "Terminal", {
-              {cons.act.launcher, 'Terminal'}
-          }},
+        launcher('', 'A', 'Activity Monitor', 'Activity Monitor'),
+        launcher('shift', 'A', 'Airport Utility', 'Airport Utility'),
+        launcher('', 'C', 'Console', 'Console'),
+        launcher('', 'D', 'Disk Utility', 'Disk Utility'),
+        launcher('', 'K', 'Keychain Access', 'Keychain Access'),
+        launcher('', 'S', 'System Information', 'System Information'),
+        launcher('', 'T', 'Terminal', 'Terminal'),
       }
   },
   [browserMenu] = {
@@ -378,70 +330,23 @@ menuHammerMenuList = {
       parentMenu = mainMenu,
       menuHotkey = nil,
       menuItems = {
-          {cons.cat.action, '', 'A', 'Applications Folder', {
-              {cons.act.launcher, 'Finder'},
-              {cons.act.keycombo, {'cmd', 'shift'}, 'a'},
-          }},
-          {cons.cat.action, 'shift', 'A', 'Airdrop', {
-              {cons.act.launcher, 'Finder'},
-              {cons.act.keycombo, {'cmd', 'shift'}, 'r'},
-          }},
-          {cons.cat.action, '', 'C', 'Computer', {
-              {cons.act.launcher, 'Finder'},
-              {cons.act.keycombo, {'cmd', 'shift'}, 'c'},
-          }},
-          {cons.cat.action, '', 'D', 'Desktop', {
-              {cons.act.launcher, 'Finder'},
-              {cons.act.keycombo, {'cmd', 'shift'}, 'd'},
-          }},
-          {cons.cat.action, 'shift', 'D', 'Downloads', {
-              {cons.act.launcher, 'Finder'},
-              {cons.act.keycombo, {'cmd', 'alt'}, 'l'},
-          }},
-          {cons.cat.action, '', 'F', "Finder", {
-              {cons.act.launcher, 'Finder'}
-          }},
-          {cons.cat.action, '', 'G', 'Go to Folder...', {
-              {cons.act.launcher, 'Finder'},
-              {cons.act.keycombo, {'cmd', 'shift'}, 'g'},
-          }},
-          {cons.cat.action, '', 'H', 'Home', {
-              {cons.act.launcher, 'Finder'},
-              {cons.act.keycombo, {'cmd', 'shift'}, 'h'},
-          }},
-          {cons.cat.action, 'shift', 'H', 'Hammerspoon', {
-              {cons.act.launcher, 'Finder'},
-              {cons.act.keycombo, {'cmd', 'shift'}, 'g'},
-              {cons.act.typetext, '~/.hammerspoon\n'},
-          }},
-          {cons.cat.action, '', 'I', 'iCloud Drive', {
-              {cons.act.launcher, 'Finder'},
-              {cons.act.keycombo, {'cmd', 'shift'}, 'i'},
-          }},
-          {cons.cat.action, '', 'K', 'Connect to Server...', {
-              {cons.act.launcher, 'Finder'},
-              {cons.act.keycombo, {'cmd'}, 'K'},
-          }},
-          {cons.cat.action, '', 'L', 'Library', {
-              {cons.act.launcher, 'Finder'},
-              {cons.act.keycombo, {'cmd', 'shift'}, 'l'},
-          }},
-          {cons.cat.action, '', 'N', 'Network', {
-              {cons.act.launcher, 'Finder'},
-              {cons.act.keycombo, {'cmd', 'shift'}, 'k'},
-          }},
-          {cons.cat.action, '', 'O', 'Documents', {
-              {cons.act.launcher, 'Finder'},
-              {cons.act.keycombo, {'cmd', 'shift'}, 'o'},
-          }},
-          {cons.cat.action, '', 'R', 'Recent', {
-              {cons.act.launcher, 'Finder'},
-              {cons.act.keycombo, {'cmd', 'shift'}, 'f'},
-          }},
-          {cons.cat.action, '', 'U', 'Utilities', {
-              {cons.act.launcher, 'Finder'},
-              {cons.act.keycombo, {'cmd', 'shift'}, 'u'},
-          }},
+        launcher('', 'A', 'Applications Folder', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'a'}),
+        launcher('', 'D', 'Desktop', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'd'}),
+        launcher('shift', 'D', 'Downloads', 'Finder', {action.keycombo, {'cmd', 'alt'}, 'l'}),
+        launcher('', 'F', 'Finder', 'Finder'),
+        launcher('', 'G', 'Go to Folder...', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'g'}),
+        launcher('', 'H', 'Home', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'h'}),
+        launcher('shift', 'H', 'Hammerspoon', 'Finder',
+                 {action.keycombo, {'cmd', 'shift'}, 'g'},
+                 {action.typetext, '~/.hammerspoon\n'}
+        ),
+        launcher('', 'I', 'iCloud Drive', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'i'}),
+        launcher('', 'K', 'Connect to Server...', 'Finder', {action.keycombo, {'cmd'}, 'k'}),
+        launcher('', 'L', 'Library', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'l'}),
+        launcher('', 'N', 'Network', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'k'}),
+        launcher('', 'O', 'Documents', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'o'}),
+        launcher('', 'R', 'Recent', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'f'}),
+        launcher('', 'U', 'Utilities', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'u'}),
       }
   }
   ,
