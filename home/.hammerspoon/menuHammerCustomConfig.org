@@ -6,6 +6,35 @@
 #+author: Rod Knowlton
 #+email: rod@codelahoma.com
 
+* Table of Contents :TOC_4:noexport:
+- [[#how-this-came-into-being][How this came into being.]]
+- [[#config-file-structure][Config file structure]]
+- [[#menus][Menus]]
+  - [[#menu-helpers][Menu Helpers]]
+  - [[#main-menu][Main Menu]]
+  - [[#help-menu][Help Menu]]
+  - [[#application-menu][Application Menu]]
+  - [[#utilities-menu][Utilities Menu]]
+  - [[#browser-menu][Browser Menu]]
+  - [[#documents-menu][Documents Menu]]
+  - [[#finder-menu][Finder Menu]]
+  - [[#hammerspoon-menu][Hammerspoon Menu]]
+  - [[#layout-menu][Layout Menu]]
+  - [[#media-menu][Media Menu]]
+  - [[#resolution-menu][Resolution Menu]]
+  - [[#system-menu][System Menu]]
+  - [[#text-menu][Text Menu]]
+  - [[#toggle-menu][Toggle Menu]]
+- [[#menu-list][Menu List]]
+- [[#appendices][Appendices]]
+  - [[#local-variables][Local Variables]]
+  - [[#preferences][Preferences]]
+    - [[#general-config][General Config]]
+    - [[#menu-appearance][Menu Appearance]]
+      - [[#default-values][Default Values]]
+      - [[#customizations][Customizations]]
+  - [[#miscellaneous][Miscellaneous]]
+    - [[#warning-not-to-edit][Warning not to edit]]
 
 * How this came into being.
 
