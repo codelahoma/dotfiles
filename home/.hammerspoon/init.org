@@ -17,6 +17,7 @@
 * Table of Contents :TOC_3:noexport:
 - [[#general-variables-and-configuration][General Variables and Configuration]]
 - [[#spoon-management][Spoon Management]]
+- [[#menu-hammer---spacemacs-style-modal-menu-manager-wip][Menu Hammer - Spacemacs style modal menu manager (wip)]]
 - [[#window-and-screen-manipulation][Window and Screen Manipulation]]
 - [[#url-dispatching-to-site-specific-browsers][URL dispatching to site-specific browsers]]
 - [[#global-key-bindings][Global Key Bindings]]
@@ -65,6 +66,15 @@ Set up SpoonInstall - this is the only spoon that needs to be manually installed
   hs.loadSpoon("SpoonInstall")
 #+end_src
 
+Add my private MenuHammer repository
+
+#+begin_src lua
+  spoon.SpoonInstall.repos.rkspoons = {
+    url = "https://github.com/codelahoma/MenuHammer",
+    desc = "codelahoma's MenuHammer repo"
+  }
+#+end_src
+
 I prefer sync notifications, makes them easier to read.
 
 #+begin_src lua
@@ -77,11 +87,19 @@ This is just a shortcut to make the declarations below look more readable, i.e. 
   Install=spoon.SpoonInstall
 #+end_src
 
+
+* Menu Hammer - Spacemacs style modal menu manager (wip)
+
 Load MenuHammer directly because it's not in a repository yet.
 
 #+begin_src lua
   menuHammer = hs.loadSpoon("MenuHammer")
   menuHammer:enter()
+#+end_src
+
+#+begin_src lua :tangle no
+  Install:andUse("MenuHammer", { repo = 'rkspoons'})
+  spoon.MenuHammer:enter()
 #+end_src
 
 * Window and Screen Manipulation

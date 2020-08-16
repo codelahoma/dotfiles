@@ -19,6 +19,11 @@ machine = hs.host.localizedName()
 
 hs.loadSpoon("SpoonInstall")
 
+spoon.SpoonInstall.repos.rkspoons = {
+  url = "https://github.com/codelahoma/MenuHammer",
+  desc = "codelahoma's MenuHammer repo"
+}
+
 spoon.SpoonInstall.use_syncinstall = true
 
 Install=spoon.SpoonInstall
@@ -69,8 +74,8 @@ Install:andUse("URLDispatcher",
                    --   { "Office 365 safelinks check",
                    --     "https://eur03.safelinks.protection.outlook.com/(.*)\\?url=(.-)&.*",
                    --     "%2" },
-                     { "MS Teams URLs",
-                       "(https://teams.microsoft.com.*)", "msteams:%1", true }
+                   --   { "MS Teams URLs",
+                   --     "(https://teams.microsoft.com.*)", "msteams:%1", true }
                    },
                    default_handler = DefaultBrowser
                  },
