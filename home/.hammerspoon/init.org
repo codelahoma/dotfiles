@@ -42,8 +42,8 @@ Global log level. Per-spoon log level can be configured in each =Install:andUse=
 Define my primary modifier combinations,  =hyper= and =magic=
 
 #+begin_src lua
-  hyper = {"cmd","alt","ctrl","shift"}
-  magic = {"cmd","alt","ctrl"}
+  hyper = {"alt","cmd","ctrl","shift"}
+  magic = {"alt","cmd","ctrl"}
 #+end_src
 
 Abbreviations for frequently used modules

@@ -6,8 +6,8 @@
 
 hs.logger.defaultLogLevel = "info"
 
-hyper = {"cmd","alt","ctrl","shift"}
-magic = {"cmd","alt","ctrl"}
+hyper = {"alt","cmd","ctrl","shift"}
+magic = {"alt","cmd","ctrl"}
 
 application = hs.application
 hotkey = hs.hotkey
