@@ -222,7 +222,7 @@ Menus are referenced by name, so we'll create a local variable for each to minim
       parentMenu = mainMenu,
       menuHotkey = nil,
       menuItems = {
-        func('', 'H', 'Hammerspoon Manual', hammerspoonManual),
+        func('',       'H', 'Hammerspoon Manual',       hammerspoonManual),
         url_opener('', 'M', 'MenuHammer Documentation', 'https://github.com/FryJay/MenuHammer'),
       }
   }
@@ -241,18 +241,18 @@ Menus are referenced by name, so we'll create a local variable for each to minim
       parentMenu = mainMenu,
       menuHotkey = {{'cmd', 'alt', 'ctrl'}, 'a'},
       menuItems = {
-        launcher('', 'E', 'Finder', 'Finder'),
-        launcher('', 'I', 'iTerm', 'iTerm'),
-        launcher('', 'J', 'Emacs', '/Applications/Emacs.app'),
-        launcher('', 'K', 'Chrome', 'com.google.chrome'),
-        launcher('', 'O', 'Slack', 'Slack'),
-        launcher('', 'M', 'Microsoft Edge', 'Microsoft Edge'),
-        launcher('', 'N', 'Messages', 'Messages'),
+        launcher('', 'E', 'Finder',             'Finder'),
+        launcher('', 'I', 'iTerm',              'iTerm'),
+        launcher('', 'J', 'Emacs',              '/Applications/Emacs.app'),
+        launcher('', 'K', 'Chrome',             'com.google.chrome'),
+        launcher('', 'O', 'Slack',              'Slack'),
+        launcher('', 'M', 'Microsoft Edge',     'Microsoft Edge'),
+        launcher('', 'N', 'Messages',           'Messages'),
         launcher('', 'S', 'Skype for Business', 'Skype for Business'),
-        launcher('', ';', 'Spotify', 'Spotify'),
-        launcher('', 'X', 'Xcode', 'Xcode'),
+        launcher('', ';', 'Spotify',            'Spotify'),
+        launcher('', 'X', 'Xcode',              'Xcode'),
 
-        submenu('', 'U', 'Utilities', utilitiesMenu),
+        submenu('',  'U', 'Utilities',          utilitiesMenu),
       }
   }
 #+end_src
@@ -269,13 +269,13 @@ Menus are referenced by name, so we'll create a local variable for each to minim
       parentMenu = applicationMenu,
       menuHotkey = nil,
       menuItems = {
-        launcher('', 'A', 'Activity Monitor', 'Activity Monitor'),
-        launcher('shift', 'A', 'Airport Utility', 'Airport Utility'),
-        launcher('', 'C', 'Console', 'Console'),
-        launcher('', 'D', 'Disk Utility', 'Disk Utility'),
-        launcher('', 'K', 'Keychain Access', 'Keychain Access'),
-        launcher('', 'S', 'System Information', 'System Information'),
-        launcher('', 'T', 'Terminal', 'Terminal'),
+        launcher('',      'A', 'Activity Monitor',   'Activity Monitor'),
+        launcher('shift', 'A', 'Airport Utility',    'Airport Utility'),
+        launcher('',      'C', 'Console',            'Console'),
+        launcher('',      'D', 'Disk Utility',       'Disk Utility'),
+        launcher('',      'K', 'Keychain Access',    'Keychain Access'),
+        launcher('',      'S', 'System Information', 'System Information'),
+        launcher('',      'T', 'Terminal',           'Terminal'),
       }
   }
 #+end_src
@@ -381,23 +381,22 @@ Menus are referenced by name, so we'll create a local variable for each to minim
       parentMenu = mainMenu,
       menuHotkey = nil,
       menuItems = {
-        launcher('', 'A', 'Applications Folder', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'a'}),
-        launcher('', 'D', 'Desktop', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'd'}),
-        launcher('shift', 'D', 'Downloads', 'Finder', {action.keycombo, {'cmd', 'alt'}, 'l'}),
-        launcher('', 'F', 'Finder', 'Finder'),
-        launcher('', 'G', 'Go to Folder...', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'g'}),
-        launcher('', 'H', 'Home', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'h'}),
-        launcher('shift', 'H', 'Hammerspoon', 'Finder',
-                 {action.keycombo, {'cmd', 'shift'}, 'g'},
-                 {action.typetext, '~/.hammerspoon\n'}
-        ),
-        launcher('', 'I', 'iCloud Drive', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'i'}),
-        launcher('', 'K', 'Connect to Server...', 'Finder', {action.keycombo, {'cmd'}, 'k'}),
-        launcher('', 'L', 'Library', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'l'}),
-        launcher('', 'N', 'Network', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'k'}),
-        launcher('', 'O', 'Documents', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'o'}),
-        launcher('', 'R', 'Recent', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'f'}),
-        launcher('', 'U', 'Utilities', 'Finder', {action.keycombo, {'cmd', 'shift'}, 'u'}),
+        launcher('',      'A', 'Applications Folder',  'Finder',  {action.keycombo, {'cmd',  'shift'}, 'a'}),
+        launcher('',      'D', 'Desktop',              'Finder',  {action.keycombo, {'cmd',  'shift'}, 'd'}),
+        launcher('shift', 'D', 'Downloads',            'Finder',  {action.keycombo, {'cmd',  'alt'},   'l'}),
+        launcher('',      'F', 'Finder',               'Finder'),
+        launcher('',      'G', 'Go to Folder...',      'Finder',  {action.keycombo, {'cmd',  'shift'}, 'g'}),
+        launcher('',      'H', 'Home',                 'Finder',  {action.keycombo, {'cmd',  'shift'}, 'h'}),
+        launcher('shift', 'H', 'Hammerspoon',          'Finder',
+                 {action.keycombo, {'cmd',  'shift'}, 'g'},
+                 {action.typetext, '~/.hammerspoon\n'}),
+        launcher('',      'I', 'iCloud Drive',         'Finder',  {action.keycombo, {'cmd',  'shift'}, 'i'}),
+        launcher('',      'K', 'Connect to Server...', 'Finder',  {action.keycombo, {'cmd'}, 'k'}),
+        launcher('',      'L', 'Library',              'Finder',  {action.keycombo, {'cmd',  'shift'}, 'l'}),
+        launcher('',      'N', 'Network',              'Finder',  {action.keycombo, {'cmd',  'shift'}, 'k'}),
+        launcher('',      'O', 'Documents',            'Finder',  {action.keycombo, {'cmd',  'shift'}, 'o'}),
+        launcher('',      'R', 'Recent',               'Finder',  {action.keycombo, {'cmd',  'shift'}, 'f'}),
+        launcher('',      'U', 'Utilities',            'Finder',  {action.keycombo, {'cmd',  'shift'}, 'u'}),
       }
   }
 
