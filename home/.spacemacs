@@ -52,7 +52,7 @@ This function should only modify configuration layer settings."
 
      markdown
      (csharp :variables csharp-backend 'lsp)
-     lsp
+     (lsp :variables lsp-file-watch-threshold 2000)
      (python :variables
              python-fill-column 99
              python-sort-imports-on-save t
