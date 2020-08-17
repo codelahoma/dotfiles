@@ -54,11 +54,11 @@ around variables comes from ~FryJay~'s original comments in the defaults file.
 * Config file structure
 
 The ~menuHammerDefaultConfig.lue~ file included in the spoon kicks right off
-with configuration variables and some initialization, which is not unusual in a script, but I'm going to
-move them to more of an appendix so we can get into the menus right away. Also
-I'm inserting a warning not to edit the tangled file. By storing the warning in
-a text source block in the Appendices, we eliminate the impression that this org
-file itself is saying not to edit /itself/.
+with configuration variables and some initialization, which is not unusual in a
+script, but I'm going to move them to more of an appendix so we can get into the
+menus right away. Also I'm inserting a warning not to edit the tangled file. By
+storing the warning in a text source block in the Appendices, we eliminate the
+impression that this org file itself is saying not to edit /itself/.
 
 #+name: top_block
 #+begin_src lua :tangle "menuHammerCustomConfig.lua" :noweb tangle
@@ -84,7 +84,8 @@ file itself is saying not to edit /itself/.
 
 * Menus
 
-Menus are what this config is all about, and using literate programming lets us get right into them.
+Menus are what this config is all about, and using literate programming lets us
+get right into them.
 
 The menus themselves are members of the list ~menuHammerMenuList~.
 
@@ -111,7 +112,8 @@ The menus themselves are members of the list ~menuHammerMenuList~.
 
 ** Main Menu
 
-Menus are referenced by name, so we'll create a local variable for each to minimize magic strings (meant as in the first meaning of [[https://en.wikipedia.org/wiki/Magic_number_(programming)][Magic Number]]).
+Menus are referenced by name, so we'll create a local variable for each to
+minimize magic strings (meant as in the first meaning of [[https://en.wikipedia.org/wiki/Magic_number_(programming)][Magic Number]]).
 
 #+begin_src lua :noweb-ref locals
   -- Main Menu
