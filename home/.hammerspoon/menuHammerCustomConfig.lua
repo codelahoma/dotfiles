@@ -3,8 +3,6 @@
 --- You should make any changes there and regenerate it from Emacs org-mode using C-c C-v t
 
 --- Local Variables
-action = cons.act
-entry_type = cons.cat
 -- Main Menu
 local mainMenu = "Main Menu"
 local helpMenu = "Help Menu"
@@ -20,6 +18,8 @@ local resolutionMenu = "Resolution Menu"
 local systemMenu = "System Menu"
 local textMenu = "Text Menu"
 local toggleMenu = "Toggle Menu"
+action = cons.act
+entry_type = cons.cat
 local logger = hs.logger.new('menuHammer')
 
 -- Preferences
@@ -148,6 +148,11 @@ if hs.screen.mainScreen():name() == "LG Ultra HD" then
 end
 
 -- Helper Functions
+function hammerspoonManual()
+  hs.doc.hsdocs.forceExternalBrowser(true)
+  hs.doc.hsdocs.moduleEntitiesInSidebar(true)
+  hs.doc.hsdocs.help()
+end
 local function submenu(modifier, key, description, menu, ...)
   additional_actions = {...}
   return {entry_type.submenu, modifier, key, description, {
@@ -172,11 +177,6 @@ local function url_opener(modifier, key, description, url)
   return {entry_type.action, modifier, key, description, {
             {action.openurl, url}
   }}
-end
-function hammerspoonManual()
-  hs.doc.hsdocs.forceExternalBrowser(true)
-  hs.doc.hsdocs.moduleEntitiesInSidebar(true)
-  hs.doc.hsdocs.help()
 end
 
 -- Menu Definitions

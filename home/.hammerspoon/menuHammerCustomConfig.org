@@ -10,7 +10,6 @@
 - [[#how-this-came-into-being][How this came into being.]]
 - [[#config-file-structure][Config file structure]]
 - [[#menus][Menus]]
-  - [[#menu-helpers][Menu Helpers]]
   - [[#main-menu][Main Menu]]
   - [[#help-menu][Help Menu]]
   - [[#application-menu][Application Menu]]
@@ -25,8 +24,8 @@
   - [[#system-menu][System Menu]]
   - [[#text-menu][Text Menu]]
   - [[#toggle-menu][Toggle Menu]]
-- [[#menu-list][Menu List]]
 - [[#appendices][Appendices]]
+  - [[#menu-helpers][Menu Helpers]]
   - [[#local-variables][Local Variables]]
   - [[#preferences][Preferences]]
     - [[#general-config][General Config]]
@@ -107,45 +106,6 @@ The menus themselves are members of the list ~menuHammerMenuList~.
     <<text_menu>>,
     <<toggle_menu>>,
   }
-#+end_src
-
-** Menu Helpers
-
-We can use local variables increase the readability of references to ~cons.*~
-
-#+begin_src lua :noweb-ref locals
-  action = cons.act
-  entry_type = cons.cat
-#+end_src
-
-Let's see if some helper functions can make it even more readable.
-
-#+begin_src lua :noweb-ref helper_functions
-  local function submenu(modifier, key, description, menu, ...)
-    additional_actions = {...}
-    return {entry_type.submenu, modifier, key, description, {
-              {action.menu, menu}, table.unpack(additional_actions)
-    }}
-  end
-
-  function launcher(modifier, key, description, app, ...)
-    additional_actions = {...}
-    return {entry_type.action, modifier, key, description, {
-              {action.launcher, app}, table.unpack(additional_actions)
-    }}
-  end
-
-  local function func(modifier, key, description, func)
-    return {entry_type.action, modifier, key, description, {
-              {action.func, func}
-    }}
-  end
-
-  local function url_opener(modifier, key, description, url)
-    return {entry_type.action, modifier, key, description, {
-              {action.openurl, url}
-    }}
-  end
 #+end_src
 
 
@@ -652,9 +612,47 @@ Menus are referenced by name, so we'll create a local variable for each to minim
     }
   }
 #+end_src
-* Menu List 
+
 * Appendices
 
+** Menu Helpers
+
+We can use local variables increase the readability of references to ~cons.*~
+
+#+begin_src lua :noweb-ref locals
+  action = cons.act
+  entry_type = cons.cat
+#+end_src
+
+Let's see if some helper functions can make it even more readable.
+
+#+begin_src lua :noweb-ref helper_functions
+  local function submenu(modifier, key, description, menu, ...)
+    additional_actions = {...}
+    return {entry_type.submenu, modifier, key, description, {
+              {action.menu, menu}, table.unpack(additional_actions)
+    }}
+  end
+
+  function launcher(modifier, key, description, app, ...)
+    additional_actions = {...}
+    return {entry_type.action, modifier, key, description, {
+              {action.launcher, app}, table.unpack(additional_actions)
+    }}
+  end
+
+  local function func(modifier, key, description, func)
+    return {entry_type.action, modifier, key, description, {
+              {action.func, func}
+    }}
+  end
+
+  local function url_opener(modifier, key, description, url)
+    return {entry_type.action, modifier, key, description, {
+              {action.openurl, url}
+    }}
+  end
+#+end_src
 ** Local Variables
 
 Set up a logger
@@ -855,5 +853,6 @@ On the LG 42" 4K, adjust for the downward drift of the screen
   This is a file generated from a literate programing source file located at :TBD:
   You should make any changes there and regenerate it from Emacs org-mode using C-c C-v t
 #+end_src
+
 
 
