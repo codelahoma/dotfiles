@@ -898,9 +898,10 @@ explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   (setq x-select-enable-clipboard nil)
   (define-key evil-visual-state-map (kbd "s-c") (kbd "\"+y"))
-  (define-key evil-insert-state-map  (kbd "s-v") (kbd "^R+"))
-  (define-key evil-ex-completion-map (kbd "s-v") (kbd "^R+"))
-  (define-key evil-ex-search-keymap  (kbd "s-v") (kbd "^R+"))
+  (define-key evil-insert-state-map  (kbd "s-v") (kbd "+"))
+  (define-key evil-ex-completion-map (kbd "s-v") (kbd "+"))
+  (define-key evil-ex-search-keymap  (kbd "s-v") (kbd "+"))
+
 
 
   (require 'window-purpose) ; workaround, should be unnecessary at some point.
