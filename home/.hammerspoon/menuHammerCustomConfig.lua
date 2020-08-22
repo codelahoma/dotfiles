@@ -3,8 +3,6 @@
 --- You should make any changes there and regenerate it from Emacs org-mode using C-c C-v t
 
 --- Local Variables
-action = cons.act
-entry_type = cons.cat
 -- Main Menu
 local mainMenu = "Main Menu"
 local helpMenu = "Help Menu"
@@ -15,14 +13,22 @@ local documentsMenu = "Documents Menu"
 local finderMenu = "Finder Menu"
 local hammerspoonMenu = "Hammerspoon Menu"
 local layoutMenu = "Layout Menu"
+local lo = {}
+
+lo.mainScreen = hs.screen{x=0, y=0}
+lo.nw60 = hs.geometry.new(0, 0, 0.25, 0.6)
+lo.sw40 = hs.geometry.new(0, 0.6, 0.25, 0.4)
+lo.mid50 = hs.geometry.new(0.25, 0, 0.5, 1)
 local mediaMenu = "Media Menu"
 local resolutionMenu = "Resolution Menu"
 local systemMenu = "System Menu"
 local textMenu = "Text Menu"
 local toggleMenu = "Toggle Menu"
+action = cons.act
+entry_type = cons.cat
 local logger = hs.logger.new('menuHammer')
 
--- Preferences
+--- Preferences
 menuShowInFullscreen = true
 showMenuBarItem = true
 -- The number of seconds that a hotkey alert will stay on screen.
@@ -147,7 +153,12 @@ if hs.screen.mainScreen():name() == "LG Ultra HD" then
   menuRowHeight = 50
 end
 
--- Helper Functions
+--- Helper Functions
+function hammerspoonManual()
+  hs.doc.hsdocs.forceExternalBrowser(true)
+  hs.doc.hsdocs.moduleEntitiesInSidebar(true)
+  hs.doc.hsdocs.help()
+end
 local function submenu(modifier, key, description, menu, ...)
   additional_actions = {...}
   return {entry_type.submenu, modifier, key, description, {
@@ -173,13 +184,24 @@ local function url_opener(modifier, key, description, url)
             {action.openurl, url}
   }}
 end
-function hammerspoonManual()
-  hs.doc.hsdocs.forceExternalBrowser(true)
-  hs.doc.hsdocs.moduleEntitiesInSidebar(true)
-  hs.doc.hsdocs.help()
+
+--- Layout Functions
+local function everyDayCarry()
+   local mainScreen = hs.screen{x=0,y=0}
+   applications = {"Google Chrome",  "Slack", "iTerm2", "/Applications/Emacs.app"}
+   for _, app in ipairs(applications) do
+      hs.application.launchOrFocus(app)
+   end
+   local layout = {
+      {"Google Chrome", nil, lo.mainScreen, hs.layout.right25, nil, nil},
+      {hs.application.get('com.tinyspeck.slackmacgap'), nil, lo.mainScreen, lo.sw40, nil, nil},
+      {"Emacs", nil, lo.mainScreen, lo.mid50, nil, nil},
+      {"iTerm2", nil, lo.mainScreen, lo.nw60, nil, nil},
+   }
+   hs.layout.apply(layout)
 end
 
--- Menu Definitions
+--- Menu Definitions
 menuHammerMenuList = {
   ------------------------------------------------------------------------------------------------
   -- Main Menu
@@ -330,25 +352,27 @@ menuHammerMenuList = {
       parentMenu = mainMenu,
       menuHotkey = nil,
       menuItems = {
-        launcher('',      'A', 'Applications Folder',  'Finder',  {action.keycombo, {'cmd',  'shift'}, 'a'}),
-        launcher('',      'D', 'Desktop',              'Finder',  {action.keycombo, {'cmd',  'shift'}, 'd'}),
-        launcher('shift', 'D', 'Downloads',            'Finder',  {action.keycombo, {'cmd',  'alt'},   'l'}),
-        launcher('',      'F', 'Finder',               'Finder'),
-        launcher('',      'G', 'Go to Folder...',      'Finder',  {action.keycombo, {'cmd',  'shift'}, 'g'}),
-        launcher('',      'H', 'Home',                 'Finder',  {action.keycombo, {'cmd',  'shift'}, 'h'}),
-        launcher('shift', 'H', 'Hammerspoon',          'Finder',
+        launcher('',               'A',                  'Applications Folder',  'Finder',  {action.keycombo, {'cmd',  'shift'}, 'a'}),
+        launcher('',               'D',                  'Downloads',            'Finder',  {action.keycombo, {'cmd',  'alt'},   'l'}),
+        launcher('shift',          'D',                  'Dropbox',              'Finder',
                  {action.keycombo, {'cmd',  'shift'}, 'g'},
+                 {action.typetext, '~/Dropbox\n'}),
+        launcher('alt',            'D',                  'Desktop',              'Finder',  {action.keycombo, {'cmd',  'shift'}, 'd'}),
+        launcher('',               'F',                  'Finder',               'Finder'),
+        launcher('',               'G',                  'Go to Folder...',      'Finder',  {action.keycombo, {'cmd',  'shift'}, 'g'}),
+        launcher('',               'H',                  'Home',                 'Finder',  {action.keycombo, {'cmd',  'shift'}, 'h'}),
+        launcher('shift',          'H',                  'Hammerspoon',          'Finder',
+                 {action.keycombo, {'cmd',               'shift'},               'g'},
                  {action.typetext, '~/.hammerspoon\n'}),
-        launcher('',      'I', 'iCloud Drive',         'Finder',  {action.keycombo, {'cmd',  'shift'}, 'i'}),
-        launcher('',      'K', 'Connect to Server...', 'Finder',  {action.keycombo, {'cmd'}, 'k'}),
-        launcher('',      'L', 'Library',              'Finder',  {action.keycombo, {'cmd',  'shift'}, 'l'}),
-        launcher('',      'N', 'Network',              'Finder',  {action.keycombo, {'cmd',  'shift'}, 'k'}),
-        launcher('',      'O', 'Documents',            'Finder',  {action.keycombo, {'cmd',  'shift'}, 'o'}),
-        launcher('',      'R', 'Recent',               'Finder',  {action.keycombo, {'cmd',  'shift'}, 'f'}),
-        launcher('',      'U', 'Utilities',            'Finder',  {action.keycombo, {'cmd',  'shift'}, 'u'}),
+        launcher('',               'I',                  'iCloud Drive',         'Finder',  {action.keycombo, {'cmd',  'shift'}, 'i'}),
+        launcher('',               'K',                  'Connect to Server...', 'Finder',  {action.keycombo, {'cmd'}, 'k'}),
+        launcher('',               'L',                  'Library',              'Finder',  {action.keycombo, {'cmd',  'shift'}, 'l'}),
+        launcher('',               'N',                  'Network',              'Finder',  {action.keycombo, {'cmd',  'shift'}, 'k'}),
+        launcher('',               'O',                  'Documents',            'Finder',  {action.keycombo, {'cmd',  'shift'}, 'o'}),
+        launcher('',               'R',                  'Recent',               'Finder',  {action.keycombo, {'cmd',  'shift'}, 'f'}),
+        launcher('',               'U',                  'Utilities',            'Finder',  {action.keycombo, {'cmd',  'shift'}, 'u'}),
       }
-  }
-  ,
+  },
   [hammerspoonMenu] = {
     parentMenu = mainMenu,
     menuHotkey = nil,
@@ -375,39 +399,16 @@ menuHammerMenuList = {
       parentMenu = mainMenu,
       menuHotkey = nil,
       menuItems = {
-        {cons.cat.action, '', 'E', "Every Day Carry", {
-           {cons.act.func, function()
-              -- See Hammerspoon layout documentation for more info on this
-              local mainScreen = hs.screen{x=0,y=0}
-              local nw60 = hs.geometry.new(0, 0, 0.25, 0.6)
-              local sw40 = hs.geometry.new(0, 0.6, 0.25, 0.4)
-              local mid50 = hs.geometry.new(0.25, 0, 0.5, 1)
-              applications = {"Google Chrome",  "Slack", "iTerm2", "/Applications/Emacs.app"}
-              for _, app in ipairs(applications) do
-                hs.application.launchOrFocus(app)
-              end
-              local layout = {
-                {"Google Chrome", nil, mainScreen, nw60, nil, nil},
-                {"Slack", nil, mainScreen, sw40, nil, nil},
-                {"Emacs", nil, mainScreen, mid50, nil, nil},
-                {"iTerm2", nil, mainScreen, hs.layout.right25, nil, nil},
-              }
-              hs.layout.apply(layout)
-           end }
-        }},
+         func('', 'E', 'Every Day Carry', everyDayCarry),
         {cons.cat.action, '', 'D', "Dev Ops", {
            {cons.act.func, function()
               -- See Hammerspoon layout documentation for more info on this
-              local mainScreen = hs.screen{x=0,y=0}
-              local nw60 = hs.geometry.new(0, 0, 0.25, 0.6)
-              local sw40 = hs.geometry.new(0, 0.6, 0.25, 0.4)
-              local mid50 = hs.geometry.new(0.25, 0, 0.5, 1)
               hs.layout.apply({
-                  {"Google Chrome", nil, mainScreen, nw60, nil, nil},
-                  {"Microsoft Edge", nil, mainScreen, nw60, nil, nil},
-                  {"Slack", nil, mainScreen, sw40, nil, nil},
-                  {"Emacs", nil, mainScreen, mid50, nil, nil},
-                  {"iTerm2", nil, mainScreen, hs.layout.right25, nil, nil},
+                  {"Google Chrome", nil, lo.mainScreen, lo.nw60, nil, nil},
+                  {"AWS Console", nil, lo.mainScreen, lo.nw60, nil, nil},
+                  {"Slack", nil, lo.mainScreen, lo.sw40, nil, nil},
+                  {"Emacs", nil,lo.mainScreen, lo.mid50, nil, nil},
+                  {"iTerm2", nil, lo.mainScreen, hs.layout.right25, nil, nil},
               })
            end }
         }},
