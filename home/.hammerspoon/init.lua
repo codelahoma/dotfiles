@@ -55,12 +55,16 @@ JiraApp = "org.epichrome.eng.SummitJIRA"
 -- SmcaApp = DefaultBrowser
 -- OpsGenieApp = DefaultBrowser
 AWSConsoleApp = "org.epichrome.eng.AWSConsole"
+TeamsApp = "org.epichrome.eng.Teams"
 
 Install:andUse("URLDispatcher",
                {
                  config = {
                    url_patterns = {
                      { "https?://summitesp.atlassian.net",          JiraApp },
+                     { "https?://open.spotify.com", "com.spotify.client"},
+                     { "https?://teams.microsoft.com", TeamsApp},
+                     { "https?://.*.console.aws.amazon.com", TeamsApp},
                      -- { "https?://issue.swisscom.com",         JiraApp },
                      -- { "https?://jira.swisscom.com",          JiraApp },
                      -- { "https?://wiki.swisscom.com",          WikiApp },
@@ -158,11 +162,12 @@ if machine == "codelahoma" then
   hotkey.bind(hyper, "q", appLauncher('qutebrowser'))
   hotkey.bind(hyper, "r", hs.reload)
   hotkey.bind(hyper, "s", appLauncher('Skype for Business'))
+  hotkey.bind(hyper, "u", appLauncher('Teams'))
   hotkey.bind(hyper, "v", pasteLauncher())
   hotkey.bind(hyper, "y", appLauncher('Summit Jira'))
   hotkey.bind(hyper, "0", centerOnMainDisplay)
   hotkey.bind(hyper, "1", appLauncher('1Password 7'))
-  hotkey.bind(hyper, ";", appLauncher('Spotify'))
+  -- hotkey.bind(hyper, ";", appLauncher('Spotify'))
 end
 
 menuModal = hs.hotkey.modal.new(hyper, "n")

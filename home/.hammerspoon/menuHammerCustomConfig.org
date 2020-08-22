@@ -10,7 +10,6 @@
 - [[#how-this-came-into-being][How this came into being.]]
 - [[#config-file-structure][Config file structure]]
 - [[#menus][Menus]]
-  - [[#menu-helpers][Menu Helpers]]
   - [[#main-menu][Main Menu]]
   - [[#help-menu][Help Menu]]
   - [[#application-menu][Application Menu]]
@@ -25,8 +24,8 @@
   - [[#system-menu][System Menu]]
   - [[#text-menu][Text Menu]]
   - [[#toggle-menu][Toggle Menu]]
-- [[#menu-list][Menu List]]
 - [[#appendices][Appendices]]
+  - [[#menu-helpers][Menu Helpers]]
   - [[#local-variables][Local Variables]]
   - [[#preferences][Preferences]]
     - [[#general-config][General Config]]
@@ -55,11 +54,11 @@ around variables comes from ~FryJay~'s original comments in the defaults file.
 * Config file structure
 
 The ~menuHammerDefaultConfig.lue~ file included in the spoon kicks right off
-with configuration variables and some initialization, which is not unusual in a script, but I'm going to
-move them to more of an appendix so we can get into the menus right away. Also
-I'm inserting a warning not to edit the tangled file. By storing the warning in
-a text source block in the Appendices, we eliminate the impression that this org
-file itself is saying not to edit /itself/.
+with configuration variables and some initialization, which is not unusual in a
+script, but I'm going to move them to more of an appendix so we can get into the
+menus right away. Also I'm inserting a warning not to edit the tangled file. By
+storing the warning in a text source block in the Appendices, we eliminate the
+impression that this org file itself is saying not to edit /itself/.
 
 #+name: top_block
 #+begin_src lua :tangle "menuHammerCustomConfig.lua" :noweb tangle
@@ -69,13 +68,16 @@ file itself is saying not to edit /itself/.
   --- Local Variables
   <<locals>>
 
-  -- Preferences
+  --- Preferences
   <<preferences>>
 
-  -- Helper Functions
+  --- Helper Functions
   <<helper_functions>>
 
-  -- Menu Definitions
+  --- Layout Functions
+  <<layout_functions>>
+
+  --- Menu Definitions
   <<menus>>
 #+end_src
 
@@ -85,7 +87,8 @@ file itself is saying not to edit /itself/.
 
 * Menus
 
-Menus are what this config is all about, and using literate programming lets us get right into them.
+Menus are what this config is all about, and using literate programming lets us
+get right into them.
 
 The menus themselves are members of the list ~menuHammerMenuList~.
 
@@ -109,49 +112,11 @@ The menus themselves are members of the list ~menuHammerMenuList~.
   }
 #+end_src
 
-** Menu Helpers
-
-We can use local variables increase the readability of references to ~cons.*~
-
-#+begin_src lua :noweb-ref locals
-  action = cons.act
-  entry_type = cons.cat
-#+end_src
-
-Let's see if some helper functions can make it even more readable.
-
-#+begin_src lua :noweb-ref helper_functions
-  local function submenu(modifier, key, description, menu, ...)
-    additional_actions = {...}
-    return {entry_type.submenu, modifier, key, description, {
-              {action.menu, menu}, table.unpack(additional_actions)
-    }}
-  end
-
-  function launcher(modifier, key, description, app, ...)
-    additional_actions = {...}
-    return {entry_type.action, modifier, key, description, {
-              {action.launcher, app}, table.unpack(additional_actions)
-    }}
-  end
-
-  local function func(modifier, key, description, func)
-    return {entry_type.action, modifier, key, description, {
-              {action.func, func}
-    }}
-  end
-
-  local function url_opener(modifier, key, description, url)
-    return {entry_type.action, modifier, key, description, {
-              {action.openurl, url}
-    }}
-  end
-#+end_src
-
 
 ** Main Menu
 
-Menus are referenced by name, so we'll create a local variable for each to minimize magic strings (meant as in the first meaning of [[https://en.wikipedia.org/wiki/Magic_number_(programming)][Magic Number]]).
+Menus are referenced by name, so we'll create a local variable for each to
+minimize magic strings (meant as in the first meaning of [[https://en.wikipedia.org/wiki/Magic_number_(programming)][Magic Number]]).
 
 #+begin_src lua :noweb-ref locals
   -- Main Menu
@@ -381,25 +346,27 @@ Menus are referenced by name, so we'll create a local variable for each to minim
       parentMenu = mainMenu,
       menuHotkey = nil,
       menuItems = {
-        launcher('',      'A', 'Applications Folder',  'Finder',  {action.keycombo, {'cmd',  'shift'}, 'a'}),
-        launcher('',      'D', 'Desktop',              'Finder',  {action.keycombo, {'cmd',  'shift'}, 'd'}),
-        launcher('shift', 'D', 'Downloads',            'Finder',  {action.keycombo, {'cmd',  'alt'},   'l'}),
-        launcher('',      'F', 'Finder',               'Finder'),
-        launcher('',      'G', 'Go to Folder...',      'Finder',  {action.keycombo, {'cmd',  'shift'}, 'g'}),
-        launcher('',      'H', 'Home',                 'Finder',  {action.keycombo, {'cmd',  'shift'}, 'h'}),
-        launcher('shift', 'H', 'Hammerspoon',          'Finder',
+        launcher('',               'A',                  'Applications Folder',  'Finder',  {action.keycombo, {'cmd',  'shift'}, 'a'}),
+        launcher('',               'D',                  'Downloads',            'Finder',  {action.keycombo, {'cmd',  'alt'},   'l'}),
+        launcher('shift',          'D',                  'Dropbox',              'Finder',
                  {action.keycombo, {'cmd',  'shift'}, 'g'},
+                 {action.typetext, '~/Dropbox\n'}),
+        launcher('alt',            'D',                  'Desktop',              'Finder',  {action.keycombo, {'cmd',  'shift'}, 'd'}),
+        launcher('',               'F',                  'Finder',               'Finder'),
+        launcher('',               'G',                  'Go to Folder...',      'Finder',  {action.keycombo, {'cmd',  'shift'}, 'g'}),
+        launcher('',               'H',                  'Home',                 'Finder',  {action.keycombo, {'cmd',  'shift'}, 'h'}),
+        launcher('shift',          'H',                  'Hammerspoon',          'Finder',
+                 {action.keycombo, {'cmd',               'shift'},               'g'},
                  {action.typetext, '~/.hammerspoon\n'}),
-        launcher('',      'I', 'iCloud Drive',         'Finder',  {action.keycombo, {'cmd',  'shift'}, 'i'}),
-        launcher('',      'K', 'Connect to Server...', 'Finder',  {action.keycombo, {'cmd'}, 'k'}),
-        launcher('',      'L', 'Library',              'Finder',  {action.keycombo, {'cmd',  'shift'}, 'l'}),
-        launcher('',      'N', 'Network',              'Finder',  {action.keycombo, {'cmd',  'shift'}, 'k'}),
-        launcher('',      'O', 'Documents',            'Finder',  {action.keycombo, {'cmd',  'shift'}, 'o'}),
-        launcher('',      'R', 'Recent',               'Finder',  {action.keycombo, {'cmd',  'shift'}, 'f'}),
-        launcher('',      'U', 'Utilities',            'Finder',  {action.keycombo, {'cmd',  'shift'}, 'u'}),
+        launcher('',               'I',                  'iCloud Drive',         'Finder',  {action.keycombo, {'cmd',  'shift'}, 'i'}),
+        launcher('',               'K',                  'Connect to Server...', 'Finder',  {action.keycombo, {'cmd'}, 'k'}),
+        launcher('',               'L',                  'Library',              'Finder',  {action.keycombo, {'cmd',  'shift'}, 'l'}),
+        launcher('',               'N',                  'Network',              'Finder',  {action.keycombo, {'cmd',  'shift'}, 'k'}),
+        launcher('',               'O',                  'Documents',            'Finder',  {action.keycombo, {'cmd',  'shift'}, 'o'}),
+        launcher('',               'R',                  'Recent',               'Finder',  {action.keycombo, {'cmd',  'shift'}, 'f'}),
+        launcher('',               'U',                  'Utilities',            'Finder',  {action.keycombo, {'cmd',  'shift'}, 'u'}),
       }
   }
-
 #+end_src
 
 
@@ -441,47 +408,48 @@ Menus are referenced by name, so we'll create a local variable for each to minim
 
 #+begin_src lua :noweb-ref locals
   local layoutMenu = "Layout Menu"
+  local lo = {}
+
+  lo.mainScreen = hs.screen{x=0, y=0}
+  lo.nw60 = hs.geometry.new(0, 0, 0.25, 0.6)
+  lo.sw40 = hs.geometry.new(0, 0.6, 0.25, 0.4)
+  lo.mid50 = hs.geometry.new(0.25, 0, 0.5, 1)
 #+end_src
 
-#+name: layout_menu
+#+name: layout_functions
 #+begin_src lua
+  local function everyDayCarry()
+     local mainScreen = hs.screen{x=0,y=0}
+     applications = {"Google Chrome",  "Slack", "iTerm2", "/Applications/Emacs.app"}
+     for _, app in ipairs(applications) do
+        hs.application.launchOrFocus(app)
+     end
+     local layout = {
+        {"Google Chrome", nil, lo.mainScreen, hs.layout.right25, nil, nil},
+        {hs.application.get('com.tinyspeck.slackmacgap'), nil, lo.mainScreen, lo.sw40, nil, nil},
+        {"Emacs", nil, lo.mainScreen, lo.mid50, nil, nil},
+        {"iTerm2", nil, lo.mainScreen, lo.nw60, nil, nil},
+     }
+     hs.layout.apply(layout)
+  end
+#+end_src
+
+#+name: layout_menu 
+#+begin_src lua 
   [layoutMenu] = {
       parentMenu = mainMenu,
       menuHotkey = nil,
       menuItems = {
-        {cons.cat.action, '', 'E', "Every Day Carry", {
-           {cons.act.func, function()
-              -- See Hammerspoon layout documentation for more info on this
-              local mainScreen = hs.screen{x=0,y=0}
-              local nw60 = hs.geometry.new(0, 0, 0.25, 0.6)
-              local sw40 = hs.geometry.new(0, 0.6, 0.25, 0.4)
-              local mid50 = hs.geometry.new(0.25, 0, 0.5, 1)
-              applications = {"Google Chrome",  "Slack", "iTerm2", "/Applications/Emacs.app"}
-              for _, app in ipairs(applications) do
-                hs.application.launchOrFocus(app)
-              end
-              local layout = {
-                {"Google Chrome", nil, mainScreen, nw60, nil, nil},
-                {"Slack", nil, mainScreen, sw40, nil, nil},
-                {"Emacs", nil, mainScreen, mid50, nil, nil},
-                {"iTerm2", nil, mainScreen, hs.layout.right25, nil, nil},
-              }
-              hs.layout.apply(layout)
-           end }
-        }},
+         func('', 'E', 'Every Day Carry', everyDayCarry),
         {cons.cat.action, '', 'D', "Dev Ops", {
            {cons.act.func, function()
               -- See Hammerspoon layout documentation for more info on this
-              local mainScreen = hs.screen{x=0,y=0}
-              local nw60 = hs.geometry.new(0, 0, 0.25, 0.6)
-              local sw40 = hs.geometry.new(0, 0.6, 0.25, 0.4)
-              local mid50 = hs.geometry.new(0.25, 0, 0.5, 1)
               hs.layout.apply({
-                  {"Google Chrome", nil, mainScreen, nw60, nil, nil},
-                  {"Microsoft Edge", nil, mainScreen, nw60, nil, nil},
-                  {"Slack", nil, mainScreen, sw40, nil, nil},
-                  {"Emacs", nil, mainScreen, mid50, nil, nil},
-                  {"iTerm2", nil, mainScreen, hs.layout.right25, nil, nil},
+                  {"Google Chrome", nil, lo.mainScreen, lo.nw60, nil, nil},
+                  {"AWS Console", nil, lo.mainScreen, lo.nw60, nil, nil},
+                  {"Slack", nil, lo.mainScreen, lo.sw40, nil, nil},
+                  {"Emacs", nil,lo.mainScreen, lo.mid50, nil, nil},
+                  {"iTerm2", nil, lo.mainScreen, hs.layout.right25, nil, nil},
               })
            end }
         }},
@@ -652,9 +620,47 @@ Menus are referenced by name, so we'll create a local variable for each to minim
     }
   }
 #+end_src
-* Menu List 
+
 * Appendices
 
+** Menu Helpers
+
+We can use local variables increase the readability of references to ~cons.*~
+
+#+begin_src lua :noweb-ref locals
+  action = cons.act
+  entry_type = cons.cat
+#+end_src
+
+Let's see if some helper functions can make it even more readable.
+
+#+begin_src lua :noweb-ref helper_functions
+  local function submenu(modifier, key, description, menu, ...)
+    additional_actions = {...}
+    return {entry_type.submenu, modifier, key, description, {
+              {action.menu, menu}, table.unpack(additional_actions)
+    }}
+  end
+
+  function launcher(modifier, key, description, app, ...)
+    additional_actions = {...}
+    return {entry_type.action, modifier, key, description, {
+              {action.launcher, app}, table.unpack(additional_actions)
+    }}
+  end
+
+  local function func(modifier, key, description, func)
+    return {entry_type.action, modifier, key, description, {
+              {action.func, func}
+    }}
+  end
+
+  local function url_opener(modifier, key, description, url)
+    return {entry_type.action, modifier, key, description, {
+              {action.openurl, url}
+    }}
+  end
+#+end_src
 ** Local Variables
 
 Set up a logger
@@ -855,5 +861,6 @@ On the LG 42" 4K, adjust for the downward drift of the screen
   This is a file generated from a literate programing source file located at :TBD:
   You should make any changes there and regenerate it from Emacs org-mode using C-c C-v t
 #+end_src
+
 
 
