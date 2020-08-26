@@ -4,12 +4,30 @@
 
   (setq org-directory "~/Dropbox/org/")
   (setq gtd-directory (concat org-directory "gtd/"))
+  (defalias `rk/org-file (apply-partially 'concat org-directory))
+  (defalias `rk/gtd-file (apply-partially 'concat gtd-directory))
 
   (add-to-list 'org-modules 'org-protocol)
   (add-to-list 'org-modules 'org-tempo)
   (add-to-list 'org-modules 'ox-jira)
   (setq org-jira-working-dir org-directory)
   (setq org-agenda-files  (append (list org-jira-working-dir) (list gtd-directory)))
+
+  (defun my-org-agenda-skip-all-siblings-but-first ()
+    "Skip all but the first non-done entry."
+    (let (should-skip-entry)
+      (unless (org-current-is-todo)
+        (setq should-skip-entry t))
+      (save-excursion
+        (while (and (not should-skip-entry) (org-goto-sibling t))
+          (when (org-current-is-todo)
+            (setq should-skip-entry t))))
+      (when should-skip-entry
+        (or (outline-next-heading)
+            (goto-char (point-max))))))
+	
+  (defun org-current-is-todo ()
+    (string= "TODO" (org-get-todo-state)))
 
   (defun transform-square-brackets-to-round-ones(string-to-transform)
     "Transforms [ into ( and ] into ), other chars left unchanged."
@@ -21,25 +39,60 @@
                                 ("t" "Todos")
                                 ("tl" "Todo with Link" entry (file+headline ,(concat gtd-directory "inbox.org") "INBOX") "* TODO %?\n  %i\n  %a")
                                 ("tt" "Todo" entry (file+headline ,(concat gtd-directory "inbox.org") "INBOX") "* TODO %?\n  %i\n")
-                                ("ts" "Summit Todo" entry (file+olp  ,(concat gtd-directory "gtd.org")"Summit" "INBOX")
-                                 ("tT" "Tickler" entry
-                                  (file+headline "~/gtd/tickler.org" "Tickler")
-                                  "* %i%? \n %U")
-                                ("j" "Journal" entry (file+datetree  "journal.org")
-                                 "* %?\nEntered on %U\n  %i\n  %a" :unnarrowed t)
-                                )))
+                                ("ts" "Summit Todo" entry (file+olp  ,(concat gtd-directory "gtd.org")"Summit" "INBOX")"* TODO %?\n  %i\n")
+                                ("tS" "Summit Todo with Link" entry (file+olp  ,(concat gtd-directory "gtd.org")"Summit" "INBOX")"* TODO %?\n  %i\n  %a")
+                                ("tT" "Tickler" entry (file+headline ,(concat gtd-directory "tickler.org") "Tickler") "* %i%? \n %U")
+                                ("j" "Journal" entry (file+datetree  "journal.org") "* %?\nEntered on %U\n  %i\n  %a" :unnarrowed t)
+                                ))
 
   (global-set-key "\C-cb" 'org-switchb)
 
+  (setq rk/work-org-files (-flatten (list
+                                     (rk/org-file "CI.org") 
+                                     (rk/org-file "SI.org")
+                                     (rk/org-file "SK.org")
+                                     (rk/org-file "work.org")
+
+                                     (rk/gtd-file "inbox.org")
+                                     (rk/gtd-file "gtd.org")
+                                     (rk/gtd-file "tickler.org")
+
+                                     (file-expand-wildcards "~/summit/*/TODOs.org")
+                                     )))
+
+  (setq rk/home-org-files (list
+                           (rk/org-file "home.org")
+
+                           (rk/gtd-file "inbox.org")
+                           (rk/gtd-file "gtd.org")
+                           (rk/gtd-file "tickler.org")
+                           ))
+
   (setq org-agenda-custom-commands
-        '(("w" "Work"
-           ((agenda "" ((org-agenda-span 1)))
-            (tags-todo "@summit" ((org-agenda-overriding-header "Summit")))
+        '(("h" "Home"
+           ((agenda "" ((org-agenda-span 3)))
             (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
             (todo "WAITING" ((org-agenda-overriding-header "Waiting")))
-            (todo "TODO" ((org-agenda-overriding-header "Todo")))
+            (todo "TODO" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/home-org-files) ))
+            ()))
+          ("s" "Summit"
+           ((agenda "" ((org-agenda-span 3)))
+            (tags-todo "@summit" ((org-agenda-overriding-header "Summit") (org-agenda-files rk/work-org-files)))
+            (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
+            (todo "WAITING" ((org-agenda-overriding-header "Waiting")))
+            (todo "TODO|BACKLOG|IN-PROGRESS" ((org-agenda-overriding-header "Todo")))
             ()))))
 
+  (add-to-list 'org-agenda-custom-commands
+               '("W" "Weekly review"
+                 agenda ""
+                 ((org-agenda-span 'week)
+                  (org-agenda-start-on-weekday 0)
+                  (org-agenda-start-with-log-mode '(closed clock))
+                  (org-agenda-skip-function
+                   '(org-agenda-skip-entry-if 'nottodo 'done))
+                  )
+                 ))
   ;; (setq org-startup-indented t)
   (add-to-list 'org-file-apps '(directory . emacs))
 
@@ -68,12 +121,12 @@
           (sequence "BACKLOG"
                     "IN-PROGRESS"
                     "WAITING"
-                    "CODE-COMPLETE"
                     "CHANGES-REQUESTED"
+                    "|"
+                    "CODE-COMPLETE"
                     "ASG-TESTING"
                     "READY-FOR_TEST"
                     "TESTING"
-                    "|"
                     "QA"
                     "RELEASED"
                     "CLOSED"
