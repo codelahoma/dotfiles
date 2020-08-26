@@ -154,6 +154,14 @@ if hs.screen.mainScreen():name() == "LG Ultra HD" then
 end
 
 --- Helper Functions
+local function focusSlackChatWindow()
+   slackChatWindow = hs.window.find('^Slack.*%d?%d:%d%d$')
+   if slackChatWindow then
+      slackChatWindow:focus()
+   end
+end
+
+
 function hammerspoonManual()
   hs.doc.hsdocs.forceExternalBrowser(true)
   hs.doc.hsdocs.moduleEntitiesInSidebar(true)
@@ -228,6 +236,8 @@ menuHammerMenuList = {
           submenu('shift', 'M',     'Media Controls',     mediaMenu),
   
           launcher('',     'O',     'Slack',              'Slack'),
+          func('shift', 'O', 'Slack Chat', focusSlackChatWindow),
+  
   
           submenu('',      'R',     'Resolution',         resolutionMenu),
   
