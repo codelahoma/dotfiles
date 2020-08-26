@@ -123,6 +123,17 @@ minimize magic strings (meant as in the first meaning of [[https://en.wikipedia.
   local mainMenu = "Main Menu"
 #+end_src
 
+#+begin_src lua :noweb-ref helper_functions
+  local function focusSlackChatWindow()
+     slackChatWindow = hs.window.find('^Slack.*%d?%d:%d%d$')
+     if slackChatWindow then
+        slackChatWindow:focus()
+     end
+  end
+
+
+#+end_src
+
 #+name: main_menu
 #+begin_src lua 
   ------------------------------------------------------------------------------------------------
@@ -150,6 +161,8 @@ minimize magic strings (meant as in the first meaning of [[https://en.wikipedia.
           submenu('shift', 'M',     'Media Controls',     mediaMenu),
 
           launcher('',     'O',     'Slack',              'Slack'),
+          func('shift', 'O', 'Slack Chat', focusSlackChatWindow),
+
 
           submenu('',      'R',     'Resolution',         resolutionMenu),
 
