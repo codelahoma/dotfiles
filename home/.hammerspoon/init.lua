@@ -110,7 +110,7 @@ local function appLauncher(app)
       launched = application.launchOrFocusByBundleID(app)
     end
 
-    wonkyAppsThatFocusButReturnFalse = {'iTerm'}
+    wonkyAppsThatFocusButReturnFalse = {'iTerm', '/Applications/Emacs.app'}
     for _, v in ipairs(wonkyAppsThatFocusButReturnFalse) do
        if v == app then
           return
@@ -180,7 +180,7 @@ b - Brave Browser Dev
 c - AWS Console
 d - Dash
 e - Excel
-j - JIRA
+m - MailMate
 p - Postman
 s - Spark
 v - Paste
@@ -209,7 +209,7 @@ menuModal:bind("", "b", "Brave Browser Dev", nil, function() application.launchO
 menuModal:bind("", "c", "AWS Console", nil, function() application.launchOrFocus("AWS Console") menuModal:exit() end, nil)
 menuModal:bind("", "d", "dash", nil, function() application.launchOrFocus("Dash") menuModal:exit() end, nil)
 menuModal:bind("", "e", "excel", nil, function() application.launchOrFocus("Microsoft Excel") menuModal:exit() end, nil)
-menuModal:bind("", "j", "JIRA", nil, function() application.launchOrFocus("Summit Jira") menuModal:exit() end, nil)
+menuModal:bind("", "m", "MailMate", nil, function() application.launchOrFocus("MailMate") menuModal:exit() end, nil)
 menuModal:bind("", "p", "postman", nil, function() application.launchOrFocus("Postman") menuModal:exit() end, nil)
 menuModal:bind("", "s", "spark", nil, function() application.launchOrFocus("Spark") menuModal:exit() end, nil)
 menuModal:bind("", "v", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") menuModal:exit() end, nil)
