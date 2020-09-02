@@ -37,8 +37,8 @@
 
   (setq org-capture-templates `(
                                 ("t" "Todos")
-                                ("tl" "Todo with Link" entry (file+headline ,(concat gtd-directory "inbox.org") "INBOX") "* TODO %?\n  %i\n  %a")
-                                ("tt" "Todo" entry (file+headline ,(concat gtd-directory "inbox.org") "INBOX") "* TODO %?\n  %i\n")
+                                ("tl" "Todo with Link" entry (file ,(concat gtd-directory "inbox.org")) "* TODO %?\n  %i\n  %a")
+                                ("tt" "Todo" entry (file ,(concat gtd-directory "inbox.org")) "* TODO %?\n  %i\n")
                                 ("ts" "Summit Todo" entry (file+olp  ,(concat gtd-directory "gtd.org")"Summit" "INBOX")"* TODO %?\n  %i\n")
                                 ("tS" "Summit Todo with Link" entry (file+olp  ,(concat gtd-directory "gtd.org")"Summit" "INBOX")"* TODO %?\n  %i\n  %a")
                                 ("tT" "Tickler" entry (file+headline ,(concat gtd-directory "tickler.org") "Tickler") "* %i%? \n %U")
@@ -133,7 +133,7 @@
                     "COMPLETE"
                     "MERGED")
 
-          (sequence "MEETING(m)" "|" "CANCELLED(l@)")))
+          (sequence "MEETING(m)" "|" "IGNORED(t)" "CANCELLED(l@)")))
 
   (setq org-catch-invisible-edits t)
 
