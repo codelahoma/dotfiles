@@ -223,7 +223,7 @@ The KSheet spoon provides for showing the keybindings for the currently active a
 
   local function pasteLauncher()
     return function()
-      hs.eventtap.keyStroke({"cmd", "shift"}, "v")
+      hs.eventtap.keyStroke({"ctrl", "alt", "cmd"}, "p")
     end
   end
 #+end_src
