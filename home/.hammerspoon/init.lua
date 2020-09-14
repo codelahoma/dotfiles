@@ -125,7 +125,7 @@ end
 
 local function pasteLauncher()
   return function()
-    hs.eventtap.keyStroke({"cmd", "shift"}, "v")
+    hs.eventtap.keyStroke({"ctrl", "alt", "cmd"}, "p")
   end
 end
 
