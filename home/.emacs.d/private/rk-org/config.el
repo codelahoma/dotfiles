@@ -10,6 +10,8 @@
   (add-to-list 'org-modules 'org-protocol)
   (add-to-list 'org-modules 'org-tempo)
   (add-to-list 'org-modules 'ox-jira)
+  (add-to-list 'org-modules 'org-checklist)
+
   (setq org-jira-working-dir org-directory)
   (setq org-agenda-files  (append (list org-jira-working-dir) (list gtd-directory)))
 
@@ -56,6 +58,7 @@
                                      (rk/gtd-file "inbox.org")
                                      (rk/gtd-file "gtd.org")
                                      (rk/gtd-file "tickler.org")
+                                     (rk/gtd-file "someday.org")
 
                                      (file-expand-wildcards "~/summit/*/TODOs.org")
                                      )))
@@ -66,14 +69,18 @@
                            (rk/gtd-file "inbox.org")
                            (rk/gtd-file "gtd.org")
                            (rk/gtd-file "tickler.org")
+                           (rk/gtd-file "someday.org")
                            ))
 
   (setq org-agenda-custom-commands
         '(("h" "Home"
            ((agenda "" ((org-agenda-span 3)))
             (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
-            (todo "WAITING" ((org-agenda-overriding-header "Waiting")))
-            (todo "TODO" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/home-org-files) ))
+            (tags "-@summit+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
+            (tags-todo "-@summit" (
+                                   (org-agenda-overriding-header "Todo")
+                                   (org-agenda-files rk/home-org-files)
+                                   (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
             ()))
           ("s" "Summit"
            ((agenda "" ((org-agenda-span 3)))
@@ -81,7 +88,17 @@
             (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
             (todo "WAITING" ((org-agenda-overriding-header "Waiting")))
             (todo "TODO|BACKLOG|IN-PROGRESS" ((org-agenda-overriding-header "Todo")))
-            ()))))
+            ()))
+          ("W" "Weekly review"
+           agenda ""
+           ((org-agenda-span 'week)
+            (org-agenda-start-on-weekday 0)
+            (org-agenda-start-with-log-mode '(closed clock))
+            (org-agenda-skip-function
+             '(org-agenda-skip-entry-if 'nottodo 'done))
+            )
+           )
+          ))
 
   (add-to-list 'org-agenda-custom-commands
                '("W" "Weekly review"
