@@ -356,6 +356,10 @@ It should only modify the values of Spacemacs settings."
    ;; Default font or prioritized list of fonts.
    ;; dotspacemacs-default-font '("Source Code Pro"
    dotspacemacs-default-font '(
+                               ("Inconsolata Nerd Font"
+                                :size 18.0
+                                :weight normal
+                                :width normal)
                                ("Monoid Nerd Font"
                                 :size 13.0
                                 :weight normal
