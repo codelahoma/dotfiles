@@ -32,7 +32,9 @@
 (defconst rk-org-packages
   '(
     (org-protocol :location built-in)
-  )
+    )
+
+
   "The list of Lisp packages required by the rk-org layer.
 
 Each entry is either:
