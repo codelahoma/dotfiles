@@ -54,7 +54,7 @@ JiraApp = "org.epichrome.eng.SummitJIRA"
 -- CollabApp = DefaultBrowser
 -- SmcaApp = DefaultBrowser
 -- OpsGenieApp = DefaultBrowser
-AWSConsoleApp = "org.epichrome.eng.AWSConsole"
+AWSConsoleApp = "org.epichrome.eng.AWSConsol386"
 TeamsApp = "org.epichrome.eng.Teams"
 
 Install:andUse("URLDispatcher",
@@ -167,7 +167,7 @@ if machine == "codelahoma" then
   hotkey.bind(hyper, "y", appLauncher('Summit Jira'))
   hotkey.bind(hyper, "0", centerOnMainDisplay)
   hotkey.bind(hyper, "1", appLauncher('1Password 7'))
-  -- hotkey.bind(hyper, ";", appLauncher('Spotify'))
+  hotkey.bind(hyper, ";", appLauncher('Spotify'))
 end
 
 menuModal = hs.hotkey.modal.new(hyper, "n")
@@ -206,7 +206,7 @@ menuModal:bind("", "escape", " not this time...", nil, function() menuModal:exit
 -- menuModal:bind("", "d", "today", nil, function() hs.eventtap.keyStrokes(os.date("%F")) menuModal:exit() end, nil)
 menuModal:bind("", "a", "activity", nil, function() application.launchOrFocus("Activity Monitor") menuModal:exit() end, nil)
 menuModal:bind("", "b", "Brave Browser Dev", nil, function() application.launchOrFocus("Brave Browser Dev") menuModal:exit() end, nil)
-menuModal:bind("", "c", "AWS Console", nil, function() application.launchOrFocus("AWS Console") menuModal:exit() end, nil)
+menuModal:bind("", "c", "AWS Console", nil, function() application.launchOrFocusByBundleID("org.epichrome.eng.AWSConsol386") menuModal:exit() end, nil)
 menuModal:bind("", "d", "dash", nil, function() application.launchOrFocus("Dash") menuModal:exit() end, nil)
 menuModal:bind("", "e", "excel", nil, function() application.launchOrFocus("Microsoft Excel") menuModal:exit() end, nil)
 menuModal:bind("", "m", "MailMate", nil, function() application.launchOrFocus("MailMate") menuModal:exit() end, nil)

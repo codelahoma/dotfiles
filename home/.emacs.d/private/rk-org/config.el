@@ -12,6 +12,8 @@
   (add-to-list 'org-modules 'ox-jira)
   (add-to-list 'org-modules 'org-checklist)
 
+  (setq org-tags-exclude-from-inheritance (list "project"))
+
   (setq org-jira-working-dir org-directory)
   (setq org-agenda-files  (append (list org-jira-working-dir) (list gtd-directory)))
 
@@ -84,10 +86,11 @@
             ()))
           ("s" "Summit"
            ((agenda "" ((org-agenda-span 3)))
-            (tags-todo "@summit" ((org-agenda-overriding-header "Summit") (org-agenda-files rk/work-org-files)))
+            (tags-todo "@summit" ((org-agenda-overriding-header "Summit") (org-agenda-files rk/work-org-files) (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
             (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
-            (todo "WAITING" ((org-agenda-overriding-header "Waiting")))
-            (todo "TODO|BACKLOG|IN-PROGRESS" ((org-agenda-overriding-header "Todo")))
+            (tags "-@home-home+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
+            (tags "project" ((org-agenda-overriding-header "Projects")))
+            (todo "TODO|BACKLOG|IN-PROGRESS" ((org-agenda-overriding-header "Todo") (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
             ()))
           ("W" "Weekly review"
            agenda ""
@@ -127,7 +130,7 @@
 
   (setq org-refile-targets '((org-agenda-files :maxlevel . 3)))
   (setq org-refile-use-outline-path 'file)
-  (setq org-outline-path-complete-in-steps nil)
+  ;; (setq org-outline-path-complete-in-steps nil)
   (setq org-refile-allow-creating-parent-nodes 'confirm)
   (setq org-clock-persist 'history)
   (org-clock-persistence-insinuate)

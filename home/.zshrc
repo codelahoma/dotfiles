@@ -6,6 +6,9 @@ ZSH=$HOME/.oh-my-zsh
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+iterm2_print_user_vars() {
+    iterm2_set_user_var gitBranch $((git branch 2> /dev/null) | grep \* | cut -c3-)
+}
 ITERM2_SQUELCH_MARK=1
 
 if [ -n "$INSIDE_EMACS" ]; then
