@@ -63,8 +63,8 @@ This function should only modify configuration layer settings."
              python-auto-set-local-pyenv-version 'on-visit
              python-test-runner 'pytest
              python-backend 'lsp
-             python-lsp-server 'mspyls
-             python-lsp-git-root "~/github/python-language-server"
+             python-lsp-server 'pyright
+             ;; python-lsp-git-root "~/github/python-language-server"
              python-formatter 'black
              python-format-on-save t
              )
@@ -78,8 +78,8 @@ This function should only modify configuration layer settings."
             c-c++-backend 'rtags
             c-c++-default-mode-for-headers 'c++-mode)
      (plantuml :variables
-               plantuml-jar-path "/usr/local/Cellar/plantuml/1.2019.6/libexec/plantuml.jar"
-               org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2019.6/libexec/plantuml.jar")
+               plantuml-jar-path "/usr/local/opt/plantuml/libexec/plantuml.jar"
+               org-plantuml-jar-path "/usr/local/opt/plantuml/libexec/plantuml.jar")
 
      command-log
      restclient
@@ -965,12 +965,12 @@ you should place your code here."
 
   (setq create-lockfiles nil)
 
-  (defun rk-python-hook ()
-    (progn 
-      (highlight-lines-matching-regexp "^ *class " 'hi-salmon)
-      (highlight-lines-matching-regexp "^ *def " 'hi-aquamarine)))
+  ;; (defun rk-python-hook ()
+  ;;   (progn 
+  ;;     (highlight-lines-matching-regexp "^ *class " 'hi-salmon)
+  ;;     (highlight-lines-matching-regexp "^ *def " 'hi-aquamarine)))
 
-  (add-hook 'python-mode-hook #'rk-python-hook)
+  ;; (add-hook 'python-mode-hook #'rk-python-hook)
 
   (with-eval-after-load 'python-mode
     (flycheck-select-checker 'python-flake8))
