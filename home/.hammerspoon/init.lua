@@ -97,36 +97,38 @@ Install:andUse("KSheet", {
 })
 
 local function centerOnMainDisplay()
-  local bigScreen = screen.find('LG Ultra HD')
-  if bigScreen then
-    window.focusedWindow():centerOnScreen(bigScreen)
-  end
+   local bigScreen = screen.find('LG Ultra HD')
+   if bigScreen then
+      window.focusedWindow():centerOnScreen(bigScreen)
+   else
+      window.focusedWindow():centerOnScreen()
+   end
 end
 
 local function appLauncher(app)
-  return function()
-    launched = application.launchOrFocus(app) 
-    if not launched then
-      launched = application.launchOrFocusByBundleID(app)
-    end
+   return function()
+      launched = application.launchOrFocus(app) 
+      if not launched then
+         launched = application.launchOrFocusByBundleID(app)
+      end
 
-    wonkyAppsThatFocusButReturnFalse = {'iTerm', '/Applications/Emacs.app'}
-    for _, v in ipairs(wonkyAppsThatFocusButReturnFalse) do
-       if v == app then
-          return
-       end
-    end
+      wonkyAppsThatFocusButReturnFalse = {'iTerm', '/Applications/Emacs.app'}
+      for _, v in ipairs(wonkyAppsThatFocusButReturnFalse) do
+         if v == app then
+            return
+         end
+      end
 
-    if not launched then
-          hs.alert(app .. " not found")
-    end
-  end
+      if not launched then
+         hs.alert(app .. " not found")
+      end
+   end
 end
 
 local function pasteLauncher()
-  return function()
-    hs.eventtap.keyStroke({"ctrl", "alt", "cmd"}, "p")
-  end
+   return function()
+      hs.eventtap.keyStroke({"ctrl", "alt", "cmd"}, "p")
+   end
 end
 
 if machine == "codelahoma-mbp" then
