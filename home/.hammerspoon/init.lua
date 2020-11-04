@@ -143,7 +143,7 @@ if machine == "codelahoma-mbp" then
   hotkey.bind(hyper, "v", pasteLauncher())
   hotkey.bind(hyper, "0", centerOnMainDisplay)
   hotkey.bind(hyper, "1", appLauncher('1Password 7'))
-  hotkey.bind(hyper, "u", appLauncher('Spotify'))
+  hotkey.bind(hyper, ";", appLauncher('Spotify'))
 end
 
 if machine == "codelahoma" then
