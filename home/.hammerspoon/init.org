@@ -208,7 +208,7 @@ The KSheet spoon provides for showing the keybindings for the currently active a
         launched = application.launchOrFocusByBundleID(app)
       end
 
-      wonkyAppsThatFocusButReturnFalse = {'iTerm', '/Applications/Emacs.app'}
+      wonkyAppsThatFocusButReturnFalse = {'Teams', 'iTerm', '/Applications/Emacs.app'}
       for _, v in ipairs(wonkyAppsThatFocusButReturnFalse) do
          if v == app then
             return
