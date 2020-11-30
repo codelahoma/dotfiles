@@ -64,7 +64,7 @@ Install:andUse("URLDispatcher",
                      { "https?://summitesp.atlassian.net",          JiraApp },
                      { "https?://open.spotify.com", "com.spotify.client"},
                      { "https?://teams.microsoft.com", TeamsApp},
-                     { "https?://.*.console.aws.amazon.com", TeamsApp},
+                     { "https?://.*.console.aws.amazon.com", AWSConsoleApp},
                      -- { "https?://issue.swisscom.com",         JiraApp },
                      -- { "https?://jira.swisscom.com",          JiraApp },
                      -- { "https?://wiki.swisscom.com",          WikiApp },
@@ -96,33 +96,47 @@ Install:andUse("KSheet", {
                  }
 })
 
+_centeredWindowsFormerPositions = {}
+
 local function centerOnMainDisplay()
+   local win = window.focusedWindow()
+   local formerPosition = _centeredWindowsFormerPositions[win:id()]
    local bigScreen = screen.find('LG Ultra HD')
-   if bigScreen then
-      window.focusedWindow():centerOnScreen(bigScreen)
-   else
-      window.focusedWindow():centerOnScreen()
+
+   hs.console.printStyledtext(hs.inspect(formerPosition))
+
+   if formerPosition then
+      win:move(formerPosition)
+      _centeredWindowsFormerPositions[win:id()] = nil
+   else 
+      _centeredWindowsFormerPositions[win:id()] = win:frame()
+      win:centerOnScreen()
+      if bigScreen then
+         win:centerOnScreen(bigScreen)
+      else
+         win:centerOnScreen()
+      end
    end
 end
 
 local function appLauncher(app)
-   return function()
-      launched = application.launchOrFocus(app) 
-      if not launched then
-         launched = application.launchOrFocusByBundleID(app)
-      end
+  return function()
+    launched = application.launchOrFocus(app) 
+    if not launched then
+      launched = application.launchOrFocusByBundleID(app)
+    end
 
-      wonkyAppsThatFocusButReturnFalse = {'iTerm', '/Applications/Emacs.app'}
-      for _, v in ipairs(wonkyAppsThatFocusButReturnFalse) do
-         if v == app then
-            return
-         end
-      end
+    wonkyAppsThatFocusButReturnFalse = {'Teams', 'iTerm', '/Applications/Emacs.app'}
+    for _, v in ipairs(wonkyAppsThatFocusButReturnFalse) do
+       if v == app then
+          return
+       end
+    end
 
-      if not launched then
-         hs.alert(app .. " not found")
-      end
-   end
+    if not launched then
+          hs.alert(app .. " not found")
+    end
+  end
 end
 
 local function pasteLauncher()
@@ -149,21 +163,18 @@ if machine == "codelahoma-mbp" then
 end
 
 if machine == "codelahoma" then
-  hotkey.bind(hyper, "b", appLauncher('Books'))
   hotkey.bind(hyper, "c", hs.toggleConsole)
   hotkey.bind(hyper, "d", appLauncher('Dash'))
   hotkey.bind(hyper, "e", appLauncher('Finder'))
-  hotkey.bind(hyper, "f", appLauncher('Firefox'))
   hotkey.bind(hyper, "h", appLauncher('VMware Horizon Client'))
   hotkey.bind(hyper, "i", appLauncher('iTerm'))
   hotkey.bind(hyper, "j", appLauncher('/Applications/Emacs.app'))
   hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
   hotkey.bind(hyper, "m", appLauncher('Microsoft Edge'))
   hotkey.bind(hyper, "o", appLauncher('Slack'))
-  hotkey.bind(hyper, "p", appLauncher('Pycharm'))
+  hotkey.bind(hyper, "p", appLauncher('MongoDB Compass'))
   hotkey.bind(hyper, "q", appLauncher('qutebrowser'))
   hotkey.bind(hyper, "r", hs.reload)
-  hotkey.bind(hyper, "s", appLauncher('Skype for Business'))
   hotkey.bind(hyper, "u", appLauncher('Teams'))
   hotkey.bind(hyper, "v", pasteLauncher())
   hotkey.bind(hyper, "y", appLauncher('Summit Jira'))
@@ -184,7 +195,8 @@ d - Dash
 e - Excel
 m - MailMate
 p - Postman
-s - Spark
+s - Stickies
+u - Visual Studio Code
 v - Paste
 
 ESC - exit
@@ -213,7 +225,8 @@ menuModal:bind("", "d", "dash", nil, function() application.launchOrFocus("Dash"
 menuModal:bind("", "e", "excel", nil, function() application.launchOrFocus("Microsoft Excel") menuModal:exit() end, nil)
 menuModal:bind("", "m", "MailMate", nil, function() application.launchOrFocus("MailMate") menuModal:exit() end, nil)
 menuModal:bind("", "p", "postman", nil, function() application.launchOrFocus("Postman") menuModal:exit() end, nil)
-menuModal:bind("", "s", "spark", nil, function() application.launchOrFocus("Spark") menuModal:exit() end, nil)
+menuModal:bind("", "s", "stickies", nil, function() application.launchOrFocus("Stickies") menuModal:exit() end, nil)
+menuModal:bind("", "u", "Visual Studio Code", nil, function() application.launchOrFocus("Visual Studio Code") menuModal:exit() end, nil)
 menuModal:bind("", "v", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") menuModal:exit() end, nil)
 
 caffeine = hs.menubar.new()
