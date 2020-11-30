@@ -31,3 +31,18 @@ export PATH="$PYENV_ROOT/bin:$PATH"
 if command -v pyenv 1>/dev/null 2>&1; then  eval "$(pyenv init - --no-rehash)";fi
 
 if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+
+if [[ "$(uname -s)"  == "Darwin" ]] ; then
+
+    # Adopted SDK workaround from @marcosgomesborges
+    [[ -n "$MACOSX_DEPLOYMENT_TARGET"  ]]  || export MACOSX_DEPLOYMENT_TARGET="$(sw_vers -productVersion | cut -c -5)"    # e.g.: 10.14
+    [[ -n "$SDKROOT" ]]                    || export SDKROOT="$(xcrun --show-sdk-path)"
+
+    # Workaround for OpenSSL header/library paths (for GCC & LINKER)
+    pfx_openssl="$(brew --prefix openssl)"  # Change this if openssl was not installed via homebrew 
+    if [[ -d "$pfx_openssl" ]]  ; then
+        export CPATH="${pfx_openssl}/include:${CPATH}"                # Headers for C pre-processor
+        export LIBRARY_PATH="${pfx_openssl}/lib:${LIBRARY_PATH}"      # libraries (for the linker)
+    fi
+
+fi
