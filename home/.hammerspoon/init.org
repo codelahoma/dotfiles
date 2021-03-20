@@ -274,7 +274,7 @@ end
   if machine == "codelahoma" then
     hotkey.bind(hyper, "c", hs.toggleConsole)
     hotkey.bind(hyper, "d", appLauncher('Dash'))
-    hotkey.bind(hyper, "e", appLauncher('Finder'))
+    hotkey.bind(hyper, "e", appLauncher('Postman'))
     hotkey.bind(hyper, "h", appLauncher('VMware Horizon Client'))
     hotkey.bind(hyper, "i", appLauncher('iTerm'))
     hotkey.bind(hyper, "j", appLauncher('/Applications/Emacs.app'))
@@ -333,7 +333,7 @@ end
   -- menuModal:bind("", "d", "today", nil, function() hs.eventtap.keyStrokes(os.date("%F")) menuModal:exit() end, nil)
   menuModal:bind("", "a", "activity", nil, function() application.launchOrFocus("Activity Monitor") menuModal:exit() end, nil)
   menuModal:bind("", "b", "Brave Browser Dev", nil, function() application.launchOrFocus("Brave Browser Dev") menuModal:exit() end, nil)
-  menuModal:bind("", "c", "AWS Console", nil, function() application.launchOrFocusByBundleID("org.epichrome.eng.AWSConsol386") menuModal:exit() end, nil)
+  menuModal:bind("", "c", "AWS Console", nil, function() application.launchOrFocusByBundleID("org.epichrome.eng.AWSConsole") menuModal:exit() end, nil)
   menuModal:bind("", "d", "dash", nil, function() application.launchOrFocus("Dash") menuModal:exit() end, nil)
   menuModal:bind("", "e", "excel", nil, function() application.launchOrFocus("Microsoft Excel") menuModal:exit() end, nil)
   menuModal:bind("", "m", "MailMate", nil, function() application.launchOrFocus("MailMate") menuModal:exit() end, nil)

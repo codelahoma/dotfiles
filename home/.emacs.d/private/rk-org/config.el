@@ -45,9 +45,8 @@
                                 ("tt" "Todo" entry (file ,(concat gtd-directory "inbox.org")) "* TODO %?\n  %i\n")
                                 ("ts" "Summit Todo" entry (file+olp  ,(concat gtd-directory "gtd.org")"Summit" "INBOX")"* TODO %?\n  %i\n")
                                 ("tS" "Summit Todo with Link" entry (file+olp  ,(concat gtd-directory "gtd.org")"Summit" "INBOX")"* TODO %?\n  %i\n  %a")
-                                ("tT" "Tickler" entry (file+headline ,(concat gtd-directory "tickler.org") "Tickler") "* %i%? \n %U")
-                                ("j" "Journal" entry (file+datetree  "journal.org") "* %?\nEntered on %U\n  %i\n  %a" :unnarrowed t)
-                                ))
+                                ("tT" "Tickler" entry (file+headline ,(concat gtd-directory "tickler.org") "Tickler") "* %i%? \n %U"))
+        )
 
   (global-set-key "\C-cb" 'org-switchb)
 
@@ -55,7 +54,6 @@
                                      (rk/org-file "CI.org") 
                                      (rk/org-file "SI.org")
                                      (rk/org-file "SK.org")
-                                     (rk/org-file "work.org")
 
                                      (rk/gtd-file "inbox.org")
                                      (rk/gtd-file "gtd.org")
@@ -84,13 +82,18 @@
                                    (org-agenda-files rk/home-org-files)
                                    (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
             ()))
+          ("j" "JIRA"
+           ((agenda "" ((org-agenda-span 3)))
+            (tags-todo "+JIRA" ((org-agenda-overriding-header "JIRA") (org-agenda-files rk/work-org-files) (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
+            (tags "-@home-home+TODO=\"IN-PROGRESS\"" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/work-org-files) (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
+            ()))
           ("s" "Summit"
            ((agenda "" ((org-agenda-span 3)))
             (tags-todo "@summit" ((org-agenda-overriding-header "Summit") (org-agenda-files rk/work-org-files) (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
             (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
             (tags "-@home-home+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
             (tags "project" ((org-agenda-overriding-header "Projects")))
-            (todo "TODO|BACKLOG|IN-PROGRESS" ((org-agenda-overriding-header "Todo") (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
+            (tags "-@home-home+TODO=\"IN-PROGRESS\"" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/work-org-files) (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
             ()))
           ("W" "Weekly review"
            agenda ""
@@ -136,7 +139,7 @@
   (org-clock-persistence-insinuate)
 
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d@)" "CANCELLED(c@)")
+        '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d@)" "CANCELLED(c@) DONE(e)")
           ;; keyword in org-jira files.
           (sequence "BACKLOG"
                     "IN-PROGRESS"

@@ -1,5 +1,4 @@
 PATH="/Users/rodk/.local/bin:~/bin:/usr/local/bin:/usr/local/sbin:/opt/local/bin:/opt/local/sbin:~/usr/local/opt/coreutils/libexec/gnubin:/Library/Android/sdk/tools:~/Library/Android/sdk/platform-tools:$PATH"
-export PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 export PATH="/Users/rodk/bin:/usr/local/opt/qt@5.5/bin:$PATH"
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
 
@@ -28,9 +27,9 @@ export PATH="$PYENV_ROOT/bin:$PATH"
 
 # [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
 
-if command -v pyenv 1>/dev/null 2>&1; then  eval "$(pyenv init - --no-rehash)";fi
+# if command -v pyenv 1>/dev/null 2>&1; then  eval "$(pyenv init - --no-rehash)";fi
 
-if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+# if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
 
 if [[ "$(uname -s)"  == "Darwin" ]] ; then
 
@@ -39,7 +38,7 @@ if [[ "$(uname -s)"  == "Darwin" ]] ; then
     [[ -n "$SDKROOT" ]]                    || export SDKROOT="$(xcrun --show-sdk-path)"
 
     # Workaround for OpenSSL header/library paths (for GCC & LINKER)
-    pfx_openssl="$(brew --prefix openssl)"  # Change this if openssl was not installed via homebrew 
+    pfx_openssl="/usr/local/opt/openssl@1.1"  # Change this if openssl was not installed via homebrew 
     if [[ -d "$pfx_openssl" ]]  ; then
         export CPATH="${pfx_openssl}/include:${CPATH}"                # Headers for C pre-processor
         export LIBRARY_PATH="${pfx_openssl}/lib:${LIBRARY_PATH}"      # libraries (for the linker)
