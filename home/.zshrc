@@ -10,6 +10,7 @@ iterm2_print_user_vars() {
     iterm2_set_user_var gitBranch $((git branch 2> /dev/null) | grep \* | cut -c3-)
 }
 ITERM2_SQUELCH_MARK=1
+# export ZSH_THEME="lambda-mod"
 
 if [ -n "$INSIDE_EMACS" ]; then
     export ZSH_THEME="lambda-mod"
@@ -166,7 +167,7 @@ alias ohmyzsh="emacsclient -n ~/.oh-my-zsh"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=( brew colored-man-pages common-aliases django docker-compose docker iterm2 pyenv fasd git github npm  osx virtualenv wakatime)
+plugins=( brew colored-man-pages common-aliases django docker-compose docker iterm2 fasd git github npm  osx wakatime)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -187,6 +188,7 @@ alias le='open -a /usr/local/opt/emacs-plus/Emacs.app'
 alias -g C='| wc -l'
 alias hl='highlight -O xterm256'
 alias -g HL='|highlight -O xterm256 -'
+alias -g F='| fx'
 alias xmlf='xmllint --format '
 alias susalt='ssh saltmaster-3 sudo salt'
 alias ss="script/stop && script/start -d && script/attach --tail=100 &"
@@ -211,13 +213,8 @@ fpath=($HOME/.homesick/repos/homeshick/completions $fpath)
 if which swiftenv > /dev/null; then eval "$(swiftenv init -)"; fi
 
 NVM_DIR=~/.nvm
-if [ -n "$INSIDE_EMACS" ]; then
-    [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-else
-    alias loadrvm='[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"'
-    alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"'
-fi
+alias loadrvm='[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"'
+alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"'
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
@@ -228,7 +225,7 @@ if [[ -f ~/.zshrc.local ]]; then
 fi
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 export DISPLAY_MAC=`ifconfig en0 | grep "inet " | cut -d " " -f2`:0
 
@@ -240,3 +237,10 @@ function startx() {
 }
 
 alias dgui='docker run -e DISPLAY=$DISPLAY_MAC -it'
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
+
+alias bsalt="ssh -t saltmaster vim /srv"
+alias esalt="ssh -t saltmaster sudo vim /srv"
+alias penv='eval "$(pyenv init -)"'
