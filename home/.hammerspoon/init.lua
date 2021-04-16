@@ -198,6 +198,7 @@ p - Postman
 s - Stickies
 u - Visual Studio Code
 v - Paste
+w - WVD (Microsoft Remote Desktop)
 
 ESC - exit
 ]]
@@ -228,6 +229,7 @@ menuModal:bind("", "p", "postman", nil, function() application.launchOrFocus("Po
 menuModal:bind("", "s", "stickies", nil, function() application.launchOrFocus("Stickies") menuModal:exit() end, nil)
 menuModal:bind("", "u", "Visual Studio Code", nil, function() application.launchOrFocus("Visual Studio Code") menuModal:exit() end, nil)
 menuModal:bind("", "v", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") menuModal:exit() end, nil)
+menuModal:bind("", "w", "Microsoft Remote Desktop", nil, function() application.launchOrFocus("Microsoft Remote Desktop") menuModal:exit() end, nil)
 
 caffeine = hs.menubar.new()
 hs.caffeinate.set("system", true, false)
