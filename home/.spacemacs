@@ -70,8 +70,9 @@ This function should only modify configuration layer settings."
              python-auto-set-local-pyenv-version 'on-visit
              python-test-runner 'pytest
              python-backend 'lsp
-             python-lsp-server 'pyright
-             ;; python-lsp-git-root "~/github/python-language-server"
+             ;; python-lsp-server 'pyright
+             python-lsp-server 'mspyls
+             python-lsp-git-root "~/github/python-language-server"
              python-formatter 'black
              python-format-on-save t
              )
