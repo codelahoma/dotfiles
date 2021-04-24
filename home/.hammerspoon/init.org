@@ -131,44 +131,49 @@ The [[http://www.hammerspoon.org/Spoons/WindowGrid.html][WindowGrid]] spoon sets
 #+begin_src lua :exports none
   -- DefaultBrowser = "com.brave.Browser.dev"
   DefaultBrowser = "com.google.Chrome"
-  JiraApp = "org.epichrome.eng.SummitJIRA"
+  JiraApp = "org.epichrome.app.SummitJIR049"
   -- WikiApp = "org.epichrome.eng.Wiki"
   -- CollabApp = DefaultBrowser
   -- SmcaApp = DefaultBrowser
   -- OpsGenieApp = DefaultBrowser
-  AWSConsoleApp = "org.epichrome.eng.AWSConsol386"
+  AWSConsoleApp = "org.epichrome.app.AWSConsol607"
   TeamsApp = "org.epichrome.eng.Teams"
+  MicrosoftEdge = "com.microsoft.edgemac"
 
-  Install:andUse("URLDispatcher",
-                 {
-                   config = {
-                     url_patterns = {
-                       { "https?://summitesp.atlassian.net",          JiraApp },
-                       { "https?://open.spotify.com", "com.spotify.client"},
-                       { "https?://teams.microsoft.com", TeamsApp},
-                       { "https?://.*.console.aws.amazon.com", AWSConsoleApp},
-                       -- { "https?://issue.swisscom.com",         JiraApp },
-                       -- { "https?://jira.swisscom.com",          JiraApp },
-                       -- { "https?://wiki.swisscom.com",          WikiApp },
-                       -- { "https?://collaboration.swisscom.com", CollabApp },
-                       -- { "https?://smca.swisscom.com",          SmcaApp },
-                       -- { "https?://app.opsgenie.com",           OpsGenieApp },
-                       -- { "https?://app.eu.opsgenie.com",        OpsGenieApp },
-                       -- { "msteams:",                            "com.microsoft.teams" }
-                     },
-                     url_redir_decoders = {
-                     --   { "Office 365 safelinks check",
-                     --     "https://eur03.safelinks.protection.outlook.com/(.*)\\?url=(.-)&.*",
-                     --     "%2" },
-                     --   { "MS Teams URLs",
-                     --     "(https://teams.microsoft.com.*)", "msteams:%1", true }
-                     },
-                     default_handler = DefaultBrowser
-                   },
-                   start = true,
-                   --                   loglevel = 'debug'
-                 }
-  )
+  if machine == "codelahoma" then
+    Install:andUse("URLDispatcher",
+                  {
+                    config = {
+                      url_patterns = {
+                        { "https?://summitesp.atlassian.net",          JiraApp },
+                        { "https?://open.spotify.com", "com.spotify.client"},
+                        { "https?://teams.microsoft.com", TeamsApp},
+                        { "https?://.*.console.aws.amazon.com", AWSConsoleApp},
+                        { "https?://.*office.com", MicrosoftEdge},
+                        { "https?://.*sentry.com", MicrosoftEdge},
+                        -- { "https?://issue.swisscom.com",         JiraApp },
+                        -- { "https?://jira.swisscom.com",          JiraApp },
+                        -- { "https?://wiki.swisscom.com",          WikiApp },
+                        -- { "https?://collaboration.swisscom.com", CollabApp },
+                        -- { "https?://smca.swisscom.com",          SmcaApp },
+                        -- { "https?://app.opsgenie.com",           OpsGenieApp },
+                        -- { "https?://app.eu.opsgenie.com",        OpsGenieApp },
+                        -- { "msteams:",                            "com.microsoft.teams" }
+                      },
+                      url_redir_decoders = {
+                      --   { "Office 365 safelinks check",
+                      --     "https://eur03.safelinks.protection.outlook.com/(.*)\\?url=(.-)&.*",
+                      --     "%2" },
+                      --   { "MS Teams URLs",
+                      --     "(https://teams.microsoft.com.*)", "msteams:%1", true }
+                      },
+                      default_handler = DefaultBrowser
+                    },
+                    start = true,
+                    --                   loglevel = 'debug'
+                  }
+    )
+  end
 #+end_src
 
 * Global Key Bindings
