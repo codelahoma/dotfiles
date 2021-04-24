@@ -44,4 +44,6 @@ if [[ "$(uname -s)"  == "Darwin" ]] ; then
         export LIBRARY_PATH="${pfx_openssl}/lib:${LIBRARY_PATH}"      # libraries (for the linker)
     fi
 
+    ulimit -n unlimited
+
 fi
