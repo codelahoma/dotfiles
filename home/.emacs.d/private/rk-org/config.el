@@ -4,8 +4,10 @@
 
   (setq org-directory "~/Dropbox/org/")
   (setq gtd-directory (concat org-directory "gtd/"))
+  (setq org-id-track-globally t)
   (defalias `rk/org-file (apply-partially 'concat org-directory))
   (defalias `rk/gtd-file (apply-partially 'concat gtd-directory))
+
 
   (add-to-list 'org-modules 'org-protocol)
   (add-to-list 'org-modules 'org-tempo)
@@ -44,6 +46,7 @@
                                 ("tl" "Todo with Link" entry (file ,(concat gtd-directory "inbox.org")) "* TODO %?\n  %i\n  %a")
                                 ("tt" "Todo" entry (file ,(concat gtd-directory "inbox.org")) "* TODO %?\n  %i\n")
                                 ("ts" "Summit Todo" entry (file+olp  ,(concat gtd-directory "gtd.org")"Summit" "INBOX")"* TODO %?\n  %i\n")
+                                ("tn" "Summit Note" item (file+olp  ,(concat gtd-directory "gtd.org")"Summit" "Notes")"Note taken %T\nWhile viewing: %f\n\n %?\n")
                                 ("tS" "Summit Todo with Link" entry (file+olp  ,(concat gtd-directory "gtd.org")"Summit" "INBOX")"* TODO %?\n  %i\n  %a")
                                 ("tT" "Tickler" entry (file+headline ,(concat gtd-directory "tickler.org") "Tickler") "* %i%? \n %U"))
         )
@@ -53,7 +56,7 @@
   (setq rk/work-org-files (-flatten (list
                                      (rk/org-file "CI.org") 
                                      (rk/org-file "SI.org")
-                                     (rk/org-file "SK.org")
+                                     (rk/org-file "DEVOPS.org")
 
                                      (rk/gtd-file "inbox.org")
                                      (rk/gtd-file "gtd.org")
@@ -93,7 +96,7 @@
             (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
             (tags "-@home-home+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
             (tags "project" ((org-agenda-overriding-header "Projects")))
-            (tags "-@home-home+TODO=\"IN-PROGRESS\"" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/work-org-files) (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
+            (tags "-@home-home+TODO=\"IN-PROGRESS\"" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/work-org-files)))
             ()))
           ("W" "Weekly review"
            agenda ""
