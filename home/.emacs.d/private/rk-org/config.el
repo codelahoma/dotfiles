@@ -15,6 +15,7 @@
   (add-to-list 'org-modules 'org-checklist)
 
   (setq org-tags-exclude-from-inheritance (list "project"))
+  (setq org-list-allow-alphabetical t)
 
   (setq org-jira-working-dir org-directory)
   (setq org-agenda-files  (append (list org-jira-working-dir) (list gtd-directory)))
@@ -43,12 +44,12 @@
 
   (setq org-capture-templates `(
                                 ("t" "Todos")
-                                ("tl" "Todo with Link" entry (file ,(concat gtd-directory "inbox.org")) "* TODO %?\n  %i\n  %a")
-                                ("tt" "Todo" entry (file ,(concat gtd-directory "inbox.org")) "* TODO %?\n  %i\n")
-                                ("ts" "Summit Todo" entry (file+olp  ,(concat gtd-directory "gtd.org")"Summit" "INBOX")"* TODO %?\n  %i\n")
-                                ("tn" "Summit Note" item (file+olp  ,(concat gtd-directory "gtd.org")"Summit" "Notes")"Note taken %T\nWhile viewing: %f\n\n %?\n")
-                                ("tS" "Summit Todo with Link" entry (file+olp  ,(concat gtd-directory "gtd.org")"Summit" "INBOX")"* TODO %?\n  %i\n  %a")
-                                ("tT" "Tickler" entry (file+headline ,(concat gtd-directory "tickler.org") "Tickler") "* %i%? \n %U"))
+                                ("tl" "Todo with Link" entry (file ,(rk/gtd-file "inbox.org")) "* TODO %?\n  %i\n  %a")
+                                ("tt" "Todo" entry (file ,(rk/gtd-file "inbox.org")) "* TODO %?\n  %i\n")
+                                ;; ("ts" "Summit Todo" entry (file+olp  ,(rk/gtd-file "gtd.org")"Summit" "INBOX")"* TODO %?\n  %i\n")
+                                ;; ("tn" "Summit Note" item (file+olp  ,(rk/gtd-file "gtd.org")"Summit" "Notes")"Note taken %T\nWhile viewing: %f\n\n %?\n")
+                                ;; ("tS" "Summit Todo with Link" entry (file+olp  ,(rk/gtd-file "gtd.org")"Summit" "INBOX")"* TODO %?\n  %i\n  %a")
+                                ("tT" "Tickler" entry (file+headline ,(rk/gtd-file "tickler.org") "Tickler") "* %i%? \n %U"))
         )
 
   (global-set-key "\C-cb" 'org-switchb)
@@ -92,11 +93,11 @@
             ()))
           ("s" "Summit"
            ((agenda "" ((org-agenda-span 3)))
-            (tags-todo "@summit" ((org-agenda-overriding-header "Summit") (org-agenda-files rk/work-org-files) (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
+            (tags-todo "+@summit-reading-TODO=\"MEETING\"" ((org-agenda-overriding-header "Summit") (org-agenda-files rk/work-org-files) ))
             (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
             (tags "-@home-home+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
             (tags "project" ((org-agenda-overriding-header "Projects")))
-            (tags "-@home-home+TODO=\"IN-PROGRESS\"" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/work-org-files)))
+            ;; (tags "-@home-home+TODO=\"IN-PROGRESS\"" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/work-org-files)))
             ()))
           ("W" "Weekly review"
            agenda ""
@@ -106,7 +107,7 @@
             (org-agenda-skip-function
              '(org-agenda-skip-entry-if 'nottodo 'done))
             )
-           )
+           ) 
           ))
 
   (add-to-list 'org-agenda-custom-commands
@@ -159,7 +160,7 @@
                     "COMPLETE"
                     "MERGED")
 
-          (sequence "MEETING(m)" "|" "IGNORED(t)" "CANCELLED(l@)")))
+          (sequence "MEETING(m)" "|" "ATTENDED(a@)" "IGNORED(t)" "CANCELLED(l@)")))
 
   (setq org-catch-invisible-edits t)
 
