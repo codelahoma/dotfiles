@@ -328,19 +328,13 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         doom-Iosvkem
-                         flatland
-                         zenburn
+                         solarized-dark-high-contrast
+                         alect-black
+                         leuven
                          material
-                         doom-one
                          lush
                          leuven
                          solarized-light-high-contrast
-                         solarized-dark-high-contrast
-                         alect-black
-                         doom-molokai
-                         leuven
-                         solarized-light
                          misterioso
                          subatomic
                          grandshell
