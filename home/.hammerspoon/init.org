@@ -24,8 +24,7 @@
 - [[#show-application-keybindings][Show application keybindings]]
 - [[#fast-navigation-to-core-apps][Fast navigation to core apps]]
   - [[#helper-functions][Helper Functions]]
-  - [[#home-bindings][Home Bindings]]
-  - [[#work-bindings][Work Bindings]]
+  - [[#key-bindings][Key Bindings]]
 - [[#hotkey-model-madness][Hotkey Model Madness]]
 - [[#caffeinate][Caffeinate]]
 - [[#load-local-config][Load Local Config]]
@@ -251,29 +250,9 @@ The KSheet spoon provides for showing the keybindings for the currently active a
 
 #+RESULTS:
 
-** Home Bindings
+** Key Bindings
 
-
-#+begin_src lua
-if machine == "codelahoma-mbp" then
-  hotkey.bind(hyper, "b", appLauncher('com.brave.Browser'))
-  hotkey.bind(hyper, "c", hs.toggleConsole)
-  hotkey.bind(hyper, "d", appLauncher('Dash'))
-  hotkey.bind(hyper, "e", appLauncher('Finder'))
-  hotkey.bind(hyper, "i", appLauncher('iTerm'))
-  hotkey.bind(hyper, "j", appLauncher('Emacs.app'))
-  hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
-  hotkey.bind(hyper, "o", appLauncher('Slack'))
-  hotkey.bind(hyper, "r", hs.reload)
-  hotkey.bind(hyper, "s", appLauncher('Spark'))
-  hotkey.bind(hyper, "v", pasteLauncher())
-  hotkey.bind(hyper, "0", centerOnMainDisplay)
-  hotkey.bind(hyper, "1", appLauncher('1Password 7'))
-  hotkey.bind(hyper, ";", appLauncher('Spotify'))
-end
-#+end_src
-
-** Work Bindings
+If it's my work laptop, the work set, otherwise my personal set.
 
 #+begin_src lua
   if machine == "codelahoma" then
@@ -292,6 +271,21 @@ end
     hotkey.bind(hyper, "u", appLauncher('org.epichrome.app.Teams880'))
     hotkey.bind(hyper, "v", pasteLauncher())
     hotkey.bind(hyper, "y", appLauncher('org.epichrome.app.SummitJIR049'))
+    hotkey.bind(hyper, "0", centerOnMainDisplay)
+    hotkey.bind(hyper, "1", appLauncher('1Password 7'))
+    hotkey.bind(hyper, ";", appLauncher('Spotify'))
+  else
+    hotkey.bind(hyper, "b", appLauncher('com.brave.Browser'))
+    hotkey.bind(hyper, "c", hs.toggleConsole)
+    hotkey.bind(hyper, "d", appLauncher('Dash'))
+    hotkey.bind(hyper, "e", appLauncher('Finder'))
+    hotkey.bind(hyper, "i", appLauncher('iTerm'))
+    hotkey.bind(hyper, "j", appLauncher('Emacs.app'))
+    hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
+    hotkey.bind(hyper, "o", appLauncher('Slack'))
+    hotkey.bind(hyper, "r", hs.reload)
+    hotkey.bind(hyper, "s", appLauncher('Spark'))
+    hotkey.bind(hyper, "v", pasteLauncher())
     hotkey.bind(hyper, "0", centerOnMainDisplay)
     hotkey.bind(hyper, "1", appLauncher('1Password 7'))
     hotkey.bind(hyper, ";", appLauncher('Spotify'))

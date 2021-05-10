@@ -150,23 +150,6 @@ local function pasteLauncher()
    end
 end
 
-if machine == "codelahoma-mbp" then
-  hotkey.bind(hyper, "b", appLauncher('com.brave.Browser'))
-  hotkey.bind(hyper, "c", hs.toggleConsole)
-  hotkey.bind(hyper, "d", appLauncher('Dash'))
-  hotkey.bind(hyper, "e", appLauncher('Finder'))
-  hotkey.bind(hyper, "i", appLauncher('iTerm'))
-  hotkey.bind(hyper, "j", appLauncher('Emacs.app'))
-  hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
-  hotkey.bind(hyper, "o", appLauncher('Slack'))
-  hotkey.bind(hyper, "r", hs.reload)
-  hotkey.bind(hyper, "s", appLauncher('Spark'))
-  hotkey.bind(hyper, "v", pasteLauncher())
-  hotkey.bind(hyper, "0", centerOnMainDisplay)
-  hotkey.bind(hyper, "1", appLauncher('1Password 7'))
-  hotkey.bind(hyper, ";", appLauncher('Spotify'))
-end
-
 if machine == "codelahoma" then
   hotkey.bind(hyper, "c", hs.toggleConsole)
   hotkey.bind(hyper, "d", appLauncher('Dash'))
@@ -183,6 +166,21 @@ if machine == "codelahoma" then
   hotkey.bind(hyper, "u", appLauncher('org.epichrome.app.Teams880'))
   hotkey.bind(hyper, "v", pasteLauncher())
   hotkey.bind(hyper, "y", appLauncher('org.epichrome.app.SummitJIR049'))
+  hotkey.bind(hyper, "0", centerOnMainDisplay)
+  hotkey.bind(hyper, "1", appLauncher('1Password 7'))
+  hotkey.bind(hyper, ";", appLauncher('Spotify'))
+else
+  hotkey.bind(hyper, "b", appLauncher('com.brave.Browser'))
+  hotkey.bind(hyper, "c", hs.toggleConsole)
+  hotkey.bind(hyper, "d", appLauncher('Dash'))
+  hotkey.bind(hyper, "e", appLauncher('Finder'))
+  hotkey.bind(hyper, "i", appLauncher('iTerm'))
+  hotkey.bind(hyper, "j", appLauncher('Emacs.app'))
+  hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
+  hotkey.bind(hyper, "o", appLauncher('Slack'))
+  hotkey.bind(hyper, "r", hs.reload)
+  hotkey.bind(hyper, "s", appLauncher('Spark'))
+  hotkey.bind(hyper, "v", pasteLauncher())
   hotkey.bind(hyper, "0", centerOnMainDisplay)
   hotkey.bind(hyper, "1", appLauncher('1Password 7'))
   hotkey.bind(hyper, ";", appLauncher('Spotify'))
