@@ -106,7 +106,7 @@ _centeredWindowsFormerPositions = {}
 local function centerOnMainDisplay()
    local win = window.focusedWindow()
    local formerPosition = _centeredWindowsFormerPositions[win:id()]
-   local bigScreen = screen.find('LG Ultra HD')
+   local bigScreen = screen.find('LG HDR 4K')
 
    hs.console.printStyledtext(hs.inspect(formerPosition))
 
