@@ -328,21 +328,9 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         solarized-dark-high-contrast
-                         alect-black
-                         leuven
-                         material
-                         lush
-                         leuven
-                         solarized-light-high-contrast
-                         misterioso
-                         subatomic
-                         grandshell
-                         doom-dracula
-                         light-blue
-                         soothe
-                         spacemacs-light
-                         spacemacs-dark
+                         tangotango
+                         cyberpunk
+                         zenburn
                          )
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
@@ -1272,7 +1260,7 @@ static char *gnus-pointer[] = {
  '(term-default-fg-color "#839496")
  '(tool-bar-mode nil)
  '(transient-mark-mode nil)
- '(treemacs-sorting 'alphabetic-asc t)
+ '(treemacs-sorting 'alphabetic-asc)
  '(vc-annotate-background t)
  '(vc-annotate-background-mode nil)
  '(vc-annotate-color-map
