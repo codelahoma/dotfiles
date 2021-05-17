@@ -142,6 +142,7 @@
   (setq org-clock-persist 'history)
   (org-clock-persistence-insinuate)
 
+  (setq org-re-reveal-root "file:///Users/rodk/.emacs.d/private/reveal.js-4.1.0")
   (setq org-todo-keywords
         '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d@)" "CANCELLED(c@) DONE(e)")
           ;; keyword in org-jira files.
