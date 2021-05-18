@@ -91,16 +91,17 @@
             (tags-todo "+JIRA" ((org-agenda-overriding-header "JIRA") (org-agenda-files rk/work-org-files) (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
             (tags "-@home-home+TODO=\"IN-PROGRESS\"" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/work-org-files) (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
             ()))
-          ("s" "Summit"
+          ("s" . "Summit Views")
+          ("ss" "Summit"
            (
-            (tags-todo "+@summit-reading-TODO=\"MEETING\"" ((org-agenda-overriding-header "Summit") (org-agenda-files rk/work-org-files) ))
+            (tags-todo "+@summit-reading-home-@home-TODO=\"MEETING\"" ((org-agenda-overriding-header "Summit") (org-agenda-files rk/work-org-files) ))
             (agenda "" ((org-agenda-span 3)))
             (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
             (tags "-@home-home+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
             (tags "project" ((org-agenda-overriding-header "Projects")))
             ;; (tags "-@home-home+TODO=\"IN-PROGRESS\"" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/work-org-files)))
             ()))
-          ("W" "Weekly review"
+          ("sW" "Weekly review"
            agenda ""
            ((org-agenda-span 'week)
             (org-agenda-start-on-weekday 0)
@@ -109,6 +110,7 @@
              '(org-agenda-skip-entry-if 'nottodo 'done))
             )
            ) 
+          ("sq" tags "@squad")
           ))
 
   (add-to-list 'org-agenda-custom-commands
