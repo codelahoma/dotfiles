@@ -72,8 +72,8 @@ This function should only modify configuration layer settings."
              python-test-runner 'pytest
              python-backend 'lsp
              ;; python-lsp-server 'pyright
-             python-lsp-server 'mspyls
-             python-lsp-git-root "~/github/python-language-server"
+             ;; python-lsp-server 'mspyls
+             ;; python-lsp-git-root "~/github/python-language-server"
              python-formatter 'black
              python-format-on-save t
              )
