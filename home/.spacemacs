@@ -328,6 +328,7 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
+                         wombat
                          tangotango
                          cyberpunk
                          zenburn
@@ -350,7 +351,7 @@ It should only modify the values of Spacemacs settings."
    ;; dotspacemacs-default-font '("Source Code Pro"
    dotspacemacs-default-font '(
                                ("Inconsolata Nerd Font"
-                                :size 18.0
+                                :size 22.0
                                 :weight normal
                                 :width normal)
                                ("Monoid Nerd Font"
@@ -906,7 +907,7 @@ you should place your code here."
   (define-key evil-ex-search-keymap  (kbd "s-v") (kbd "+"))
 
   (add-to-list 'default-frame-alist
-               '(font . "Inconsolata Nerd Font-18"))
+               '(font . "Inconsolata Nerd Font-22"))
 
 
 
@@ -1295,6 +1296,7 @@ static char *gnus-pointer[] = {
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((((class color) (min-colors 89)) (:foreground "#d4d4d4" :background "#000000"))))
  '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
  '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil))))
  '(cursor ((t (:background "#b58900"))))
