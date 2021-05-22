@@ -72,8 +72,8 @@ This function should only modify configuration layer settings."
              python-test-runner 'pytest
              python-backend 'lsp
              ;; python-lsp-server 'pyright
-             python-lsp-server 'mspyls
-             python-lsp-git-root "~/github/python-language-server"
+             ;; python-lsp-server 'mspyls
+             ;; python-lsp-git-root "~/github/python-language-server"
              python-formatter 'black
              python-format-on-save t
              )
@@ -328,21 +328,10 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         solarized-dark-high-contrast
-                         alect-black
-                         leuven
-                         material
-                         lush
-                         leuven
-                         solarized-light-high-contrast
-                         misterioso
-                         subatomic
-                         grandshell
-                         doom-dracula
-                         light-blue
-                         soothe
-                         spacemacs-light
-                         spacemacs-dark
+                         wombat
+                         tangotango
+                         cyberpunk
+                         zenburn
                          )
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
@@ -362,7 +351,7 @@ It should only modify the values of Spacemacs settings."
    ;; dotspacemacs-default-font '("Source Code Pro"
    dotspacemacs-default-font '(
                                ("Inconsolata Nerd Font"
-                                :size 18.0
+                                :size 22.0
                                 :weight normal
                                 :width normal)
                                ("Monoid Nerd Font"
@@ -918,7 +907,7 @@ you should place your code here."
   (define-key evil-ex-search-keymap  (kbd "s-v") (kbd "+"))
 
   (add-to-list 'default-frame-alist
-               '(font . "Inconsolata Nerd Font-18"))
+               '(font . "Inconsolata Nerd Font-22"))
 
 
 
@@ -1255,6 +1244,11 @@ static char *gnus-pointer[] = {
  '(objed-cursor-color "#ff5555")
  '(org-agenda-files
    '("~/Dropbox/org/CI.org" "~/Dropbox/org/SI.org" "~/Dropbox/org/DEVOPS.org" "~/Dropbox/org/gtd/inbox.org" "~/Dropbox/org/gtd/gtd.org" "~/Dropbox/org/gtd/tickler.org" "~/Dropbox/org/gtd/someday.org" "~/summit/erp-service/TODOs.org"))
+ '(org-agenda-sorting-strategy
+   '((agenda habit-down time-up priority-down category-keep)
+     (todo priority-down category-keep)
+     (tags priority-down todo-state-up)
+     (search category-keep)))
  '(package-selected-packages
    '(stickyfunc-enhance srefactor zenburn-theme zen-and-art-theme yasnippet-snippets yapfify xterm-color xcscope wsd-mode ws-butler winum white-sand-theme which-key web-mode web-beautify wakatime-mode volatile-highlights vi-tilde-fringe uuidgen use-package unfill undo-tree underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toml-mode toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit swift-mode sunny-day-theme sublime-themes subatomic256-theme subatomic-theme sql-indent spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode slack emojify circe oauth2 sicp shell-pop seti-theme scss-mode sass-mode salt-mode mmm-jinja2 yaml-mode s3ed reverse-theme reveal-in-osx-finder restclient-helm restart-emacs rebecca-theme rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme racer pytest pyenv-mode py-isort purple-haze-theme pug-mode professional-theme plantuml-mode planet-theme pipenv pyvenv pip-requirements phpunit phpcbf php-extras php-auto-yasnippets phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pbcopy paradox spinner ox-twbs ox-reveal ox-gfm osx-trash osx-dictionary orgit organic-green-theme org-projectile org-category-capture org-present org-pomodoro org-mime org-jira org-download org-bullets open-junk-file omtose-phellack-theme omnisharp oldlace-theme occidental-theme obsidian-theme ob-restclient ob-http ob-async nvm noctilux-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow magit-popup magit-gh-pulls madhat2r-theme macrostep lush-theme lua-mode lorem-ipsum livid-mode skewer-mode live-py-mode linum-relative link-hint light-soap-theme launchctl js2-refactor multiple-cursors js2-mode js-doc jira-markup-mode jbeans-theme jazz-theme ir-black-theme inkpot-theme indent-guide imenu-list ibuffer-projectile hydra lv hy-mode dash-functional hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation heroku-theme hemisu-theme helm-themes helm-swoop helm-pydoc helm-projectile projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme haml-mode gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gmail-message-mode ham-mode html-to-markdown gitignore-mode github-search github-review a ghub treepy github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gist gh marshal logito pcache ht gh-md geiser gandalf-theme fuzzy fold-this flyspell-popup flyspell-correct-helm flyspell-correct flymd flycheck-rust flycheck-pos-tip pos-tip flycheck pkg-info epl flx-ido flx flatui-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit git-commit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-easymotion evil-args evil-anzu anzu evil goto-chg eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help emoji-cheat-sheet-plus emmet-mode elisp-slime-nav elfeed-web simple-httpd elfeed-org elfeed-goodies ace-jump-mode noflet powerline popwin elfeed eink-theme ein with-editor polymode deferred request anaphora editorconfig edit-server dumb-jump drupal-mode php-mode dracula-theme dockerfile-mode docker transient tablist json-mode docker-tramp json-snatcher json-reformat django-theme disaster direnv diminish diff-hl darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme csv-mode csharp-mode company-web web-completion-data company-statistics company-restclient restclient know-your-http-well company-emoji company-c-headers company-anaconda company command-log-mode column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode coffee-mode cmake-mode clues-theme clean-aindent-mode clang-format cherry-blossom-theme cargo markdown-mode rust-mode busybee-theme bubbleberry-theme brutalist-theme birds-of-paradise-plus-theme bind-map bind-key badwolf-theme auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed atomic-chrome websocket apropospriate-theme anti-zenburn-theme anaconda-mode pythonic f dash s ample-zen-theme ample-theme alert log4e gntp alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup flatland-theme))
  '(paradox-github-token t)
@@ -1267,7 +1261,7 @@ static char *gnus-pointer[] = {
  '(term-default-fg-color "#839496")
  '(tool-bar-mode nil)
  '(transient-mark-mode nil)
- '(treemacs-sorting 'alphabetic-asc t)
+ '(treemacs-sorting 'alphabetic-asc)
  '(vc-annotate-background t)
  '(vc-annotate-background-mode nil)
  '(vc-annotate-color-map
@@ -1290,6 +1284,7 @@ static char *gnus-pointer[] = {
      (340 . "#268fc6")
      (360 . "#268bd2")))
  '(vc-annotate-very-old-color nil)
+ '(vterm-max-scrollback 100000)
  '(wakatime-python-bin nil)
  '(weechat-color-list
    '(unspecified "#fdf6e3" "#eee8d5" "#990A1B" "#dc322f" "#546E00" "#859900" "#7B6000" "#b58900" "#00629D" "#268bd2" "#93115C" "#d33682" "#00736F" "#2aa198" "#657b83" "#839496"))
@@ -1302,6 +1297,7 @@ static char *gnus-pointer[] = {
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((((class color) (min-colors 89)) (:foreground "#d4d4d4" :background "#000000"))))
  '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
  '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil))))
  '(cursor ((t (:background "#b58900"))))

@@ -149,7 +149,7 @@ if hs.screen.mainScreen():currentMode().w > 2000 then
   menuMinNumberOfRows = 3
   menuNumberOfColumns = 8
 end
-if hs.screen.mainScreen():name() == "LG Ultra HD" then
+if hs.screen.mainScreen():name() == "LG HDR 4K" then
   menuRowHeight = 50
 end
 
