@@ -63,6 +63,7 @@
                                      (rk/gtd-file "gtd.org")
                                      (rk/gtd-file "tickler.org")
                                      (rk/gtd-file "someday.org")
+                                     (rk/gtd-file "reference.org")
 
                                      (file-expand-wildcards "~/summit/*/TODOs.org")
                                      )))
@@ -132,8 +133,12 @@
 
   ;; Org-Journal
   (setq org-journal-dir "~/Dropbox/org/journal/")
+  (setq org-journal-file-type 'weekly)
 
 
+  ;; Org-reveal
+  (setq org-re-reveal-title-slide "<h1 class='title'>%t</h1><h2 class='author'>%a</h2><p class='email'>%e</p>")
+  (setq org-re-reveal-root "file:///Users/rodk/.emacs.d/private/reveal.js-4.1.0")
 
   ;; Refiling refinements
   ;; source: https://blog.aaronbieber.com/2017/03/19/organizing-notes-with-refile.html
@@ -145,11 +150,11 @@
   (setq org-clock-persist 'history)
   (org-clock-persistence-insinuate)
 
-  (setq org-re-reveal-root "file:///Users/rodk/.emacs.d/private/reveal.js-4.1.0")
   (setq org-todo-keywords
         '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d@)" "CANCELLED(c@) DONE(e)")
           ;; keyword in org-jira files.
           (sequence "BACKLOG"
+                    "TO-DO"
                     "IN-PROGRESS"
                     "WAITING"
                     "CHANGES-REQUESTED"
