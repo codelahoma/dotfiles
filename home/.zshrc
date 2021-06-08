@@ -244,4 +244,6 @@ export PATH="$PATH:$HOME/.rvm/bin"
 alias bsalt="ssh -t saltmaster vim /srv"
 alias esalt="ssh -t saltmaster sudo vim /srv"
 alias penv='eval "$(pyenv init -)"'
+alias ccat='/bin/cat'
+alias cat='/usr/local/bin/bat'
 eval "$(pyenv init -)"
