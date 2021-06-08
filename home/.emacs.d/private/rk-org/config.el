@@ -95,8 +95,8 @@
           ("s" . "Summit Views")
           ("ss" "Summit"
            (
-            (tags-todo "+@summit-reading-home-@home/-MEETING" ((org-agenda-overriding-header "Summit") (org-agenda-files rk/work-org-files) ))
             (agenda "" ((org-agenda-span 3)))
+            (tags-todo "+@summit-reading-home-@home/-MEETING" ((org-agenda-overriding-header "Summit") (org-agenda-files rk/work-org-files) ))
             (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
             (tags "-@home-home+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
             (tags "project" ((org-agenda-overriding-header "Projects")))
