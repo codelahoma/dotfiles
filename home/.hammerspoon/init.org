@@ -138,7 +138,8 @@ The [[http://www.hammerspoon.org/Spoons/WindowGrid.html][WindowGrid]] spoon sets
   AWSConsoleApp = "org.epichrome.app.AWSConsol607"
   TeamsApp = "org.epichrome.eng.Teams"
   MicrosoftEdge = "com.microsoft.edgemac"
-
+  SummitProd = "org.epichrome.app.SummitProd"
+  
   if machine == "codelahoma" then
     Install:andUse("URLDispatcher",
                   {
@@ -150,14 +151,8 @@ The [[http://www.hammerspoon.org/Spoons/WindowGrid.html][WindowGrid]] spoon sets
                         { "https?://.*.console.aws.amazon.com", AWSConsoleApp},
                         { "https?://.*office.com", MicrosoftEdge},
                         { "https?://.*sentry.com", MicrosoftEdge},
-                        -- { "https?://issue.swisscom.com",         JiraApp },
-                        -- { "https?://jira.swisscom.com",          JiraApp },
-                        -- { "https?://wiki.swisscom.com",          WikiApp },
-                        -- { "https?://collaboration.swisscom.com", CollabApp },
-                        -- { "https?://smca.swisscom.com",          SmcaApp },
-                        -- { "https?://app.opsgenie.com",           OpsGenieApp },
-                        -- { "https?://app.eu.opsgenie.com",        OpsGenieApp },
-                        -- { "msteams:",                            "com.microsoft.teams" }
+                        { "https?://erp.summitesp.com", SummitProd},
+                        { "https?://sk-sap.summitesp.com", SummitProd},
                       },
                       url_redir_decoders = {
                       --   { "Office 365 safelinks check",
