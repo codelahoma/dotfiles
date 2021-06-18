@@ -959,6 +959,7 @@ you should place your code here."
   ;;              '(font . "Inconsolata Nerd Font-22"))
 
 
+  (evil-leader/set-key "q q" 'spacemacs/frame-killer)
 
   ;; (require 'window-purpose) ; workaround, should be unnecessary at some point.
 
