@@ -57,6 +57,7 @@ JiraApp = "org.epichrome.app.SummitJIR049"
 AWSConsoleApp = "org.epichrome.app.AWSConsol607"
 TeamsApp = "org.epichrome.eng.Teams"
 MicrosoftEdge = "com.microsoft.edgemac"
+SummitProd = "org.epichrome.app.SummitProd"
 
 if machine == "codelahoma" then
   Install:andUse("URLDispatcher",
@@ -69,6 +70,9 @@ if machine == "codelahoma" then
                       { "https?://.*.console.aws.amazon.com", AWSConsoleApp},
                       { "https?://.*office.com", MicrosoftEdge},
                       { "https?://.*sentry.com", MicrosoftEdge},
+                      { "https?://erp.summitesp.com", SummitProd},
+                      { "https?://sk-sap.summitesp.com", SummitProd},
+
                       -- { "https?://issue.swisscom.com",         JiraApp },
                       -- { "https?://jira.swisscom.com",          JiraApp },
                       -- { "https?://wiki.swisscom.com",          WikiApp },
