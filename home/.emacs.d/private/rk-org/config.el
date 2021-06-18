@@ -157,6 +157,7 @@
                     "TO-DO"
                     "IN-PROGRESS"
                     "WAITING"
+                    "PAUSED"
                     "CHANGES-REQUESTED"
                     "CODE-COMPLETE"
                     "ASG-TESTING"
