@@ -193,6 +193,12 @@ alias xmlf='xmllint --format '
 alias susalt='ssh saltmaster-3 sudo salt'
 alias ss="script/stop && script/start -d && script/attach --tail=100 &"
 alias ssd="script-docker/stop && script-docker/start -d && script-docker/attach --tail=100 &"
+alias emc="emacsclient -nw"
+alias bsalt="ssh -t saltmaster vim /srv"
+alias esalt="ssh -t saltmaster sudo vim /srv"
+alias penv='eval "$(pyenv init -)"'
+alias ccat='/bin/cat'
+alias cat='/usr/local/bin/bat'
 autoload edit-command-line
 zle -N edit-command-line
 bindkey '^X^E' edit-command-line
@@ -241,9 +247,4 @@ alias dgui='docker run -e DISPLAY=$DISPLAY_MAC -it'
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
 
-alias bsalt="ssh -t saltmaster vim /srv"
-alias esalt="ssh -t saltmaster sudo vim /srv"
-alias penv='eval "$(pyenv init -)"'
-alias ccat='/bin/cat'
-alias cat='/usr/local/bin/bat'
 eval "$(pyenv init -)"
