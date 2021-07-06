@@ -182,18 +182,10 @@ cask "vlc"
 cask "webpquicklook"
 cask "xquartz"
 cask "xscope"
-mas "Be Focused Pro", id: 961632517
-mas "Browser Fairy", id: 483014855
-mas "Chrono Plus", id: 946047238
-mas "com.inovize.fluid", id: 1077036385
-mas "Copied", id: 1026349850
 mas "DaisyDisk", id: 411643860
 mas "Developer", id: 640199958
 mas "Display Menu", id: 549083868
-mas "Drafts", id: 1435957248
 mas "Fantastical", id: 975937182
-mas "Growl", id: 467939042
-mas "Jira", id: 1475897096
 mas "Kindle", id: 405399194
 mas "LastPass", id: 926036361
 mas "LiveReload", id: 482898991
@@ -202,19 +194,12 @@ mas "Microsoft OneNote", id: 784801555
 mas "Microsoft Outlook", id: 985367838
 mas "Microsoft PowerPoint", id: 462062816
 mas "Microsoft Word", id: 462054704
-mas "Numbers", id: 409203825
-mas "OneDrive", id: 823766827
-mas "Pages", id: 409201541
 mas "Paste", id: 967805235
-mas "Paste JSON as Code • quicktype", id: 1330801220
 mas "PopClip", id: 445189367
 mas "ReadKit", id: 588726889
 mas "Simplify", id: 448003584
 mas "Slack", id: 803453959
-mas "Spark", id: 1176895641
 mas "StatusClock", id: 552792489
-mas "Tweetbot", id: 1384080005
-mas "Twitter", id: 409789998
 mas "Xcode", id: 497799835
 mas "XmlSpy", id: 1254478180
 mas "Yoink", id: 457622435
