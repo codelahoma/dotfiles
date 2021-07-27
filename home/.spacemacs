@@ -121,7 +121,7 @@ This function should only modify configuration layer settings."
                       ;; auto-completion-enable-help-tooltip 'manual
                       auto-completion-enable-sort-by-usage t
                       auto-completion-enable-snippets-in-popup t
-                      ;; auto-completion-use-company-box t
+                      auto-completion-use-company-box t
                       )
      (better-defaults :variables
                       better-defaults-move-to-beginning-of-code-first t
