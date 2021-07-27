@@ -128,19 +128,14 @@ The [[http://www.hammerspoon.org/Spoons/WindowGrid.html][WindowGrid]] spoon sets
 * URL dispatching to site-specific browsers
 
 #+begin_src lua :exports none
-  -- DefaultBrowser = "com.brave.Browser.dev"
   DefaultBrowser = "com.google.Chrome"
   JiraApp = "org.epichrome.app.SummitJIR049"
-  -- WikiApp = "org.epichrome.eng.Wiki"
-  -- CollabApp = DefaultBrowser
-  -- SmcaApp = DefaultBrowser
-  -- OpsGenieApp = DefaultBrowser
   AWSConsoleApp = "org.epichrome.app.AWSConsol607"
   TeamsApp = "org.epichrome.eng.Teams"
   MicrosoftEdge = "com.microsoft.edgemac"
   SummitProd = "org.epichrome.app.SummitProd"
   
-  if machine == "codelahoma" then
+  if machine == "codelahoma" or machine == "rk-mbp" then
     Install:andUse("URLDispatcher",
                   {
                     config = {
@@ -250,7 +245,7 @@ The KSheet spoon provides for showing the keybindings for the currently active a
 If it's my work laptop, the work set, otherwise my personal set.
 
 #+begin_src lua
-    if machine == "codelahoma" then
+    if machine == "codelahoma" or machine == "rk-mbp" then
       hotkey.bind(hyper, "c", hs.toggleConsole)
       hotkey.bind(hyper, "d", appLauncher('Dash'))
       hotkey.bind(hyper, "e", appLauncher('Postman'))
@@ -266,7 +261,7 @@ If it's my work laptop, the work set, otherwise my personal set.
       hotkey.bind(hyper, "q", appLauncher('qutebrowser'))
       hotkey.bind(hyper, "r", hs.reload)
       hotkey.bind(hyper, "s", appLauncher('org.epichrome.app.SummitProd'))
-      hotkey.bind(hyper, "u", appLauncher('org.epichrome.app.Teams880'))
+      hotkey.bind(hyper, "u", appLauncher('org.epichrome.app.Teams'))
       hotkey.bind(hyper, "v", pasteLauncher())
       hotkey.bind(hyper, "y", appLauncher('org.epichrome.app.SummitJIR049'))
       hotkey.bind(hyper, "0", centerOnMainDisplay)

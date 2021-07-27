@@ -59,7 +59,7 @@ TeamsApp = "org.epichrome.eng.Teams"
 MicrosoftEdge = "com.microsoft.edgemac"
 SummitProd = "org.epichrome.app.SummitProd"
 
-if machine == "codelahoma" then
+if machine == "codelahoma" or machine == "rk-mbp" then
   Install:andUse("URLDispatcher",
                 {
                   config = {
@@ -72,15 +72,6 @@ if machine == "codelahoma" then
                       { "https?://.*sentry.com", MicrosoftEdge},
                       { "https?://erp.summitesp.com", SummitProd},
                       { "https?://sk-sap.summitesp.com", SummitProd},
-
-                      -- { "https?://issue.swisscom.com",         JiraApp },
-                      -- { "https?://jira.swisscom.com",          JiraApp },
-                      -- { "https?://wiki.swisscom.com",          WikiApp },
-                      -- { "https?://collaboration.swisscom.com", CollabApp },
-                      -- { "https?://smca.swisscom.com",          SmcaApp },
-                      -- { "https?://app.opsgenie.com",           OpsGenieApp },
-                      -- { "https?://app.eu.opsgenie.com",        OpsGenieApp },
-                      -- { "msteams:",                            "com.microsoft.teams" }
                     },
                     url_redir_decoders = {
                     --   { "Office 365 safelinks check",
@@ -154,7 +145,7 @@ local function pasteLauncher()
    end
 end
 
-if machine == "codelahoma" then
+if machine == "codelahoma" or machine == "rk-mbp" then
     hotkey.bind(hyper, "c", hs.toggleConsole)
     hotkey.bind(hyper, "d", appLauncher('Dash'))
     hotkey.bind(hyper, "e", appLauncher('Postman'))
@@ -170,7 +161,7 @@ if machine == "codelahoma" then
     hotkey.bind(hyper, "q", appLauncher('qutebrowser'))
     hotkey.bind(hyper, "r", hs.reload)
     hotkey.bind(hyper, "s", appLauncher('org.epichrome.app.SummitProd'))
-    hotkey.bind(hyper, "u", appLauncher('org.epichrome.app.Teams880'))
+    hotkey.bind(hyper, "u", appLauncher('org.epichrome.app.Teams'))
     hotkey.bind(hyper, "v", pasteLauncher())
     hotkey.bind(hyper, "y", appLauncher('org.epichrome.app.SummitJIR049'))
     hotkey.bind(hyper, "0", centerOnMainDisplay)
