@@ -221,7 +221,7 @@ if which swiftenv > /dev/null; then eval "$(swiftenv init -)"; fi
 NVM_DIR=~/.nvm
 alias loadrvm='[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"'
 alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"'
-
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 eval "$(direnv hook zsh)"
@@ -248,3 +248,7 @@ alias dgui='docker run -e DISPLAY=$DISPLAY_MAC -it'
 export PATH="$PATH:$HOME/.rvm/bin"
 
 eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+export LDFLAGS="-L/usr/local/opt/zlib/lib -L/usr/local/opt/bzip2/lib"
+export CPPFLAGS="-I/usr/local/opt/zlib/include -I/usr/local/opt/bzip2/include"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

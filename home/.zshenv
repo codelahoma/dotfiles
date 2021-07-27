@@ -1,5 +1,5 @@
 PATH="/Users/rodk/.local/bin:~/bin:/usr/local/bin:/usr/local/sbin:/opt/local/bin:/opt/local/sbin:~/usr/local/opt/coreutils/libexec/gnubin:/Library/Android/sdk/tools:~/Library/Android/sdk/platform-tools:$PATH"
-export PATH="/Users/rodk/bin:/usr/local/opt/qt@5.5/bin:$PATH"
+export PATH="/Users/rodk/bin:/usr/local/opt/mysql-client/bin:$PATH"
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
 
 
@@ -19,7 +19,7 @@ export LC_ALL="en_US.UTF-8"
 export TERM=xterm-256color
 export SAVEHIST=50000
 export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
+export PATH="$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH"
 
 # Set NVM_DIR if it isn't already defined
 # [[ -z "$NVM_DIR" ]] && export NVM_DIR="$HOME/.nvm"
