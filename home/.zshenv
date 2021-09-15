@@ -20,6 +20,7 @@ export TERM=xterm-256color
 export SAVEHIST=50000
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH"
+export KALEIDOSCOPE_DIR=/Users/rodk/Documents/Arduino/Kaleidoscope
 
 # Set NVM_DIR if it isn't already defined
 # [[ -z "$NVM_DIR" ]] && export NVM_DIR="$HOME/.nvm"
