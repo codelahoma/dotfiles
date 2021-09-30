@@ -16,6 +16,7 @@ if [ -n "$INSIDE_EMACS" ]; then
     export ZSH_THEME="lambda-mod"
 else
     export ZSH_THEME="powerlevel10k/powerlevel10k"
+    # export ZSH_THEME="cdimascio-lambda"
     # export ZSH_THEME="wedisagree"
     # export POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(vcs newline pyenv context dir)
     # export POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs history time)
@@ -167,7 +168,7 @@ alias ohmyzsh="emacsclient -n ~/.oh-my-zsh"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=( brew colored-man-pages common-aliases docker-compose docker iterm2 fasd git github npm  osx poetry wakatime)
+plugins=(asdf brew colored-man-pages common-aliases docker-compose docker iterm2 fasd git github npm  osx poetry wakatime)
 
 source $ZSH/oh-my-zsh.sh
 
