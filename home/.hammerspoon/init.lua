@@ -47,13 +47,8 @@ hs.grid.HINTS = {
  {'5', '2', '3', '4', 'j', 'k', 'l', ';'}, 
 }
 
--- DefaultBrowser = "com.brave.Browser.dev"
 DefaultBrowser = "com.google.Chrome"
 JiraApp = "org.epichrome.app.SummitJIR049"
--- WikiApp = "org.epichrome.eng.Wiki"
--- CollabApp = DefaultBrowser
--- SmcaApp = DefaultBrowser
--- OpsGenieApp = DefaultBrowser
 AWSConsoleApp = "org.epichrome.app.AWSConsol607"
 TeamsApp = "org.epichrome.eng.Teams"
 MicrosoftEdge = "com.microsoft.edgemac"
@@ -197,7 +192,7 @@ e - Excel
 m - MailMate
 p - Postman
 s - Stickies
-u - Visual Studio Code
+u - SQUAD Agenda
 v - Paste
 w - WVD (Microsoft Remote Desktop)
 
@@ -228,7 +223,7 @@ menuModal:bind("", "e", "excel", nil, function() application.launchOrFocus("Micr
 menuModal:bind("", "m", "MailMate", nil, function() application.launchOrFocus("MailMate") menuModal:exit() end, nil)
 menuModal:bind("", "p", "postman", nil, function() application.launchOrFocus("Postman") menuModal:exit() end, nil)
 menuModal:bind("", "s", "stickies", nil, function() application.launchOrFocus("Stickies") menuModal:exit() end, nil)
-menuModal:bind("", "u", "Visual Studio Code", nil, function() application.launchOrFocus("Visual Studio Code") menuModal:exit() end, nil)
+menuModal:bind("", "u", "SQUAD Agenda", nil, function() application.launchOrFocusByBundleID("org.epichrome.app.SQUADAgenda") menuModal:exit() end, nil)
 menuModal:bind("", "v", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") menuModal:exit() end, nil)
 menuModal:bind("", "w", "Microsoft Remote Desktop", nil, function() application.launchOrFocus("Microsoft Remote Desktop") menuModal:exit() end, nil)
 

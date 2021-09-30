@@ -301,7 +301,7 @@ If it's my work laptop, the work set, otherwise my personal set.
   m - MailMate
   p - Postman
   s - Stickies
-  u - Visual Studio Code
+  u - SQUAD Agenda
   v - Paste
   w - WVD (Microsoft Remote Desktop)
 
@@ -332,7 +332,7 @@ If it's my work laptop, the work set, otherwise my personal set.
   menuModal:bind("", "m", "MailMate", nil, function() application.launchOrFocus("MailMate") menuModal:exit() end, nil)
   menuModal:bind("", "p", "postman", nil, function() application.launchOrFocus("Postman") menuModal:exit() end, nil)
   menuModal:bind("", "s", "stickies", nil, function() application.launchOrFocus("Stickies") menuModal:exit() end, nil)
-  menuModal:bind("", "u", "Visual Studio Code", nil, function() application.launchOrFocus("Visual Studio Code") menuModal:exit() end, nil)
+  menuModal:bind("", "u", "SQUAD Agenda", nil, function() application.launchOrFocusByBundleID("org.epichrome.app.SQUADAgenda") menuModal:exit() end, nil)
   menuModal:bind("", "v", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") menuModal:exit() end, nil)
   menuModal:bind("", "w", "Microsoft Remote Desktop", nil, function() application.launchOrFocus("Microsoft Remote Desktop") menuModal:exit() end, nil)
 #+end_src
