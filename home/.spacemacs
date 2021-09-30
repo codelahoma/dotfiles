@@ -742,6 +742,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
   (advice-add 'evil-avy-goto-line :after #'evil-scroll-line-to-center)
   (advice-add 'org-open-at-point :after #'evil-scroll-line-to-center)
+  (advice-add 'evil-ex-search-next :after #'evil-scroll-line-to-center)
+
 
   (with-eval-after-load 'completion
     (defun spacemacs/helm-files-do-rg (&optional dir)
