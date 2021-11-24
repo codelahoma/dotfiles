@@ -167,7 +167,7 @@ alias ohmyzsh="emacsclient -n ~/.oh-my-zsh"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=( brew colored-man-pages common-aliases django docker-compose docker iterm2 fasd git github npm  osx wakatime)
+plugins=(zsh-autosuggestions zsh-syntax-highlighting brew common-aliases django docker-compose docker iterm2 fasd git github npm  osx wakatime)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -198,7 +198,7 @@ alias bsalt="ssh -t saltmaster vim /srv"
 alias esalt="ssh -t saltmaster sudo vim /srv"
 alias penv='eval "$(pyenv init -)"'
 alias ccat='/bin/cat'
-alias cat='/usr/local/bin/bat'
+alias cat='/opt/homebrew/bin/bat'
 autoload edit-command-line
 zle -N edit-command-line
 bindkey '^X^E' edit-command-line
