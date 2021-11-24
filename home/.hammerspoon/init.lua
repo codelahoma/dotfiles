@@ -168,7 +168,7 @@ if machine == "codelahoma" or machine == "rk-mbp" then
     hotkey.bind(hyper, "d", appLauncher('Dash'))
     hotkey.bind(hyper, "e", appLauncher('Finder'))
     hotkey.bind(hyper, "i", appLauncher('iTerm'))
-    hotkey.bind(hyper, "j", appLauncher('Emacs.app'))
+    hotkey.bind(hyper, "j", appLauncher('iTerm'))
     hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
     hotkey.bind(hyper, "o", appLauncher('Slack'))
     hotkey.bind(hyper, "r", hs.reload)
