@@ -249,7 +249,7 @@ alias dgui='docker run -e DISPLAY=$DISPLAY_MAC -it'
 export PATH="$PATH:$HOME/.rvm/bin"
 
 export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init --path)"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 export LDFLAGS="-L/usr/local/opt/zlib/lib -L/usr/local/opt/bzip2/lib"
