@@ -54,34 +54,42 @@ TeamsApp = "org.epichrome.eng.Teams"
 MicrosoftEdge = "com.microsoft.edgemac"
 SummitProd = "org.epichrome.app.SummitProd"
 
-if machine == "codelahoma" or machine == "rk-mbp" then
-  Install:andUse("URLDispatcher",
-                {
-                  config = {
-                    url_patterns = {
-                      { "https?://summitesp.atlassian.net",          JiraApp },
-                      { "https?://open.spotify.com", "com.spotify.client"},
-                      { "https?://teams.microsoft.com", TeamsApp},
-                      { "https?://.*.console.aws.amazon.com", AWSConsoleApp},
-                      { "https?://.*office.com", MicrosoftEdge},
-                      { "https?://.*sentry.com", MicrosoftEdge},
-                      { "https?://erp.summitesp.com", SummitProd},
-                      { "https?://sk-sap.summitesp.com", SummitProd},
-                    },
-                    url_redir_decoders = {
-                    --   { "Office 365 safelinks check",
-                    --     "https://eur03.safelinks.protection.outlook.com/(.*)\\?url=(.-)&.*",
-                    --     "%2" },
-                    --   { "MS Teams URLs",
-                    --     "(https://teams.microsoft.com.*)", "msteams:%1", true }
-                    },
-                    default_handler = DefaultBrowser
-                  },
-                  start = true,
-                  --                   loglevel = 'debug'
-                }
-  )
+if machine == "codelahoma" then
+
+  url_patterns = {
+    { "https?://summitesp.atlassian.net",          JiraApp },
+    { "https?://open.spotify.com", "com.spotify.client"},
+    { "https?://teams.microsoft.com", TeamsApp},
+    { "https?://.*.console.aws.amazon.com", AWSConsoleApp},
+    { "https?://.*office.com", MicrosoftEdge},
+    { "https?://.*sentry.com", MicrosoftEdge},
+    { "https?://erp.summitesp.com", SummitProd},
+    { "https?://sk-sap.summitesp.com", SummitProd},
+  }
+
+    url_redir_decoders = {
+      --   { "Office 365 safelinks check",
+      --     "https://eur03.safelinks.protection.outlook.com/(.*)\\?url=(.-)&.*",
+      --     "%2" },
+      --   { "MS Teams URLs",
+      --     "(https://teams.microsoft.com.*)", "msteams:%1", true }
+    }
+else
+  url_patterns = {}
+  url_redir_decoders = {}
 end
+
+Install:andUse("URLDispatcher",
+              {
+                config = {
+                  url_patterns = url_patterns,
+                  url_redir_decoders = url_redir_decoders,
+                  default_handler = DefaultBrowser
+                },
+                start = true,
+                loglevel = 'debug'
+              }
+)
 
 hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
 
@@ -170,6 +178,7 @@ if machine == "codelahoma" or machine == "rk-mbp" then
     hotkey.bind(hyper, "i", appLauncher('iTerm'))
     hotkey.bind(hyper, "j", appLauncher('iTerm'))
     hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
+    hotkey.bind(hyper, "m", appLauncher('MailMate'))
     hotkey.bind(hyper, "o", appLauncher('Slack'))
     hotkey.bind(hyper, "r", hs.reload)
     hotkey.bind(hyper, "s", appLauncher('Spark'))
@@ -253,6 +262,6 @@ if hs.fs.attributes(localfile) then
   dofile(localfile)
 end
 
-hs.ipc.cliInstall()
+hs.ipc.cliInstall("/opt/homebrew")
 
 hs.alert.show("Config Loaded")
