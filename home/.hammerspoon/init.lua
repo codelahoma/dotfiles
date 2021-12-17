@@ -17,6 +17,9 @@ screen = hs.screen
 spotify = hs.spotify
 machine = hs.host.localizedName()
 
+work_machines = {["rk-mbp"] = true}
+home_machines = {["codelahoma"] = true, ["m1-mini"] = true}
+
 hs.loadSpoon("SpoonInstall")
 
 spoon.SpoonInstall.repos.rkspoons = {
@@ -54,42 +57,51 @@ TeamsApp = "org.epichrome.eng.Teams"
 MicrosoftEdge = "com.microsoft.edgemac"
 SummitProd = "org.epichrome.app.SummitProd"
 
-if machine == "codelahoma" then
-
-  url_patterns = {
-    { "https?://summitesp.atlassian.net",          JiraApp },
-    { "https?://open.spotify.com", "com.spotify.client"},
-    { "https?://teams.microsoft.com", TeamsApp},
-    { "https?://.*.console.aws.amazon.com", AWSConsoleApp},
-    { "https?://.*office.com", MicrosoftEdge},
-    { "https?://.*sentry.com", MicrosoftEdge},
-    { "https?://erp.summitesp.com", SummitProd},
-    { "https?://sk-sap.summitesp.com", SummitProd},
-  }
-
-    url_redir_decoders = {
-      --   { "Office 365 safelinks check",
-      --     "https://eur03.safelinks.protection.outlook.com/(.*)\\?url=(.-)&.*",
-      --     "%2" },
-      --   { "MS Teams URLs",
-      --     "(https://teams.microsoft.com.*)", "msteams:%1", true }
-    }
-else
-  url_patterns = {}
-  url_redir_decoders = {}
+if  work_machines[machine] ~= nil  then
+  Install:andUse("URLDispatcher",
+                {
+                  config = {
+                    url_patterns = {
+                      { "https?://summitesp.atlassian.net",          JiraApp },
+                      { "https?://open.spotify.com", "com.spotify.client"},
+                      { "https?://teams.microsoft.com", TeamsApp},
+                      { "https?://.*.console.aws.amazon.com", AWSConsoleApp},
+                      { "https?://.*office.com", MicrosoftEdge},
+                      { "https?://.*sentry.com", MicrosoftEdge},
+                      { "https?://erp.summitesp.com", SummitProd},
+                      { "https?://sk-sap.summitesp.com", SummitProd},
+                    },
+                    url_redir_decoders = {
+                    --   { "Office 365 safelinks check",
+                    --     "https://eur03.safelinks.protection.outlook.com/(.*)\\?url=(.-)&.*",
+                    --     "%2" },
+                    --   { "MS Teams URLs",
+                    --     "(https://teams.microsoft.com.*)", "msteams:%1", true }
+                    },
+                    default_handler = DefaultBrowser
+                  },
+                  start = true,
+                  --                   loglevel = 'debug'
+                }
+  )
 end
 
-Install:andUse("URLDispatcher",
-              {
-                config = {
-                  url_patterns = url_patterns,
-                  url_redir_decoders = url_redir_decoders,
-                  default_handler = DefaultBrowser
-                },
-                start = true,
-                loglevel = 'debug'
-              }
-)
+if home_machines[machine] ~= nil then
+  Install:andUse("URLDispatcher",
+                {
+                  config = {
+                    url_patterns = {
+                    },
+                    url_redir_decoders = {
+                    },
+                    default_handler = DefaultBrowser
+                  },
+                  start = true,
+                  --                   loglevel = 'debug'
+                }
+  )
+
+end
 
 hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
 
@@ -148,7 +160,7 @@ local function pasteLauncher()
    end
 end
 
-if machine == "codelahoma" or machine == "rk-mbp" then
+if work_machines[machine] ~= nil then
     hotkey.bind(hyper, "c", hs.toggleConsole)
     hotkey.bind(hyper, "d", appLauncher('Dash'))
     hotkey.bind(hyper, "e", appLauncher('Postman'))

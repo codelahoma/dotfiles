@@ -168,7 +168,7 @@ alias ohmyzsh="emacsclient -n ~/.oh-my-zsh"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(zsh-autosuggestions zsh-syntax-highlighting brew common-aliases django docker-compose docker iterm2 fasd git github npm  osx wakatime)
+plugins=(brew colored-man-pages common-aliases docker-compose docker iterm2 fasd git github npm  macos pyenv wakatime)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -213,9 +213,11 @@ unalias run-help
 autoload run-help
 HELPDIR=/usr/local/share/zsh/help
 
-source "$HOME/.homesick/repos/homeshick/homeshick.sh"
-fpath=($HOME/.homesick/repos/homeshick/completions $fpath)
+export HOMESHICK_DIR=/opt/homebrew/opt/homeshick
+source /opt/homebrew/opt/homeshick/homeshick.sh
 
+# initialise completions with ZSH's compinit
+autoload -Uz compinit && compinit
 
 if which swiftenv > /dev/null; then eval "$(swiftenv init -)"; fi
 
@@ -226,6 +228,7 @@ alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"'
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 eval "$(direnv hook zsh)"
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
 if [[ -f ~/.zshrc.local ]]; then
   source ~/.zshrc.local
@@ -242,18 +245,13 @@ function startx() {
         socat TCP-LISTEN:6000,reuseaddr,fork UNIX-CLIENT:\"$DISPLAY\" &
 	  fi
 }
-
 alias dgui='docker run -e DISPLAY=$DISPLAY_MAC -it'
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
 
-export PYENV_ROOT="$HOME/.pyenv"
-eval "$(pyenv init --path)"
 eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
 export LDFLAGS="-L/usr/local/opt/zlib/lib -L/usr/local/opt/bzip2/lib"
 export CPPFLAGS="-I/usr/local/opt/zlib/include -I/usr/local/opt/bzip2/include"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-export PATH="$HOME/.poetry/bin:$PATH"

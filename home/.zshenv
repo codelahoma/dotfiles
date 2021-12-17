@@ -18,8 +18,6 @@ export LC_ALL="en_US.UTF-8"
 # User configuration
 export TERM=xterm-256color
 export SAVEHIST=50000
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH"
 export KALEIDOSCOPE_DIR=/Users/rodk/Documents/Arduino/Kaleidoscope
 
 # Set NVM_DIR if it isn't already defined
@@ -28,9 +26,6 @@ export KALEIDOSCOPE_DIR=/Users/rodk/Documents/Arduino/Kaleidoscope
 
 # [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
 
-# if command -v pyenv 1>/dev/null 2>&1; then  eval "$(pyenv init - --no-rehash)";fi
-
-# if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
 
 if [[ "$(uname -s)"  == "Darwin" ]] ; then
 
