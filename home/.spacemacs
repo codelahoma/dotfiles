@@ -160,7 +160,7 @@ This function should only modify configuration layer settings."
 
      (wakatime :variables
                wakatime-api-key "c3241a98-9066-4792-87de-163047db98b3"
-               wakatime-cli-path "/Users/rodk/.pyenv/shims/wakatime")
+               wakatime-cli-path "/opt/homebrew/bin/wakatime-cli")
 
      rk-layout
      rk-org
