@@ -160,7 +160,7 @@ This function should only modify configuration layer settings."
 
      (wakatime :variables
                wakatime-api-key "REDACTED_WAKATIME_KEY"
-               wakatime-cli-path "/Users/rodk/.pyenv/shims/wakatime")
+               wakatime-cli-path "/opt/homebrew/bin/wakatime-cli")
 
      rk-layout
      rk-org
