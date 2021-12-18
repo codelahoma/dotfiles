@@ -192,6 +192,7 @@ if work_machines[machine] ~= nil then
     hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
     hotkey.bind(hyper, "m", appLauncher('MailMate'))
     hotkey.bind(hyper, "o", appLauncher('Slack'))
+    hotkey.bind(hyper, "p", appLauncher('Preview'))
     hotkey.bind(hyper, "r", hs.reload)
     hotkey.bind(hyper, "s", appLauncher('Spark'))
     hotkey.bind(hyper, "v", pasteLauncher())
