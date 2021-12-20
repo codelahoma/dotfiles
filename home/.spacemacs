@@ -146,13 +146,13 @@ This function should only modify configuration layer settings."
                       version-control-diff-side 'left)
      themes-megapack
      ;; multiple-cursors
-     ;; (treemacs :variables
-     ;;           treemacs-sorting 'alphabetic-asc
-     ;;           ;; treemacs-use-follow-mode 'tag
-     ;;           treemacs-use-git-mode 'deferred
-     ;;           treemacs-use-scope-type 'Perspectives
-     ;;           treemacs-use-filewatch-mode nil)
-     neotree
+     (treemacs :variables
+               treemacs-sorting 'alphabetic-asc
+               ;; treemacs-use-follow-mode 'tag
+               treemacs-use-git-mode 'deferred
+               treemacs-use-scope-type 'Perspectives
+               treemacs-use-filewatch-mode nil)
+     ;; neotree
      ;; bm
 
      ;; (dash :variables
