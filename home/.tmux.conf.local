@@ -362,6 +362,8 @@ bind C-Space copy-mode
 bind-key c command-prompt -p "Project:" "new-window -n '%%'"
 bind-key C-c command-prompt -p "Project:" "new-window -n '%%'"
 
+# wait for me to select a pane if I display their numbers
+bind-key -T prefix q display-panes -d 0
 # replace C-b by C-a instead of using both prefixes
 # set -gu prefix2
 unbind C-a
