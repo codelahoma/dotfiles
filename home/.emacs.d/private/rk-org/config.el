@@ -3,6 +3,7 @@
   ;;
 
   (setq org-directory "~/Dropbox/org/")
+  (setq org-brain-path (concat org-directory "brain/"))
   (setq gtd-directory (concat org-directory "gtd/"))
   (setq org-id-track-globally t)
   (defalias `rk/org-file (apply-partially 'concat org-directory))
@@ -16,6 +17,7 @@
 
   (setq org-tags-exclude-from-inheritance (list "project"))
   (setq org-list-allow-alphabetical t)
+  (setq org-enable-org-brain-support t)
 
   (setq org-jira-working-dir org-directory)
   (setq org-agenda-files  (append (list org-jira-working-dir) (list gtd-directory)))
@@ -151,7 +153,7 @@
   (org-clock-persistence-insinuate)
 
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d@)" "CANCELLED(c@) DONE(e)")
+        '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c@)")
           ;; keyword in org-jira files.
           (sequence "BACKLOG"
                     "TO-DO"
