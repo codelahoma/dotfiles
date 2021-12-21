@@ -30,7 +30,7 @@ export KALEIDOSCOPE_DIR=/Users/rodk/Documents/Arduino/Kaleidoscope
 if [[ "$(uname -s)"  == "Darwin" ]] ; then
 
     # Adopted SDK workaround from @marcosgomesborges
-    [[ -n "$MACOSX_DEPLOYMENT_TARGET"  ]]  || export MACOSX_DEPLOYMENT_TARGET="$(sw_vers -productVersion | cut -c -5)"    # e.g.: 10.14
+    [[ -n "$MACOSX_DEPLOYMENT_TARGET"  ]]  || export MACOSX_DEPLOYMENT_TARGET="$(sw_vers -productVersion | tr -d '\n')"    # e.g.: 10.14
     [[ -n "$SDKROOT" ]]                    || export SDKROOT="$(xcrun --show-sdk-path)"
 
     # Workaround for OpenSSL header/library paths (for GCC & LINKER)
