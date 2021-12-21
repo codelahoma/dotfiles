@@ -168,7 +168,7 @@ alias ohmyzsh="emacsclient -n ~/.oh-my-zsh"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(asdf brew colored-man-pages common-aliases docker-compose docker iterm2 fasd git github npm  osx poetry wakatime)
+plugins=(asdf brew colored-man-pages common-aliases docker-compose docker iterm2 fasd git github npm macos wakatime zsh-256color)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -182,7 +182,7 @@ unsetopt nomatch
 # fi
 
 export EDITOR='emacsclient -nw'
-
+export ZSH_WAKATIME_BIN=/usr/local/bin/wakatime-cli
 autoload zmv
 alias mmv='noglob zmv -W'
 alias le='open -a /usr/local/opt/emacs-plus/Emacs.app'
