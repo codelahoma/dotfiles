@@ -182,7 +182,7 @@ unsetopt nomatch
 # fi
 
 export EDITOR='emacsclient -nw'
-
+export ZSH_WAKATIME_BIN=/usr/local/bin/wakatime-cli
 autoload zmv
 alias mmv='noglob zmv -W'
 alias le='open -a /usr/local/opt/emacs-plus/Emacs.app'
