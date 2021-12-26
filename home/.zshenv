@@ -21,11 +21,8 @@ export SAVEHIST=50000
 export KALEIDOSCOPE_DIR=/Users/rodk/github/Kaleidoscope
 export ZSH_WAKATIME_BIN=/opt/homebrew/bin/wakatime-cli
 
-# Set NVM_DIR if it isn't already defined
-# [[ -z "$NVM_DIR" ]] && export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-
-# [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
+# key bindings
+bindkey -s ^f "tmux-sessionizer\n"
 
 
 if [[ "$(uname -s)"  == "Darwin" ]] ; then
