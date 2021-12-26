@@ -8,6 +8,7 @@
 	"/"	= "searchAllMessages:";
 	"n"	= "nextMessage:";
 	"p"	= "previousMessage:";
+  "i" = "loadAllImagesOnce:";
 	"j"   = "nextThread:";
 	"k"   = "previousThread:";
   "l" = "markAsNotJunk:";
@@ -25,7 +26,6 @@
 	"v"	= "moveToMailbox:";
 	"#"   = "deleteMessage:";
 
-	"I"	= ( "setTag:", "\\Seen", "nextMessage:");
 	"U"	= ( "removeTag:", "\\Seen");
 
 	// Only in MailMate
