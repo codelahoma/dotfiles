@@ -98,7 +98,7 @@ tmux_conf_theme_focused_pane_bg="$tmux_conf_theme_colour_2"
 # pane border style, possible values are:
 #   - thin (default)
 #   - fat
-tmux_conf_theme_pane_border_style=fat
+tmux_conf_theme_pane_border_style=thin
 
 # pane borders colours:
 tmux_conf_theme_pane_border="$tmux_conf_theme_colour_2"
@@ -138,7 +138,7 @@ tmux_conf_theme_status_attr="none"
 #     - #{hostname_full_ssh}
 #     - #{username}
 #     - #{username_ssh}
-tmux_conf_theme_terminal_title="#h ❐ #S ● #I #W"
+tmux_conf_theme_terminal_title="#h #{circled_session_name}  ● #I #W"
 
 # window sta javascript:window.location='drafts://x-callback-url/create?text='+encodeURIComponent(document.title+'%5Cn')+ encodeURIComponent(location.href)+'&action=taus style
 #   - built-in variables are:
@@ -190,14 +190,14 @@ tmux_conf_theme_window_status_last_bg="$tmux_conf_theme_colour_2"
 tmux_conf_theme_window_status_last_attr="none"
 
 # status left/right sections separators
-# tmux_conf_theme_left_separator_main=""
-# tmux_conf_theme_left_separator_sub="|"
-# tmux_conf_theme_right_separator_main=""
-# tmux_conf_theme_right_separator_sub="|"
-tmux_conf_theme_left_separator_main='\uE0B0'  # /!\ you don't need to install Powerline
-tmux_conf_theme_left_separator_sub='\uE0B1'   #   you only need fonts patched with
-tmux_conf_theme_right_separator_main='\uE0B2' #   Powerline symbols or the standalone
-tmux_conf_theme_right_separator_sub='\uE0B3'  #   PowerlineSymbols.otf font, see README.md
+tmux_conf_theme_left_separator_main=""
+tmux_conf_theme_left_separator_sub="|"
+tmux_conf_theme_right_separator_main=""
+tmux_conf_theme_right_separator_sub="|"
+# tmux_conf_theme_left_separator_main='\uE0B0'  # /!\ you don't need to install Powerline
+# tmux_conf_theme_left_separator_sub='\uE0B1'   #   you only need fonts patched with
+# tmux_conf_theme_right_separator_main='\uE0B2' #   Powerline symbols or the standalone
+# tmux_conf_theme_right_separator_sub='\uE0B3'  #   PowerlineSymbols.otf font, see README.md
 
 # status left/right content:
 #   - separate main sections with "|"
@@ -226,8 +226,8 @@ tmux_conf_theme_right_separator_sub='\uE0B3'  #   PowerlineSymbols.otf font, see
 #     - #{uptime_s}
 #     - #{username}
 #     - #{username_ssh}
-tmux_conf_theme_status_left="#{prefix_highlight}#{hostname} | #{username}#{root} | ❐ #S | ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} "
-tmux_conf_theme_status_right=" #{prefix}#{mouse}#{pairing}#{synchronized}#{?battery_status,#{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},} , %R , %d %b | #{username}#{root} | #{hostname} "
+tmux_conf_theme_status_left=" #{circled_session_name} | ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} "
+tmux_conf_theme_status_right=" #{prefix}#{pairing}#{synchronized} | #{?window_zoomed_flag, ,🔍 | #{username}#{root} | #{hostname} "
 # tmux_conf_theme_status_right='#{pairing}#{synchronized} #{cpu_bg_color} CPU: #{cpu_icon} #{cpu_percentage} |#{ram_bg_color} MEM: #{ram_icon} #{ram_percentage} | #(curl -m 1 wttr.in?format=1 2>/dev/null; sleep 900) | %R , %d %b '
 
 #
@@ -348,6 +348,9 @@ set -g mode-keys vi
 unbind t
 bind-key t choose-tree
 
+# forget the find window.  That is for chumps — ThePrimeagen
+unbind-key f
+bind-key -r f run-shell "tmux neww ~/bin/tmux-sessionizer"
 
 # split-window bindings to be vimish
 bind-key s split-window -v
@@ -399,6 +402,7 @@ tmux_conf_update_plugins_on_reload=true
 # to enable a plugin, use the 'set -g @plugin' syntax:
 # visit https://github.com/tmux-plugins for available plugins
 set -g @plugin 'tmux-plugins/tmux-copycat'
+set -g @plugin 'tmux-plugins/tmux-logging''
 # set -g @plugin 'tmux-plugins/tmux-cpu'
 # set -g @plugin 'laktak/extrakto'
 # set -g @plugin 'tmux-plugins/tmux-prefix-highlight'

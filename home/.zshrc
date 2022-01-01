@@ -123,7 +123,7 @@ else
     POWERLEVEL9K_CUSTOM_ITERM_MARK="iterm2_prompt_mark"
 
     POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(custom_iterm_mark time newline context os_icon custom_battery_status ssh root_indicator dir vcs)
-    POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time pyenv custom_internet_status)
+    POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time custom_internet_status)
     HIST_STAMPS="mm/dd/yyyy"
     DISABLE_UPDATE_PROMPT=true
 fi
@@ -168,7 +168,7 @@ alias ohmyzsh="emacsclient -n ~/.oh-my-zsh"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(asdf brew colored-man-pages common-aliases docker-compose docker iterm2 fasd git github npm  macos pyenv wakatime)
+plugins=(asdf brew colored-man-pages common-aliases docker-compose docker iterm2 fasd git github npm  macos wakatime)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -197,7 +197,6 @@ alias ssd="script-docker/stop && script-docker/start -d && script-docker/attach 
 alias emc="emacsclient -nw"
 alias bsalt="ssh -t saltmaster vim /srv"
 alias esalt="ssh -t saltmaster sudo vim /srv"
-alias penv='eval "$(pyenv init -)"'
 alias ccat='/bin/cat'
 alias cat='/opt/homebrew/bin/bat'
 autoload edit-command-line
@@ -252,7 +251,6 @@ alias dgui='docker run -e DISPLAY=$DISPLAY_MAC -it'
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
 
-eval "$(pyenv init -)"
 export LDFLAGS="-L/usr/local/opt/zlib/lib -L/usr/local/opt/bzip2/lib"
 export CPPFLAGS="-I/usr/local/opt/zlib/include -I/usr/local/opt/bzip2/include"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

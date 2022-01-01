@@ -183,6 +183,7 @@ if work_machines[machine] ~= nil then
     hotkey.bind(hyper, "1", appLauncher('1Password 7'))
     hotkey.bind(hyper, ";", appLauncher('Spotify'))
   else
+    hotkey.bind(hyper, "a", appLauncher('Arduino IDE'))
     hotkey.bind(hyper, "b", appLauncher('com.brave.Browser'))
     hotkey.bind(hyper, "c", hs.toggleConsole)
     hotkey.bind(hyper, "d", appLauncher('Dash'))

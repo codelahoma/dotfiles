@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set ~ ~/personal ~/work ~/.homesick/repos/dotfiles/home
+set ~ ~/personal ~/work ~/github ~/.homesick/repos/dotfiles/home
 session=$((echo ${*} | tr " " "\n";find ${*} -mindepth 1 -maxdepth 1 -type d) | fzf)
 
 session_name=$(basename "$session" | tr . _)
