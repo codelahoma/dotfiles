@@ -22,7 +22,14 @@ export KALEIDOSCOPE_DIR=/Users/rodk/github/Kaleidoscope
 export ZSH_WAKATIME_BIN=/opt/homebrew/bin/wakatime-cli
 
 # key bindings
-bindkey -s ^f "tmux-sessionizer\n"
+bindkey -s ^F "tmux-sessionizer\n"
+
+function rk_autojump {
+                     targetdir=$(fasd -ld | fzf)
+                     cd $targetdir
+                     }
+
+bindkey -s ^O "rk_autojump\n"
 
 
 if [[ "$(uname -s)"  == "Darwin" ]] ; then
