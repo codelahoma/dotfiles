@@ -4,8 +4,16 @@ session=$((echo ${*} | tr " " "\n";find ${*} -mindepth 1 -maxdepth 1 -type d) | 
 
 session_name=$(basename "$session" | tr . _)
 
+if ! tmux list-sessions 2>/dev/null; then
+    tmux start-server
+fi
+
 if ! tmux has-session -t "$session_name" 2>/dev/null; then
     tmux new-session -s "$session_name" -c "$session" -d
 fi
 
-tmux switch-client -t "$session_name"
+if [ -z "$TMUX" ]; then
+    tmux attach -t "$session_name"
+else
+    tmux switch-client -t "$session_name"
+fi
