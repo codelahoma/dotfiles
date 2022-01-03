@@ -199,6 +199,7 @@ alias bsalt="ssh -t saltmaster vim /srv"
 alias esalt="ssh -t saltmaster sudo vim /srv"
 alias ccat='/bin/cat'
 alias cat='/opt/homebrew/bin/bat'
+alias org='emacsclient -nw ~/Dropbox/org/gtd/gtd.org'
 autoload edit-command-line
 zle -N edit-command-line
 bindkey '^X^E' edit-command-line
