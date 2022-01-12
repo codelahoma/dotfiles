@@ -17,7 +17,7 @@ screen = hs.screen
 spotify = hs.spotify
 machine = hs.host.localizedName()
 
-work_machines = {["rk-mbp"] = true}
+work_machines = {["codelahoma-kw"] = true}
 home_machines = {["codelahoma"] = true, ["m1-mini"] = true}
 
 hs.loadSpoon("SpoonInstall")
@@ -170,21 +170,15 @@ if work_machines[machine] ~= nil then
 
 -- hotkey.bind(hyper, "j", appLauncher('/Applications/Emacs.app'))
     hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
-    hotkey.bind(hyper, "m", appLauncher('Microsoft Edge'))
+    hotkey.bind(hyper, "m", appLauncher('GMail'))
     hotkey.bind(hyper, "o", appLauncher('Slack'))
-    hotkey.bind(hyper, "p", appLauncher('MongoDB Compass'))
-    hotkey.bind(hyper, "q", appLauncher('qutebrowser'))
     hotkey.bind(hyper, "r", hs.reload)
-    hotkey.bind(hyper, "s", appLauncher('org.epichrome.app.SummitProd'))
-    hotkey.bind(hyper, "u", appLauncher('org.epichrome.app.Teams'))
     hotkey.bind(hyper, "v", pasteLauncher())
-    hotkey.bind(hyper, "y", appLauncher('org.epichrome.app.SummitJIR049'))
     hotkey.bind(hyper, "0", centerOnMainDisplay)
     hotkey.bind(hyper, "1", appLauncher('1Password 7'))
     hotkey.bind(hyper, ";", appLauncher('Spotify'))
   else
     hotkey.bind(hyper, "a", appLauncher('Arduino IDE'))
-    hotkey.bind(hyper, "b", appLauncher('com.brave.Browser'))
     hotkey.bind(hyper, "c", hs.toggleConsole)
     hotkey.bind(hyper, "d", appLauncher('Dash'))
     hotkey.bind(hyper, "e", appLauncher('Finder'))
@@ -195,7 +189,6 @@ if work_machines[machine] ~= nil then
     hotkey.bind(hyper, "o", appLauncher('Slack'))
     hotkey.bind(hyper, "p", appLauncher('Preview'))
     hotkey.bind(hyper, "r", hs.reload)
-    hotkey.bind(hyper, "s", appLauncher('Spark'))
     hotkey.bind(hyper, "v", pasteLauncher())
     hotkey.bind(hyper, "0", centerOnMainDisplay)
     hotkey.bind(hyper, "1", appLauncher('1Password 7'))
@@ -209,15 +202,13 @@ Modal Menu
 ----------
 a - Activity Monitor
 b - Brave Browser Dev
-c - AWS Console
+c - Google Calendar
 d - Dash
-e - Excel
 m - MailMate
+n - Notion
 p - Postman
 s - Stickies
-u - SQUAD Agenda
 v - Paste
-w - WVD (Microsoft Remote Desktop)
 
 ESC - exit
 ]]
@@ -240,15 +231,13 @@ menuModal:bind("", "escape", " not this time...", nil, function() menuModal:exit
 -- menuModal:bind("", "d", "today", nil, function() hs.eventtap.keyStrokes(os.date("%F")) menuModal:exit() end, nil)
 menuModal:bind("", "a", "activity", nil, function() application.launchOrFocus("Activity Monitor") menuModal:exit() end, nil)
 menuModal:bind("", "b", "Brave Browser Dev", nil, function() application.launchOrFocus("Brave Browser Dev") menuModal:exit() end, nil)
-menuModal:bind("", "c", "AWS Console", nil, function() application.launchOrFocusByBundleID("org.epichrome.app.AWSConsol607") menuModal:exit() end, nil)
+menuModal:bind("", "c", "Google Calendar", nil, function() application.launchOrFocusByBundleID("com.webcatalog.juli.google-calendar") menuModal:exit() end, nil)
 menuModal:bind("", "d", "dash", nil, function() application.launchOrFocus("Dash") menuModal:exit() end, nil)
-menuModal:bind("", "e", "excel", nil, function() application.launchOrFocus("Microsoft Excel") menuModal:exit() end, nil)
 menuModal:bind("", "m", "MailMate", nil, function() application.launchOrFocus("MailMate") menuModal:exit() end, nil)
+menuModal:bind("", "n", "Notion", nil, function() application.launchOrFocus("Notion") menuModal:exit() end, nil)
 menuModal:bind("", "p", "postman", nil, function() application.launchOrFocus("Postman") menuModal:exit() end, nil)
 menuModal:bind("", "s", "stickies", nil, function() application.launchOrFocus("Stickies") menuModal:exit() end, nil)
-menuModal:bind("", "u", "SQUAD Agenda", nil, function() application.launchOrFocusByBundleID("org.epichrome.app.SQUADAgenda") menuModal:exit() end, nil)
 menuModal:bind("", "v", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") menuModal:exit() end, nil)
-menuModal:bind("", "w", "Microsoft Remote Desktop", nil, function() application.launchOrFocus("Microsoft Remote Desktop") menuModal:exit() end, nil)
 
 caffeine = hs.menubar.new()
 hs.caffeinate.set("system", true, false)
