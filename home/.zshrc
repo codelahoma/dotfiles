@@ -168,7 +168,7 @@ alias ohmyzsh="emacsclient -n ~/.oh-my-zsh"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(asdf brew colored-man-pages common-aliases docker-compose docker iterm2 fasd git github npm  macos wakatime)
+plugins=(asdf brew colored-man-pages common-aliases docker-compose docker iterm2 fasd fzf git github npm  macos wakatime)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -234,7 +234,6 @@ if [[ -f ~/.zshrc.local ]]; then
   source ~/.zshrc.local
 fi
 
-. /opt/homebrew/opt/asdf/libexec/asdf.sh
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 # [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

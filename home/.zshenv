@@ -20,6 +20,7 @@ export TERM=xterm-256color
 export SAVEHIST=50000
 export KALEIDOSCOPE_DIR=/Users/rodk/github/Kaleidoscope
 export ZSH_WAKATIME_BIN=/opt/homebrew/bin/wakatime-cli
+export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
 
 # key bindings
 bindkey -s ^F "tmux-sessionizer\n"
