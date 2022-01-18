@@ -51,25 +51,14 @@ hs.grid.HINTS = {
 }
 
 DefaultBrowser = "com.google.Chrome"
-JiraApp = "org.epichrome.app.SummitJIR049"
-AWSConsoleApp = "org.epichrome.app.AWSConsol607"
-TeamsApp = "org.epichrome.eng.Teams"
-MicrosoftEdge = "com.microsoft.edgemac"
-SummitProd = "org.epichrome.app.SummitProd"
+Spotify = "com.spotify.client"
 
 if  work_machines[machine] ~= nil  then
   Install:andUse("URLDispatcher",
                 {
                   config = {
                     url_patterns = {
-                      { "https?://summitesp.atlassian.net",          JiraApp },
-                      { "https?://open.spotify.com", "com.spotify.client"},
-                      { "https?://teams.microsoft.com", TeamsApp},
-                      { "https?://.*.console.aws.amazon.com", AWSConsoleApp},
-                      { "https?://.*office.com", MicrosoftEdge},
-                      { "https?://.*sentry.com", MicrosoftEdge},
-                      { "https?://erp.summitesp.com", SummitProd},
-                      { "https?://sk-sap.summitesp.com", SummitProd},
+                      { "https?://open.spotify.com", Spotify},
                     },
                     url_redir_decoders = {
                     --   { "Office 365 safelinks check",
@@ -174,6 +163,7 @@ if work_machines[machine] ~= nil then
     hotkey.bind(hyper, "o", appLauncher('Slack'))
     hotkey.bind(hyper, "r", hs.reload)
     hotkey.bind(hyper, "v", pasteLauncher())
+    hotkey.bind(hyper, "y", appLauncher('Jira'))
     hotkey.bind(hyper, "0", centerOnMainDisplay)
     hotkey.bind(hyper, "1", appLauncher('1Password 7'))
     hotkey.bind(hyper, ";", appLauncher('Spotify'))
