@@ -48,31 +48,21 @@
                                 ("t" "Todos")
                                 ("tl" "Todo with Link" entry (file ,(rk/gtd-file "inbox.org")) "* TODO %?\n  %i\n  %a")
                                 ("tt" "Todo" entry (file ,(rk/gtd-file "inbox.org")) "* TODO %?\n  %i\n")
-                                ;; ("ts" "Summit Todo" entry (file+olp  ,(rk/gtd-file "gtd.org")"Summit" "INBOX")"* TODO %?\n  %i\n")
-                                ;; ("tn" "Summit Note" item (file+olp  ,(rk/gtd-file "gtd.org")"Summit" "Notes")"Note taken %T\nWhile viewing: %f\n\n %?\n")
-                                ;; ("tS" "Summit Todo with Link" entry (file+olp  ,(rk/gtd-file "gtd.org")"Summit" "INBOX")"* TODO %?\n  %i\n  %a")
                                 ("tT" "Tickler" entry (file+headline ,(rk/gtd-file "tickler.org") "Tickler") "* %i%? \n %U"))
         )
 
   (global-set-key "\C-cb" 'org-switchb)
 
   (setq rk/work-org-files (-flatten (list
-                                     (rk/org-file "CI.org") 
-                                     (rk/org-file "SI.org")
-                                     (rk/org-file "DEVOPS.org")
 
                                      (rk/gtd-file "inbox.org")
                                      (rk/gtd-file "gtd.org")
                                      (rk/gtd-file "tickler.org")
                                      (rk/gtd-file "someday.org")
                                      (rk/gtd-file "reference.org")
-
-                                     (file-expand-wildcards "~/summit/*/TODOs.org")
                                      )))
 
   (setq rk/home-org-files (list
-                           (rk/org-file "home.org")
-
                            (rk/gtd-file "inbox.org")
                            (rk/gtd-file "gtd.org")
                            (rk/gtd-file "tickler.org")
@@ -83,28 +73,26 @@
         '(("h" "Home"
            ((agenda "" ((org-agenda-span 3)))
             (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
-            (tags "-@summit+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
-            (tags-todo "-@summit" (
+            (tags "-@kitewire+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
+            (tags-todo "-@kitewire" (
                                    (org-agenda-overriding-header "Todo")
                                    (org-agenda-files rk/home-org-files)
                                    (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
             ()))
-          ("j" "JIRA"
-           ((agenda "" ((org-agenda-span 3)))
-            (tags-todo "+JIRA" ((org-agenda-overriding-header "JIRA") (org-agenda-files rk/work-org-files) (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
-            (tags "-@home-home+TODO=\"IN-PROGRESS\"" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/work-org-files) (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
-            ()))
-          ("s" . "Summit Views")
-          ("ss" "Summit"
+          ("k" . "Kitewire Views")
+          ("kk" "Kitewire"
            (
-            (agenda "" ((org-agenda-span 3)))
-            (tags-todo "+@summit-reading-home-@home/-MEETING" ((org-agenda-overriding-header "Summit") (org-agenda-files rk/work-org-files) ))
+            (agenda)
+            (tags-todo "+kitewire-reading-home-@home-30days-60days-90days/-MEETING" ((org-agenda-overriding-header "Kitewire") (org-agenda-files rk/work-org-files) ))
             (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
             (tags "-@home-home+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
+            (tags "30days" ((org-agenda-overriding-header "30 Day Plan")))
+            (tags "60days" ((org-agenda-overriding-header "60 Day Plan")))
+            (tags "90days" ((org-agenda-overriding-header "90 Day Plan")))
             (tags "project" ((org-agenda-overriding-header "Projects")))
             ;; (tags "-@home-home+TODO=\"IN-PROGRESS\"" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/work-org-files)))
             ()))
-          ("sW" "Weekly review"
+          ("kW" "Weekly review"
            agenda ""
            ((org-agenda-span 'week)
             (org-agenda-start-on-weekday 0)
@@ -112,9 +100,7 @@
             (org-agenda-skip-function
              '(org-agenda-skip-entry-if 'nottodo 'done))
             )
-           ) 
-          ("sq" tags "@squad")
-          ))
+           )))
 
   (add-to-list 'org-agenda-custom-commands
                '("W" "Weekly review"
