@@ -36,6 +36,7 @@ This function should only modify configuration layer settings."
      ansible
      cmake
      elm
+     graphviz
      rust
      sql
      spacemacs-modeline
@@ -80,8 +81,8 @@ This function should only modify configuration layer settings."
      (yaml :variables
            yaml-enable-lsp t)
      (plantuml :variables
-               plantuml-jar-path "/usr/local/opt/plantuml/libexec/plantuml.jar"
-               org-plantuml-jar-path "/usr/local/opt/plantuml/libexec/plantuml.jar")
+               plantuml-jar-path "/opt/homebrew/opt/plantuml/libexec/plantuml.jar"
+               org-plantuml-jar-path "/opt/homebrew/opt/plantuml/libexec/plantuml.jar")
 
      command-log
      restclient
@@ -960,6 +961,7 @@ you should place your code here."
   (setq easy-jekyll-url "https://codelahoma.com")
 
   (evil-leader/set-key "q q" 'spacemacs/frame-killer)
+  (evil-leader/set-key "/" 'spacemacs/helm-project-do-ag)
 
 
   (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
@@ -997,7 +999,7 @@ you should place your code here."
 
   ;; (setq-default git-magit-status-fullscreen t)
 
-  (setq helm-ag-base-command "/usr/local/bin/ag --vimgrep")
+  (setq helm-ag-base-command "/opt/homebrew/bin/rg --vimgrep --no-heading --smart-case")
 
   (setq multi-term-program "/bin/zsh")
 
@@ -1053,49 +1055,6 @@ you should place your code here."
              (list "-a" "firefox" url))))
   (setq flymd-browser-open-function 'my-flymd-browser-function)
 
-
-  ;; (with-eval-after-load 'slack
-  ;;   (add-hook 'slack-mode-hook #'emojify-mode)
-
-  ;;   (with-eval-after-load 'tracking
-  ;;     (define-key tracking-mode-map [f11]
-  ;;       #'tracking-next-buffer))
-
-  ;;   (setq slack-buffer-create-on-notify t)
-  ;;   ;; (defun slack-user-status (id team) "")
-
-  ;;   ;; (defun endless/-author-at (pos)
-  ;;   ;;   (replace-regexp-in-string
-  ;;   ;;    (rx "\n" (* anything)) ""
-  ;;   ;;    (or (get-text-property pos 'lui-raw-text) "")))
-
-  ;;   ;; (defun endless/-remove-slack-author ()
-  ;;   ;;   "Remove author here if it's the same as above."
-  ;;   ;;   (let ((author-here (endless/-author-at (point)))
-  ;;   ;;         (author-above (endless/-author-at (1- (point)))))
-  ;;   ;;     (when (and (looking-at-p (regexp-quote author-here))
-  ;;   ;;                (equal author-here author-above))
-  ;;   ;;       (delete-region (1- (point))
-  ;;   ;;                      (1+ (line-end-position))))))
-
-  ;;   ;; (defun endless/remove-slack-author-hook ()
-  ;;   ;;   "For usage in `lui-pre-output-hook'."
-  ;;   ;;   (when (derived-mode-p 'slack-mode)
-  ;;   ;;     (save-excursion
-  ;;   ;;       (goto-char (point-min))
-  ;;   ;;       (save-restriction
-  ;;   ;;         (widen)
-  ;;   ;;         (endless/-remove-slack-author)))))
-
-  ;;   ;; (add-hook 'lui-pre-output-hook
-  ;;   ;;           #'endless/remove-slack-author-hook)
-  ;;   )
-
-  ;; (defun lsp-set-cfg ()
-  ;;   (let ((lsp-cfg '(:pyls (:configurationSources ("flake8")))))
-  ;;     (lsp--set-configuration lsp-cfg)))
-
-  ;; (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg)
 
   (add-hook 'rjsx-mode #'lsp-javascript-typescript-enable)
 
@@ -1179,6 +1138,7 @@ This function is called at the very end of Spacemacs initialization."
    [default default default italic underline success warning error])
  '(ansi-color-names-vector
    ["#080808" "#d70000" "#67b11d" "#875f00" "#268bd2" "#af00df" "#00ffff" "#b2b2b2"])
+ '(asdf-binary "/opt/homebrew/bin/asdf")
  '(column-number-mode t)
  '(company-quickhelp-color-background "#4F4F4F")
  '(company-quickhelp-color-foreground "#DCDCCC")
@@ -1291,6 +1251,8 @@ static char *gnus-pointer[] = {
  '(nrepl-message-colors
    '("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4"))
  '(objed-cursor-color "#ff5555")
+ '(org-agenda-files
+   '("/Users/rodk/Dropbox/org/gtd/inbox.org" "/Users/rodk/Dropbox/org/gtd/gtd.org" "/Users/rodk/Dropbox/org/gtd/tickler.org" "/Users/rodk/Dropbox/org/gtd/someday.org" "/Users/rodk/Dropbox/org/gtd/reference.org"))
  '(org-agenda-sorting-strategy
    '((agenda habit-down time-up priority-down category-keep)
      (todo priority-down category-keep)
