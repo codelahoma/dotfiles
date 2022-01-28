@@ -52,6 +52,7 @@ hs.grid.HINTS = {
 
 DefaultBrowser = "com.google.Chrome"
 Spotify = "com.spotify.client"
+Notion = "notion.id"
 
 if  work_machines[machine] ~= nil  then
   Install:andUse("URLDispatcher",
@@ -59,6 +60,7 @@ if  work_machines[machine] ~= nil  then
                   config = {
                     url_patterns = {
                       { "https?://open.spotify.com", Spotify},
+                      { "https?://www.notion.so", Notion},
                     },
                     url_redir_decoders = {
                     --   { "Office 365 safelinks check",

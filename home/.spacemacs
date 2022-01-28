@@ -34,6 +34,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-configuration-layers
    '(
      ansible
+     bm
      cmake
      elm
      graphviz
@@ -63,7 +64,7 @@ This function should only modify configuration layer settings."
           )
      (python :variables
              python-fill-column 99
-             python-sort-imports-on-save t
+             ;; python-sort-imports-on-save t
              python-auto-set-local-pyenv-version 'on-visit
              python-test-runner 'pytest
              python-backend 'lsp
@@ -72,7 +73,7 @@ This function should only modify configuration layer settings."
              ;; python-lsp-server 'mspyls
              ;; python-lsp-git-root "~/github/python-language-server"
              python-formatter 'black
-             python-format-on-save t
+             ;; python-format-on-save t
              )
      ipython-notebook
      semantic
