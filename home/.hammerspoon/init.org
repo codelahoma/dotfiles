@@ -60,7 +60,7 @@ Abbreviations for frequently used modules
 Which systems are work and which are home
 
 #+begin_src lua
-  work_machines = {["codelahoma-kw"] = true}
+  work_machines = {["codelahoma-kw"] = true, ["codelahoma-kw-m1"] = true }
   home_machines = {["codelahoma"] = true, ["m1-mini"] = true}
 #+end_src
 

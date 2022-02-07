@@ -17,7 +17,7 @@ screen = hs.screen
 spotify = hs.spotify
 machine = hs.host.localizedName()
 
-work_machines = {["codelahoma-kw"] = true}
+work_machines = {["codelahoma-kw"] = true, ["codelahoma-kw-m1"] = true }
 home_machines = {["codelahoma"] = true, ["m1-mini"] = true}
 
 hs.loadSpoon("SpoonInstall")
