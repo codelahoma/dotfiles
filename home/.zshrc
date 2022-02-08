@@ -117,7 +117,10 @@ alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"'
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-eval "$(direnv hook zsh)"
+eval "$(asdf exec direnv hook zsh)"
+# A shortcut for asdf managed direnv.
+direnv() { asdf exec direnv "$@"; }
+
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 if [[ -f ~/.zshrc.local ]]; then
