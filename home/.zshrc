@@ -90,6 +90,8 @@ alias esalt="ssh -t saltmaster sudo vim /srv"
 alias ccat='/bin/cat'
 alias cat='/opt/homebrew/bin/bat'
 alias org='emacsclient -nw ~/Dropbox/org/gtd/gtd.org'
+alias Make=`which make`
+alias make="$(which make) --"
 autoload edit-command-line
 zle -N edit-command-line
 bindkey '^X^E' edit-command-line
