@@ -17,8 +17,8 @@ screen = hs.screen
 spotify = hs.spotify
 machine = hs.host.localizedName()
 
-work_machines = {["codelahoma-kw"] = true, ["codelahoma-kw-m1"] = true }
-home_machines = {["codelahoma"] = true, ["m1-mini"] = true}
+work_machines = {["codelahoma"] = true, ["codelahoma-kw"] = true, ["codelahoma-kw-m1"] = true, ["codelahoma-atlasup"] = true }
+home_machines = {["m1-mini"] = true}
 
 hs.loadSpoon("SpoonInstall")
 
@@ -37,7 +37,6 @@ menuHammer:enter()
 Install:andUse("WindowGrid",
                 {
                   config = { gridGeometries = { { "8x5", "3840x2160"}, { "6x4" } } },
-                  hotkeys = {show_grid = {hyper, "8"}},
                   start = true
                 }
 )
@@ -152,84 +151,89 @@ local function pasteLauncher()
 end
 
 if work_machines[machine] ~= nil then
-    hotkey.bind(hyper, "c", hs.toggleConsole)
-    hotkey.bind(hyper, "d", appLauncher('Dash'))
-    hotkey.bind(hyper, "e", appLauncher('Postman'))
-    hotkey.bind(hyper, "h", hs.toggleConsole)
-    hotkey.bind(hyper, "i", appLauncher('iTerm'))
-    hotkey.bind(hyper, "j", appLauncher('iTerm'))
-
--- hotkey.bind(hyper, "j", appLauncher('/Applications/Emacs.app'))
-    hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
-    hotkey.bind(hyper, "m", appLauncher('GMail'))
-    hotkey.bind(hyper, "o", appLauncher('Slack'))
-    hotkey.bind(hyper, "r", hs.reload)
-    hotkey.bind(hyper, "v", pasteLauncher())
-    hotkey.bind(hyper, "y", appLauncher('Jira'))
-    hotkey.bind(hyper, "0", centerOnMainDisplay)
-    hotkey.bind(hyper, "1", appLauncher('1Password 7'))
-    hotkey.bind(hyper, ";", appLauncher('Spotify'))
-  else
-    hotkey.bind(hyper, "a", appLauncher('Arduino IDE'))
-    hotkey.bind(hyper, "c", hs.toggleConsole)
-    hotkey.bind(hyper, "d", appLauncher('Dash'))
-    hotkey.bind(hyper, "e", appLauncher('Finder'))
-    hotkey.bind(hyper, "i", appLauncher('iTerm'))
-    hotkey.bind(hyper, "j", appLauncher('iTerm'))
-    hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
-    hotkey.bind(hyper, "m", appLauncher('MailMate'))
-    hotkey.bind(hyper, "o", appLauncher('Slack'))
-    hotkey.bind(hyper, "p", appLauncher('Preview'))
-    hotkey.bind(hyper, "r", hs.reload)
-    hotkey.bind(hyper, "v", pasteLauncher())
-    hotkey.bind(hyper, "0", centerOnMainDisplay)
-    hotkey.bind(hyper, "1", appLauncher('1Password 7'))
-    hotkey.bind(hyper, ";", appLauncher('Spotify'))
-  end
-
-menuModal = hs.hotkey.modal.new(hyper, "n")
-menuModal.alertUID = ""
-menuModal.alertText = [[
-Modal Menu
-----------
-a - Activity Monitor
-b - Brave Browser Dev
-c - Google Calendar
-d - Dash
-m - MailMate
-n - Notion
-p - Postman
-s - Stickies
-v - Paste
-
-ESC - exit
-]]
-
-
-function menuModal:entered()
-   self.alertUID = hs.alert(self.alertText, "forever")
+  hotkey.bind(hyper, "a", appLauncher('Arduino IDE'))
+  hotkey.bind(hyper, "b", appLauncher('Bitbucket'))
+  hotkey.bind(hyper, "c", hs.toggleConsole)
+  hotkey.bind(hyper, "d", appLauncher('Dash'))
+  hotkey.bind(hyper, "e", appLauncher('Finder'))
+  hotkey.bind(hyper, "f", appLauncher('MailMate'))
+  hotkey.bind(hyper, "h", hs.toggleConsole)
+  hotkey.bind(hyper, "j", appLauncher('iTerm'))
+  hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
+  hotkey.bind(hyper, "l", appLauncher('Google Calendar'))
+  hotkey.bind(hyper, "m", appLauncher('GMail'))
+  hotkey.bind(hyper, "n", appLauncher('Notion'))
+  hotkey.bind(hyper, "o", appLauncher('Slack'))
+  hotkey.bind(hyper, "p", appLauncher('Postman'))
+  hotkey.bind(hyper, "q", appLauncher('1Password 7'))
+  hotkey.bind(hyper, "r", hs.reload)
+  hotkey.bind(hyper, "s", hs.grid.show)
+  hotkey.bind(hyper, "v", pasteLauncher())
+  hotkey.bind(hyper, "y", appLauncher('Jira'))
+  hotkey.bind(hyper, "z", centerOnMainDisplay)
+  hotkey.bind(hyper, ";", appLauncher('Spotify'))
+  hotkey.bind(hyper, "0", centerOnMainDisplay)
+else
+  hotkey.bind(hyper, "a", appLauncher('Arduino IDE'))
+  hotkey.bind(hyper, "c", hs.toggleConsole)
+  hotkey.bind(hyper, "d", appLauncher('Dash'))
+  hotkey.bind(hyper, "e", appLauncher('Finder'))
+  hotkey.bind(hyper, "i", appLauncher('iTerm'))
+  hotkey.bind(hyper, "j", appLauncher('iTerm'))
+  hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
+  hotkey.bind(hyper, "m", appLauncher('MailMate'))
+  hotkey.bind(hyper, "o", appLauncher('Slack'))
+  hotkey.bind(hyper, "p", appLauncher('Preview'))
+  hotkey.bind(hyper, "r", hs.reload)
+  hotkey.bind(hyper, "v", pasteLauncher())
+  hotkey.bind(hyper, "0", centerOnMainDisplay)
+  hotkey.bind(hyper, "q", appLauncher('1Password 7'))
+  hotkey.bind(hyper, ";", appLauncher('Spotify'))
 end
 
-function menuModal:exited()
-   hs.alert.closeSpecific(self.alertUID)
-end
+-- menuModal = hs.hotkey.modal.new(hyper, "n")
+-- menuModal.alertUID = ""
+-- menuModal.alertText = [[
+-- Modal Menu
+-- ----------
+-- a - Activity Monitor
+-- b - Brave Browser Dev
+-- c - Google Calendar
+-- d - Dash
+-- m - MailMate
+-- n - Notion
+-- p - Postman
+-- s - Stickies
+-- v - Paste
 
--- in this example, Ctrl+Shift+h triggers this keybinding mode, which will allow us to use the ones defined below. A nice touch for usability: This also offers to show a message.
+-- ESC - exit
+-- ]]
 
--- I recommend having this one at all times: Bind the escape key to exit keybinding mode:
-menuModal:bind("", "escape", " not this time...", nil, function() menuModal:exit() end, nil)
 
--- An example binding I find useful: Type today's date in ISO format.
--- menuModal:bind("", "d", "today", nil, function() hs.eventtap.keyStrokes(os.date("%F")) menuModal:exit() end, nil)
-menuModal:bind("", "a", "activity", nil, function() application.launchOrFocus("Activity Monitor") menuModal:exit() end, nil)
-menuModal:bind("", "b", "Brave Browser Dev", nil, function() application.launchOrFocus("Brave Browser Dev") menuModal:exit() end, nil)
-menuModal:bind("", "c", "Google Calendar", nil, function() application.launchOrFocusByBundleID("com.webcatalog.juli.google-calendar") menuModal:exit() end, nil)
-menuModal:bind("", "d", "dash", nil, function() application.launchOrFocus("Dash") menuModal:exit() end, nil)
-menuModal:bind("", "m", "MailMate", nil, function() application.launchOrFocus("MailMate") menuModal:exit() end, nil)
-menuModal:bind("", "n", "Notion", nil, function() application.launchOrFocus("Notion") menuModal:exit() end, nil)
-menuModal:bind("", "p", "postman", nil, function() application.launchOrFocus("Postman") menuModal:exit() end, nil)
-menuModal:bind("", "s", "stickies", nil, function() application.launchOrFocus("Stickies") menuModal:exit() end, nil)
-menuModal:bind("", "v", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") menuModal:exit() end, nil)
+-- function menuModal:entered()
+--    self.alertUID = hs.alert(self.alertText, "forever")
+-- end
+
+-- function menuModal:exited()
+--    hs.alert.closeSpecific(self.alertUID)
+-- end
+
+-- -- in this example, Ctrl+Shift+h triggers this keybinding mode, which will allow us to use the ones defined below. A nice touch for usability: This also offers to show a message.
+
+-- -- I recommend having this one at all times: Bind the escape key to exit keybinding mode:
+-- menuModal:bind("", "escape", " not this time...", nil, function() menuModal:exit() end, nil)
+
+-- -- An example binding I find useful: Type today's date in ISO format.
+-- -- menuModal:bind("", "d", "today", nil, function() hs.eventtap.keyStrokes(os.date("%F")) menuModal:exit() end, nil)
+-- menuModal:bind("", "a", "activity", nil, function() application.launchOrFocus("Activity Monitor") menuModal:exit() end, nil)
+-- menuModal:bind("", "b", "Brave Browser Dev", nil, function() application.launchOrFocus("Brave Browser Dev") menuModal:exit() end, nil)
+-- menuModal:bind("", "c", "Google Calendar", nil, function() application.launchOrFocusByBundleID("com.webcatalog.juli.google-calendar") menuModal:exit() end, nil)
+-- menuModal:bind("", "d", "dash", nil, function() application.launchOrFocus("Dash") menuModal:exit() end, nil)
+-- menuModal:bind("", "m", "MailMate", nil, function() application.launchOrFocus("MailMate") menuModal:exit() end, nil)
+-- menuModal:bind("", "n", "Notion", nil, function() application.launchOrFocus("Notion") menuModal:exit() end, nil)
+-- menuModal:bind("", "p", "postman", nil, function() application.launchOrFocus("Postman") menuModal:exit() end, nil)
+-- menuModal:bind("", "s", "stickies", nil, function() application.launchOrFocus("Stickies") menuModal:exit() end, nil)
+-- menuModal:bind("", "v", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") menuModal:exit() end, nil)
 
 caffeine = hs.menubar.new()
 hs.caffeinate.set("system", true, false)
