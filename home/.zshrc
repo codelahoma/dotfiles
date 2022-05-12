@@ -154,3 +154,5 @@ export CPPFLAGS="-I/usr/local/opt/zlib/include -I/usr/local/opt/bzip2/include"
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
+source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
+. "$(brew --prefix asdf)/libexec/asdf.sh"
