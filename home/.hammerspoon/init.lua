@@ -165,7 +165,11 @@ if work_machines[machine] ~= nil then
   hotkey.bind(hyper, "n", appLauncher('Notion'))
   hotkey.bind(hyper, "o", appLauncher('Slack'))
   hotkey.bind(hyper, "p", appLauncher('Postman'))
-  hotkey.bind(hyper, "q", appLauncher('1Password 7'))
+  if machine == "codelahoma-atlasup" then
+    hotkey.bind(hyper, "q", appLauncher('1Password'))
+  else
+    hotkey.bind(hyper, "q", appLauncher('1Password 7'))
+  end
   hotkey.bind(hyper, "r", hs.reload)
   hotkey.bind(hyper, "s", hs.grid.show)
   hotkey.bind(hyper, "v", pasteLauncher())

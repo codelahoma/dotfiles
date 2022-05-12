@@ -258,8 +258,6 @@ The KSheet spoon provides for showing the keybindings for the currently active a
 
 ** Key Bindings
 
-If it's my work laptop, the work set, otherwise my personal set.
-
 #+begin_src lua
   if work_machines[machine] ~= nil then
     hotkey.bind(hyper, "a", appLauncher('Arduino IDE'))
@@ -276,7 +274,11 @@ If it's my work laptop, the work set, otherwise my personal set.
     hotkey.bind(hyper, "n", appLauncher('Notion'))
     hotkey.bind(hyper, "o", appLauncher('Slack'))
     hotkey.bind(hyper, "p", appLauncher('Postman'))
-    hotkey.bind(hyper, "q", appLauncher('1Password 7'))
+    if machine == "codelahoma-atlasup" then
+      hotkey.bind(hyper, "q", appLauncher('1Password'))
+    else
+      hotkey.bind(hyper, "q", appLauncher('1Password 7'))
+    end
     hotkey.bind(hyper, "r", hs.reload)
     hotkey.bind(hyper, "s", hs.grid.show)
     hotkey.bind(hyper, "v", pasteLauncher())
@@ -302,6 +304,8 @@ If it's my work laptop, the work set, otherwise my personal set.
     hotkey.bind(hyper, ";", appLauncher('Spotify'))
   end
 #+end_src
+
+If it's my work laptop, the work set, otherwise my personal set.
 
 * Hotkey Model Madness
 
