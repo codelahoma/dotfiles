@@ -1,0 +1,34 @@
+{
+    "Profiles": [
+        {
+            "Name": "erp-dev",
+            "Badge Text" : "localhost",
+            "Dynamic Profile Parent Name": "Default",
+            "Custom Directory": "Yes",
+            "Working Directory": "/Users/rodk/summit/erp-service/",
+            "Tags": [
+                "localhost",
+                "erp-service"
+            ],
+            "Guid": "21C9B723-8A46-4E6E-97E3-7B287644E386"
+        },
+        {
+            "Name": "erp-docker-run",
+            "Dynamic Profile Parent Name": "erp-dev",
+            "Guid": "81E738C8-8006-45F0-AC11-ED5DED8F928A",
+            "Initial Text": "script/start -d && docker-compose logs -t -f --tail=100 erp celery &"
+        },
+        {
+            "Name": "erp-docker-test",
+            "Dynamic Profile Parent Name": "erp-dev",
+            "Guid": "059FA199-360E-4744-8F83-FC52C13EA337",
+            "Initial Text": "wpyt --disable-warnings --ff -q"
+        },
+        {
+            "Name": "erp-docker-console",
+            "Dynamic Profile Parent Name": "erp-dev",
+            "Guid": "6EC010A0-E6B5-4248-9AF8-A8B9D0F82942",
+            "Initial Text": "until script/console py; do; sleep 1; done"
+        }
+    ]
+}
