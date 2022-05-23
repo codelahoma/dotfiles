@@ -36,13 +36,13 @@ This function should only modify configuration layer settings."
      ansible
      bm
      cmake
-     elm
      graphviz
-     rust
      sql
      spacemacs-modeline
      csv
+     helpful
      html
+     restclient
      (javascript :variables
                  javascript-repl 'nodejs) ;; includes Coffeescript support
      (typescript :variables
@@ -50,7 +50,6 @@ This function should only modify configuration layer settings."
                  typescript-linter 'tslint
                  tide-tsserver-executable "/Users/rodk/.asdf/installs/nodejs/14.19.0/.npm/bin/tsserver")
      react
-     coffeescript
      (lua :variables
           lua-backend 'lsp-emmy
           lua-lsp-emmy-jar-path "~/.emacs.d/EmmyLua-LS-all.jar" ; default path
@@ -58,28 +57,20 @@ This function should only modify configuration layer settings."
           lua-lsp-emmy-enable-file-watchers t)                  ; enabled default
 
      markdown
-     ;; (csharp :variables csharp-backend 'lsp)
      (lsp :variables
           lsp-file-watch-threshold 2000
           lsp-navigation 'peek
-          lsp-enable-symbol-highlighting nil
           lsp-headerline-breadcrumb-enable t
           lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols)
           )
      (python :variables
              python-fill-column 99
-             ;; python-sort-imports-on-save t
-             python-auto-set-local-pyenv-version 'on-visit
              python-test-runner 'pytest
              python-backend 'lsp
              python-lsp-server 'pylsp
-             ;; python-lsp-server 'pyright
-             ;; python-lsp-server 'mspyls
-             ;; python-lsp-git-root "~/github/python-language-server"
              python-formatter 'black
              ;; python-format-on-save t
              )
-     ipython-notebook
      semantic
      emacs-lisp
 
@@ -89,8 +80,6 @@ This function should only modify configuration layer settings."
                plantuml-jar-path "/opt/homebrew/opt/plantuml/libexec/plantuml.jar"
                org-plantuml-jar-path "/opt/homebrew/opt/plantuml/libexec/plantuml.jar")
 
-     command-log
-     restclient
      (elfeed :variables
              elfeed-db-directory "~/Dropbox/elfeed/"
              rmh-elfeed-org-files (list "~/Dropbox/org/elfeed.org"))
@@ -102,26 +91,22 @@ This function should only modify configuration layer settings."
      ibuffer
      (spell-checking :variables
                      spell-checking-enable-by-default nil)
-     imenu-list
      (osx :variables
           osx-command-as nil)
      chrome
-     helm
+     (helm :variables
+           helm-enable-auto-resize t)
      pdf
-     xkcd
+     ;; xkcd
      docker
      (auto-completion :variables
-                      ;; auto-completion-enable-help-tooltip 'manual
                       auto-completion-enable-sort-by-usage t
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-use-company-box t
                       )
-     (better-defaults :variables
-                      better-defaults-move-to-beginning-of-code-first t
-                      better-defaults-move-to-end-of-code-first t)
      git
      (shell :variables
-            shell-default-shell 'ansi-term
+            shell-default-shell 'vterm
             shell-default-term-shell "/bin/zsh"
             shell-default-height 50
             shell-default-position 'right
@@ -138,7 +123,7 @@ This function should only modify configuration layer settings."
                ;; treemacs-use-follow-mode 'tag
                treemacs-use-git-mode 'deferred
                treemacs-use-scope-type 'Perspectives
-               treemacs-use-filewatch-mode nil)
+               treemacs-use-filewatch-mode t)
 
      (wakatime :variables
                wakatime-api-key "c3241a98-9066-4792-87de-163047db98b3"
@@ -147,17 +132,12 @@ This function should only modify configuration layer settings."
      (org :variables
           org-enable-bootstrap-support t
           org-enable-github-support t
-          ;; org-enable-jira-support t
           org-enable-notifications t
-          org-enable-org-journal-support t
           org-enable-reveal-js-support t
           org-start-notification-daemon-on-startup t
           org-enable-roam-support t
           org-enable-roam-ui t)
 
-     (unicode-fonts :variables
-                    unicode-fonts-enable-ligatures t
-                    )
      ;; Private layers
      rk-layout
      ;; rk-org
@@ -359,18 +339,10 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         material
-                         naquadah
                          professional
-                         phoenix-dark-pink
                          soft-charcoal
                          soft-morning
-                         ujelly
-                         wheatgrass
                          spacemacs-light
-                         spacemacs-dark
-                         tangotango
-                         cyberpunk
                          )
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
@@ -391,6 +363,10 @@ It should only modify the values of Spacemacs settings."
    ;; Point size is recommended, because it's device independent. (default 10.0)
    ;; dotspacemacs-default-font '("Source Code Pro"
    dotspacemacs-default-font '(
+                               ("FuraCode Nerd Font"
+                                :size 18.0
+                                :weight normal
+                                :width normal)
                                ("Inconsolata Nerd Font"
                                 :size 22.0
                                 :weight normal
@@ -725,14 +701,13 @@ See the header of this file for more information."
   "Initialization function for user code.
 It is called immediately after `dotspacemacs/init', before layer configuration
 executes.
+
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
   ;; (define-derived-mode anaconda-view-mode special-mode "Anaconda-View")
   (add-to-list 'configuration-layer-elpa-archives '("melpa-stable" . "stable.melpa.org/packages/"))
-  ;; (add-to-list 'package-pinned-packages '(spaceline . "melpa-stable"))
-  ;; (add-to-list 'package-pinned-packages '(spaceline-all-the-icons . "melpa-stable"))
-  ;; (add-to-list 'package-pinned-packages '(all-the-icons . "melpa-stable"))
+
   (defun markdown-html (buffer)
     (princ (with-current-buffer buffer
              (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
@@ -763,219 +738,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
         (helm-do-ag dir)))
     )
 
-  (with-eval-after-load 'unicode-fonts
-    
-    ;; Enable the www ligature in every possible major mode
-    (ligature-set-ligatures 't '("www"))
-
-    ;; Enable ligatures in programming modes                                                           
-    (ligature-set-ligatures 'prog-mode '("www" "**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\" "{-" "::"
-                                        ":::" ":=" "!!" "!=" "!==" "-}" "----" "-->" "->" "->>"
-                                        "-<" "-<<" "-~" "#{" "#[" "##" "###" "####" "#(" "#?" "#_"
-                                        "#_(" ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*" "/**"
-                                        "/=" "/==" "/>" "//" "///" "&&" "||" "||=" "|=" "|>" "^=" "$>"
-                                        "++" "+++" "+>" "=:=" "==" "===" "==>" "=>" "=>>" "<="
-                                        "=<<" "=/=" ">-" ">=" ">=>" ">>" ">>-" ">>=" ">>>" "<*"
-                                        "<*>" "<|" "<|>" "<$" "<$>" "<!--" "<-" "<--" "<->" "<+"
-                                        "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
-                                        "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%"))
-
-(global-ligature-mode 't)
-
-    )
-
-  (with-eval-after-load 'org
-    ;; Org config goes here
-    ;;
-
-    (setq org-directory "~/Dropbox/org/")
-    (setq gtd-directory (concat org-directory "gtd/"))
-    (setq org-id-track-globally t)
-    (defalias `rk/org-file (apply-partially 'concat org-directory))
-    (defalias `rk/gtd-file (apply-partially 'concat gtd-directory))
-
-
-    (setq org-enable-roam-support t)
-    (setq org-roam-directory (concat org-directory "roam-notes/"))
-    (setq org-roam-completion-everywhere t)
-    (add-to-list 'spacemacs-default-company-backends 'company-capf)
-    (setq org-roam-dailies-capture-templates
-          '(("d" "default" entry
-             "\n* %?"
-             :target (file+head "%<%Y-%m-%d>.org"
-                                "#+title: %<%Y-%m-%d>\n"))))
-    (org-roam-db-autosync-mode)
-
-    (add-to-list 'org-modules 'org-protocol)
-    (add-to-list 'org-modules 'org-tempo)
-    (add-to-list 'org-modules 'ox-jira)
-    (add-to-list 'org-modules 'org-checklist)
-
-    (setq org-tags-exclude-from-inheritance (list "project"))
-    (setq org-list-allow-alphabetical t)
-
-    (setq org-jira-working-dir org-directory)
-    (setq org-agenda-files  (append (list org-jira-working-dir) (list gtd-directory)))
-
-    (defun my-org-agenda-skip-all-siblings-but-first ()
-      "Skip all but the first non-done entry."
-      (let (should-skip-entry)
-        (unless (org-current-is-todo)
-          (setq should-skip-entry t))
-        (save-excursion
-          (while (and (not should-skip-entry) (org-goto-sibling t))
-            (when (org-current-is-todo)
-              (setq should-skip-entry t))))
-        (when should-skip-entry
-          (or (outline-next-heading)
-              (goto-char (point-max))))))
-
-   (defun org-current-is-todo ()
-      (string= "TODO" (org-get-todo-state)))
-
-    (defun transform-square-brackets-to-round-ones(string-to-transform)
-      "Transforms [ into ( and ] into ), other chars left unchanged."
-      (concat
-       (mapcar #'(lambda (c) (if (equal c ?\[) ?\( (if (equal c ?\]) ?\) c))) string-to-transform))
-      )
-
-    (setq org-capture-templates `(
-                                  ("t" "Todos")
-                                  ("tl" "Todo with Link" entry (file ,(rk/gtd-file "inbox.org")) "* TODO %?\n  %i\n  %a")
-                                  ("tt" "Todo" entry (file ,(rk/gtd-file "inbox.org")) "* TODO %?\n  %i\n")
-                                  ("tT" "Tickler" entry (file+headline ,(rk/gtd-file "tickler.org") "Tickler") "* %i%? \n %U"))
-          )
-
-    (global-set-key "\C-cb" 'org-switchb)
-
-    (setq rk/work-org-files (-flatten (list
-
-                                       (rk/gtd-file "inbox.org")
-                                       (rk/gtd-file "gtd.org")
-                                       (rk/gtd-file "tickler.org")
-                                       (rk/gtd-file "someday.org")
-                                       (rk/gtd-file "reference.org")
-                                       )))
-
-    (setq rk/home-org-files (list
-                             (rk/gtd-file "inbox.org")
-                             (rk/gtd-file "gtd.org")
-                             (rk/gtd-file "tickler.org")
-                             (rk/gtd-file "someday.org")
-                             ))
-
-    (setq org-agenda-custom-commands
-          '(("h" "Home"
-             ((agenda "" ((org-agenda-span 3)))
-              (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
-              (tags "-@kitewire+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
-              (tags-todo "-@kitewire" (
-                                       (org-agenda-overriding-header "Todo")
-                                       (org-agenda-files rk/home-org-files)
-                                       (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
-              ()))
-            ("k" . "Kitewire Views")
-            ("kk" "Kitewire"
-             (
-              (agenda)
-              (tags-todo "+kitewire-reading-home-@home-30days-60days-90days/-MEETING" ((org-agenda-overriding-header "Kitewire") (org-agenda-files rk/work-org-files) ))
-              (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
-              (tags "-@home-home+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
-              ;; (tags "30days" ((org-agenda-overriding-header "30 Day Plan")))
-              ;; (tags "60days" ((org-agenda-overriding-header "60 Day Plan")))
-              ;; (tags "90days" ((org-agenda-overriding-header "90 Day Plan")))
-              (tags "project" ((org-agenda-overriding-header "Projects")))
-              ;; (tags "-@home-home+TODO=\"IN-PROGRESS\"" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/work-org-files)))
-              ()))
-            ("kW" "Weekly review"
-             agenda ""
-             ((org-agenda-span 'week)
-              (org-agenda-start-on-weekday 0)
-              (org-agenda-start-with-log-mode '(closed clock))
-              (org-agenda-skip-function
-               '(org-agenda-skip-entry-if 'nottodo 'done))
-              )
-             )))
-
-    (add-to-list 'org-agenda-custom-commands
-                 '("W" "Weekly review"
-                   agenda ""
-                   ((org-agenda-span 'week)
-                    (org-agenda-start-on-weekday 0)
-                    (org-agenda-start-with-log-mode '(closed clock))
-                    (org-agenda-skip-function
-                     '(org-agenda-skip-entry-if 'nottodo 'done))
-                    )
-                   ))
-    ;; (setq org-startup-indented t)
-    (add-to-list 'org-file-apps '(directory . emacs))
-
-    ;; Org-Jira
-    (setq jiralib-url "https://summitesp.atlassian.net")
-    (setq org-jira-use-status-as-todo t)
-
-    ;; Org-Journal
-    (setq org-journal-dir "~/Dropbox/org/journal/")
-    (setq org-journal-file-type 'weekly)
-
-
-    ;; Org-reveal
-    (setq org-re-reveal-title-slide "<h1 class='title'>%t</h1><h2 class='author'>%a</h2><p class='email'>%e</p>")
-    (setq org-re-reveal-root "file:///Users/rodk/.emacs.d/private/reveal.js-4.1.0")
-
-    ;; Refiling refinements
-    ;; source: https://blog.aaronbieber.com/2017/03/19/organizing-notes-with-refile.html
-
-    (setq org-refile-targets '((org-agenda-files :maxlevel . 3)))
-    (setq org-refile-use-outline-path 'file)
-    (setq org-outline-path-complete-in-steps nil)
-    (setq org-refile-allow-creating-parent-nodes 'confirm)
-    (setq org-clock-persist 'history)
-    (org-clock-persistence-insinuate)
-
-    (setq org-todo-keywords
-          '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c@)")
-            ;; keyword in org-jira files.
-            (sequence "BACKLOG"
-                      "TO-DO"
-                      "IN-PROGRESS"
-                      "WAITING"
-                      "PAUSED"
-                      "CHANGES-REQUESTED"
-                      "CODE-COMPLETE"
-                      "ASG-TESTING"
-                      "READY-FOR_TEST"
-                      "TESTING"
-                      "QA"
-                      "|"
-                      "RELEASED"
-                      "CLOSED"
-                      "COMPLETE"
-                      "MERGED")
-
-            (sequence "MEETING(m)" "|" "ATTENDED(a@)" "IGNORED(t)" "CANCELLED(l@)")))
-
-    (setq org-catch-invisible-edits t)
-
-    (setq org-roam-dailies-capture-templates
-          '(("d" "default" entry "* %<%I:%M %p>: %?"
-             :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
-
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((emacs-lisp . t)
-       (http . t)
-       (lua . t)
-       (python . t)
-       (R . t)))
-    (setq org-confirm-babel-evaluate nil
-          org-src-fontify-natively t
-          org-src-tab-acts-natively t)
-
-    ;; Fix mangling of org-structure-template-alist by ox-reveal
-    (setq org-structure-template-alist
-          (delete-duplicates(append (cdr org-structure-template-alist)
-                                    (list '("n" . "notes"))))))
   (with-eval-after-load 'direnv
     (direnv-mode))
 
@@ -1176,6 +938,197 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
+  ;; Org Mode
+  ;; Org config goes here
+  ;;
+
+  (setq org-directory "~/Dropbox/org/")
+  (setq gtd-directory (concat org-directory "gtd/"))
+  (setq org-id-track-globally t)
+  (defalias `rk/org-file (apply-partially 'concat org-directory))
+  (defalias `rk/gtd-file (apply-partially 'concat gtd-directory))
+
+
+  (setq org-enable-roam-support t)
+  (setq org-roam-directory (concat org-directory "roam-notes/"))
+  (setq org-roam-completion-everywhere t)
+  (add-to-list 'spacemacs-default-company-backends 'company-capf)
+
+  (add-to-list 'org-modules 'org-protocol)
+  (add-to-list 'org-modules 'org-tempo)
+  (add-to-list 'org-modules 'org-checklist)
+
+  (setq org-tags-exclude-from-inheritance (list "project"))
+  (setq org-list-allow-alphabetical t)
+
+  (setq org-jira-working-dir org-directory)
+  (setq org-agenda-files  (append (list org-jira-working-dir) (list gtd-directory)))
+
+  (defun my-org-agenda-skip-all-siblings-but-first ()
+    "Skip all but the first non-done entry."
+    (let (should-skip-entry)
+      (unless (org-current-is-todo)
+        (setq should-skip-entry t))
+      (save-excursion
+        (while (and (not should-skip-entry) (org-goto-sibling t))
+          (when (org-current-is-todo)
+            (setq should-skip-entry t))))
+      (when should-skip-entry
+        (or (outline-next-heading)
+            (goto-char (point-max))))))
+	
+  (defun org-current-is-todo ()
+    (string= "TODO" (org-get-todo-state)))
+
+  (defun transform-square-brackets-to-round-ones(string-to-transform)
+    "Transforms [ into ( and ] into ), other chars left unchanged."
+    (concat
+     (mapcar #'(lambda (c) (if (equal c ?\[) ?\( (if (equal c ?\]) ?\) c))) string-to-transform))
+    )
+
+  (setq org-capture-templates `(
+                                ("t" "Todos")
+                                ("tl" "Todo with Link" entry (file ,(rk/gtd-file "inbox.org")) "* TODO %?\n  %i\n  %a")
+                                ("tt" "Todo" entry (file ,(rk/gtd-file "inbox.org")) "* TODO %?\n  %i\n")
+                                ("tT" "Tickler" entry (file+headline ,(rk/gtd-file "tickler.org") "Tickler") "* %i%? \n %U"))
+        )
+
+  (global-set-key "\C-cb" 'org-switchb)
+
+  (setq rk/work-org-files (-flatten (list
+
+                                     (rk/gtd-file "inbox.org")
+                                     (rk/gtd-file "gtd.org")
+                                     (rk/gtd-file "tickler.org")
+                                     (rk/gtd-file "someday.org")
+                                     (rk/gtd-file "reference.org")
+                                     )))
+
+  (setq rk/home-org-files (list
+                           (rk/gtd-file "inbox.org")
+                           (rk/gtd-file "home.org")
+                           (rk/gtd-file "gtd.org")
+                           (rk/gtd-file "tickler.org")
+                           (rk/gtd-file "someday.org")
+                           ))
+
+  (setq org-agenda-custom-commands
+        '(("h" "Home"
+           ((agenda "" ((org-agenda-span 3)))
+            (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
+            (tags "-@kitewire+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
+            (tags-todo "-@kitewire" (
+                                   (org-agenda-overriding-header "Todo")
+                                   (org-agenda-files rk/home-org-files)
+                                   (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
+            ()))
+          ("k" . "Kitewire Views")
+          ("kk" "Kitewire"
+           (
+            (agenda)
+            (tags-todo "+kitewire-reading-home-@home-30days-60days-90days/-MEETING" ((org-agenda-overriding-header "Kitewire") (org-agenda-files rk/work-org-files) ))
+            (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
+            (tags "-@home-home+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
+            ;; (tags "30days" ((org-agenda-overriding-header "30 Day Plan")))
+            ;; (tags "60days" ((org-agenda-overriding-header "60 Day Plan")))
+            ;; (tags "90days" ((org-agenda-overriding-header "90 Day Plan")))
+            (tags "project" ((org-agenda-overriding-header "Projects")))
+            ;; (tags "-@home-home+TODO=\"IN-PROGRESS\"" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/work-org-files)))
+            ()))
+          ("kW" "Weekly review"
+           agenda ""
+           ((org-agenda-span 'week)
+            (org-agenda-start-on-weekday 0)
+            (org-agenda-start-with-log-mode '(closed clock))
+            (org-agenda-skip-function
+             '(org-agenda-skip-entry-if 'nottodo 'done))
+            )
+           )))
+
+  (add-to-list 'org-agenda-custom-commands
+               '("W" "Weekly review"
+                 agenda ""
+                 ((org-agenda-span 'week)
+                  (org-agenda-start-on-weekday 0)
+                  (org-agenda-start-with-log-mode '(closed clock))
+                  (org-agenda-skip-function
+                   '(org-agenda-skip-entry-if 'nottodo 'done))
+                  )
+                 ))
+  ;; (setq org-startup-indented t)
+  (add-to-list 'org-file-apps '(directory . emacs))
+
+  ;; Org-Jira
+  (setq jiralib-url "https://summitesp.atlassian.net")
+  (setq org-jira-use-status-as-todo t)
+
+  ;; Org-Journal
+  (setq org-journal-dir "~/Dropbox/org/journal/")
+  (setq org-journal-file-type 'weekly)
+
+
+  ;; Org-reveal
+  (setq org-re-reveal-title-slide "<h1 class='title'>%t</h1><h2 class='author'>%a</h2><p class='email'>%e</p>")
+  (setq org-re-reveal-root "file:///Users/rodk/.emacs.d/private/reveal.js-4.1.0")
+
+  ;; Refiling refinements
+  ;; source: https://blog.aaronbieber.com/2017/03/19/organizing-notes-with-refile.html
+
+  (setq org-refile-targets '((org-agenda-files :maxlevel . 3)))
+  (setq org-refile-use-outline-path 'file)
+  (setq org-outline-path-complete-in-steps nil)
+  (setq org-refile-allow-creating-parent-nodes 'confirm)
+  (setq org-clock-persist 'history)
+  (org-clock-persistence-insinuate)
+
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c@)")
+          ;; keyword in org-jira files.
+          (sequence "BACKLOG"
+                    "TO-DO"
+                    "IN-PROGRESS"
+                    "WAITING"
+                    "PAUSED"
+                    "CHANGES-REQUESTED"
+                    "CODE-COMPLETE"
+                    "ASG-TESTING"
+                    "READY-FOR_TEST"
+                    "TESTING"
+                    "QA"
+                    "|"
+                    "RELEASED"
+                    "CLOSED"
+                    "COMPLETE"
+                    "MERGED")
+
+          (sequence "MEETING(m)" "|" "ATTENDED(a@)" "IGNORED(t)" "CANCELLED(l@)")))
+
+  (setq org-catch-invisible-edits 'smart)
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (http . t)
+     (lua . t)
+     (python . t)
+     (R . t)))
+  (setq org-confirm-babel-evaluate nil
+        org-src-fontify-natively t
+        org-src-tab-acts-natively t)
+
+  ;; Fix mangling of org-structure-template-alist by ox-reveal
+  (setq org-structure-template-alist
+        (delete-duplicates(append (cdr org-structure-template-alist)
+                                  (list '("n" . "notes")))))
+
+  (setq org-roam-dailies-capture-templates
+        '(("d" "default" entry
+           "* %?"
+           :target (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>\n"))))
+  (org-roam-db-autosync-mode)
+
+  ;; Hyde
   (setq hyde-home "~/github/codelahoma.github.io")
 
   (add-to-list 'load-path "/Users/rodk/.emacs.d/private/")
@@ -1202,8 +1155,6 @@ you should place your code here."
 
   (setq max-specpdl-size 6000)
   (setq lsp-message-project-root-warning t)
-  (setq lsp-python-python-executable-cmd "~/.pyenv/shims/python")
-  ;; (setq javascript-backend 'tern)
 
   (when (string= system-type "darwin")
     (setq dired-use-ls-dired nil))
@@ -1248,8 +1199,6 @@ you should place your code here."
   (with-eval-after-load 'python-mode
     (flycheck-select-checker 'python-flake8))
 
-
-  ;; (load "~/Dropbox/emacs/.slack_auth.el")
 
   (setq projectile-enable-caching t)
   (set-face-attribute 'mode-line nil :height 1.08)
@@ -1321,7 +1270,7 @@ you should place your code here."
   (spacemacs/declare-prefix "oor" "org-roam")
 
 
-  (spacemacs/declare-prefix "ooj" "jira/journal")
+  (spacemacs/declare-prefix "ooj" "journal")
   (spacemacs/declare-prefix "oojp" "projects")
   (spacemacs/declare-prefix "ooji" "issues")
   (spacemacs/declare-prefix "oojs" "subtasks")
@@ -1330,20 +1279,6 @@ you should place your code here."
   (spacemacs/set-leader-keys
     "oojj" 'org-roam-dailies-capture-today
     "oojf" 'org-roam-dailies-goto-today
-    "oojpg" 'org-jira-get-projects
-    "oojib" 'org-jira-browse-issue
-    "oojig" 'org-jira-get-issues
-    "oojih" 'org-jira-get-issues-headonly
-    "oojif" 'org-jira-get-issues-from-filter-headonly
-    "oojiu" 'org-jira-update-issue
-    "oojiw" 'org-jira-progress-issue
-    "oojir" 'org-jira-refresh-issue
-    "oojic" 'org-jira-create-issue
-    "oojiy" 'org-jira-copy-current-issue-key
-    "oojsc" 'org-jira-create-subtask
-    "oojsg" 'org-jira-get-subtasks
-    "oojcu" 'org-jira-update-comment
-    "oojtj" 'org-jira-todo-to-jira
     "oorj" 'org-roam-dailies-capture-today)
  )
 
@@ -1492,7 +1427,7 @@ static char *gnus-pointer[] = {
      (tags priority-down todo-state-up)
      (search category-keep)))
  '(package-selected-packages
-   '(fira-code-mode org-roam compat zenburn-theme zen-and-art-theme yasnippet-snippets yapfify xterm-color xcscope wsd-mode ws-butler winum white-sand-theme which-key web-mode web-beautify wakatime-mode volatile-highlights vi-tilde-fringe uuidgen use-package unfill undo-tree underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toml-mode toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit swift-mode sunny-day-theme sublime-themes subatomic256-theme subatomic-theme sql-indent spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode slack emojify circe oauth2 sicp shell-pop seti-theme scss-mode sass-mode salt-mode mmm-jinja2 yaml-mode s3ed reverse-theme reveal-in-osx-finder restclient-helm restart-emacs rebecca-theme rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme racer pytest pyenv-mode py-isort purple-haze-theme pug-mode professional-theme plantuml-mode planet-theme pipenv pyvenv pip-requirements phpunit phpcbf php-extras php-auto-yasnippets phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pbcopy paradox spinner ox-twbs ox-reveal ox-gfm osx-trash osx-dictionary orgit organic-green-theme org-projectile org-category-capture org-present org-pomodoro org-mime org-jira org-download org-bullets open-junk-file omtose-phellack-theme omnisharp oldlace-theme occidental-theme obsidian-theme ob-restclient ob-http ob-async nvm noctilux-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow magit-popup magit-gh-pulls madhat2r-theme macrostep lush-theme lua-mode lorem-ipsum livid-mode skewer-mode live-py-mode linum-relative link-hint light-soap-theme launchctl js2-refactor multiple-cursors js2-mode js-doc jira-markup-mode jbeans-theme jazz-theme ir-black-theme inkpot-theme indent-guide imenu-list ibuffer-projectile hydra lv hy-mode dash-functional hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation heroku-theme hemisu-theme helm-themes helm-swoop helm-pydoc helm-projectile projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme haml-mode gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gmail-message-mode ham-mode html-to-markdown gitignore-mode github-search github-review a ghub treepy github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gist gh marshal logito pcache ht gh-md geiser gandalf-theme fuzzy fold-this flyspell-popup flyspell-correct-helm flyspell-correct flymd flycheck-rust flycheck-pos-tip pos-tip flycheck pkg-info epl flx-ido flx flatui-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit git-commit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-easymotion evil-args evil-anzu anzu evil goto-chg eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help emoji-cheat-sheet-plus emmet-mode elisp-slime-nav elfeed-web simple-httpd elfeed-org elfeed-goodies ace-jump-mode noflet powerline popwin elfeed eink-theme ein with-editor polymode deferred request anaphora editorconfig edit-server dumb-jump drupal-mode php-mode dracula-theme dockerfile-mode docker transient tablist json-mode docker-tramp json-snatcher json-reformat django-theme disaster direnv diminish diff-hl darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme csv-mode csharp-mode company-web web-completion-data company-statistics company-restclient restclient know-your-http-well company-emoji company-c-headers company-anaconda company command-log-mode column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode coffee-mode cmake-mode clues-theme clean-aindent-mode clang-format cherry-blossom-theme cargo markdown-mode rust-mode busybee-theme bubbleberry-theme brutalist-theme birds-of-paradise-plus-theme bind-map bind-key badwolf-theme auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed atomic-chrome websocket apropospriate-theme anti-zenburn-theme anaconda-mode pythonic f dash s ample-zen-theme ample-theme alert log4e gntp alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup flatland-theme))
+   '(emacsql-sqlite3 fira-code-mode org-roam compat zenburn-theme zen-and-art-theme yasnippet-snippets yapfify xterm-color xcscope wsd-mode ws-butler winum white-sand-theme which-key web-mode web-beautify wakatime-mode volatile-highlights vi-tilde-fringe uuidgen use-package unfill undo-tree underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toml-mode toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit swift-mode sunny-day-theme sublime-themes subatomic256-theme subatomic-theme sql-indent spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode slack emojify circe oauth2 sicp shell-pop seti-theme scss-mode sass-mode salt-mode mmm-jinja2 yaml-mode s3ed reverse-theme reveal-in-osx-finder restclient-helm restart-emacs rebecca-theme rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme racer pytest pyenv-mode py-isort purple-haze-theme pug-mode professional-theme plantuml-mode planet-theme pipenv pyvenv pip-requirements phpunit phpcbf php-extras php-auto-yasnippets phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pbcopy paradox spinner ox-twbs ox-reveal ox-gfm osx-trash osx-dictionary orgit organic-green-theme org-projectile org-category-capture org-present org-pomodoro org-mime org-jira org-download org-bullets open-junk-file omtose-phellack-theme omnisharp oldlace-theme occidental-theme obsidian-theme ob-restclient ob-http ob-async nvm noctilux-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow magit-popup magit-gh-pulls madhat2r-theme macrostep lush-theme lua-mode lorem-ipsum livid-mode skewer-mode live-py-mode linum-relative link-hint light-soap-theme launchctl js2-refactor multiple-cursors js2-mode js-doc jira-markup-mode jbeans-theme jazz-theme ir-black-theme inkpot-theme indent-guide imenu-list ibuffer-projectile hydra lv hy-mode dash-functional hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation heroku-theme hemisu-theme helm-themes helm-swoop helm-pydoc helm-projectile projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme haml-mode gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gmail-message-mode ham-mode html-to-markdown gitignore-mode github-search github-review a ghub treepy github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gist gh marshal logito pcache ht gh-md geiser gandalf-theme fuzzy fold-this flyspell-popup flyspell-correct-helm flyspell-correct flymd flycheck-rust flycheck-pos-tip pos-tip flycheck pkg-info epl flx-ido flx flatui-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit git-commit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-easymotion evil-args evil-anzu anzu evil goto-chg eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help emoji-cheat-sheet-plus emmet-mode elisp-slime-nav elfeed-web simple-httpd elfeed-org elfeed-goodies ace-jump-mode noflet powerline popwin elfeed eink-theme ein with-editor polymode deferred request anaphora editorconfig edit-server dumb-jump drupal-mode php-mode dracula-theme dockerfile-mode docker transient tablist json-mode docker-tramp json-snatcher json-reformat django-theme disaster direnv diminish diff-hl darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme csv-mode csharp-mode company-web web-completion-data company-statistics company-restclient restclient know-your-http-well company-emoji company-c-headers company-anaconda company command-log-mode column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode coffee-mode cmake-mode clues-theme clean-aindent-mode clang-format cherry-blossom-theme cargo markdown-mode rust-mode busybee-theme bubbleberry-theme brutalist-theme birds-of-paradise-plus-theme bind-map bind-key badwolf-theme auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed atomic-chrome websocket apropospriate-theme anti-zenburn-theme anaconda-mode pythonic f dash s ample-zen-theme ample-theme alert log4e gntp alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup flatland-theme))
  '(paradox-github-token t)
  '(pdf-view-midnight-colors '("#655370" . "#fbf8ef"))
  '(pos-tip-background-color "#eee8d5")
@@ -1503,7 +1438,7 @@ static char *gnus-pointer[] = {
  '(term-default-fg-color "#839496")
  '(tool-bar-mode nil)
  '(transient-mark-mode nil)
- '(treemacs-sorting 'alphabetic-asc)
+ '(treemacs-sorting 'alphabetic-asc t)
  '(vc-annotate-background t)
  '(vc-annotate-background-mode nil)
  '(vc-annotate-color-map
