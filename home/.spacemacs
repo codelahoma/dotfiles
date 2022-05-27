@@ -723,6 +723,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (advice-add 'evil-avy-goto-line :after #'evil-scroll-line-to-center)
   (advice-add 'org-open-at-point :after #'evil-scroll-line-to-center)
   (advice-add 'evil-ex-search-next :after #'evil-scroll-line-to-center)
+  (advice-add 'evil-avy-goto-char-timer :after #'evil-scroll-line-to-center)
 
   (with-eval-after-load 'completion
     (defun spacemacs/helm-files-do-rg (&optional dir)
@@ -1082,25 +1083,7 @@ you should place your code here."
   (org-clock-persistence-insinuate)
 
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c@)")
-          ;; keyword in org-jira files.
-          (sequence "BACKLOG"
-                    "TO-DO"
-                    "IN-PROGRESS"
-                    "WAITING"
-                    "PAUSED"
-                    "CHANGES-REQUESTED"
-                    "CODE-COMPLETE"
-                    "ASG-TESTING"
-                    "READY-FOR_TEST"
-                    "TESTING"
-                    "QA"
-                    "|"
-                    "RELEASED"
-                    "CLOSED"
-                    "COMPLETE"
-                    "MERGED")
-
+        '((sequence "TODO(t)" "WAITING(w)" "NEXT(n)" "IN-PROGRESS(i)""NEEDS-REFINEMENT(r)" "QUESTION" "|" "NOT-APPLICABLE" "DONE(d)" "CANCELLED(c@)")
           (sequence "MEETING(m)" "|" "ATTENDED(a@)" "IGNORED(t)" "CANCELLED(l@)")))
 
   (setq org-catch-invisible-edits 'smart)
@@ -1123,7 +1106,7 @@ you should place your code here."
 
   (setq org-roam-dailies-capture-templates
         '(("d" "default" entry
-           "* %?"
+           "* %<%H:%M>  %?"
            :target (file+head "%<%Y-%m-%d>.org"
                               "#+title: %<%Y-%m-%d>\n"))))
   (org-roam-db-autosync-mode)
