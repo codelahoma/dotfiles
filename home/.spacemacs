@@ -73,6 +73,7 @@ This function should only modify configuration layer settings."
              python-formatter 'black
              ;; python-format-on-save t
              )
+     hy
      semantic
      emacs-lisp
 
