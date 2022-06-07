@@ -144,7 +144,7 @@ This function should only modify configuration layer settings."
      ;; Private layers
      rk-layout
      ;; rk-org
-     jekyll
+     ;; jekyll ; also be sure to set home variable commented out further down
      )
 
    ;; List of additional packages that will be installed without being
@@ -1130,7 +1130,7 @@ you should place your code here."
   (org-roam-db-autosync-mode)
 
   ;; Hyde
-  (setq hyde-home "~/github/codelahoma.github.io")
+  ;; (setq hyde-home "~/github/codelahoma.github.io")
 
   (add-to-list 'load-path "/Users/rodk/.emacs.d/private/")
   (require 'asdf)
