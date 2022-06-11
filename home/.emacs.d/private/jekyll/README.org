@@ -1,0 +1,47 @@
+#+TITLE: jekyll layer
+#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../css/readtheorg.css" />
+
+#+CAPTION: logo
+
+# The maximum height of the logo should be 200 pixels.
+[[file:img/jekyll.png]]
+
+* Table of Contents                                        :TOC_4_org:noexport:
+ - [[Description][Description]]
+ - [[Install][Install]]
+ - [[Key bindings][Key bindings]]
+
+* Description
+This adds support for [[https://github.com/nibrahim/Hyde][Hyde]], which adds a frontend for Jekyll blog management. 
+
+* Install
+You will need to install this manually:
+
+#+begin_src shell
+git clone https://github.com/0x414A/spacemacs-jekyll ~/.emacs.d/private/jekyll
+#+end_src
+
+To use this contribution add it to your =~/.spacemacs=
+
+#+begin_src emacs-lisp
+  (setq-default dotspacemacs-configuration-layers '(jekyll))
+#+end_src
+* Key bindings
+
+To invoke the Hyde view:
+
+| Key Binding | Description            |
+|-------------+------------------------|
+| ~<SPC> aj~  | Invoke the Hyde window |
+
+
+While in the Hyde view:
+
+| Key Binding | Description           |
+|-------------+-----------------------|
+| ~RET~       | Open a post           |
+| ~g~         | Reload posts          |
+| ~d~         | Delete post           |
+| ~c~         | Commit the post       |
+| ~p~         | Promote draft to post |
+| ~n~         | Create a new post     |
