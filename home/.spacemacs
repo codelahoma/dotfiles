@@ -39,8 +39,8 @@ This function should only modify configuration layer settings."
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-use-company-box t
                       )
-     (colors :variables
-             colors-colorize-identifiers 'all)
+     ;; (colors :variables
+     ;;         colors-colorize-identifiers 'all)
      emoji
      helm
      multiple-cursors
@@ -90,7 +90,6 @@ This function should only modify configuration layer settings."
      markdown
      (org :variables
           org-enable-appear-support t
-          org-appear-trigger 'manual
           org-enable-bootstrap-support t
           org-enable-org-contacts-support t
           org-enable-github-support t
@@ -135,6 +134,7 @@ This function should only modify configuration layer settings."
      bm
      command-log
      copy-as-format
+     ;; eaf
      (elfeed :variables
              elfeed-db-directory "~/Dropbox/elfeed/"
              rmh-elfeed-org-files (list "~/Dropbox/org/elfeed.org"))
@@ -292,7 +292,9 @@ It should only modify the values of Spacemacs settings."
    ;; with `:variables' keyword (similar to layers). Check the editing styles
    ;; section of the documentation for details on available variables.
    ;; (default 'vim)
-   dotspacemacs-editing-style 'vim
+   dotspacemacs-editing-style '(vim :variables
+                                    vim-style-visual-line-move-text t
+                                )
 
    ;; If non-nil show the version string in the Spacemacs buffer. It will
    ;; appear as (spacemacs version)@(emacs version)
@@ -741,7 +743,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
   (load-file "/Users/rodk/.emacs.d/private/local/narrow-indirect.el")
 
 
-  ;; end user-init
+  ;; end user-init 
  
 )
 
@@ -762,48 +764,86 @@ Put your configuration code here, except for variables that should be set
 before packages are loaded."
   ;; Org Appearance
 
+  ;; Modus theme loader, if I want it
+  (require 'modus-themes)
+  (defun rk/go-modus ()
+    "Activate modus-theme"
+    (interactive)
+    (progn
+      (setq modus-themes-bold-constructs t
+            modus-themes-italic-constructs t
+            modus-themes-mixed-fonts t
+            modus-themes-org-blocks 'gray-background
+            modus-themes-syntax '(alt-syntax)
+            modus-themes-links '(italic bold background no-color no-underline)
+            modus-themes-prompts '(intense background)
+            modus-themes-hl-line '(intense)
+            modus-themes-mode-line '(accented borderless 2 1.5)
+            modus-themes-fringes '(intense)
+            modus-themes-completions '((t . (extrabold intense))))
+      (load-theme 'modus-vivendi t )))
+
   (let* ((variable-tuple
-          (cond ((x-list-fonts "ETBembo")         '(:font "ETBembo"))
+          (cond ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
+                ((x-list-fonts "Avenir Next") '(:font "Avenir Next"))
                 ((x-list-fonts "Fira Sans")       '(:font "Fira Sans"))
-                ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
                 ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
                 ((x-list-fonts "Verdana")         '(:font "Verdana"))
                 ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
                 (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
-         (base-font-color     (face-foreground 'default nil 'default))
-         (headline           `(:inherit default :weight bold :foreground ,base-font-color)))
+         ;; (base-font-color     (face-foreground 'default nil 'default))
+         (headline           `(:inherit default :weight normal ))
+         )
 
     (custom-theme-set-faces
      'user
-     `(org-level-8 ((t (,@headline ,@variable-tuple))))
-     `(org-level-7 ((t (,@headline ,@variable-tuple))))
-     `(org-level-6 ((t (,@headline ,@variable-tuple))))
-     `(org-level-5 ((t (,@headline ,@variable-tuple))))
-     `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1))))
-     `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.25))))
-     `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5))))
+     '(fixed-pitch ((t ( :family "FuraCode Nerd Font Mono" :height 1.0))))
+     '(variable-pitch ((t (:family "Source Sans Pro" :height 1.1))))
+     `(org-document-title ((t (,@headline ,@variable-tuple :height 2.0 :underline nil))))
      `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75))))
-     `(org-document-title ((t (,@headline ,@variable-tuple :height 2.0 :underline nil))))))
+     `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5))))
+     `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.25))))
+     `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1))))
+     `(org-level-5 ((t (,@headline ,@variable-tuple))))
+     `(org-level-6 ((t (,@headline ,@variable-tuple))))
+     `(org-level-7 ((t (,@headline ,@variable-tuple))))
+     `(org-level-8 ((t (,@headline ,@variable-tuple))))
+     '(org-block ((t (:inherit fixed-pitch :height 0.8))))
+     '(org-code ((t (:inherit (shadow fixed-pitch)))))
+     '(org-date ((t (:inherit (font-lock-comment-face fixed-pitch) :height 0.9))))
+     '(org-document-info ((t (:foreground "dark orange"))))
+     '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+     '(org-done ((t ( :font "Fira Sans" :height 0.6 :background nil))))
+     '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
+     '(org-link ((t (:foreground "royal blue" :underline t))))
+     '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+     '(org-property-value ((t (:inherit fixed-pitch))) t)
+     '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+     '(org-table ((t (:inherit fixed-pitch ))))
+     '(org-tag ((t (:inherit (shadow fixed-pitch)  :height 0.5))))
+     '(org-todo ((t ( :font "Fira Sans" :height 0.8))))
+     '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
+     ))
 
-  (custom-theme-set-faces
-   'user
-   '(variable-pitch ((t (:family "ETBembo" :height 180 :weight thin))))
-   '(fixed-pitch ((t ( :family "Fira Code Retina" :height 160)))))
 
-  (custom-theme-set-faces
-   'user
-   '(org-block ((t (:inherit fixed-pitch))))
-   '(org-code ((t (:inherit (shadow fixed-pitch)))))
-   '(org-document-info ((t (:foreground "dark orange"))))
-   '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
-   '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
-   '(org-link ((t (:foreground "royal blue" :underline t))))
-   '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-   '(org-property-value ((t (:inherit fixed-pitch))) t)
-   '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch) :height 1.1))))
-   '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
-   '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
-   '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
+  ;; (with-eval-after-load 'org-superstar
+  ;;   (setq org-superstar-item-bullet-alist
+  ;;         '((?* . ?•)
+  ;;           (?+ . ?➤)
+  ;;           (?- . ?•)))
+  ;;   (setq org-superstar-headline-bullets-list '(?\s))
+  ;;   (setq org-superstar-special-todo-items t)
+  ;;   (setq org-superstar-remove-leading-stars t)
+  ;;   ;; Enable custom bullets for TODO items
+  ;;   (setq org-superstar-todo-bullet-alist
+  ;;         '(("TODO" . ?☐)
+  ;;           ("NEXT" . ?✒)
+  ;;           ("HOLD" . ?✰)
+  ;;           ("WAITING" . ?☕)
+  ;;           ("CANCELLED" . ?✘)
+  ;;           ("DONE" . ?✔)))
+  ;;   (org-superstar-restart))
+  ;; (setq org-ellipsis " ▼ ")
 
   ;; Private Key Mappings 
 
@@ -1210,12 +1250,12 @@ before packages are loaded."
              "NEXT(n)"
              "IN-PROGRESS(i)"
              "NEEDS-REFINEMENT(r)"
-             "QUESTION"
              "|"
              "NOT-APPLICABLE"
              "DONE(d)"
              "CANCELLED(c@)"
              )
+            (sequence "QUESTION" "|" "ANSWERED(@)")
             (sequence "MEETING(m)" "|" "ATTENDED(a@)" "IGNORED(t)" "CANCELLED(l@)")))
 
     (setq org-catch-invisible-edits 'smart)
@@ -1361,6 +1401,9 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("a0415d8fc6aeec455376f0cbcc1bee5f8c408295d1c2b9a1336db6947b89dd98" "dad40020beea412623b04507a4c185079bff4dcea20a93d8f8451acb6afc8358" default))
+ '(org-hide-emphasis-markers t)
  '(package-selected-packages
    '(evil-vimish-fold vimish-fold zonokai-emacs zenburn-theme zen-and-art-theme yasnippet-snippets yapfify yaml-mode xterm-color wsd-mode ws-butler writeroom-mode winum white-sand-theme which-key web-mode web-beautify wakatime-mode vterm volatile-highlights vim-powerline vi-tilde-fringe uuidgen use-package unkillable-scratch undo-tree underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil toxi-theme toc-org tide texfrag terminal-here tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit symon symbol-overlay sunny-day-theme sublime-themes subatomic256-theme subatomic-theme string-inflection string-edit sql-indent sphinx-doc spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline-all-the-icons spacegray-theme space-doc soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode sicp shell-pop seti-theme scss-mode sass-mode rjsx-mode reverse-theme reveal-in-osx-finder restclient-helm restart-emacs rebecca-theme rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme quickrun pytest pylookup pyenv-mode pydoc py-isort purple-haze-theme pug-mode professional-theme prettier-js poetry plantuml-mode planet-theme pippel pipenv pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persistent-scratch pdf-view-restore pcre2el password-generator paradox ox-twbs ox-slack ox-jira ox-hugo overseer osx-trash osx-dictionary osx-clipboard orgit-forge organic-green-theme org-wild-notifier org-vcard org-transclusion org-superstar org-sticky-header org-roam-ui org-rich-yank org-re-reveal org-projectile org-present org-pomodoro org-mime org-journal org-jira org-download org-contrib org-contacts org-cliplink org-appear open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-restclient ob-hy ob-http ob-async npm-mode nose nodejs-repl noctilux-theme naquadah-theme nameless mustang-theme multi-term multi-line monokai-theme monochrome-theme molokai-theme moe-theme modus-themes mmm-mode minimal-theme material-theme markdown-toc majapahit-theme madhat2r-theme macrostep lush-theme lsp-ui lsp-python-ms lsp-pyright lsp-origami lorem-ipsum livid-mode live-py-mode light-soap-theme launchctl keychain-environment keycast kaolin-themes json-reformat json-navigator js2-refactor js-doc jira-markup-mode jbeans-theme jazz-theme ir-black-theme inspector inkpot-theme info+ indent-guide importmagic impatient-mode ibuffer-projectile hyde hybrid-mode hy-mode hungry-delete holy-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation highlight-indent-guides hide-comnt heroku-theme hemisu-theme helpful help-fns+ helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-flx helm-descbinds helm-ctest helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme graphviz-dot-mode grandshell-theme gotham-theme google-translate golden-ratio gnuplot gmail-message-mode gitignore-templates git-timemachine git-modes git-messenger git-link git-gutter-fringe gh-md gandalf-theme fuzzy font-lock+ flyspell-correct-helm flymd flycheck-pos-tip flycheck-package flycheck-elsa flx-ido flatui-theme flatland-theme fira-code-mode farmhouse-theme fancy-battery eziam-theme eyebrowse expand-region exotica-theme evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-terminal-cursor-changer evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-ediff evil-easymotion evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help emr emojify emoji-cheat-sheet-plus emmet-mode elisp-slime-nav elisp-def elfeed-org elfeed-goodies editorconfig edit-server dumb-jump drag-stuff dracula-theme dotenv-mode doom-themes dockerfile-mode docker django-theme direnv dired-quick-sort diminish devdocs darktooth-theme darkokai-theme darkmine-theme darkburn-theme dap-mode dakrone-theme cython-mode cyberpunk-theme csv-mode copy-as-format company-web company-statistics company-restclient company-lua company-emoji company-box company-anaconda command-log-mode column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode code-cells cmake-mode clues-theme clean-aindent-mode chocolate-theme cherry-blossom-theme centered-cursor-mode busybee-theme bubbleberry-theme browse-at-remote bm blacken birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atomic-chrome apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme ace-link ace-jump-helm-line ac-ispell))
  '(paradox-github-token t)
