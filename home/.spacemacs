@@ -928,8 +928,8 @@ before packages are loaded."
   ;; Python
   (with-eval-after-load 'python-mode
     (flycheck-select-checker 'python-flake8))
-  (add-hook 'python-mode-hook
-            '(flycheck-select-checker 'python-flake8))
+  ;; (add-hook 'python-mode-hook
+  ;;           '(flycheck-select-checker 'python-flake8))
 
   ;; Elfeed
 
