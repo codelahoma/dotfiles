@@ -35,12 +35,19 @@ This function should only modify configuration layer settings."
    '(
      ;; Interface
      (auto-completion :variables
-                      auto-completion-enable-sort-by-usage t
+                      auto-completion-return-key-behavior 'complete
+                      auto-completion-tab-key-behavior 'complete
+                      auto-completion-complete-with-key-sequence nil
+                      auto-completion-complete-with-key-sequence-delay 0.1
+                      auto-completion-minimum-prefix-length 1
+                      auto-completion-idle-delay 0.2
+                      auto-completion-private-snippets-directory nil
                       auto-completion-enable-snippets-in-popup t
-                      auto-completion-use-company-box t
-                      )
-     ;; (colors :variables
-     ;;         colors-colorize-identifiers 'all)
+                      auto-completion-enable-help-tooltip t
+                      auto-completion-use-company-box nil
+                      auto-completion-enable-sort-by-usage t)
+     (colors :variables
+             colors-colorize-identifiers 'all)
      emoji
      helm
      multiple-cursors
@@ -191,6 +198,7 @@ This function should only modify configuration layer settings."
 
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '(
+                                    company
                                     ;; all-the-icons
                                     ;; spaceline
                                     ;; spaceline-all-the-icons
@@ -779,9 +787,18 @@ before packages are loaded."
             modus-themes-prompts '(intense background)
             modus-themes-hl-line '(intense)
             modus-themes-mode-line '(accented borderless 2 1.5)
-            modus-themes-fringes '(intense)
-            modus-themes-completions '((t . (extrabold intense))))
+            modus-themes-fringes '(intense))
       (load-theme 'modus-vivendi t )))
+
+  (require 'color)
+
+  (let ((bg (face-attribute 'default :background)))
+    (custom-set-faces
+     `(company-tooltip ((t (:inherit default :background ,(color-lighten-name bg 2)))))
+     `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
+     `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
+     `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
+     `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
 
   (let* ((variable-tuple
           (cond ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
