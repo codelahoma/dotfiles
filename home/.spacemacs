@@ -36,11 +36,11 @@ This function should only modify configuration layer settings."
      ;; Interface
      (auto-completion :variables
                       auto-completion-return-key-behavior 'complete
-                      auto-completion-tab-key-behavior 'complete
+                      auto-completion-tab-key-behavior 'cycle
                       auto-completion-complete-with-key-sequence nil
                       auto-completion-complete-with-key-sequence-delay 0.1
                       auto-completion-minimum-prefix-length 1
-                      auto-completion-idle-delay 0.2
+                      auto-completion-idle-delay 0.1
                       auto-completion-private-snippets-directory nil
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-enable-help-tooltip t
@@ -776,7 +776,7 @@ before packages are loaded."
     (progn
       (let ((bg (face-attribute 'default :background)))
         (custom-set-faces
-         '(company-tooltip ((t (:weight bold :foreground "systemBlueColor" :background "systemGrayColor" :inherit default))))))
+         '(company-tooltip ((t (:weight bold :foreground "dark red" :background "khaki1" :inherit default))))))
       (setq modus-themes-bold-constructs t
             modus-themes-completions '((t . (extrabold intense)))
             modus-themes-italic-constructs t
