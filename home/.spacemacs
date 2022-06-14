@@ -1073,6 +1073,10 @@ before packages are loaded."
 
   ;; end Hyde Mode
 
+  ;; fira-code-mode
+
+  (with-eval-after-load 'fira-code-mode
+    (global-fira-code-mode))
   ;; direnv
 
   (with-eval-after-load 'direnv
