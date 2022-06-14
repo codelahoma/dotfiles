@@ -12,13 +12,15 @@ iterm2_print_user_vars() {
 ITERM2_SQUELCH_MARK=1
 # export ZSH_THEME="lambda-mod"
 
-if [ -n "$INSIDE_EMACS" ]; then
-    export ZSH_THEME="lambda-mod"
-else
-    export ZSH_THEME="powerlevel10k/powerlevel10k"
-    source ~/.p10k.zsh 
-fi
+# if [ -n "$INSIDE_EMACS" ]; then
+#     export ZSH_THEME="lambda-mod"
+# else
+#     export ZSH_THEME="powerlevel10k/powerlevel10k"
+#     source ~/.p10k.zsh 
+# fi
 
+export ZSH_THEME="powerlevel10k/powerlevel10k"
+source ~/.p10k.zsh 
 
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
@@ -156,3 +158,7 @@ export CPPFLAGS="-I/usr/local/opt/zlib/include -I/usr/local/opt/bzip2/include"
 
 source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
 . "$(brew --prefix asdf)/libexec/asdf.sh"
+
+if [ -n "$INSIDE_EMACS" ]; then
+    direnv reload
+fi

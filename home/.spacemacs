@@ -99,7 +99,6 @@ This function should only modify configuration layer settings."
           org-enable-appear-support t
           org-enable-bootstrap-support t
           org-enable-org-contacts-support t
-          org-enable-github-support t
           org-enable-hugo-support t
           org-enable-jira-support t
           jiralib-url "https://kitewire.atlassian.net:443"
@@ -151,9 +150,11 @@ This function should only modify configuration layer settings."
      (shell :variables
             shell-default-shell 'vterm
             shell-default-term-shell "/bin/zsh"
+            spacemacs-vterm-history-file-location "~/.zsh_history"
             shell-default-height 50
-            shell-default-position 'right
-            shell-enable-smart-eshell t
+            shell-default-position 'bottom
+            shell-enable-smart-eshell nil
+            shell-default-full-span nil
             close-window-with-terminal t)
      (search-engine)
      (spell-checking :variables
@@ -766,6 +767,9 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+  ;; scratch
+  (add-hook 'find-file-hook 'direnv-update-directory-environment)
+
   ;; Org Appearance
 
   ;; Modus theme loader, if I want it
@@ -786,7 +790,7 @@ before packages are loaded."
             modus-themes-links '(italic bold background no-color no-underline)
             modus-themes-prompts '(intense background)
             modus-themes-hl-line '(intense)
-            modus-themes-mode-line '(accented borderless 2 1.5)
+            modus-themes-mode-line '(accented borderless 1.1)
             modus-themes-fringes '(intense))
       (load-theme 'modus-vivendi t )))
 
