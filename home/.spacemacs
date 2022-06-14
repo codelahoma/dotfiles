@@ -1150,6 +1150,8 @@ before packages are loaded."
     (add-hook 'org-mode-hook 'variable-pitch-mode)
     (add-hook 'org-mode-hook 'visual-line-mode)
     (setq org-directory "~/Dropbox/org/")
+    (setq org-persp-startup-org-file (concat org-directory "inbox.org")
+          org-persp-startup-with-agenda "kk")
     (setq gtd-directory (concat org-directory "gtd/"))
     (setq org-id-track-globally t)
     (defalias `rk/org-file (apply-partially 'concat org-directory))
