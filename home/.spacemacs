@@ -815,7 +815,7 @@ before packages are loaded."
     (custom-theme-set-faces
      'user
      '(fixed-pitch ((t ( :family "FiraCode Nerd Font" :height 1.0))))
-     '(variable-pitch ((t (:family "Source Sans Pro" :height 1.1))))
+     '(variable-pitch ((t (:family "Fira Sans" :height 1.1))))
      `(org-document-title ((t (,@headline ,@variable-tuple :height 2.0 :underline nil))))
      `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75))))
      `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5))))
@@ -843,24 +843,24 @@ before packages are loaded."
      ))
 
 
-  ;; (with-eval-after-load 'org-superstar
-  ;;   (setq org-superstar-item-bullet-alist
-  ;;         '((?* . ?•)
-  ;;           (?+ . ?➤)
-  ;;           (?- . ?•)))
-  ;;   (setq org-superstar-headline-bullets-list '(?\s))
-  ;;   (setq org-superstar-special-todo-items t)
-  ;;   (setq org-superstar-remove-leading-stars t)
-  ;;   ;; Enable custom bullets for TODO items
-  ;;   (setq org-superstar-todo-bullet-alist
-  ;;         '(("TODO" . ?☐)
-  ;;           ("NEXT" . ?✒)
-  ;;           ("HOLD" . ?✰)
-  ;;           ("WAITING" . ?☕)
-  ;;           ("CANCELLED" . ?✘)
-  ;;           ("DONE" . ?✔)))
-  ;;   (org-superstar-restart))
-  ;; (setq org-ellipsis " ▼ ")
+  (with-eval-after-load 'org-superstar
+    (setq org-superstar-item-bullet-alist
+          '((?* . ?•)
+            (?+ . ?➤)
+            (?- . ?•)))
+    (setq org-superstar-headline-bullets-list '(?\s))
+    (setq org-superstar-special-todo-items t)
+    (setq org-superstar-remove-leading-stars t)
+    ;; Enable custom bullets for TODO items
+    (setq org-superstar-todo-bullet-alist
+          '(("TODO" . ?☐)
+            ("NEXT" . ?✒)
+            ("HOLD" . ?✰)
+            ("WAITING" . ?☕)
+            ("CANCELLED" . ?✘)
+            ("DONE" . ?✔)))
+    (org-superstar-restart))
+  (setq org-ellipsis " ▼ ")
 
   ;; Private Key Mappings 
 
