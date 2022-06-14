@@ -998,19 +998,19 @@ before packages are loaded."
   ;; Mode line
   (set-face-attribute 'mode-line nil :height 1.08)
 
-  (defun rk-bump-mode-fonts()
-    "Increase the mode-line font sizes for my old eyes"
-    (let ((faces '(mode-line
-                   mode-line-buffer-id
-                   mode-line-emphasis
-                   mode-line-highlight
-                   mode-line-inactive)))
-      (mapc
-       (lambda (face) (set-face-attribute face nil :font "Inconsolata for Powerline-18"))
-       faces)))
+  ;; (defun rk-bump-mode-fonts()
+  ;;   "Increase the mode-line font sizes for my old eyes"
+  ;;   (let ((faces '(mode-line
+  ;;                  mode-line-buffer-id
+  ;;                  mode-line-emphasis
+  ;;                  mode-line-highlight
+  ;;                  mode-line-inactive)))
+  ;;     (mapc
+  ;;      (lambda (face) (set-face-attribute face nil :font "Inconsolata for Powerline-18"))
+  ;;      faces)))
 
-  (add-hook 'spacemacs-post-theme-change-hook
-            'rk-bump-mode-fonts)
+  ;; (add-hook 'spacemacs-post-theme-change-hook
+  ;;           'rk-bump-mode-fonts)
 
   ;; EWW
 
