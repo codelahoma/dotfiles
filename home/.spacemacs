@@ -98,10 +98,9 @@ This function should only modify configuration layer settings."
      (org :variables
           org-enable-appear-support t
           org-enable-bootstrap-support t
-          org-enable-org-contacts-support t
+          org-enable-org-contacts-support nil
           org-enable-hugo-support t
           org-enable-jira-support t
-          jiralib-url "https://kitewire.atlassian.net:443"
           org-enable-org-journal-support t
           org-enable-notifications t
           org-enable-reveal-js-support t
@@ -1167,10 +1166,6 @@ before packages are loaded."
     (setq org-agenda-files  (list gtd-directory))
 
     (setq org-capture-templates `(
-                                  ("c" "Contacts"
-                                   entry
-                                   (file rk/org-contact-file)
-                                   "* %(org-contacts-template-name)\n:PROPERTIES:\n:EMAIL: %(org-contacts-template-email)\n:END:")
                                   ("t" "Todos")
                                   ("tl" "Todo with Link" entry (file ,(rk/gtd-file "inbox.org")) "* TODO %?\n  %i\n  %a")
                                   ("tt" "Todo" entry (file ,(rk/gtd-file "inbox.org")) "* TODO %?\n  %i\n")
@@ -1179,9 +1174,6 @@ before packages are loaded."
 
     (global-set-key "\C-cb" 'org-switchb)
 
-    (setq rk/org-contact-file (rk/org-file "contact.org")
-          org-contacts-files '(rk/org-contact-file))
-    
     (setq diary-file (rk/gtd-file "diary.org"))
     (setq org-agenda-include-diary t)
 
