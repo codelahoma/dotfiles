@@ -18,6 +18,7 @@
 - [[#general-variables-and-configuration][General Variables and Configuration]]
 - [[#spoon-management][Spoon Management]]
 - [[#menu-hammer---spacemacs-style-modal-menu-manager-wip][Menu Hammer - Spacemacs style modal menu manager (wip)]]
+- [[#pushtotalk---global-microphone-control][PushToTalk - global microphone control]]
 - [[#window-and-screen-manipulation][Window and Screen Manipulation]]
 - [[#url-dispatching-to-site-specific-browsers][URL dispatching to site-specific browsers]]
 - [[#global-key-bindings][Global Key Bindings]]
@@ -110,6 +111,22 @@ Load MenuHammer directly because it's not in a repository yet.
   spoon.MenuHammer:enter()
 #+end_src
 
+* PushToTalk - global microphone control
+#+begin_src lua
+  Install:andUse("PushToTalk",
+                 {
+                   config = {
+                     detect_on_start = true,
+                     app_switcher = {
+                       ['zoom.us'] = 'push-to-talk'
+                     }
+                   },
+                   start = true,
+                 }
+  )
+#+end_src
+
+
 * Window and Screen Manipulation
 
 The [[http://www.hammerspoon.org/Spoons/WindowGrid.html][WindowGrid]] spoon sets up a key binding (=Hyper-8= here) to overlay a grid that allows resizing windows by specifying their opposite corners.
@@ -136,17 +153,24 @@ The [[http://www.hammerspoon.org/Spoons/WindowGrid.html][WindowGrid]] spoon sets
 * URL dispatching to site-specific browsers
 
 #+begin_src lua 
-  DefaultBrowser = "com.google.Chrome"
+  Qutebrowser = "org.qt-project.Qt.QtWebEngineCore"
+  Bitbucket = "com.webcatalog.juli.bitbucket"
+  Jira = "com.webcatalog.juli.jira"
+  Chrome = "com.google.Chrome"
   Spotify = "com.spotify.client"
   Notion = "notion.id"
 
+  DefaultBrowser = Qutebrowser
   if  work_machines[machine] ~= nil  then
     Install:andUse("URLDispatcher",
                   {
                     config = {
+                      decode_slack_redir_urls = true,
                       url_patterns = {
                         { "https?://open.spotify.com", Spotify},
                         { "https?://www.notion.so", Notion},
+                        { "https?://bitbucket.org/kitewire", Bitbucket},
+                        { "https?://kitewire.atlassian.net", Jira}
                       },
                       url_redir_decoders = {
                       --   { "Office 365 safelinks check",
