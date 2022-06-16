@@ -182,6 +182,7 @@ This function should only modify configuration layer settings."
                                       editorconfig
                                       evil-easymotion
                                       fira-code-mode
+                                      fold-this
                                       highlight-indent-guides
                                       jira-markup-mode
                                       keychain-environment
@@ -613,7 +614,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; Code folding method. Possible values are `evil', `origami' and `vimish'.
    ;; (default 'evil)
-   dotspacemacs-folding-method 'vimish
+   dotspacemacs-folding-method 'evil
 
    ;; If non-nil and `dotspacemacs-activate-smartparens-mode' is also non-nil,
    ;; `smartparens-strict-mode' will be enabled in programming modes.
@@ -878,15 +879,9 @@ before packages are loaded."
 
   (spacemacs/declare-prefix "of" "folding")
   (spacemacs/set-leader-keys
-    "off" 'vimish-fold
-    "ofa" 'vimish-fold-avy
-    "ofm" 'vimish-refold
-    "ofM" 'vimish-refold-all
-    "ofv" 'vimish-fold-delete
-    "ofr" 'vimish-fold-unfold
-    "ofR" 'vimish-fold-unfold-all
-    "oft" 'vimish-fold-toggle
-    "ofT" 'vimish-fold-toggle-all)
+    "off" 'fold-this
+    "ofm" 'fold-this-all
+    "ofr" 'fold-this-unfold-all)
 
   (spacemacs/declare-prefix "ox" "text")
   (spacemacs/set-leader-keys "oxt" 'xah-title-case-region-or-line)
