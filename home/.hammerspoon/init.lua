@@ -34,6 +34,18 @@ Install=spoon.SpoonInstall
 menuHammer = hs.loadSpoon("MenuHammer")
 menuHammer:enter()
 
+Install:andUse("PushToTalk",
+               {
+                 config = {
+                   detect_on_start = true,
+                   app_switcher = {
+                     ['zoom.us'] = 'push-to-talk'
+                   }
+                 },
+                 start = true,
+               }
+)
+
 Install:andUse("WindowGrid",
                 {
                   config = { gridGeometries = { { "8x5", "3840x2160"}, { "6x4" } } },
@@ -49,17 +61,24 @@ hs.grid.HINTS = {
  {'5', '2', '3', '4', 'j', 'k', 'l', ';'}, 
 }
 
-DefaultBrowser = "com.google.Chrome"
+Qutebrowser = "org.qt-project.Qt.QtWebEngineCore"
+Bitbucket = "com.webcatalog.juli.bitbucket"
+Jira = "com.webcatalog.juli.jira"
+Chrome = "com.google.Chrome"
 Spotify = "com.spotify.client"
 Notion = "notion.id"
 
+DefaultBrowser = Qutebrowser
 if  work_machines[machine] ~= nil  then
   Install:andUse("URLDispatcher",
                 {
                   config = {
+                    decode_slack_redir_urls = true,
                     url_patterns = {
                       { "https?://open.spotify.com", Spotify},
                       { "https?://www.notion.so", Notion},
+                      { "https?://bitbucket.org/kitewire", Bitbucket},
+                      { "https?://kitewire.atlassian.net", Jira}
                     },
                     url_redir_decoders = {
                     --   { "Office 365 safelinks check",
