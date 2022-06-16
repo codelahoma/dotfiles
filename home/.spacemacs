@@ -377,6 +377,8 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
+                         leuven
+                         cyberpunk-theme
                          gruvbox-light-hard
                          gruvbox-dark-hard
                          )
@@ -1283,6 +1285,7 @@ before packages are loaded."
        (http . t)
        (lua . t)
        (python . t)
+       (shell . t)
        (R . t)))
     (setq org-confirm-babel-evaluate nil
           org-src-fontify-natively t
