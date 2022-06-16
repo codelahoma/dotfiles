@@ -30,7 +30,7 @@ function rk_autojump {
                      cd $targetdir
                      }
 
-bindkey -s ^O "rk_autojump\n"
+bindkey -s ^T "rk_autojump\n"
 
 
 if [[ "$(uname -s)"  == "Darwin" ]] ; then
