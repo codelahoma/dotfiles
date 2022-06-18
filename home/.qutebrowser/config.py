@@ -10,8 +10,25 @@
 #   qute://help/configuring.html
 #   qute://help/settings.html
 
+import operator
+import os
+import platform
+
+from qutebrowser.api import interceptor, message
+from qutebrowser.config.config import ConfigContainer  # noqa: F401
+from qutebrowser.config.configfiles import ConfigAPI  # noqa: F401
+
+config = config  # type: ConfigAPI  # noqa: F821
+c = c  # type: ConfigContainer  # noqa: F821
+
 # Change the argument to True to still load settings configured via autoconfig.yml
 config.load_autoconfig(False)
+
+c.colors.webpage.darkmode.enabled = True
+
+config.bind(',b', 'spawn --userscript qute-capture read')
+# used in our redirect interceptor scripts
+initial_start = c.tabs.background == False
 
 # Which cookies to accept. With QtWebEngine, this setting also controls
 # other features with tracking capabilities similar to those of cookies;
