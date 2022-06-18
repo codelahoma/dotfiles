@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/Users/rodk/.direnv/python-3.8.12/bin/python
 
 """
 Store the given url in an org-mode file
@@ -16,8 +16,8 @@ import time
 import tempfile
 
 ORG_FILE = "~/personal/org-files/inbox.org"
-HEADING_PATH = "Read Later"
-EDITOR='xterm -e vi'
+HEADING_PATH = "Inbox"
+EDITOR = 'emacsclient -c -n'
 HEADING_SEPERATOR = '/'
 TIME_FORMAT = "Captured: <%Y-%m-%d %a>"
 DMENU = "dmenu -i -l 15"
@@ -136,12 +136,12 @@ def main(args):
     orgfile = os.path.expanduser(args.file)
 
     try:
-        org.load_from_file(orgfile);
+        org.load_from_file(orgfile)
     except FileNotFoundError:
         # If the file doesn't exist we begin with an empty org structure
         pass
 
-    node = resolve_heading(org.root, args.heading);
+    node = resolve_heading(org.root, args.heading)
 
     if args.mode == "write":
         newnode = new_node(title, node.level + 1)
