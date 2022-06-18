@@ -39,7 +39,7 @@ This function should only modify configuration layer settings."
                       auto-completion-tab-key-behavior 'cycle
                       auto-completion-complete-with-key-sequence nil
                       auto-completion-complete-with-key-sequence-delay 0.1
-                      auto-completion-minimum-prefix-length 1
+                      auto-completion-minimum-prefix-length 2
                       auto-completion-idle-delay 0.1
                       auto-completion-private-snippets-directory nil
                       auto-completion-enable-snippets-in-popup t
@@ -49,11 +49,14 @@ This function should only modify configuration layer settings."
      (colors :variables
              colors-colorize-identifiers 'all)
      emoji
+     evil-better-jumper
      helm
      multiple-cursors
      (osx :variables
           osx-command-as nil)
      spacemacs-modeline
+     spacemacs-org
+     spacemacs-navigation
      syntax-checking
      theming
      themes-megapack
@@ -97,6 +100,7 @@ This function should only modify configuration layer settings."
      markdown
      (org :variables
           org-enable-appear-support t
+          org-appear-autolinks nil
           org-enable-bootstrap-support t
           org-enable-org-contacts-support nil
           org-enable-hugo-support t
@@ -336,9 +340,9 @@ It should only modify the values of Spacemacs settings."
    ;; pair of numbers, e.g. `(recents-by-project . (7 .  5))', where the first
    ;; number is the project limit and the second the limit on the recent files
    ;; within a project.
-   dotspacemacs-startup-lists '((agenda)
-                                (recents . 5)
-                                (projects . 7))
+   dotspacemacs-startup-lists '((recents . 8)
+                                (projects . 5)
+                                (bookmarks . 5))
 
    ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
@@ -378,8 +382,9 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
+                         hc-zenburn
                          leuven
-                         cyberpunk-theme
+                         cyberpunk
                          gruvbox-light-hard
                          gruvbox-dark-hard
                          )
@@ -678,7 +683,7 @@ It should only modify the values of Spacemacs settings."
    ;; performance issues, instead of calculating the frame title by
    ;; `spacemacs/title-prepare' all the time.
    ;; (default "%I@%S")
-   dotspacemacs-frame-title-format "%I | %t:%f"
+   dotspacemacs-frame-title-format "%I | %t | %f %n"
 
    ;; Format specification for setting the icon title format
    ;; (default nil - same as frame-title-format)
@@ -808,7 +813,8 @@ before packages are loaded."
      `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
 
   (let* ((variable-tuple
-          (cond ((x-list-fonts "Fira Sans")       '(:font "Fira Sans"))
+          (cond ((x-list-fonts "ETBembo") '(:font "ETBembo"))
+                ((x-list-fonts "Fira Sans")       '(:font "Fira Sans"))
                 ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
                 ((x-list-fonts "Avenir Next") '(:font "Avenir Next"))
                 ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
@@ -822,7 +828,7 @@ before packages are loaded."
     (custom-theme-set-faces
      'user
      '(fixed-pitch ((t ( :family "FiraCode Nerd Font" :height 1.0))))
-     '(variable-pitch ((t (:family "Fira Sans" :height 1.1))))
+     '(variable-pitch ((t (:family "ETBembo" :height 1.1))))
      `(org-document-title ((t (,@headline ,@variable-tuple :height 2.0 :underline nil))))
      `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75))))
      `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5))))
