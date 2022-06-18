@@ -26,7 +26,8 @@ config.load_autoconfig(False)
 
 c.colors.webpage.darkmode.enabled = True
 
-config.bind(',b', 'spawn --userscript qute-capture read')
+# config.bind(',b', 'spawn --userscript qute-capture write')
+
 # used in our redirect interceptor scripts
 initial_start = c.tabs.background == False
 
