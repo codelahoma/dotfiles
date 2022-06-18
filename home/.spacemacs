@@ -118,6 +118,7 @@ This function should only modify configuration layer settings."
                org-plantuml-jar-path "/opt/homebrew/opt/plantuml/libexec/plantuml.jar")
 
      ;; Development Tools
+     ansible
      cmake
      graphviz
      restclient
@@ -1082,7 +1083,7 @@ before packages are loaded."
   (with-eval-after-load 'direnv
     (direnv-mode))
 
-  ;; ansible
+  ; ansible
 
   (with-eval-after-load 'ansible
     (add-hook 'ansible-hook 'ansible-auto-decrypt-encrypt)
