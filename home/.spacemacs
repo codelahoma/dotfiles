@@ -1157,17 +1157,25 @@ before packages are loaded."
     (setq alert-default-style 'notifications)
     (add-hook 'org-mode-hook 'variable-pitch-mode)
     (add-hook 'org-mode-hook 'visual-line-mode)
-    (setq org-directory "~/Dropbox/org/")
+
+    ;; org directories
+    (setq org-directory "~/personal/org-files/")
+    (setq elfeed-db-directory (concat org-directory "elfeed-db/"))
+    (setq org-roam-directory (concat org-directory "roam-notes/"))
+
+
+    ;; default to all top level org files for agenda
+    (unless org-agenda-files 
+      (setq org-agenda-files (directory-files org-directory nil "org$")))
+
+    ;; file prefix aliases
+    (defalias `rk/org-file (apply-partially 'concat org-directory))
+
     (setq org-persp-startup-org-file (concat org-directory "inbox.org")
           org-persp-startup-with-agenda "kk")
-    (setq gtd-directory (concat org-directory "gtd/"))
     (setq org-id-track-globally t)
-    (defalias `rk/org-file (apply-partially 'concat org-directory))
-    (defalias `rk/gtd-file (apply-partially 'concat gtd-directory))
 
 
-    (setq org-enable-roam-support t)
-    (setq org-roam-directory (concat org-directory "roam-notes/"))
     (setq org-roam-completion-everywhere t)
     (add-to-list 'spacemacs-default-company-backends 'company-capf)
 
@@ -1175,23 +1183,22 @@ before packages are loaded."
     (add-to-list 'org-modules 'org-tempo)
     (add-to-list 'org-modules 'org-checklist)
 
-    (setq org-tags-exclude-from-inheritance (list "project"))
+    (setq org-tags-exclude-from-inheritance '("project"))
     (setq org-list-allow-alphabetical t)
-    (setq org-agenda-files  (list gtd-directory))
 
     (setq org-capture-templates `(
                                   ("t" "Todos")
-                                  ("tl" "Todo with Link" entry (file ,(rk/gtd-file "inbox.org")) "* TODO %?\n  %i\n  %a")
-                                  ("tt" "Todo" entry (file ,(rk/gtd-file "inbox.org")) "* TODO %?\n  %i\n")
-                                  ("tT" "Tickler" entry (file+headline ,(rk/gtd-file "tickler.org") "Tickler") "* %i%? \n %U"))
+                                  ("tl" "Todo with Link" entry (file ,(rk/org-file "inbox.org")) "* TODO %?\n  %i\n  %a")
+                                  ("tt" "Todo" entry (file ,(rk/org-file "inbox.org")) "* TODO %?\n  %i\n")
+                                  ("tT" "Tickler" entry (file+headline ,(rk/org-file "tickler.org") "Tickler") "* %i%? \n %U"))
           )
 
     (global-set-key "\C-cb" 'org-switchb)
 
-    (setq diary-file (rk/gtd-file "diary.org"))
+    (setq diary-file (rk/org-file "diary.org"))
     (setq org-agenda-include-diary t)
 
-    (setq org-journal-dir "~/Dropbox/org/journal/"
+    (setq org-journal-dir "~/personal/org-files/journal/"
           org-journal-date-prefix "#+TITLE: "
           org-journal-date-format "%A, %B %d %Y"
           org-journal-time-prefix "* "
@@ -1201,19 +1208,19 @@ before packages are loaded."
 
     (setq rk/work-org-files (-flatten (list
 
-                                       (rk/gtd-file "inbox.org")
-                                       (rk/gtd-file "gtd.org")
-                                       (rk/gtd-file "tickler.org")
-                                       (rk/gtd-file "someday.org")
-                                       (rk/gtd-file "reference.org")
+                                       (rk/org-file "inbox.org")
+                                       (rk/org-file "gtd.org")
+                                       (rk/org-file "tickler.org")
+                                       (rk/org-file "someday.org")
+                                       (rk/org-file "reference.org")
                                        )))
 
     (setq rk/home-org-files (list
-                             (rk/gtd-file "inbox.org")
-                             (rk/gtd-file "home.org")
-                             (rk/gtd-file "gtd.org")
-                             (rk/gtd-file "tickler.org")
-                             (rk/gtd-file "someday.org")
+                             (rk/org-file "inbox.org")
+                             (rk/org-file "home.org")
+                             (rk/org-file "gtd.org")
+                             (rk/org-file "tickler.org")
+                             (rk/org-file "someday.org")
                              ))
 
     (setq org-agenda-custom-commands
