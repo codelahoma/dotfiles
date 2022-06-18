@@ -192,6 +192,11 @@ This function should only modify configuration layer settings."
                                       keychain-environment
                                       ob-async
                                       org-jira
+                                      (org-ql :quelpa (org-ql :fetcher github :repo "alphapapa/org-ql"
+                                                              :files (:defaults (:exclude "helm-org-ql.el"))))
+                                      (helm-org-ql
+                                       :quelpa (helm-org-ql :fetcher github :repo "alphapapa/org-ql"
+                                                            :files ("helm-org-ql.el")))
                                       ox-jira
                                       ox-slack
                                       sicp
