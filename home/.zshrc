@@ -96,7 +96,6 @@ alias Make=`which make`
 alias make="$(which make) --"
 autoload edit-command-line
 zle -N edit-command-line
-bindkey '^X^E' edit-command-line
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -120,6 +119,16 @@ alias loadrvm='[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"'
 alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"'
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+bindkey '^X^E' edit-command-line
+bindkey -s ^F "tmux-sessionizer\n"
+
+function rk_autojump {
+    targetdir=$(fasd -ld | fzf)
+    cd $targetdir
+}
+
+bindkey -s ^T "rk_autojump\n"
 
 eval "$(asdf exec direnv hook zsh)"
 # A shortcut for asdf managed direnv.
@@ -157,7 +166,7 @@ export CPPFLAGS="-I/usr/local/opt/zlib/include -I/usr/local/opt/bzip2/include"
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
 source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
-. "$(brew --prefix asdf)/libexec/asdf.sh"
+
 
 if [ -n "$INSIDE_EMACS" ]; then
     direnv reload

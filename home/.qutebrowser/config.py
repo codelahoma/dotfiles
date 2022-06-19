@@ -26,7 +26,10 @@ config.load_autoconfig(False)
 
 c.colors.webpage.darkmode.enabled = True
 
+config.set("fonts.default_size", "18pt")
+
 # config.bind(',b', 'spawn --userscript qute-capture write')
+config.bind(';w', 'hint links spawn  ~/.local/bin/mpv  {hint-url}')
 
 # used in our redirect interceptor scripts
 initial_start = c.tabs.background == False
