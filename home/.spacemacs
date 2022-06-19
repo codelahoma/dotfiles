@@ -871,12 +871,18 @@ before packages are loaded."
     (setq org-superstar-remove-leading-stars t)
     ;; Enable custom bullets for TODO items
     (setq org-superstar-todo-bullet-alist
-          '(("TODO" . ?☐)
-            ("NEXT" . ?✒)
-            ("HOLD" . ?✰)
+          '(("TODO" . ?🪚)
+            ("NEXT" . ?👀)
+            ("IN-PROGRESS" . ?🚀)
+            ("NEEDS-REFINEMENT" . ?🔍)
+            ("NOT-APPLICABLE" . ?💩)
             ("WAITING" . ?☕)
-            ("CANCELLED" . ?✘)
-            ("DONE" . ?✔)))
+            ("QUESTION" . ?❓)
+            ("MEETING" . ?⏰)
+            ("CANCELLED" . ?❌)
+            ("ATTENDED" . ?📝)
+            ("ANSWERED" . ?👍) 
+            ("DONE" . ?✅)))
     (org-superstar-restart))
   (setq org-ellipsis " ▼ ")
 
