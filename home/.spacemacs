@@ -156,7 +156,7 @@ This function should only modify configuration layer settings."
             shell-default-term-shell "/bin/zsh"
             spacemacs-vterm-history-file-location "~/.zsh_history"
             shell-default-height 50
-            shell-default-position 'bottom
+            shell-default-position 'right
             shell-enable-smart-eshell nil
             shell-default-full-span nil
             close-window-with-terminal t)
