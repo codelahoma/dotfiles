@@ -208,6 +208,7 @@ else
   hotkey.bind(hyper, "o", appLauncher('Slack'))
   hotkey.bind(hyper, "p", appLauncher('Preview'))
   hotkey.bind(hyper, "r", hs.reload)
+  hotkey.bind(hyper, "s", hs.grid.show)
   hotkey.bind(hyper, "v", pasteLauncher())
   hotkey.bind(hyper, "0", centerOnMainDisplay)
   hotkey.bind(hyper, "q", appLauncher('1Password 7'))
