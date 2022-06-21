@@ -24,7 +24,7 @@ c = c  # type: ConfigContainer  # noqa: F821
 # Change the argument to True to still load settings configured via autoconfig.yml
 config.load_autoconfig(False)
 
-c.colors.webpage.darkmode.enabled = True
+# c.colors.webpage.darkmode.enabled = True
 
 config.set("fonts.default_size", "18pt")
 
