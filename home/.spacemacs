@@ -74,7 +74,7 @@ This function should only modify configuration layer settings."
                  javascript-repl 'nodejs) ;; includes Coffeescript support
      (typescript :variables
                  typescript-backend 'tide
-                 typescript-linter 'tslint
+                 typescript-linter 'eslint
                  tide-tsserver-executable "/Users/rodk/.asdf/installs/nodejs/14.19.0/.npm/bin/tsserver")
      (lua :variables
           lua-backend 'lsp-emmy
@@ -782,6 +782,19 @@ Put your configuration code here, except for variables that should be set
 before packages are loaded."
   ;; scratch
   (add-hook 'find-file-hook 'direnv-update-directory-environment)
+
+
+
+  (require 'vterm)
+
+  (defun rk/vterm (&optional term-name)
+    "create a vterm session wrapped around a minimal tmux session"
+    (interactive "sterm-name: ")
+    (let* ((the-term-name (if (stringp term-name) term-name "default term name"))
+           (the-project-dir (or (projectile-project-p) default-directory))
+           (vterm-shell (concat vterm-shell " -i -c " "'~/bin/tmux-session-launch " the-term-name " " the-project-dir "'")))
+      (message vterm-shell)
+      (vterm-other-window the-term-name)))
 
   ;; Org Appearance
 
