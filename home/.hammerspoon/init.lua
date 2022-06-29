@@ -78,6 +78,7 @@ if  work_machines[machine] ~= nil  then
                       { "https?://open.spotify.com", Spotify},
                       { "https?://www.notion.so", Notion},
                       { "https?://bitbucket.org/kitewire", Bitbucket},
+                      { "https?://bitbucket.org/", Bitbucket},
                       { "https?://kitewire.atlassian.net", Jira}
                     },
                     url_redir_decoders = {
