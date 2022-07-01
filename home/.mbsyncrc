@@ -1,0 +1,29 @@
+IMAPAccount fastmail
+Host imap.fastmail.com
+Port 993
+User knowshank@fastmail.com
+# FIXME: switch to authinfo.gpg
+PassCmd "cat ~/.mbsync-fastmail"
+SSLType IMAPS
+SSLVersions TLSv1.2
+
+IMAPStore fastmail-remote
+Account fastmail
+
+# local storage
+MaildirStore fastmail-local
+Path ~/Maildir/
+Inbox ~/Maildir/INBOX
+# The SubFolders option allows to represent all
+# IMAP folders as local subfolders
+Subfolders Verbatim
+
+Channel fastmail
+Far :fastmail-remote:
+Near :fastmail-local:
+Patterns *
+Expunge None
+CopyArrivalDate yes
+Sync All
+Create Near
+SyncState *
