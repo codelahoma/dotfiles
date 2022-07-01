@@ -205,8 +205,8 @@ This function should only modify configuration layer settings."
                                                             :files ("helm-org-ql.el")))
                                       ox-jira
                                       ox-slack
-                                      atomic-chrome
                                       direnv
+                                      atomic-chrome
                                       editorconfig
                                       fold-this
                                       jira-markup-mode
@@ -785,124 +785,111 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
   (setq custom-file "~/.spacemacs.d/custom.el")
+  (require 'vterm)
   
-    ;; scratch
-    (add-hook 'find-file-hook 'direnv-update-directory-environment)
+  (defun rk/vterm (&optional term-name)
+    "create a vterm session wrapped around a minimal tmux session"
+    (interactive "sterm-name: ")
+    (let* ((the-term-name (if (stringp term-name) term-name "default term name"))
+           (the-project-dir (or (projectile-project-p) default-directory))
+           (vterm-shell (concat vterm-shell " -i -c " "'~/bin/tmux-session-launch " the-term-name " " the-project-dir "'")))
+      (message vterm-shell)
+      (vterm-other-window the-term-name)))
   
   
+  (require 'modus-themes)
+  (defun rk/go-modus ()
+    "Activate modus-theme"
+    (interactive)
+    (progn
+      (let ((bg (face-attribute 'default :background)))
+        (custom-set-faces
+         '(company-tooltip ((t (:weight bold :foreground "dark red" :background "khaki1" :inherit default))))))
+      (setq modus-themes-bold-constructs t
+            modus-themes-completions '((t . (extrabold intense)))
+            modus-themes-italic-constructs t
+            modus-themes-mixed-fonts t
+            modus-themes-org-blocks 'gray-background
+            modus-themes-syntax '(alt-syntax)
+            modus-themes-links '(italic bold background no-color no-underline)
+            modus-themes-prompts '(intense background)
+            modus-themes-hl-line '(intense)
+            modus-themes-mode-line '(accented borderless 1.1)
+            modus-themes-fringes '(intense))
+      (load-theme 'modus-vivendi t )))
   
-    (require 'vterm)
+  (let* ((variable-tuple
+          (cond ((x-list-fonts "Fira Sans")       '(:font "Fira Sans"))
+                ((x-list-fonts "Avenir Next") '(:font "Avenir Next"))
+                ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
+                ((x-list-fonts "ETBembo") '(:font "ETBembo"))
+                ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
+                ((x-list-fonts "Verdana")         '(:font "Verdana"))
+                ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
+                (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
+         (headline           `(:inherit default :weight normal ))
+         )
   
-    (defun rk/vterm (&optional term-name)
-      "create a vterm session wrapped around a minimal tmux session"
-      (interactive "sterm-name: ")
-      (let* ((the-term-name (if (stringp term-name) term-name "default term name"))
-             (the-project-dir (or (projectile-project-p) default-directory))
-             (vterm-shell (concat vterm-shell " -i -c " "'~/bin/tmux-session-launch " the-term-name " " the-project-dir "'")))
-        (message vterm-shell)
-        (vterm-other-window the-term-name)))
+    (custom-theme-set-faces
+     'user
+     '(fixed-pitch ((t ( :family "FiraCode Nerd Font" :height 1.0))))
+     '(variable-pitch ((t (:family "Fira Sans" :height 1.1))))
+     `(org-document-title ((t (,@headline ,@variable-tuple :height 2.5 :underline nil))))
+     `(org-level-1 ((t (,@headline ,@variable-tuple :height 2.0))))
+     `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.8))))
+     `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.6))))
+     `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.4))))
+     `(org-level-5 ((t (,@headline ,@variable-tuple :height 1.2))))
+     `(org-level-6 ((t (,@headline ,@variable-tuple :height 1.2))))
+     `(org-level-7 ((t (,@headline ,@variable-tuple :height 1.2))))
+     `(org-level-8 ((t (,@headline ,@variable-tuple :height 1.2))))
+     '(org-block ((t (:inherit fixed-pitch :height 0.8))))
+     '(org-code ((t (:inherit (shadow fixed-pitch)))))
+     '(org-date ((t (:inherit (font-lock-comment-face fixed-pitch) :height 0.9))))
+     '(org-document-info ((t (:foreground "dark orange"))))
+     '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+     '(org-done ((t ( :font "Fira Sans" :height 0.6 :background nil))))
+     '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
+     '(org-link ((t (:foreground "royal blue" :underline t))))
+     '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+     '(org-property-value ((t (:inherit fixed-pitch))) t)
+     '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+     '(org-table ((t (:inherit fixed-pitch ))))
+     '(org-tag ((t (:inherit (shadow fixed-pitch)  :height 0.5))))
+     '(org-todo ((t ( :font "Fira Sans" :height 0.8))))
+     '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
+     ))
+  (with-eval-after-load 'org-superstar
+    (setq org-superstar-item-bullet-alist
+          '((?* . ?•)
+            (?+ . ?➤)
+            (?- . ?•)))
+    (setq org-superstar-headline-bullets-list '(?\s))
+    (setq org-superstar-special-todo-items t)
+    (setq org-superstar-remove-leading-stars t)
+    ;; Enable custom bullets for TODO items
+    (setq org-superstar-todo-bullet-alist
+          '(("TODO" . ?🔳)
+            ("NEXT" . ?👀)
+            ("IN-PROGRESS" . ?🚀)
+            ("NEEDS-REFINEMENT" . ?🔍)
+            ("NOT-APPLICABLE" . ?💩)
+            ("WAITING" . ?☕)
+            ("QUESTION" . ?❓)
+            ("MEETING" . ?⏰)
+            ("CANCELLED" . ?❌)
+            ("ATTENDED" . ?📝)
+            ("ANSWERED" . ?👍) 
+            ("DONE" . ?✅)))
+    (org-superstar-restart))
+  (add-hook 'find-file-hook 'direnv-update-directory-environment)
   
     ;; Org Appearance
   
-    ;; Modus theme loader, if I want it
-    (require 'modus-themes)
-    (defun rk/go-modus ()
-      "Activate modus-theme"
-      (interactive)
-      (progn
-        (let ((bg (face-attribute 'default :background)))
-          (custom-set-faces
-           '(company-tooltip ((t (:weight bold :foreground "dark red" :background "khaki1" :inherit default))))))
-        (setq modus-themes-bold-constructs t
-              modus-themes-completions '((t . (extrabold intense)))
-              modus-themes-italic-constructs t
-              modus-themes-mixed-fonts t
-              modus-themes-org-blocks 'gray-background
-              modus-themes-syntax '(alt-syntax)
-              modus-themes-links '(italic bold background no-color no-underline)
-              modus-themes-prompts '(intense background)
-              modus-themes-hl-line '(intense)
-              modus-themes-mode-line '(accented borderless 1.1)
-              modus-themes-fringes '(intense))
-        (load-theme 'modus-vivendi t )))
-  
-    (require 'color)
-  
-    (let ((bg (face-attribute 'default :background)))
-      (custom-set-faces
-       '(company-tooltip ((t (:weight bold :foreground "dark red" :background "khaki1" :inherit default))))
-       `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
-       `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
-       `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
-       `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
-  
-    (let* ((variable-tuple
-            (cond ((x-list-fonts "Fira Sans")       '(:font "Fira Sans"))
-                  ((x-list-fonts "Avenir Next") '(:font "Avenir Next"))
-                  ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
-                  ((x-list-fonts "ETBembo") '(:font "ETBembo"))
-                  ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
-                  ((x-list-fonts "Verdana")         '(:font "Verdana"))
-                  ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
-                  (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
-           ;; (base-font-color     (face-foreground 'default nil 'default))
-           (headline           `(:inherit default :weight normal ))
-           )
-  
-      (custom-theme-set-faces
-       'user
-       '(fixed-pitch ((t ( :family "FiraCode Nerd Font" :height 1.0))))
-       '(variable-pitch ((t (:family "Fira Sans" :height 1.1))))
-       `(org-document-title ((t (,@headline ,@variable-tuple :height 2.5 :underline nil))))
-       `(org-level-1 ((t (,@headline ,@variable-tuple :height 2.0))))
-       `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.8))))
-       `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.6))))
-       `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.4))))
-       `(org-level-5 ((t (,@headline ,@variable-tuple :height 1.2))))
-       `(org-level-6 ((t (,@headline ,@variable-tuple :height 1.2))))
-       `(org-level-7 ((t (,@headline ,@variable-tuple :height 1.2))))
-       `(org-level-8 ((t (,@headline ,@variable-tuple :height 1.2))))
-       '(org-block ((t (:inherit fixed-pitch :height 0.8))))
-       '(org-code ((t (:inherit (shadow fixed-pitch)))))
-       '(org-date ((t (:inherit (font-lock-comment-face fixed-pitch) :height 0.9))))
-       '(org-document-info ((t (:foreground "dark orange"))))
-       '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
-       '(org-done ((t ( :font "Fira Sans" :height 0.6 :background nil))))
-       '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
-       '(org-link ((t (:foreground "royal blue" :underline t))))
-       '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-       '(org-property-value ((t (:inherit fixed-pitch))) t)
-       '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-       '(org-table ((t (:inherit fixed-pitch ))))
-       '(org-tag ((t (:inherit (shadow fixed-pitch)  :height 0.5))))
-       '(org-todo ((t ( :font "Fira Sans" :height 0.8))))
-       '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
-       ))
   
   
-    (with-eval-after-load 'org-superstar
-      (setq org-superstar-item-bullet-alist
-            '((?* . ?•)
-              (?+ . ?➤)
-              (?- . ?•)))
-      (setq org-superstar-headline-bullets-list '(?\s))
-      (setq org-superstar-special-todo-items t)
-      (setq org-superstar-remove-leading-stars t)
-      ;; Enable custom bullets for TODO items
-      (setq org-superstar-todo-bullet-alist
-            '(("TODO" . ?🔳)
-              ("NEXT" . ?👀)
-              ("IN-PROGRESS" . ?🚀)
-              ("NEEDS-REFINEMENT" . ?🔍)
-              ("NOT-APPLICABLE" . ?💩)
-              ("WAITING" . ?☕)
-              ("QUESTION" . ?❓)
-              ("MEETING" . ?⏰)
-              ("CANCELLED" . ?❌)
-              ("ATTENDED" . ?📝)
-              ("ANSWERED" . ?👍) 
-              ("DONE" . ?✅)))
-      (org-superstar-restart))
+  
+  
     (setq org-ellipsis " ▼ ")
   
     ;; Private Key Mappings 
