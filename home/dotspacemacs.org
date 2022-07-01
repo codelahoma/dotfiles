@@ -1,6 +1,7 @@
 #+TITLE:My Spacemacs Init
 #+AUTHOR: Rod Knowlton
 #+EMAIL: codelahoma@gmail.com
+
 * .spacemacs
 
 I got tired of having to hop all over my =.spacemacs= file when making adjustments and only being able to use plain text search because the only real syntax to hang on were the functions, which could in turn contain /a lot/ of code unrelated to what I was working on.
@@ -13,7 +14,7 @@ I'll probably want to eventually break things down into separate elisp files, bu
 
 It consists of a brief [[*.spacemacs Preamble][preamble]], followed by a [[*The functions][handful of functions]].
 
-#+begin_src emacs-lisp :noweb yes :tangle .spacemacs :comments no
+#+begin_src emacs-lisp :noweb no-export  :tangle .spacemacs :comments no
   <<preamble>>
   <<dotspacemacs-layers>>
   <<dotspacemacs-init>>
@@ -23,7 +24,7 @@ It consists of a brief [[*.spacemacs Preamble][preamble]], followed by a [[*The 
   <<dotspacemacs-user-config>>
   <<the-rest>>
 #+end_src
-** noweb-ref Legend
+* noweb-ref Legend
 The following special values of the =noweb-ref= header argument will cause a code block  to behave in the follow manner, allowing better grouping of all configuration by modes.
 
 | noweb-ref                 | behavior (l)=add to list, (c)=insert code into               |
@@ -32,11 +33,67 @@ The following special values of the =noweb-ref= header argument will cause a cod
 | additional-packages       | (l) =dotspacemacs-additional-packages= in =dotspacemacs/layers=  |
 | dotspacemacs-themes       | (l) =dotspacemacs-themes= in =dotspacemacs/init=                 |
 | dotspacemacs-default-font | (l) ~dotspacemacs-default-font~ in ~dotspacemacs/init~           |
-| private-key-bindings      | (c) dotspacemacs/user-config                                 |
+| user-config               | (c) dotspacemacs/user-config                                 |
+| private-key-bindings      | (c) dotspacemacs/user-config, in key-bindings section        |
 |---------------------------+--------------------------------------------------------------|
+* Scratch (functions and such I'm working on/playing with)
+** rk/vterm
+My attempt at [[file:~/personal/org-files/home.org::*tmux/vterm pairing][giving myself a safety net]] on my vterm sessions, using tmux
+#+begin_src emacs-lisp :noweb no-export :noweb-ref user-config
+  (require 'vterm)
 
-** Interface
-*** Auto Completion
+  (defun rk/vterm (&optional term-name)
+    "create a vterm session wrapped around a minimal tmux session"
+    (interactive "sterm-name: ")
+    (let* ((the-term-name (if (stringp term-name) term-name "default term name"))
+           (the-project-dir (or (projectile-project-p) default-directory))
+           (vterm-shell (concat vterm-shell " -i -c " "'~/bin/tmux-session-launch " the-term-name " " the-project-dir "'")))
+      (message vterm-shell)
+      (vterm-other-window the-term-name)))
+
+
+#+end_src
+** 
+** rk/go-modus
+Playing around with [[https://github.com/protesilaos/modus-themes/][Modus Themes]], as seen on [[https://systemcrafters.net/emacs-from-scratch/the-modus-themes/][Style Your Emacs with the Modus Themes - System Crafters]] 
+#+begin_src emacs-lisp :noweb no-export :noweb-ref user-config
+  (require 'modus-themes)
+  (defun rk/go-modus ()
+    "Activate modus-theme"
+    (interactive)
+    (progn
+      (let ((bg (face-attribute 'default :background)))
+        (custom-set-faces
+         '(company-tooltip ((t (:weight bold :foreground "dark red" :background "khaki1" :inherit default))))))
+      (setq modus-themes-bold-constructs t
+            modus-themes-completions '((t . (extrabold intense)))
+            modus-themes-italic-constructs t
+            modus-themes-mixed-fonts t
+            modus-themes-org-blocks 'gray-background
+            modus-themes-syntax '(alt-syntax)
+            modus-themes-links '(italic bold background no-color no-underline)
+            modus-themes-prompts '(intense background)
+            modus-themes-hl-line '(intense)
+            modus-themes-mode-line '(accented borderless 1.1)
+            modus-themes-fringes '(intense))
+      (load-theme 'modus-vivendi t )))
+
+#+end_src
+* Interface
+** Appearance
+# *** Company Box
+# #+begin_src emacs-lisp :noweb-ref user-config
+#   (require 'color)
+
+#   (let ((bg (face-attribute 'default :background)))
+#     (custom-set-faces
+#      '(company-tooltip ((t (:weight bold :foreground "dark red" :background "khaki1" :inherit default))))
+#      `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
+#      `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
+#      `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
+#      `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
+# #+end_src
+** Auto Completion
 #+begin_src emacs-lisp :noweb-ref config-layers
   (auto-completion :variables
                    auto-completion-return-key-behavior 'complete
@@ -49,7 +106,7 @@ The following special values of the =noweb-ref= header argument will cause a cod
                    auto-completion-use-company-box t
                    auto-completion-enable-sort-by-usage t)
 #+end_src
-*** Folding
+** Folding
 Using =fold-this= because vimish folding is unfortuntely too laggy on some large files (where folding is needed more than anywhere).
 #+begin_src emacs-lisp :noweb-ref additional-packages
   fold-this
@@ -62,7 +119,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
     "ofm" 'fold-this-all
     "ofr" 'fold-this-unfold-all)
 #+end_src
-*** Default Fonts
+** Default Fonts
 #+begin_src emacs-lisp :noweb-ref dotspacemacs-default-font
   ("FiraCode Nerd Font"
    :size 16.0
@@ -110,7 +167,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
    :width normal)
 
 #+end_src
-*** Other
+** Other
 #+begin_src emacs-lisp :noweb-ref config-layers
   (colors :variables
           colors-colorize-identifiers 'all)
@@ -126,20 +183,20 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
   syntax-checking
 
 #+end_src
-**** Additional Packages
+*** Additional Packages
 #+begin_src emacs-lisp :noweb-ref additional-packages
   evil-easymotion
   fira-code-mode
   highlight-indent-guides
 
 #+end_src
-*** Themes
-**** layers
+** Themes
+*** layers
 #+begin_src emacs-lisp :noweb-ref config-layers
   theming
   themes-megapack
 #+end_src
-**** default themes
+*** default themes
 #+begin_src emacs-lisp :noweb-ref dotspacemacs-themes
   farmhouse-light
   farmhouse-dark
@@ -151,7 +208,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
   gruvbox-light-hard
   gruvbox-dark-hard
 #+end_src
-*** Treemacs
+** Treemacs
 #+begin_src emacs-lisp :noweb-ref config-layers
   (treemacs :variables
             treemacs-sorting 'alphabetic-asc
@@ -160,21 +217,19 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
             treemacs-use-scope-type 'Perspectives
             treemacs-use-filewatch-mode t)
 #+end_src
-*** 
-** Programming Languages
-
-*** Rust
+* Programming Languages
+** Rust
 #+begin_src emacs-lisp :noweb-ref config-layers
   rust
 #+end_src
 
-*** Javascript
+** Javascript
 #+begin_src emacs-lisp :noweb-ref config-layers
   (javascript :variables
               javascript-repl 'nodejs) ;; includes Coffeescript support
 #+end_src
 
-*** Typescript
+** Typescript
 #+begin_src emacs-lisp :noweb-ref config-layers
   (typescript :variables
               typescript-backend 'tide
@@ -182,7 +237,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
               tide-tsserver-executable "/Users/rodk/.asdf/installs/nodejs/14.19.0/.npm/bin/tsserver")
 #+end_src
 
-*** Lua
+** Lua
 #+begin_src emacs-lisp :noweb-ref config-layers
   (lua :variables
        lua-backend 'lsp-emmy
@@ -191,7 +246,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
        lua-lsp-emmy-enable-file-watchers t)                  ; enabled default
 #+end_src
 
-*** Python
+** Python
 #+begin_src emacs-lisp :noweb-ref config-layers
   (python :variables
           python-fill-column 99
@@ -203,22 +258,21 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
           )
 #+end_src
 
-*** Other
+** Other
 #+begin_src emacs-lisp :noweb-ref config-layers
   emacs-lisp
   sql
   hy
 #+end_src
 
-** Frameworks
+* Frameworks
 #+begin_src emacs-lisp :noweb-ref config-layers
   react
 #+end_src
 
-** Markup Languages
-
-*** Org Mode
-**** Layer Variables
+* Markup Languages
+** Org Mode
+*** Layer Variables
 #+begin_src emacs-lisp :noweb-ref config-layers
   (org :variables
        org-enable-appear-support t
@@ -238,7 +292,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
        org-start-notification-daemon-on-startup t)
 #+end_src
 
-**** Additional Packages
+*** Additional Packages
 #+begin_src emacs-lisp :noweb-ref additional-packages
   ob-async
   org-jira
@@ -251,36 +305,105 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
   ox-slack
 #+end_src
 
+*** Appearance
+**** font faces
+#+begin_src emacs-lisp :noweb no-export :noweb-ref user-config
+    (let* ((variable-tuple
+            (cond ((x-list-fonts "Fira Sans")       '(:font "Fira Sans"))
+                  ((x-list-fonts "Avenir Next") '(:font "Avenir Next"))
+                  ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
+                  ((x-list-fonts "ETBembo") '(:font "ETBembo"))
+                  ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
+                  ((x-list-fonts "Verdana")         '(:font "Verdana"))
+                  ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
+                  (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
+           (headline           `(:inherit default :weight normal ))
+           )
 
+      (custom-theme-set-faces
+       'user
+       '(fixed-pitch ((t ( :family "FiraCode Nerd Font" :height 1.0))))
+       '(variable-pitch ((t (:family "Fira Sans" :height 1.1))))
+       `(org-document-title ((t (,@headline ,@variable-tuple :height 2.5 :underline nil))))
+       `(org-level-1 ((t (,@headline ,@variable-tuple :height 2.0))))
+       `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.8))))
+       `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.6))))
+       `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.4))))
+       `(org-level-5 ((t (,@headline ,@variable-tuple :height 1.2))))
+       `(org-level-6 ((t (,@headline ,@variable-tuple :height 1.2))))
+       `(org-level-7 ((t (,@headline ,@variable-tuple :height 1.2))))
+       `(org-level-8 ((t (,@headline ,@variable-tuple :height 1.2))))
+       '(org-block ((t (:inherit fixed-pitch :height 0.8))))
+       '(org-code ((t (:inherit (shadow fixed-pitch)))))
+       '(org-date ((t (:inherit (font-lock-comment-face fixed-pitch) :height 0.9))))
+       '(org-document-info ((t (:foreground "dark orange"))))
+       '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+       '(org-done ((t ( :font "Fira Sans" :height 0.6 :background nil))))
+       '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
+       '(org-link ((t (:foreground "royal blue" :underline t))))
+       '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+       '(org-property-value ((t (:inherit fixed-pitch))) t)
+       '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+       '(org-table ((t (:inherit fixed-pitch ))))
+       '(org-tag ((t (:inherit (shadow fixed-pitch)  :height 0.5))))
+       '(org-todo ((t ( :font "Fira Sans" :height 0.8))))
+       '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
+       ))
+#+end_src
 
-*** Other
+**** org-superstar
+#+begin_src emacs-lisp :noweb-ref user-config
+  (with-eval-after-load 'org-superstar
+    (setq org-superstar-item-bullet-alist
+          '((?* . ?•)
+            (?+ . ?➤)
+            (?- . ?•)))
+    (setq org-superstar-headline-bullets-list '(?\s))
+    (setq org-superstar-special-todo-items t)
+    (setq org-superstar-remove-leading-stars t)
+    ;; Enable custom bullets for TODO items
+    (setq org-superstar-todo-bullet-alist
+          '(("TODO" . ?🔳)
+            ("NEXT" . ?👀)
+            ("IN-PROGRESS" . ?🚀)
+            ("NEEDS-REFINEMENT" . ?🔍)
+            ("NOT-APPLICABLE" . ?💩)
+            ("WAITING" . ?☕)
+            ("QUESTION" . ?❓)
+            ("MEETING" . ?⏰)
+            ("CANCELLED" . ?❌)
+            ("ATTENDED" . ?📝)
+            ("ANSWERED" . ?👍) 
+            ("DONE" . ?✅)))
+    (org-superstar-restart))
+#+end_src
+** Other
 #+begin_src emacs-lisp :noweb-ref config-layers
   html
   markdown
 #+end_src
 
-*** PlantUML
+** PlantUML
 #+begin_src emacs-lisp :noweb-ref config-layers
   (plantuml :variables
             plantuml-jar-path "/opt/homebrew/opt/plantuml/libexec/plantuml.jar"
             org-plantuml-jar-path "/opt/homebrew/opt/plantuml/libexec/plantuml.jar")
 #+end_src
 
-*** Yaml
+** Yaml
 #+begin_src emacs-lisp :noweb-ref config-layers
   (yaml :variables
         yaml-enable-lsp t)
 #+end_src
 
-
-** File Formats
+* File Formats
 #+begin_src emacs-lisp :noweb-ref config-layers
   csv
   pdf
 #+end_src
 
-** Development Tools
-*** Other
+* Development Tools
+** Other
 #+begin_src emacs-lisp :noweb-ref config-layers
   ansible
   cmake
@@ -288,7 +411,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
   restclient
 #+end_src
 
-**** LSP
+*** LSP
 #+begin_src emacs-lisp :noweb-ref config-layers
   (lsp :variables
        lsp-file-watch-threshold 2000
@@ -298,7 +421,21 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
        )
 #+end_src
 
-*** External App Integrations
+** External App Integrations
+
+*** direnv
+The direnv package, along with [[https://github.com/asdf-community/asdf-direnv][asdf-direnv]], allow specification of tools specific to a directory.
+#+begin_src emacs-lisp :noweb-ref additional-packages
+direnv
+#+end_src
+
+We add a hook to update the ~direnv~ variables whenever loading a file.
+#+begin_src emacs-lisp :noweb no-export :noweb-ref user-config
+  (add-hook 'find-file-hook 'direnv-update-directory-environment)
+
+#+end_src
+
+*** Other
 #+begin_src emacs-lisp :noweb-ref config-layers
   chrome
   docker
@@ -309,15 +446,16 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
 
 #+end_src
 
-*** Emacs Extensions and Applications
-**** elfeed (RSS Reader)
+
+** Emacs Extensions and Applications
+*** elfeed (RSS Reader)
 #+begin_src emacs-lisp :noweb-ref config-layers
   (elfeed :variables
           elfeed-db-directory "~/Dropbox/elfeed/"
           rmh-elfeed-org-files (list "~/Dropbox/org/elfeed.org"))
 #+end_src
 
-**** mu4e (Email)
+*** mu4e (Email)
 #+begin_src emacs-lisp :noweb-ref config-layers
   (mu4e :variables
         user-email-address "codelahoma@gmail.com"
@@ -341,7 +479,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
         mu4e-change-filenames-when-moving t)
 #+end_src
 
-**** Other
+*** Other
 #+begin_src emacs-lisp :noweb-ref config-layers
   bm
   command-log
@@ -355,7 +493,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
   (version-control :variables
                    version-control-diff-side 'left)
 #+end_src
-**** shell
+*** shell
 #+begin_src emacs-lisp :noweb-ref config-layers
   (shell :variables
          shell-default-shell 'vterm
@@ -367,98 +505,95 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
          shell-default-full-span nil
          close-window-with-terminal t)
 #+end_src
-** The functions
-
-
-*** dotspacemacs/layers
+* The functions
+** dotspacemacs/layers
 Configures the base distribution and the layers I want installed and configure.
 
-#+begin_src emacs-lisp :noweb yes :noweb-ref dotspacemacs-layers 
-(defun dotspacemacs/layers ()
-  "Layer configuration:
-This function should only modify configuration layer settings."
-  (setq-default
-   ;; Base distribution to use. This is a layer contained in the directory
-   ;; `+distribution'. For now available distributions are `spacemacs-base'
-   ;; or `spacemacs'. (default 'spacemacs)
-   dotspacemacs-distribution 'spacemacs
+#+begin_src emacs-lisp :noweb no-export  :noweb-ref dotspacemacs-layers 
+  (defun dotspacemacs/layers ()
+    "Layer configuration:
+  This function should only modify configuration layer settings."
+    (setq-default
+     ;; Base distribution to use. This is a layer contained in the directory
+     ;; `+distribution'. For now available distributions are `spacemacs-base'
+     ;; or `spacemacs'. (default 'spacemacs)
+     dotspacemacs-distribution 'spacemacs
 
-   ;; Lazy installation of layers (i.e. layers are installed only when a file
-   ;; with a supported type is opened). Possible values are `all', `unused'
-   ;; and `nil'. `unused' will lazy install only unused layers (i.e. layers
-   ;; not listed in variable `dotspacemacs-configuration-layers'), `all' will
-   ;; lazy install any layer that support lazy installation even the layers
-   ;; listed in `dotspacemacs-configuration-layers'. `nil' disable the lazy
-   ;; installation feature and you have to explicitly list a layer in the
-   ;; variable `dotspacemacs-configuration-layers' to install it.
-   ;; (default 'unused)
-   dotspacemacs-enable-lazy-installation 'unused
+     ;; Lazy installation of layers (i.e. layers are installed only when a file
+     ;; with a supported type is opened). Possible values are `all', `unused'
+     ;; and `nil'. `unused' will lazy install only unused layers (i.e. layers
+     ;; not listed in variable `dotspacemacs-configuration-layers'), `all' will
+     ;; lazy install any layer that support lazy installation even the layers
+     ;; listed in `dotspacemacs-configuration-layers'. `nil' disable the lazy
+     ;; installation feature and you have to explicitly list a layer in the
+     ;; variable `dotspacemacs-configuration-layers' to install it.
+     ;; (default 'unused)
+     dotspacemacs-enable-lazy-installation 'unused
 
-   ;; If non-nil then Spacemacs will ask for confirmation before installing
-   ;; a layer lazily. (default t)
-   dotspacemacs-ask-for-lazy-installation t
+     ;; If non-nil then Spacemacs will ask for confirmation before installing
+     ;; a layer lazily. (default t)
+     dotspacemacs-ask-for-lazy-installation t
 
-   ;; List of additional paths where to look for configuration layers.
-   ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
-   dotspacemacs-configuration-layer-path '()
+     ;; List of additional paths where to look for configuration layers.
+     ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
+     dotspacemacs-configuration-layer-path '()
 
-   ;; List of configuration layers to load.
-   dotspacemacs-configuration-layers
-   '(
-     <<config-layers>>
-     ;; private layers
-     rk-layout
-     jekyll
-     )
+     ;; List of configuration layers to load.
+     dotspacemacs-configuration-layers
+     '(
+       <<config-layers>>
+       ;; private layers
+       rk-layout
+       jekyll
+       )
 
 
-   ;; List of additional packages that will be installed without being wrapped
-   ;; in a layer (generally the packages are installed only and should still be
-   ;; loaded using load/require/use-package in the user-config section below in
-   ;; this file). If you need some configuration for these packages, then
-   ;; consider creating a layer. You can also put the configuration in
-   ;; `dotspacemacs/user-config'. To use a local version of a package, use the
-   ;; `:location' property: '(your-package :location "~/path/to/your-package/")
-   ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(
-                                      <<additional-packages>>
-                                      atomic-chrome
-                                      direnv
-                                      editorconfig
-                                      fold-this
-                                      jira-markup-mode
-                                      keychain-environment
-                                      sicp
-                                      wsd-mode
-                                      yasnippet-snippets
+     ;; List of additional packages that will be installed without being wrapped
+     ;; in a layer (generally the packages are installed only and should still be
+     ;; loaded using load/require/use-package in the user-config section below in
+     ;; this file). If you need some configuration for these packages, then
+     ;; consider creating a layer. You can also put the configuration in
+     ;; `dotspacemacs/user-config'. To use a local version of a package, use the
+     ;; `:location' property: '(your-package :location "~/path/to/your-package/")
+     ;; Also include the dependencies as they will not be resolved automatically.
+     dotspacemacs-additional-packages '(
+                                        <<additional-packages>>
+                                        atomic-chrome
+                                        editorconfig
+                                        fold-this
+                                        jira-markup-mode
+                                        keychain-environment
+                                        sicp
+                                        wsd-mode
+                                        yasnippet-snippets
+                                        )
+
+     ;; A list of packages that cannot be updated.
+     dotspacemacs-frozen-packages '()
+
+     ;; A list of packages that will not be installed and loaded.
+     dotspacemacs-excluded-packages '(
+                                      ;; company
+                                      ;; all-the-icons
+                                      ;; spaceline
+                                      ;; spaceline-all-the-icons
+                                      ;; forge
+                                      ;; closql
+                                      ;; ghub
                                       )
 
-   ;; A list of packages that cannot be updated.
-   dotspacemacs-frozen-packages '()
-
-   ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '(
-                                    ;; company
-                                    ;; all-the-icons
-                                    ;; spaceline
-                                    ;; spaceline-all-the-icons
-                                    ;; forge
-                                    ;; closql
-                                    ;; ghub
-                                    )
-
-   ;; Defines the behaviour of Spacemacs when installing packages.
-   ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
-   ;; `used-only' installs only explicitly used packages and deletes any unused
-   ;; packages as well as their unused dependencies. `used-but-keep-unused'
-   ;; installs only the used packages but won't delete unused ones. `all'
-   ;; installs *all* packages supported by Spacemacs and never uninstalls them.
-   ;; (default is `used-only')
-   dotspacemacs-install-packages 'used-only))
+     ;; Defines the behaviour of Spacemacs when installing packages.
+     ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
+     ;; `used-only' installs only explicitly used packages and deletes any unused
+     ;; packages as well as their unused dependencies. `used-but-keep-unused'
+     ;; installs only the used packages but won't delete unused ones. `all'
+     ;; installs *all* packages supported by Spacemacs and never uninstalls them.
+     ;; (default is `used-only')
+     dotspacemacs-install-packages 'used-only))
 #+end_src
 
-*** dotspacemacs/init
-#+begin_src emacs-lisp :noweb yes :noweb-ref dotspacemacs-init
+** dotspacemacs/init
+#+begin_src emacs-lisp :noweb no-export :noweb-ref dotspacemacs-init
   (defun dotspacemacs/init ()
     "Initialization:
   This function is called at the very beginning of Spacemacs startup,
@@ -923,8 +1058,8 @@ This function should only modify configuration layer settings."
      dotspacemacs-byte-compile nil))
 #+end_src
 
-*** dotspacemacs/user-env
-#+begin_src emacs-lisp :noweb yes :noweb-ref dotspacemacs-user-env
+** dotspacemacs/user-env
+#+begin_src emacs-lisp :noweb no-export :noweb-ref dotspacemacs-user-env
   (defun dotspacemacs/user-env ()
     "Environment variables setup.
   This function defines the environment variables for your Emacs session. By
@@ -934,8 +1069,8 @@ This function should only modify configuration layer settings."
     (spacemacs/load-spacemacs-env))
 #+end_src
 
-*** dotspacemacs/user-init
-#+begin_src emacs-lisp :noweb yes :noweb-ref dotspacemacs-user-init
+** dotspacemacs/user-init
+#+begin_src emacs-lisp :noweb no-export :noweb-ref dotspacemacs-user-init
   (defun dotspacemacs/user-init ()
     "Initialization for user code:
   This function is called immediately after `dotspacemacs/init', before layer
@@ -951,8 +1086,8 @@ This function should only modify configuration layer settings."
     (load-file "/Users/rodk/.emacs.d/private/local/narrow-indirect.el"))
 #+end_src
 
-*** dotspacemacs/user-load
-#+begin_src emacs-lisp :noweb yes :noweb-ref dotspacemacs-user-load
+** dotspacemacs/user-load
+#+begin_src emacs-lisp :noweb no-export :noweb-ref dotspacemacs-user-load
   (defun dotspacemacs/user-load ()
     "Library to load while dumping.
   This function is called only while dumping Spacemacs configuration. You can
@@ -961,8 +1096,8 @@ This function should only modify configuration layer settings."
     )
 #+end_src
 
-*** dotspacemacs/user-config
-#+begin_src emacs-lisp :noweb yes :noweb-ref dotspacemacs-user-config
+** dotspacemacs/user-config
+#+begin_src emacs-lisp :noweb no-export :noweb-ref dotspacemacs-user-config
   (defun dotspacemacs/user-config ()
     "Configuration for user code:
   This function is called at the very end of Spacemacs startup, after layer
@@ -977,125 +1112,14 @@ This function should only modify configuration layer settings."
       (load-file custom-file)))
 #+end_src
 
-*** user config yet to reorganize
-#+begin_src emacs-lisp :noweb yes :noweb-ref to-organize
-    ;; scratch
-    (add-hook 'find-file-hook 'direnv-update-directory-environment)
-
-
-
-    (require 'vterm)
-
-    (defun rk/vterm (&optional term-name)
-      "create a vterm session wrapped around a minimal tmux session"
-      (interactive "sterm-name: ")
-      (let* ((the-term-name (if (stringp term-name) term-name "default term name"))
-             (the-project-dir (or (projectile-project-p) default-directory))
-             (vterm-shell (concat vterm-shell " -i -c " "'~/bin/tmux-session-launch " the-term-name " " the-project-dir "'")))
-        (message vterm-shell)
-        (vterm-other-window the-term-name)))
-
+* user config yet to reorganize
+#+begin_src emacs-lisp :noweb no-export :noweb-ref to-organize
     ;; Org Appearance
 
-    ;; Modus theme loader, if I want it
-    (require 'modus-themes)
-    (defun rk/go-modus ()
-      "Activate modus-theme"
-      (interactive)
-      (progn
-        (let ((bg (face-attribute 'default :background)))
-          (custom-set-faces
-           '(company-tooltip ((t (:weight bold :foreground "dark red" :background "khaki1" :inherit default))))))
-        (setq modus-themes-bold-constructs t
-              modus-themes-completions '((t . (extrabold intense)))
-              modus-themes-italic-constructs t
-              modus-themes-mixed-fonts t
-              modus-themes-org-blocks 'gray-background
-              modus-themes-syntax '(alt-syntax)
-              modus-themes-links '(italic bold background no-color no-underline)
-              modus-themes-prompts '(intense background)
-              modus-themes-hl-line '(intense)
-              modus-themes-mode-line '(accented borderless 1.1)
-              modus-themes-fringes '(intense))
-        (load-theme 'modus-vivendi t )))
-
-    (require 'color)
-
-    (let ((bg (face-attribute 'default :background)))
-      (custom-set-faces
-       '(company-tooltip ((t (:weight bold :foreground "dark red" :background "khaki1" :inherit default))))
-       `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
-       `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
-       `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
-       `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
-
-    (let* ((variable-tuple
-            (cond ((x-list-fonts "Fira Sans")       '(:font "Fira Sans"))
-                  ((x-list-fonts "Avenir Next") '(:font "Avenir Next"))
-                  ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
-                  ((x-list-fonts "ETBembo") '(:font "ETBembo"))
-                  ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
-                  ((x-list-fonts "Verdana")         '(:font "Verdana"))
-                  ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
-                  (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
-           ;; (base-font-color     (face-foreground 'default nil 'default))
-           (headline           `(:inherit default :weight normal ))
-           )
-
-      (custom-theme-set-faces
-       'user
-       '(fixed-pitch ((t ( :family "FiraCode Nerd Font" :height 1.0))))
-       '(variable-pitch ((t (:family "Fira Sans" :height 1.1))))
-       `(org-document-title ((t (,@headline ,@variable-tuple :height 2.5 :underline nil))))
-       `(org-level-1 ((t (,@headline ,@variable-tuple :height 2.0))))
-       `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.8))))
-       `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.6))))
-       `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.4))))
-       `(org-level-5 ((t (,@headline ,@variable-tuple :height 1.2))))
-       `(org-level-6 ((t (,@headline ,@variable-tuple :height 1.2))))
-       `(org-level-7 ((t (,@headline ,@variable-tuple :height 1.2))))
-       `(org-level-8 ((t (,@headline ,@variable-tuple :height 1.2))))
-       '(org-block ((t (:inherit fixed-pitch :height 0.8))))
-       '(org-code ((t (:inherit (shadow fixed-pitch)))))
-       '(org-date ((t (:inherit (font-lock-comment-face fixed-pitch) :height 0.9))))
-       '(org-document-info ((t (:foreground "dark orange"))))
-       '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
-       '(org-done ((t ( :font "Fira Sans" :height 0.6 :background nil))))
-       '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
-       '(org-link ((t (:foreground "royal blue" :underline t))))
-       '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-       '(org-property-value ((t (:inherit fixed-pitch))) t)
-       '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-       '(org-table ((t (:inherit fixed-pitch ))))
-       '(org-tag ((t (:inherit (shadow fixed-pitch)  :height 0.5))))
-       '(org-todo ((t ( :font "Fira Sans" :height 0.8))))
-       '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
-       ))
 
 
-    (with-eval-after-load 'org-superstar
-      (setq org-superstar-item-bullet-alist
-            '((?* . ?•)
-              (?+ . ?➤)
-              (?- . ?•)))
-      (setq org-superstar-headline-bullets-list '(?\s))
-      (setq org-superstar-special-todo-items t)
-      (setq org-superstar-remove-leading-stars t)
-      ;; Enable custom bullets for TODO items
-      (setq org-superstar-todo-bullet-alist
-            '(("TODO" . ?🔳)
-              ("NEXT" . ?👀)
-              ("IN-PROGRESS" . ?🚀)
-              ("NEEDS-REFINEMENT" . ?🔍)
-              ("NOT-APPLICABLE" . ?💩)
-              ("WAITING" . ?☕)
-              ("QUESTION" . ?❓)
-              ("MEETING" . ?⏰)
-              ("CANCELLED" . ?❌)
-              ("ATTENDED" . ?📝)
-              ("ANSWERED" . ?👍) 
-              ("DONE" . ?✅)))
-      (org-superstar-restart))
+
+
     (setq org-ellipsis " ▼ ")
 
     ;; Private Key Mappings 
@@ -1647,7 +1671,7 @@ This function should only modify configuration layer settings."
                   (replace-match (aref $x 1) "FIXEDCASE" "LITERAL")))
               $strPairs))))))
 #+end_src
-** .spacemacs Preamble
+* .spacemacs Preamble
 A brief heading to the file, defining lexical binding and warning that the config is in this org file.
 
 #+NAME: preamble
