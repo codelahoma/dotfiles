@@ -41,8 +41,26 @@ config.set('content.javascript.enabled', True, 'qute://*/*')
 config.load_autoconfig(False)
 
 
-config.set("fonts.default_size", "18pt")
-config.set("zoom.default", "125%")
+c.fonts.default_size = "18pt"
+c.zoom.default = "125%"
 # config.bind(',b', 'spawn --userscript qute-capture write')
 config.bind(';w', 'hint links spawn  ~/.local/bin/mpv  {hint-url}')
+config.bind("h", "back")
+config.bind("l", "forward")
+config.unbind("J")
+config.unbind("K")
+
+config.bind("J", "tab-prev")
+config.bind("K", "tab-next")
+config.bind(",t", "set-cmd-text -s :open -t ")
+config.unbind("xo")
+config.unbind("xO")
+
+config.bind(",xo", "set-cmd-txt -s :open -b ")
+config.bind(",xO", "set-cmd-txt -s :open -b -r {url:pretty}")
+
+config.bind("x", "tab-close")
+config.bind("X", "undo")
+
+c.auto_save.session = True
 # qutebrowser Config:1 ends here
