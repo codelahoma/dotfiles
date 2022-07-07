@@ -17,6 +17,7 @@
 * Table of Contents :TOC_3:noexport:
 - [[#general-variables-and-configuration][General Variables and Configuration]]
 - [[#spoon-management][Spoon Management]]
+- [[#edit-in-emacs][Edit in Emacs]]
 - [[#menu-hammer---spacemacs-style-modal-menu-manager-wip][Menu Hammer - Spacemacs style modal menu manager (wip)]]
 - [[#pushtotalk---global-microphone-control][PushToTalk - global microphone control]]
 - [[#window-and-screen-manipulation][Window and Screen Manipulation]]
@@ -96,6 +97,19 @@ This is just a shortcut to make the declarations below look more readable, i.e. 
   Install=spoon.SpoonInstall
 #+end_src
 
+* Edit in Emacs
+A spoon to allow editing with Emacs from any textbox in macOS.
+
+#+begin_src lua
+  hs.loadSpoon("editWithEmacs")
+  if spoon.editWithEmacs then
+    local bindings = {
+      edit_selection = {magic, "e"},
+      edit_all = {hyper, "e"}
+    }
+    spoon.editWithEmacs:bindHotkeys(bindings)
+  end
+#+end_src
 
 * Menu Hammer - Spacemacs style modal menu manager (wip)
 
