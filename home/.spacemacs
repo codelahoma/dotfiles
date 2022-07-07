@@ -90,6 +90,7 @@ This function should only modify configuration layer settings."
      emacs-lisp
      sql
      hy
+     ess ; R
      react
      (org :variables
           org-enable-appear-support t
@@ -126,6 +127,7 @@ This function should only modify configuration layer settings."
           lsp-headerline-breadcrumb-enable t
           lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols)
           )
+     pass
      chrome
      docker
      git
@@ -134,8 +136,8 @@ This function should only modify configuration layer settings."
                wakatime-cli-path "/opt/homebrew/bin/wakatime-cli")
      
      (elfeed :variables
-             elfeed-db-directory "~/Dropbox/elfeed/"
-             rmh-elfeed-org-files (list "~/Dropbox/org/elfeed.org"))
+             elfeed-db-directory "~/personal/org-files/elfeed-db"
+             rmh-elfeed-org-files (list "~/personal/org-files/elfeed.org")) 
      (mu4e :variables
            user-email-address "codelahoma@gmail.com"
            mu4e-use-maildirs-extension nil
@@ -143,6 +145,7 @@ This function should only modify configuration layer settings."
            mu4e-enable-notifications t
            mu4e-enable-mode-line t
            mu4e-org-compose-support t
+           mu4e-headers-leave-behavior 'always
            org-mu4e-convert-to-html t
            mu4e-enable-async-operations t
            mu4e-maildir "~/Maildir"
@@ -206,6 +209,7 @@ This function should only modify configuration layer settings."
                                       ox-jira
                                       ox-slack
                                       direnv
+                                      pinboard
                                       atomic-chrome
                                       editorconfig
                                       fold-this
@@ -818,6 +822,7 @@ before packages are loaded."
             modus-themes-fringes '(intense))
       (load-theme 'modus-vivendi t )))
   
+  (load "~/github/editWithEmacs.spoon/hammerspoon.el")
   (let* ((variable-tuple
           (cond ((x-list-fonts "Fira Sans")       '(:font "Fira Sans"))
                 ((x-list-fonts "Avenir Next") '(:font "Avenir Next"))
@@ -882,8 +887,256 @@ before packages are loaded."
             ("ANSWERED" . ?👍) 
             ("DONE" . ?✅)))
     (org-superstar-restart))
+  (setq org-src-window-setup 'split-window-below)
+  (with-eval-after-load 'org
+      (setq org-M-RET-may-split-line nil)
+  
+      (font-lock-add-keywords 'org-mode
+                              '(("^ *\\([-]\\) "
+                                 (0 (prog1 ()
+                                      (compose-region
+                                       (match-beginning 1)
+                                       (match-end 1)
+                                       "•"))))))
+      (setq alert-default-style 'notifications)
+      (add-hook 'org-mode-hook 'variable-pitch-mode)
+      (add-hook 'org-mode-hook 'visual-line-mode)
+  
+      ;; org directories
+      (setq org-directory "~/personal/org-files/")
+      (setq org-roam-directory (concat org-directory "roam-notes/"))
+  
+      ;; (setq elfeed-db-directory (concat org-directory "elfeed-db/")
+      ;;       rmh-elfeed-org-files (list (concat org-directory "elfeed.org")))
+  
+      ;; default to all top level org files for agenda
+      (unless org-agenda-files 
+        (setq org-agenda-files (directory-files org-directory nil "org$")))
+  
+      ;; file prefix aliases
+      (defalias `rk/org-file (apply-partially 'concat org-directory))
+  
+      (setq org-persp-startup-org-file (concat org-directory "inbox.org"))
+      (setq org-id-track-globally t)
+  
+  
+      (setq org-roam-completion-everywhere t)
+      (add-to-list 'spacemacs-default-company-backends 'company-capf)
+  
+      (add-to-list 'org-modules 'org-protocol)
+      (add-to-list 'org-modules 'org-tempo)
+      (add-to-list 'org-modules 'org-checklist)
+  
+      (setq org-tags-exclude-from-inheritance '("project"))
+      (setq org-list-allow-alphabetical t)
+  
+      (setq org-capture-templates `(
+                                    ("t" "Todos")
+                                    ("tl" "Todo with Link" entry (file ,(rk/org-file "inbox.org")) "* TODO %?\n  %i\n  %a")
+                                    ("tt" "Todo" entry (file ,(rk/org-file "inbox.org")) "* TODO %?\n  %i\n")
+                                    ("tT" "Tickler" entry (file+headline ,(rk/org-file "tickler.org") "Tickler") "* %i%? \n %U"))
+            )
+  
+      (global-set-key "\C-cb" 'org-switchb)
+  
+      (setq diary-file (rk/org-file "diary.org"))
+      (setq org-agenda-include-diary t)
+  
+      (setq org-journal-dir "~/personal/org-files/journal/"
+            org-journal-date-prefix "#+TITLE: "
+            org-journal-date-format "%A, %B %d %Y"
+            org-journal-time-prefix "* "
+            )
+  
+  
+  
+      (setq rk/work-org-files (-flatten (list
+  
+                                         (rk/org-file "inbox.org")
+                                         (rk/org-file "gtd.org")
+                                         (rk/org-file "tickler.org")
+                                         (rk/org-file "someday.org")
+                                         (rk/org-file "reference.org")
+                                         )))
+  
+      (setq rk/home-org-files (list
+                               (rk/org-file "inbox.org")
+                               (rk/org-file "home.org")
+                               (rk/org-file "gtd.org")
+                               (rk/org-file "tickler.org")
+                               (rk/org-file "someday.org")
+                               ))
+  
+      (setq org-agenda-custom-commands
+            '(("h" "Home"
+               ((agenda "" ((org-agenda-span 3)))
+                (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
+                (tags "-@kitewire+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
+                (tags-todo "-@kitewire" (
+                                         (org-agenda-overriding-header "Todo")
+                                         (org-agenda-files rk/home-org-files)
+                                         (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
+                ()))
+              ("k" . "Kitewire Views")
+              ("kk" "Kitewire"
+               (
+                (agenda "" (
+                            (org-agenda-entry-types '(:deadline :scheduled* :timestamp :sexp))
+                            (org-agenda-files rk/work-org-files)
+                            ))
+                (tags-todo "+kitewire-reading-home-@home-30days-60days-90days/-MEETING" ((org-agenda-overriding-header "Kitewire") (org-agenda-files rk/work-org-files) ))
+                (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
+                (tags "-@home-home+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
+                ;; (tags "30days" ((org-agenda-overriding-header "30 Day Plan")))
+                ;; (tags "60days" ((org-agenda-overriding-header "60 Day Plan")))
+                ;; (tags "90days" ((org-agenda-overriding-header "90 Day Plan")))
+                (tags "project" ((org-agenda-overriding-header "Projects")))
+                ;; (tags "-@home-home+TODO=\"IN-PROGRESS\"" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/work-org-files)))
+                ()))
+              ("kW" "Weekly review"
+               agenda ""
+               ((org-agenda-span 'week)
+                (org-agenda-start-on-weekday 0)
+                (org-agenda-start-with-log-mode '(closed clock))
+                (org-agenda-skip-function
+                 '(org-agenda-skip-entry-if 'nottodo 'done))
+                )
+               )))
+      (add-to-list 'org-agenda-custom-commands
+                   '("W" "Weekly review"
+                     agenda ""
+                     ((org-agenda-span 'week)
+                      (org-agenda-start-on-weekday 0)
+                      (org-agenda-start-with-log-mode '(closed clock))
+                      (org-agenda-skip-function
+                       '(org-agenda-skip-entry-if 'nottodo 'done))
+                      )
+                     ))
+      (setq org-startup-indented t)
+      (add-to-list 'org-file-apps '(directory . emacs))
+  
+      ;; Refiling refinements
+      ;; source: https://blog.aaronbieber.com/2017/03/19/organizing-notes-with-refile.html
+  
+      (setq org-refile-targets '((org-agenda-files :maxlevel . 6)))
+      (setq org-refile-use-outline-path 'file)
+      (setq org-outline-path-complete-in-steps nil)
+      (setq org-refile-allow-creating-parent-nodes 'confirm)
+      (setq org-clock-persist 'history)
+      (org-clock-persistence-insinuate)
+  
+      (setq org-todo-keywords
+            '((sequence
+               "TODO(t)"
+               "WAITING(w)"
+               "NEXT(n)"
+               "IN-PROGRESS(i)"
+               "NEEDS-REFINEMENT(r)"
+               "|"
+               "NOT-APPLICABLE"
+               "DONE(d)"
+               "CANCELLED(c@)"
+               )
+              (sequence "QUESTION" "|" "ANSWERED(@)")
+              (sequence "MEETING(m)" "|" "ATTENDED(a@)" "IGNORED(t)" "CANCELLED(l@)")))
+  
+      (setq org-catch-invisible-edits 'smart)
+  
+      (org-babel-do-load-languages
+       'org-babel-load-languages
+       '((emacs-lisp . t)
+         (http . t)
+         (lua . t)
+         (python . t)
+         (shell . t)
+         (R . t)))
+      (setq org-confirm-babel-evaluate nil
+            org-src-fontify-natively t
+            org-src-tab-acts-natively t)
+  
+      (setq org-roam-dailies-capture-templates
+            '(("d" "default" entry
+               "* %<%H:%M>  %?"
+               :target (file+head "%<%Y-%m-%d>.org"
+                                  "#+title: %<%Y-%m-%d>\n"))))
+      (org-roam-db-autosync-mode)
+      )
   (add-hook 'find-file-hook 'direnv-update-directory-environment)
   
+  
+  (setq mu4e-contexts
+        (list
+         ;; Work account
+         (make-mu4e-context
+          :name "Work"
+          :match-func
+          (lambda (msg)
+            (when msg
+              (string-prefix-p "/Gmail" (mu4e-message-field msg :maildir))))
+          :vars '((user-mail-address . "rod@atlasup.com")
+                  (user-full-name    . "Rod Knowlton")
+                  (mu4e-drafts-folder  . "/Gmail/[Gmail]/Drafts")
+                  (mu4e-sent-folder  . "/Gmail/[Gmail]/Sent Mail")
+                  (mu4e-refile-folder  . "/Gmail/[Gmail]/All Mail")
+                  (mu4e-trash-folder  . "/Gmail/[Gmail]/Trash")
+                  (mu4e-maildir-shortcuts . ((:maildir "/Gmail/Inbox" :key ?i)
+                                             (:maildir "/Gmail/[Gmail]/Sent Mail" :key ?s)
+                                             (:maildir "/Gmail/[Gmail]/Drafts" :key ?d)
+                                             (:maildir "/Gmail/[Gmail]/All Mail" :key ?a)
+                                             (:maildir "/Gmail/[Gmail]/Trash" :key ?t)
+                                             (:maildir "/Gmail/[Gmail]/Spam" :key ?j)))
+                  ))
+  
+         ;; Personal account
+         (make-mu4e-context
+          :name "Personal"
+          :match-func
+          (lambda (msg)
+            (when msg
+              (string-prefix-p "/Fastmail" (mu4e-message-field msg :maildir))))
+          :vars '((user-mail-address . "rod@rodknowlton.com")
+                  (user-full-name    . "Rod Knowlton")
+                  (mu4e-drafts-folder  . "/Fastmail/Drafts")
+                  (mu4e-sent-folder  . "/Fastmail/Sent")
+                  (mu4e-refile-folder  . "/Fastmail/Archive")
+                  (mu4e-trash-folder  . "/Fastmail/Trash")
+                  (mu4e-maildir-shortcuts . ((:maildir "/Fastmail/INBOX" :key ?i)
+                                             (:maildir "/Fastmail/Sent Items" :key ?s)
+                                             (:maildir "/Fastmail/Drafts" :key ?d)
+                                             (:maildir "/Fastmail/Archive" :key ?a)
+                                             (:maildir "/Fastmail/Trash" :key ?t)
+                                             (:maildir "/Fastmail/Junk Mail" :key ?j)))
+                  ))))
+  (add-to-list 'load-path "~/.spacemacs.d/lisp/")
+  (require 'mu4e)
+  (require 'smtpmail)
+  
+  (setq mu4e-headers-leave-behavior 'apply
+        message-send-mail-function 'message-send-mail-with-sendmail
+        sendmail-program "/opt/homebrew/bin/msmtp")
+  (setq mu4e-bookmarks '((:name "Recent Unread Inbox"
+                               :query "maildir:/Fastmail/INBOX AND flag:unread AND date:3d..now"
+                               :key ?r)
+                        (:name "Unread messages"
+                               :query "flag:unread AND NOT flag:trashed"
+                               :key 117)
+                        (:name "Today's messages"
+                               :query "date:today..now"
+                               :key 116)))
+  (setq mu4e-maildir-shortcuts
+        '((:maildir "/Fastmail/INBOX" :key ?f)
+          (:maildir "/Gmail/Inbox" :key ?g)))
+  (require 'browse-url)
+  
+  (defun rk/mu4e-view-in-external-browser (msg)
+    (let ((browse-url-browser-function 'browse-url-default-macosx-browser))
+    mu4e-action-view-in-browser))
+  
+  (setq mu4e-view-actions '(("capture message" . mu4e-action-capture-message)
+                            ("view in browser" . mu4e-action-view-in-browser)
+                            ("bview in qutebrowser" . rk/mu4e-view-in-external-browser)
+                            ("show this thread" . mu4e-action-show-thread)))
+  (require 'mu4e-dashboard)
     ;; Org Appearance
   
   
@@ -899,6 +1152,9 @@ before packages are loaded."
       "off" 'fold-this
       "ofm" 'fold-this-all
       "ofr" 'fold-this-unfold-all)
+    (spacemacs/declare-prefix "oa" "applications")
+    (spacemacs/set-leader-keys
+      "oap" 'pinboard)
   
     (spacemacs/declare-prefix "ob" "buffer")
     (spacemacs/set-leader-keys "obn" 'spacemacs/new-empty-buffer)
@@ -939,9 +1195,9 @@ before packages are loaded."
     ;; end Key Mappings
   
     ;; mu4e
-    (fset 'my-move-to-trash "mTrash")
-    (define-key mu4e-headers-mode-map (kbd "d") 'my-move-to-trash)
-    (define-key mu4e-view-mode-map (kbd "d") 'my-move-to-trash)
+    ;; (fset 'my-move-to-trash "mTrash")
+    ;; (define-key mu4e-headers-mode-map (kbd "d") 'my-move-to-trash)
+  ;; (define-key mu4e-view-mode-map (kbd "d") 'my-move-to-trash)
   
     (with-eval-after-load 'mu4e-alert
       (mu4e-alert-set-default-style 'notifier))
@@ -1165,178 +1421,7 @@ before packages are loaded."
       (imp--notify-clients))
   
     ;; Org Mode
-    (with-eval-after-load 'org
-      (setq org-M-RET-may-split-line nil)
   
-      (font-lock-add-keywords 'org-mode
-                              '(("^ *\\([-]\\) "
-                                 (0 (prog1 ()
-                                      (compose-region
-                                       (match-beginning 1)
-                                       (match-end 1)
-                                       "•"))))))
-      (setq alert-default-style 'notifications)
-      (add-hook 'org-mode-hook 'variable-pitch-mode)
-      (add-hook 'org-mode-hook 'visual-line-mode)
-  
-      ;; org directories
-      (setq org-directory "~/personal/org-files/")
-      (setq elfeed-db-directory (concat org-directory "elfeed-db/"))
-      (setq org-roam-directory (concat org-directory "roam-notes/"))
-  
-  
-      ;; default to all top level org files for agenda
-      (unless org-agenda-files 
-        (setq org-agenda-files (directory-files org-directory nil "org$")))
-  
-      ;; file prefix aliases
-      (defalias `rk/org-file (apply-partially 'concat org-directory))
-  
-      (setq org-persp-startup-org-file (concat org-directory "inbox.org"))
-      (setq org-id-track-globally t)
-  
-  
-      (setq org-roam-completion-everywhere t)
-      (add-to-list 'spacemacs-default-company-backends 'company-capf)
-  
-      (add-to-list 'org-modules 'org-protocol)
-      (add-to-list 'org-modules 'org-tempo)
-      (add-to-list 'org-modules 'org-checklist)
-  
-      (setq org-tags-exclude-from-inheritance '("project"))
-      (setq org-list-allow-alphabetical t)
-  
-      (setq org-capture-templates `(
-                                    ("t" "Todos")
-                                    ("tl" "Todo with Link" entry (file ,(rk/org-file "inbox.org")) "* TODO %?\n  %i\n  %a")
-                                    ("tt" "Todo" entry (file ,(rk/org-file "inbox.org")) "* TODO %?\n  %i\n")
-                                    ("tT" "Tickler" entry (file+headline ,(rk/org-file "tickler.org") "Tickler") "* %i%? \n %U"))
-            )
-  
-      (global-set-key "\C-cb" 'org-switchb)
-  
-      (setq diary-file (rk/org-file "diary.org"))
-      (setq org-agenda-include-diary t)
-  
-      (setq org-journal-dir "~/personal/org-files/journal/"
-            org-journal-date-prefix "#+TITLE: "
-            org-journal-date-format "%A, %B %d %Y"
-            org-journal-time-prefix "* "
-            )
-  
-  
-  
-      (setq rk/work-org-files (-flatten (list
-  
-                                         (rk/org-file "inbox.org")
-                                         (rk/org-file "gtd.org")
-                                         (rk/org-file "tickler.org")
-                                         (rk/org-file "someday.org")
-                                         (rk/org-file "reference.org")
-                                         )))
-  
-      (setq rk/home-org-files (list
-                               (rk/org-file "inbox.org")
-                               (rk/org-file "home.org")
-                               (rk/org-file "gtd.org")
-                               (rk/org-file "tickler.org")
-                               (rk/org-file "someday.org")
-                               ))
-  
-      (setq org-agenda-custom-commands
-            '(("h" "Home"
-               ((agenda "" ((org-agenda-span 3)))
-                (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
-                (tags "-@kitewire+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
-                (tags-todo "-@kitewire" (
-                                         (org-agenda-overriding-header "Todo")
-                                         (org-agenda-files rk/home-org-files)
-                                         (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
-                ()))
-              ("k" . "Kitewire Views")
-              ("kk" "Kitewire"
-               (
-                (agenda "" (
-                            (org-agenda-entry-types '(:deadline :scheduled* :timestamp :sexp))
-                            (org-agenda-files rk/work-org-files)
-                            ))
-                (tags-todo "+kitewire-reading-home-@home-30days-60days-90days/-MEETING" ((org-agenda-overriding-header "Kitewire") (org-agenda-files rk/work-org-files) ))
-                (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
-                (tags "-@home-home+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
-                ;; (tags "30days" ((org-agenda-overriding-header "30 Day Plan")))
-                ;; (tags "60days" ((org-agenda-overriding-header "60 Day Plan")))
-                ;; (tags "90days" ((org-agenda-overriding-header "90 Day Plan")))
-                (tags "project" ((org-agenda-overriding-header "Projects")))
-                ;; (tags "-@home-home+TODO=\"IN-PROGRESS\"" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/work-org-files)))
-                ()))
-              ("kW" "Weekly review"
-               agenda ""
-               ((org-agenda-span 'week)
-                (org-agenda-start-on-weekday 0)
-                (org-agenda-start-with-log-mode '(closed clock))
-                (org-agenda-skip-function
-                 '(org-agenda-skip-entry-if 'nottodo 'done))
-                )
-               )))
-      (add-to-list 'org-agenda-custom-commands
-                   '("W" "Weekly review"
-                     agenda ""
-                     ((org-agenda-span 'week)
-                      (org-agenda-start-on-weekday 0)
-                      (org-agenda-start-with-log-mode '(closed clock))
-                      (org-agenda-skip-function
-                       '(org-agenda-skip-entry-if 'nottodo 'done))
-                      )
-                     ))
-      (setq org-startup-indented t)
-      (add-to-list 'org-file-apps '(directory . emacs))
-  
-      ;; Refiling refinements
-      ;; source: https://blog.aaronbieber.com/2017/03/19/organizing-notes-with-refile.html
-  
-      (setq org-refile-targets '((org-agenda-files :maxlevel . 6)))
-      (setq org-refile-use-outline-path 'file)
-      (setq org-outline-path-complete-in-steps nil)
-      (setq org-refile-allow-creating-parent-nodes 'confirm)
-      (setq org-clock-persist 'history)
-      (org-clock-persistence-insinuate)
-  
-      (setq org-todo-keywords
-            '((sequence
-               "TODO(t)"
-               "WAITING(w)"
-               "NEXT(n)"
-               "IN-PROGRESS(i)"
-               "NEEDS-REFINEMENT(r)"
-               "|"
-               "NOT-APPLICABLE"
-               "DONE(d)"
-               "CANCELLED(c@)"
-               )
-              (sequence "QUESTION" "|" "ANSWERED(@)")
-              (sequence "MEETING(m)" "|" "ATTENDED(a@)" "IGNORED(t)" "CANCELLED(l@)")))
-  
-      (setq org-catch-invisible-edits 'smart)
-  
-      (org-babel-do-load-languages
-       'org-babel-load-languages
-       '((emacs-lisp . t)
-         (http . t)
-         (lua . t)
-         (python . t)
-         (shell . t)
-         (R . t)))
-      (setq org-confirm-babel-evaluate nil
-            org-src-fontify-natively t
-            org-src-tab-acts-natively t)
-  
-      (setq org-roam-dailies-capture-templates
-            '(("d" "default" entry
-               "* %<%H:%M>  %?"
-               :target (file+head "%<%Y-%m-%d>.org"
-                                  "#+title: %<%Y-%m-%d>\n"))))
-      (org-roam-db-autosync-mode)
-      )
     ;; End Org Mode
   
     ;; Misc functions
