@@ -149,10 +149,6 @@ This function should only modify configuration layer settings."
            org-mu4e-convert-to-html t
            mu4e-enable-async-operations t
            mu4e-maildir "~/Maildir"
-           mu4e-trash-folder "/Trash"
-           mu4e-refile-folder "/Archive"
-           mu4e-drafts-folder "/Drafts"
-           mu4e-sent-folder "/Sent"
            mu4e-get-mail-command "mbsync -a"
            mu4e-view-show-addresses t
            mu4e-view-show-images t
@@ -1079,6 +1075,8 @@ before packages are loaded."
                   (mu4e-sent-folder  . "/Gmail/[Gmail]/Sent Mail")
                   (mu4e-refile-folder  . "/Gmail/[Gmail]/All Mail")
                   (mu4e-trash-folder  . "/Gmail/[Gmail]/Trash")
+                  (message-sendmail-extra-arguments . ("-a" "atlasup"))
+                  (mu4e-compose-signature . "\nRod Knowlton\nBackend Developer - AtlasUp\nGithub: codelahoma")
                   (mu4e-maildir-shortcuts . ((:maildir "/Gmail/Inbox" :key ?i)
                                              (:maildir "/Gmail/[Gmail]/Sent Mail" :key ?s)
                                              (:maildir "/Gmail/[Gmail]/Drafts" :key ?d)
@@ -1100,6 +1098,8 @@ before packages are loaded."
                   (mu4e-sent-folder  . "/Fastmail/Sent")
                   (mu4e-refile-folder  . "/Fastmail/Archive")
                   (mu4e-trash-folder  . "/Fastmail/Trash")
+                  (message-sendmail-extra-arguments . ("-a" "fastmail"))
+                  (mu4e-compose-signature . "Rod Knowlton\n\nI make computers do things.")
                   (mu4e-maildir-shortcuts . ((:maildir "/Fastmail/INBOX" :key ?i)
                                              (:maildir "/Fastmail/Sent Items" :key ?s)
                                              (:maildir "/Fastmail/Drafts" :key ?d)

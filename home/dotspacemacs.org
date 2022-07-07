@@ -687,10 +687,6 @@ Set up a key binding to launch
         org-mu4e-convert-to-html t
         mu4e-enable-async-operations t
         mu4e-maildir "~/Maildir"
-        mu4e-trash-folder "/Trash"
-        mu4e-refile-folder "/Archive"
-        mu4e-drafts-folder "/Drafts"
-        mu4e-sent-folder "/Sent"
         mu4e-get-mail-command "mbsync -a"
         mu4e-view-show-addresses t
         mu4e-view-show-images t
@@ -717,6 +713,8 @@ Set up a key binding to launch
                   (mu4e-sent-folder  . "/Gmail/[Gmail]/Sent Mail")
                   (mu4e-refile-folder  . "/Gmail/[Gmail]/All Mail")
                   (mu4e-trash-folder  . "/Gmail/[Gmail]/Trash")
+                  (message-sendmail-extra-arguments . ("-a" "atlasup"))
+                  (mu4e-compose-signature . "\nRod Knowlton\nBackend Developer - AtlasUp\nGithub: codelahoma")
                   (mu4e-maildir-shortcuts . ((:maildir "/Gmail/Inbox" :key ?i)
                                              (:maildir "/Gmail/[Gmail]/Sent Mail" :key ?s)
                                              (:maildir "/Gmail/[Gmail]/Drafts" :key ?d)
@@ -738,6 +736,8 @@ Set up a key binding to launch
                   (mu4e-sent-folder  . "/Fastmail/Sent")
                   (mu4e-refile-folder  . "/Fastmail/Archive")
                   (mu4e-trash-folder  . "/Fastmail/Trash")
+                  (message-sendmail-extra-arguments . ("-a" "fastmail"))
+                  (mu4e-compose-signature . "Rod Knowlton\n\nI make computers do things.")
                   (mu4e-maildir-shortcuts . ((:maildir "/Fastmail/INBOX" :key ?i)
                                              (:maildir "/Fastmail/Sent Items" :key ?s)
                                              (:maildir "/Fastmail/Drafts" :key ?d)
@@ -748,7 +748,7 @@ Set up a key binding to launch
 #+end_src
 
 #+RESULTS:
-| #s(mu4e-context Work nil nil (lambda (msg) (when msg (string-prefix-p /Gmail (mu4e-message-field msg :maildir)))) ((user-mail-address . rod@atlasup.com) (user-full-name . Rod Knowlton) (mu4e-drafts-folder . /Gmail/[Gmail]/Drafts) (mu4e-sent-folder . /Gmail/[Gmail]/Sent Mail) (mu4e-refile-folder . /Gmail/[Gmail]/All Mail) (mu4e-trash-folder . /Gmail/[Gmail]/Trash) (mu4e-maildir-shortcuts (:maildir /Gmail/Inbox :key 105) (:maildir /Gmail/[Gmail]/Sent Mail :key 115) (:maildir /Gmail/[Gmail]/Drafts :key 100) (:maildir /Gmail/[Gmail]/All Mail :key 97) (:maildir /Gmail/[Gmail]/Trash :key 116) (:maildir /Gmail/[Gmail]/Spam :key 106)))) | #s(mu4e-context Personal nil nil (lambda (msg) (when msg (string-prefix-p /Fastmail (mu4e-message-field msg :maildir)))) ((user-mail-address . rod@rodknowlton.com) (user-full-name . Rod Knowlton) (mu4e-drafts-folder . /Fastmail/Drafts) (mu4e-sent-folder . /Fastmail/Sent) (mu4e-refile-folder . /Fastmail/Archive) (mu4e-trash-folder . /Fastmail/Trash) (mu4e-maildir-shortcuts (:maildir /Fastmail/INBOX :key 105) (:maildir /Fastmail/Sent Items :key 115) (:maildir /Fastmail/Drafts :key 100) (:maildir /Fastmail/Archive :key 97) (:maildir /Fastmail/Trash :key 116) (:maildir /Fastmail/Junk Mail :key 106)))) |
+| #s(mu4e-context Work nil nil (lambda (msg) (when msg (string-prefix-p /Gmail (mu4e-message-field msg :maildir)))) ((user-mail-address . rod@atlasup.com) (user-full-name . Rod Knowlton) (mu4e-drafts-folder . /Gmail/[Gmail]/Drafts) (mu4e-sent-folder . /Gmail/[Gmail]/Sent Mail) (mu4e-refile-folder . /Gmail/[Gmail]/All Mail) (mu4e-trash-folder . /Gmail/[Gmail]/Trash) (message-sendmail-extra-arguments -a atlasup) (mu4e-compose-signature . |
 
 *** customizations
 Make sure our custom lisp directory is in =load-path= (effective noop if already there)
