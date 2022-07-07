@@ -14,6 +14,7 @@ Once [[https://orgmode.org/manual/Extracting-Source-Code.html][tangled]], this c
   <<initialization>>
   <<ui-customization>>
   <<keybindings>>
+  <<preferences>>
 #+end_src
 
 * UI Customization
@@ -24,23 +25,77 @@ Once [[https://orgmode.org/manual/Extracting-Source-Code.html][tangled]], this c
 ** Zoom for my weary eyes
 Bump up the interface fonts
 #+begin_src python 
-  config.set("fonts.default_size", "18pt")
+  c.fonts.default_size = "18pt"
 #+end_src
 
 Zoom the page overall
 #+begin_src python 
-  config.set("zoom.default", "125%")
+  c.zoom.default = "125%"
 #+end_src
 * Keybindings
 :PROPERTIES:
 :header-args: :noweb-ref keybindings :tangle no
 :END:
 
+** mpv
 #+begin_src python
 # config.bind(',b', 'spawn --userscript qute-capture write')
 config.bind(';w', 'hint links spawn  ~/.local/bin/mpv  {hint-url}')
 #+end_src
+** Navigation
+Attempting to recreate my [[file:~/.homesick/repos/dotfiles/home/.config/vimium/vimium-options.json][Vimium]] keybinding experience, as much as possible.
+
+The =,= prefix is reserved for user binding, but I'll instead use it as a holding area for bindings that would be shadowed by my desired ones.
+
+As an example, I'm accustomed to using =x= to close a tab, but by default it's just the first character of the =xo= and =xO= bindings, so I'll recreate those bindings as =,xo= and =,xO=.
+
+*** History
+#+begin_src python
+  config.bind("h", "back")
+  config.bind("l", "forward")
+#+end_src
+
+*** Tab Management
+Reverse the existing bindings for moving tab to tab
+#+begin_src python
+  config.unbind("J")
+  config.unbind("K")
+
+  config.bind("J", "tab-prev")
+  config.bind("K", "tab-next")
+#+end_src
+
+Given the huge number of default bindings that have a =t= prefix, I'll go ahead and use =,t= as my /new tab/ key, but may end up just using the default =O= binding instead
+#+begin_src python
+  config.bind(",t", "set-cmd-text -s :open -t ")
+#+end_src
+
+The =x= binding I mentioned above isn't nearly as overloaded, and I'm /really/ used to using it to close tabs, so I'll do the little bit of work to move them.
+#+begin_src python
+  config.unbind("xo")
+  config.unbind("xO")
+
+  config.bind(",xo", "set-cmd-txt -s :open -b ")
+  config.bind(",xO", "set-cmd-txt -s :open -b -r {url:pretty}")
+
+  config.bind("x", "tab-close")
+  config.bind("X", "undo")
+#+end_src
+
+=b= defaults to loading quickmarks, but I prefering for hopping around tabs (buffers would be the mnemonic)
+#+begin_src python
+#+end_src
+
 * Preferences
+:PROPERTIES:
+:header-args: :noweb-ref preferences :tangle no
+:END:
+
+** Sessions
+Multiple sessions are apparently supported, but for now I just care about always opening with the tabs I last had open.
+#+begin_src python
+  c.auto_save.session = True
+#+end_src
 
 * Initialization
 #+NAME: initialization
