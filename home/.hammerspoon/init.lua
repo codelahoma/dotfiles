@@ -31,6 +31,15 @@ spoon.SpoonInstall.use_syncinstall = true
 
 Install=spoon.SpoonInstall
 
+hs.loadSpoon("editWithEmacs")
+if spoon.editWithEmacs then
+  local bindings = {
+    edit_selection = {magic, "e"},
+    edit_all = {hyper, "e"}
+  }
+  spoon.editWithEmacs:bindHotkeys(bindings)
+end
+
 menuHammer = hs.loadSpoon("MenuHammer")
 menuHammer:enter()
 

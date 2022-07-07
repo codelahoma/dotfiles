@@ -79,6 +79,12 @@ Playing around with [[https://github.com/protesilaos/modus-themes/][Modus Themes
       (load-theme 'modus-vivendi t )))
 
 #+end_src
+** editWithEmacs
+Trying out a Hammerspoon Spoon for system-wide emacs editing
+#+begin_src emacs-lisp :noweb-ref user-config
+  (load "~/github/editWithEmacs.spoon/hammerspoon.el")
+#+end_src
+
 * Interface
 ** Appearance
 # *** Company Box
