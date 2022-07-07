@@ -40,12 +40,12 @@ Account gmail
 
 MaildirStore gmail-local
 Subfolders Verbatim
-Path ~/Maildir/Gmail
+Path ~/Maildir/Gmail/
 Inbox ~/Maildir/Gmail/Inbox
 
 Channel gmail
 Far :gmail-remote:
 Near :gmail-local:
-Patterns * ![Gmail]* "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail" "[Gmail]/Trash"
+Patterns *
 Create Both
 SyncState *
