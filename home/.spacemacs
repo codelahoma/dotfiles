@@ -121,6 +121,7 @@ This function should only modify configuration layer settings."
      cmake
      graphviz
      restclient
+     ipython-notebook
      (lsp :variables
           lsp-file-watch-threshold 2000
           lsp-navigation 'peek
@@ -1136,7 +1137,6 @@ before packages are loaded."
                             ("view in browser" . mu4e-action-view-in-browser)
                             ("bview in qutebrowser" . rk/mu4e-view-in-external-browser)
                             ("show this thread" . mu4e-action-show-thread)))
-  (require 'mu4e-dashboard)
     ;; Org Appearance
   
   

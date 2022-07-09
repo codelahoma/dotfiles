@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+echo $* >> /tmp/vterm.log
+DEFAULT_SESSION_NAME="*vterm-$$*"
+DEFAULT_DIRECTORY=${HOME}
+
+# session_name="${1-$DEFAULT_SESSION_NAME}"
+# directory="${2-$DEFAULT_DIRECTORY}"
+session_name="${1}"
+directory="${2}"
+minimal_config="~/.config/tmux/minimal_tmux.conf"
+
+
+if ! tmux list-sessions 2>/dev/null; then
+    tmux start-server
+fi
+
+if ! tmux has-session -t "$session_name" 2>/dev/null; then
+    tmux new-session -s "$session_name" -c "$directory" -f $minimal_config -d
+fi
+
+if [ -z "$TMUX" ]; then
+    tmux attach -t "$session_name"
+else
+    tmux switch-client -t "$session_name"
+fi
