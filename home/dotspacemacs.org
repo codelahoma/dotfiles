@@ -1,3 +1,4 @@
+#+STARTUP: show2levels
 #+TITLE:My Spacemacs Init
 #+AUTHOR: Rod Knowlton
 #+EMAIL: codelahoma@gmail.com
@@ -608,6 +609,7 @@ Let's not rearrange the windows when we open the special edit window, instead us
   cmake
   graphviz
   restclient
+  ipython-notebook
 #+end_src
 
 *** LSP
@@ -808,12 +810,12 @@ Make sure our custom lisp directory is in =load-path= (effective noop if already
 
 **** 
 
-**** Dashboard
-An org based dashboard based on [[https://github.com/rougier/mu4e-dashboard.git][rougier/mu4e-dashboard: A dashboard for mu4e (mu for emacs)]]
+# **** Dashboard
+# An org based dashboard based on [[https://github.com/rougier/mu4e-dashboard.git][rougier/mu4e-dashboard: A dashboard for mu4e (mu for emacs)]]
 
-#+begin_src emacs-lisp :noweb-ref user-config :results silent
-  (require 'mu4e-dashboard)
-#+end_src
+# #+begin_src emacs-lisp :noweb-ref user-config :results silent
+#   (require 'mu4e-dashboard)
+# #+end_src
 
 ** Other
 #+begin_src emacs-lisp :noweb-ref config-layers
