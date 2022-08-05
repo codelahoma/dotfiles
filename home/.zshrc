@@ -12,123 +12,15 @@ iterm2_print_user_vars() {
 ITERM2_SQUELCH_MARK=1
 # export ZSH_THEME="lambda-mod"
 
-if [ -n "$INSIDE_EMACS" ]; then
-    export ZSH_THEME="lambda-mod"
-else
-    export ZSH_THEME="powerlevel10k/powerlevel10k"
-    # export ZSH_THEME="cdimascio-lambda"
-    # export ZSH_THEME="wedisagree"
-    # export POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(vcs newline pyenv context dir)
-    # export POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs history time)
-    POWERLEVEL9K_MODE='nerdfont-complete'
+# if [ -n "$INSIDE_EMACS" ]; then
+#     export ZSH_THEME="lambda-mod"
+# else
+#     export ZSH_THEME="powerlevel10k/powerlevel10k"
+#     source ~/.p10k.zsh 
+# fi
 
-    # Please only use this battery segment if you have material icons in your nerd font (or font)
-    # Otherwise, use the font awesome one in "User Segments"
-    # prompt_zsh_battery_level() {
-    #     local percentage1=`pmset -g ps  |  sed -n 's/.*[[:blank:]]+*\(.*%\).*/\1/p'`
-    #     local percentage=`echo "${percentage1//\%}"`
-    #     local color='%F{red}'
-    #     local symbol="\uf00d"
-    #     pmset -g ps | grep "discharging" > /dev/null
-    #     if [ $? -eq 0 ]; then
-    #         local charging="false";
-    #     else
-    #         local charging="true";
-    #     fi
-    #     if [ $percentage -le 20 ]
-    #     then symbol='\uf579' ; color='%F{red}' ;
-    #          #10%
-    #     elif [ $percentage -gt 19 ] && [ $percentage -le 30 ]
-    #     then symbol="\uf57a" ; color='%F{red}' ;
-    #          #20%
-    #     elif [ $percentage -gt 29 ] && [ $percentage -le 40 ]
-    #     then symbol="\uf57b" ; color='%F{yellow}' ;
-    #          #35%
-    #     elif [ $percentage -gt 39 ] && [ $percentage -le 50 ]
-    #     then symbol="\uf57c" ; color='%F{yellow}' ;
-    #          #45%
-    #     elif [ $percentage -gt 49 ] && [ $percentage -le 60 ]
-    #     then symbol="\uf57d" ; color='%F{blue}' ;
-    #          #55%
-    #     elif [ $percentage -gt 59 ] && [ $percentage -le 70 ]
-    #     then symbol="\uf57e" ; color='%F{blue}' ;
-    #          #65%
-    #     elif [ $percentage -gt 69 ] && [ $percentage -le 80 ]
-    #     then symbol="\uf57f" ; color='%F{blue}' ;
-    #          #75%
-    #     elif [ $percentage -gt 79 ] && [ $percentage -le 90 ]
-    #     then symbol="\uf580" ; color='%F{blue}' ;
-    #          #85%
-    #     elif [ $percentage -gt 89 ] && [ $percentage -le 99 ]
-    #     then symbol="\uf581" ; color='%F{blue}' ;
-    #          #85%
-    #     elif [ $percentage -gt 98 ]
-    #     then symbol="\uf578" ; color='%F{green}' ;
-    #          #100%
-    #     fi
-    #     if [ $charging = "true" ];
-    #     then color='%F{green}'; if [ $percentage -gt 98 ]; then symbol='\uf584'; fi
-    #     fi
-    #     echo -n "%{$color%}$symbol" ;
-    # }
-
-    # zsh_internet_signal(){
-    #     local color
-    #     local symbol="\uf7ba"
-    #     if ifconfig en0 | grep inactive &> /dev/null; then
-    #         color="%F{red}"
-    #     else
-    #         color="%F{blue}"
-    #     fi
-    #     echo -n "%{$color%}$symbol "
-    # }
-
-    POWERLEVEL9K_PROMPT_ON_NEWLINE=true
-    POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
-    POWERLEVEL9K_RPROMPT_ON_NEWLINE=true
-    POWERLEVEL9K_SHORTEN_DIR_LENGTH=2
-    POWERLEVEL9K_SHORTEN_STRATEGY="truncate_beginning"
-    POWERLEVEL9K_RVM_BACKGROUND="black"
-    POWERLEVEL9K_RVM_FOREGROUND="249"
-    POWERLEVEL9K_RVM_VISUAL_IDENTIFIER_COLOR="red"
-    POWERLEVEL9K_TIME_BACKGROUND="black"
-    POWERLEVEL9K_TIME_FOREGROUND="249"
-    POWERLEVEL9K_TIME_FORMAT="\UF43A %D{%I:%M   %m.%d.%y}"
-    POWERLEVEL9K_RVM_BACKGROUND="black"
-    POWERLEVEL9K_RVM_FOREGROUND="249"
-    POWERLEVEL9K_RVM_VISUAL_IDENTIFIER_COLOR="red"
-    POWERLEVEL9K_STATUS_VERBOSE=false
-    POWERLEVEL9K_VCS_CLEAN_FOREGROUND='black'
-    POWERLEVEL9K_VCS_CLEAN_BACKGROUND='green'
-    POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND='black'
-    POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND='yellow'
-    POWERLEVEL9K_VCS_MODIFIED_FOREGROUND='white'
-    POWERLEVEL9K_VCS_MODIFIED_BACKGROUND='black'
-    POWERLEVEL9K_COMMAND_EXECUTION_TIME_BACKGROUND='black'
-    POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND='blue'
-    POWERLEVEL9K_FOLDER_ICON=''
-    POWERLEVEL9K_STATUS_OK_IN_NON_VERBOSE=true
-    POWERLEVEL9K_STATUS_VERBOSE=false
-    POWERLEVEL9K_COMMAND_EXECUTION_TIME_THRESHOLD=0
-    POWERLEVEL9K_VCS_UNTRACKED_ICON='\u25CF'
-    POWERLEVEL9K_VCS_UNSTAGED_ICON='\u00b1'
-    POWERLEVEL9K_VCS_INCOMING_CHANGES_ICON='\u2193'
-    POWERLEVEL9K_VCS_OUTGOING_CHANGES_ICON='\u2191'
-    POWERLEVEL9K_VCS_COMMIT_ICON="\uf417"
-    POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX="%F{blue}\u256D\u2500%f"
-    POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%F{blue}\u2570\uf460%f "
-    # POWERLEVEL9K_CUSTOM_BATTERY_STATUS="prompt_zsh_battery_level"
-    # POWERLEVEL9K_CUSTOM_INTERNET_STATUS="zsh_internet_signal"
-    # POWERLEVEL9K_CUSTOM_INTERNET_STATUS_BACKGROUND="gray"
-    POWERLEVEL9K_CUSTOM_ITERM_MARK="iterm2_prompt_mark"
-
-    POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(custom_iterm_mark time newline context os_icon custom_battery_status ssh root_indicator dir vcs)
-    POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time custom_internet_status)
-    HIST_STAMPS="mm/dd/yyyy"
-    DISABLE_UPDATE_PROMPT=true
-fi
-
-# ZSH_THEME="robbyrussell"
+export ZSH_THEME="powerlevel10k/powerlevel10k"
+source ~/.p10k.zsh 
 
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
@@ -168,7 +60,7 @@ alias ohmyzsh="emacsclient -n ~/.oh-my-zsh"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(asdf brew colored-man-pages common-aliases docker-compose docker iterm2 fasd fzf git github npm  macos wakatime)
+plugins=(asdf brew colored-man-pages common-aliases docker-compose docker iterm2 fasd fzf git github npm  macos wakatime zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -200,9 +92,10 @@ alias esalt="ssh -t saltmaster sudo vim /srv"
 alias ccat='/bin/cat'
 alias cat='/opt/homebrew/bin/bat'
 alias org='emacsclient -nw ~/Dropbox/org/gtd/gtd.org'
+alias Make=`which make`
+alias make="$(which make) --"
 autoload edit-command-line
 zle -N edit-command-line
-bindkey '^X^E' edit-command-line
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -227,7 +120,20 @@ alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"'
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-eval "$(direnv hook zsh)"
+bindkey '^X^E' edit-command-line
+bindkey -s ^F "tmux-sessionizer\n"
+
+function rk_autojump {
+    targetdir=$(fasd -ld | fzf)
+    cd $targetdir
+}
+
+bindkey -s ^T "rk_autojump\n"
+
+eval "$(asdf exec direnv hook zsh)"
+# A shortcut for asdf managed direnv.
+direnv() { asdf exec direnv "$@"; }
+
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 if [[ -f ~/.zshrc.local ]]; then
@@ -255,3 +161,13 @@ export LDFLAGS="-L/usr/local/opt/zlib/lib -L/usr/local/opt/bzip2/lib"
 export CPPFLAGS="-I/usr/local/opt/zlib/include -I/usr/local/opt/bzip2/include"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
+
+# Generated for envman. Do not edit.
+[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+
+source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
+
+
+if [ -n "$INSIDE_EMACS" ]; then
+    direnv reload
+fi

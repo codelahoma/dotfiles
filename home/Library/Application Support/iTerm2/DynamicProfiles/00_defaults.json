@@ -24,7 +24,7 @@
                 "Red Component": 0.5607843399047852
             },
             "HotKey Window Floats": true,
-            "Right Option Key Sends": 0,
+            "Right Option Key Sends": 2,
             "Character Encoding": 4,
             "Selection Color": {
                 "Green Component": 0.31001487374305725,
@@ -341,7 +341,7 @@
                 "Red Component": 0.07858304679393768
             },
             "Blur": false,
-            "Normal Font": "MesloLGSNerdFontComplete-Regular 18",
+        "Normal Font": "FuraCodeNerdFontComplete-Retina 16",
             "Vertical Spacing": 1,
             "Ansi 7 Color": {
                 "Green Component": 0.27381426095962524,
@@ -352,7 +352,7 @@
             "Command": "",
             "Terminal Type": "xterm-256color",
             "Horizontal Spacing": 1,
-            "Option Key Sends": 0,
+            "Option Key Sends": 2,
             "Only The Default BG Color Uses Transparency": false,
             "HotKey Window Animates": true,
             "HotKey Modifier Flags": 0,
@@ -376,7 +376,7 @@
             },
             "Screen": -1,
             "HotKey Characters Ignoring Modifiers": "",
-            "Non Ascii Font": "MesloLGSNerdFontComplete-Regular 18",
+            "Non Ascii Font": "FuraCodeNerdFontComplete-Retina 16",
             "Ansi 13 Color": {
                 "Green Component": 0.1882352977991104,
                 "Blue Component": 0.6549019813537598,
@@ -417,7 +417,7 @@
                 "Red Component": 0.7333333492279053
             },
             "HotKey Window Floats": false,
-            "Right Option Key Sends": 0,
+            "Right Option Key Sends": 2,
             "Character Encoding": 4,
             "Selection Color": {
                 "Green Component": 0.8353000283241272,
@@ -725,7 +725,7 @@
                 "Red Component": 0
             },
             "Blur": true,
-            "Normal Font": "MesloLGSNerdFontComplete-Regular 18",
+            "Normal Font": "FuraCodeNerdFontComplete-Retina 16",
             "Vertical Spacing": 1,
             "Ansi 7 Color": {
                 "Green Component": 0.7333333492279053,
@@ -737,7 +737,7 @@
             "Command": "",
             "Terminal Type": "xterm-256color",
             "Horizontal Spacing": 1,
-            "Option Key Sends": 0,
+            "Option Key Sends": 2,
             "Only The Default BG Color Uses Transparency": false,
             "HotKey Window Animates": true,
             "HotKey Modifier Flags": 1835008,
