@@ -1,2 +1,3 @@
 home/.pentadactyl/info/
 .DS_Store
+/home/.emacs.d/private/framegeometry
