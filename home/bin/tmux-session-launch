@@ -15,7 +15,7 @@ if ! tmux list-sessions 2>/dev/null; then
 fi
 
 if ! tmux has-session -t "$session_name" 2>/dev/null; then
-    tmux new-session -s "$session_name" -c "$directory" -f $minimal_config -d
+    tmux new-session -s "$session_name" -c "$directory"  -d
 fi
 
 if [ -z "$TMUX" ]; then
