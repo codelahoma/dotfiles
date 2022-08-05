@@ -3,12 +3,22 @@
   ;;
 
   (setq org-directory "~/Dropbox/org/")
-  (setq org-brain-path (concat org-directory "brain/"))
   (setq gtd-directory (concat org-directory "gtd/"))
   (setq org-id-track-globally t)
   (defalias `rk/org-file (apply-partially 'concat org-directory))
   (defalias `rk/gtd-file (apply-partially 'concat gtd-directory))
 
+
+  (setq org-enable-roam-support t)
+  (setq org-roam-directory (concat org-directory "roam-notes/"))
+  (setq org-roam-completion-everywhere t)
+  (add-to-list 'spacemacs-default-company-backends 'company-capf)
+  (setq org-roam-dailies-capture-templates
+        '(("d" "default" entry
+           "* %?"
+           :target (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>\n"))))
+  (org-roam-db-autosync-mode)
 
   (add-to-list 'org-modules 'org-protocol)
   (add-to-list 'org-modules 'org-tempo)
@@ -17,7 +27,6 @@
 
   (setq org-tags-exclude-from-inheritance (list "project"))
   (setq org-list-allow-alphabetical t)
-  (setq org-enable-org-brain-support t)
 
   (setq org-jira-working-dir org-directory)
   (setq org-agenda-files  (append (list org-jira-working-dir) (list gtd-directory)))
@@ -86,9 +95,9 @@
             (tags-todo "+kitewire-reading-home-@home-30days-60days-90days/-MEETING" ((org-agenda-overriding-header "Kitewire") (org-agenda-files rk/work-org-files) ))
             (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
             (tags "-@home-home+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
-            (tags "30days" ((org-agenda-overriding-header "30 Day Plan")))
-            (tags "60days" ((org-agenda-overriding-header "60 Day Plan")))
-            (tags "90days" ((org-agenda-overriding-header "90 Day Plan")))
+            ;; (tags "30days" ((org-agenda-overriding-header "30 Day Plan")))
+            ;; (tags "60days" ((org-agenda-overriding-header "60 Day Plan")))
+            ;; (tags "90days" ((org-agenda-overriding-header "90 Day Plan")))
             (tags "project" ((org-agenda-overriding-header "Projects")))
             ;; (tags "-@home-home+TODO=\"IN-PROGRESS\"" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/work-org-files)))
             ()))

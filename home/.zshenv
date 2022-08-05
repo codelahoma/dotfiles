@@ -1,4 +1,4 @@
-PATH="/opt/homebrew/bin:/Users/rodk/.local/bin:~/bin:/usr/local/bin:/usr/local/sbin:/opt/local/bin:/opt/local/sbin:~/usr/local/opt/coreutils/libexec/gnubin:/Library/Android/sdk/tools:~/Library/Android/sdk/platform-tools:$PATH"
+PATH="/opt/homebrew/bin:/Users/rodk/.local/bin:~/bin:/opt/local/bin:/opt/local/sbin:~/usr/local/opt/coreutils/libexec/gnubin:/Library/Android/sdk/tools:~/Library/Android/sdk/platform-tools:$PATH"
 export PATH="/Users/rodk/bin:/usr/local/opt/qt@5.5/bin:$PATH"
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
 
@@ -30,7 +30,7 @@ function rk_autojump {
                      cd $targetdir
                      }
 
-bindkey -s ^O "rk_autojump\n"
+bindkey -s ^T "rk_autojump\n"
 
 
 if [[ "$(uname -s)"  == "Darwin" ]] ; then

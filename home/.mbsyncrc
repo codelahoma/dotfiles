@@ -1,0 +1,51 @@
+IMAPAccount fastmail
+Host imap.fastmail.com
+Port 993
+User knowshank@fastmail.com
+PassCmd "pass mbsync/knowshank@fastmail.com"
+SSLType IMAPS
+SSLVersions TLSv1.2
+
+IMAPStore fastmail-remote
+Account fastmail
+
+# local storage
+MaildirStore fastmail-local
+Path ~/Maildir/Fastmail/
+Inbox ~/Maildir/Fastmail/INBOX
+# The SubFolders option allows to represent all
+# IMAP folders as local subfolders
+Subfolders Verbatim
+
+Channel fastmail
+Far :fastmail-remote:
+Near :fastmail-local:
+Patterns *
+Expunge None
+CopyArrivalDate yes
+Sync All
+Create Near
+SyncState *
+
+IMAPAccount gmail
+Host imap.gmail.com
+User rod@atlasup.com
+PassCmd "pass mbsync/rod@atlasup.com"
+SSLType IMAPS
+AuthMech PLAIN
+CertificateFile /etc/ssl/cert.pem
+
+IMAPStore gmail-remote
+Account gmail
+
+MaildirStore gmail-local
+Subfolders Verbatim
+Path ~/Maildir/Gmail/
+Inbox ~/Maildir/Gmail/Inbox
+
+Channel gmail
+Far :gmail-remote:
+Near :gmail-local:
+Patterns *
+Create Both
+SyncState *

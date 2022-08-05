@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+targetdir=$(fasd -ld | fzf)
+
+cd $targetdir

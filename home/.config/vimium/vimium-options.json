@@ -1,0 +1,118 @@
+{
+  "settingsVersion": "1.66",
+  "exclusionRules": [
+    {
+      "pattern": "https?://access.parallels.com/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://access.parallels.com/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://10fastfingers.com/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://mdn.mozillademos.org/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://localhost:8888/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://127.0.0.1:6080/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://leetcode.com/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://sksrvr.com:32768/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://www.udemy.com/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://knowshank.myqnapcloud.com:32768/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://knowshank.myqnapcloud.com:8082/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://eytktystsaehdcidvwlbrd.coursera-apps.org/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://eirgxdnqferkeawgmmbypg.coursera-apps.org/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://pvhjkowklbrwhnkpwatves.coursera-apps.org/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://www.inoreader.com/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://www.typing.com/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://whereby.com/*",
+      "passKeys": "m"
+    },
+    {
+      "pattern": "https?://127.0.0.1:8888/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://www.codewars.com/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://colab.research.google.com/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://colab.research.google.com/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://hubs.mozilla.com/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://console.aws.amazon.com/cloud9/*",
+      "passKeys": ""
+    },
+    {
+      "pattern": "https?://192.168.4.30:8080/linux-station-vnc/*",
+      "passKeys": ""
+    }
+  ],
+  "filterLinkHints": false,
+  "waitForEnterForFilteredHints": true,
+  "hideHud": false,
+  "keyMappings": "# Insert your preferred key mappings here.\n\nmap h goBack\nmap l goForward\nmap H scrollLeft\nmap L scrollRight\nmap <c-d> scrollPageDown\nmap <c-f> scrollFullPageDown\nmap <c-b> scrollFullPageUp\nmap gp togglePinTab\nmap b Vomnibar.activateTabSelection\nmap dd removeTab\nmap <c-v> passNextKey\nmap <c-i> enterInsertMode\nmap m Marks.activateCreateMode swap\nmap ` Marks.activateGotoMode swap\nmap <m-,> moveTabLeft count=99\nmap <m-.> moveTabRight count=99\nmap \\ passNextKey normal\nmap s Vomnibar.activate keyword=g\nmap w Vomnibar.activate keyword=w\nmap <m-b> Vomnibar.activateBookmarks\nmap gd LinkHints.activateModeToDownloadLink",
+  "linkHintCharacters": "sadfjklewcmpgh",
+  "linkHintNumbers": "0123456789",
+  "newTabUrl": "about:newtab",
+  "nextPatterns": "next,more,newer,>,›,→,»,≫,>>",
+  "previousPatterns": "prev,previous,back,older,<,‹,←,«,≪,<<",
+  "regexFindMode": false,
+  "ignoreKeyboardLayout": false,
+  "scrollStepSize": 60,
+  "smoothScroll": true,
+  "grabBackFocus": true,
+  "searchEngines": "w: http://www.wikipedia.org/w/index.php?title=Special:Search&search=%s Wikipedia\ndj: https://docs.djangoproject.com/en/1.8/search/?q=%s Django (1.8)\ndj2: https://docs.djangoproject.com/en/2.0/search/?q=%s Django 2\ndrf: http://www.django-rest-framework.org/?q=%s Django Rest Framework\nap: https://developer.apple.com/search/?q=%s Apple Developer\nan: https://www.android.com/results/#q=%s Android\ngh: https://github.com/search?utf8=%E2%9C%93&q=%s Github\nso: http://stackoverflow.com/search?q=%s Stack Overflow\nse: http://www.google.com/search?q=%s+site%3Astackoverflow.com+OR+site%3Asuperuser.com+OR+site%3Aprogrammers.stackexchange.com+OR+site%3Aux.stackexchange.com Stack Exchange\naz: http://www.amazon.com/s/?field-keywords=%s Amazon\ng: http://www.google.com/search?q=%s Google\n# kendo: https://www.google.com/search?q=%s+site=docs.telerik.com+inurl=kendo-ui KendoUI\njq: http://api.jquery.com/?s=%s jQuery\ngr: https://www.google.com/search?tbs=qdr:m&q=%s Google Recent (month)\nciu: http://caniuse.com/#search=%s Can I Use?\ndog: https://httpstatusdogs.com/%s HTTP Status Dogs\nsap: https://www.google.com/search?q=%s&inurl=sap4tech.net SAP 4 Tech\n# More examples.\n#\n# (Vimium supports search completion Wikipedia, as\n# above, and for these.)\n#\n\nl: http://www.google.com/search?q=%s&btnI I'm feeling lucky...\ny: http://www.youtube.com/results?search_query=%s Youtube\n# gm: https://www.google.com/maps?q=%s Google maps\n# b: https://www.bing.com/search?q=%s Bing\nd: https://duckduckgo.com/?q=%s DuckDuckGo\ng: https://www.google.com/search?q=%s Google\nl: https://www.google.com/search?btnI=1&q=%s I'm feeling lucky...\npp: https://pypi.org/search/?q=%s\n\n# qw: https://www.qwant.com/?q=%s Qwant",
+  "searchUrl": "https://www.google.com/search?q=",
+  "userDefinedLinkHintCss": "div > .vimiumHintMarker {\n/* linkhint boxes */\nbackground: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FFF785),\n  color-stop(100%,#FFC542));\nborder: 1px solid #E3BE23;\n}\n\ndiv > .vimiumHintMarker span {\n/* linkhint text */\ncolor: black;\nfont-weight: bold;\nfont-size: 12px;\n}\n\ndiv > .vimiumHintMarker > .matchingCharacter {\n}"
+}
