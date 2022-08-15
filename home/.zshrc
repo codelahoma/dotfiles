@@ -22,6 +22,8 @@ ITERM2_SQUELCH_MARK=1
 export ZSH_THEME="powerlevel10k/powerlevel10k"
 source ~/.p10k.zsh 
 
+
+
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 alias ohmyzsh="emacsclient -n ~/.oh-my-zsh"
@@ -74,7 +76,7 @@ unsetopt nomatch
 # fi
 
 export EDITOR='emacsclient -nw'
-export ZSH_WAKATIME_BIN=/usr/local/bin/wakatime-cli
+export ZSH_WAKATIME_BIN=/opt/homebrew/bin/wakatime-cli
 autoload zmv
 alias mmv='noglob zmv -W'
 alias le='open -a /usr/local/opt/emacs-plus/Emacs.app'
