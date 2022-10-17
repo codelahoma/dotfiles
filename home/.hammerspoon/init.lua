@@ -43,18 +43,6 @@ end
 menuHammer = hs.loadSpoon("MenuHammer")
 menuHammer:enter()
 
-Install:andUse("PushToTalk",
-               {
-                 config = {
-                   detect_on_start = true,
-                   app_switcher = {
-                     ['zoom.us'] = 'push-to-talk'
-                   }
-                 },
-                 start = true,
-               }
-)
-
 Install:andUse("WindowGrid",
                 {
                   config = { gridGeometries = { { "8x5", "3840x2160"}, { "6x4" } } },
@@ -77,7 +65,7 @@ Chrome = "com.google.Chrome"
 Spotify = "com.spotify.client"
 Notion = "notion.id"
 
-DefaultBrowser = Qutebrowser
+DefaultBrowser = Chrome
 if  work_machines[machine] ~= nil  then
   Install:andUse("URLDispatcher",
                 {
@@ -90,17 +78,10 @@ if  work_machines[machine] ~= nil  then
                       { "https?://bitbucket.org/", Bitbucket},
                       { "https?://kitewire.atlassian.net", Jira}
                     },
-                    url_redir_decoders = {
-                    --   { "Office 365 safelinks check",
-                    --     "https://eur03.safelinks.protection.outlook.com/(.*)\\?url=(.-)&.*",
-                    --     "%2" },
-                    --   { "MS Teams URLs",
-                    --     "(https://teams.microsoft.com.*)", "msteams:%1", true }
-                    },
                     default_handler = DefaultBrowser
                   },
                   start = true,
-                  --                   loglevel = 'debug'
+                  loglevel = 'debug'
                 }
   )
 end
@@ -180,12 +161,12 @@ local function pasteLauncher()
 end
 
 if work_machines[machine] ~= nil then
-  hotkey.bind(hyper, "a", appLauncher('Arduino IDE'))
+  -- hotkey.bind(hyper, "a", appLauncher('Arduino IDE'))
   hotkey.bind(hyper, "b", appLauncher('Bitbucket'))
   hotkey.bind(hyper, "c", hs.toggleConsole)
   hotkey.bind(hyper, "d", appLauncher('Dash'))
-  hotkey.bind(hyper, "f", appLauncher('MailMate'))
-  hotkey.bind(hyper, "h", hs.toggleConsole)
+  hotkey.bind(hyper, "g", appLauncher('Atlas Jupyter'))
+  hotkey.bind(hyper, "h", appLauncher('Docker Desktop'))
   hotkey.bind(hyper, "i", appLauncher('iTerm'))
   hotkey.bind(hyper, "j", appLauncher('Emacs'))
   hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
