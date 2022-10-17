@@ -3,6 +3,7 @@ Host imap.fastmail.com
 Port 993
 User knowshank@fastmail.com
 PassCmd "pass mbsync/knowshank@fastmail.com"
+AuthMech LOGIN
 SSLType IMAPS
 SSLVersions TLSv1.2
 
