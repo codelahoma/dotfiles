@@ -47,7 +47,7 @@ This function should only modify configuration layer settings."
                       auto-completion-use-company-box t
                       auto-completion-enable-sort-by-usage t)
      (colors :variables
-             colors-colorize-identifiers 'all)
+             colors-colorize-identifiers 'variables)
      emoji
      evil-better-jumper
      helm
@@ -83,7 +83,7 @@ This function should only modify configuration layer settings."
              python-fill-column 99
              python-test-runner 'pytest
              python-backend 'lsp
-             python-lsp-server 'pylsp
+             python-lsp-server 'pyright
              python-formatter 'black
              python-format-on-save t
              )
@@ -110,6 +110,7 @@ This function should only modify configuration layer settings."
           org-start-notification-daemon-on-startup t)
      html
      markdown
+     elasticsearch
      (plantuml :variables
                plantuml-jar-path "/opt/homebrew/opt/plantuml/libexec/plantuml.jar"
                org-plantuml-jar-path "/opt/homebrew/opt/plantuml/libexec/plantuml.jar")
@@ -195,6 +196,7 @@ This function should only modify configuration layer settings."
                                       evil-easymotion
                                       fira-code-mode
                                       highlight-indent-guides
+                                      ef-themes
                                       
                                       ob-async
                                       org-jira
@@ -428,7 +430,7 @@ It should only modify the values of Spacemacs settings."
    ;; Point size is recommended, because it's device independent. (default 10.0)
    dotspacemacs-default-font '(
                                ("FiraCode Nerd Font"
-                                :size 16.0
+                                :size 18.0
                                 :weight normal
                                 :width normal)
                                ("Inconsolata Nerd Font"
@@ -820,6 +822,15 @@ before packages are loaded."
       (load-theme 'modus-vivendi t )))
   
   (load "~/github/editWithEmacs.spoon/hammerspoon.el")
+  ;; (require 'color)
+  
+  ;; (let ((bg (face-attribute 'default :background)))
+  ;;   (custom-set-faces
+  ;;    '(company-tooltip ((t (:weight bold :foreground "dark red" :background "khaki1" :inherit default))))
+  ;;    `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
+  ;;    `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
+  ;;    `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
+  ;;    `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
   (let* ((variable-tuple
           (cond ((x-list-fonts "Fira Sans")       '(:font "Fira Sans"))
                 ((x-list-fonts "Avenir Next") '(:font "Avenir Next"))
@@ -1046,6 +1057,7 @@ before packages are loaded."
          (lua . t)
          (python . t)
          (shell . t)
+         (elasticsearch . t)
          (R . t)))
       (setq org-confirm-babel-evaluate nil
             org-src-fontify-natively t
