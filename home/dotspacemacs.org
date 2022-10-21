@@ -92,20 +92,18 @@ Trying out a Hammerspoon Spoon for system-wide emacs editing
 * Interface
 ** Appearance
 Currently commented out:
-#+begin_example
-# *** Company Box
-# #+begin_src emacs-lisp :noweb-ref user-config
-#   (require 'color)
+*** Company Box
+#+begin_src emacs-lisp :noweb-ref user-config
+  ;; (require 'color)
 
-#   (let ((bg (face-attribute 'default :background)))
-#     (custom-set-faces
-#      '(company-tooltip ((t (:weight bold :foreground "dark red" :background "khaki1" :inherit default))))
-#      `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
-#      `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
-#      `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
-#      `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
-# #+end_src
-#+end_example
+  ;; (let ((bg (face-attribute 'default :background)))
+  ;;   (custom-set-faces
+  ;;    '(company-tooltip ((t (:weight bold :foreground "dark red" :background "khaki1" :inherit default))))
+  ;;    `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
+  ;;    `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
+  ;;    `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
+  ;;    `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
+#+end_src
 ** Auto Completion
 #+begin_src emacs-lisp :noweb-ref config-layers
   (auto-completion :variables
@@ -135,7 +133,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
 ** Default Fonts
 #+begin_src emacs-lisp :noweb-ref dotspacemacs-default-font
   ("FiraCode Nerd Font"
-   :size 16.0
+   :size 18.0
    :weight normal
    :width normal)
   ("Inconsolata Nerd Font"
@@ -183,7 +181,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
 ** Other
 #+begin_src emacs-lisp :noweb-ref config-layers
   (colors :variables
-          colors-colorize-identifiers 'all)
+          colors-colorize-identifiers 'variables)
   emoji
   evil-better-jumper
   helm
@@ -201,6 +199,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
   evil-easymotion
   fira-code-mode
   highlight-indent-guides
+  ef-themes
 
 #+end_src
 ** Themes
@@ -265,7 +264,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
           python-fill-column 99
           python-test-runner 'pytest
           python-backend 'lsp
-          python-lsp-server 'pylsp
+          python-lsp-server 'pyright
           python-formatter 'black
           python-format-on-save t
           )
@@ -405,6 +404,7 @@ Let's not rearrange the windows when we open the special edit window, instead us
 #+begin_src emacs-lisp :noweb-ref config-layers
   html
   markdown
+  elasticsearch
 #+end_src
 
 ** PlantUML
@@ -583,6 +583,7 @@ Let's not rearrange the windows when we open the special edit window, instead us
          (lua . t)
          (python . t)
          (shell . t)
+         (elasticsearch . t)
          (R . t)))
       (setq org-confirm-babel-evaluate nil
             org-src-fontify-natively t
