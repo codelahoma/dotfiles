@@ -88,10 +88,13 @@ This function should only modify configuration layer settings."
              python-format-on-save t
              )
      emacs-lisp
+     prolog
      sql
      hy
      ess ; R
      react
+     (mermaid :variables
+              ob-mermaid-cli-path "/Users/rodk/personal/org-files/node_modules/.bin/mmdc")
      (org :variables
           org-enable-appear-support t
           org-appear-autolinks nil
