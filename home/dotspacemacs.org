@@ -277,6 +277,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
 ** Other
 #+begin_src emacs-lisp :noweb-ref config-layers
   emacs-lisp
+  prolog
   sql
   hy
   ess ; R
@@ -288,6 +289,12 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
 #+end_src
 
 * Markup Languages
+** Mermaid
+#+begin_src emacs-lisp :noweb-ref config-layers
+  (mermaid :variables
+           ob-mermaid-cli-path "/Users/rodk/personal/org-files/node_modules/.bin/mmdc")
+#+end_src
+
 ** Org Mode
 *** Layer Variables
 #+begin_src emacs-lisp :noweb-ref config-layers
