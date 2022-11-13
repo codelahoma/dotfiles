@@ -62,7 +62,7 @@ alias ohmyzsh="emacsclient -n ~/.oh-my-zsh"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(asdf brew colored-man-pages common-aliases docker-compose docker iterm2 fasd fzf git github npm  macos wakatime zsh-autosuggestions)
+plugins=(asdf brew colored-man-pages common-aliases  iterm2 fasd fzf git github npm  macos wakatime zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -87,7 +87,6 @@ alias -g F='| fx'
 alias xmlf='xmllint --format '
 alias susalt='ssh saltmaster-3 sudo salt'
 alias ss="script/stop && script/start -d && script/attach --tail=100 &"
-alias ssd="script-docker/stop && script-docker/start -d && script-docker/attach --tail=100 &"
 alias emc="emacsclient -nw"
 alias bsalt="ssh -t saltmaster vim /srv"
 alias esalt="ssh -t saltmaster sudo vim /srv"
@@ -154,7 +153,6 @@ function startx() {
         socat TCP-LISTEN:6000,reuseaddr,fork UNIX-CLIENT:\"$DISPLAY\" &
 	  fi
 }
-alias dgui='docker run -e DISPLAY=$DISPLAY_MAC -it'
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
@@ -173,3 +171,19 @@ source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
 if [ -n "$INSIDE_EMACS" ]; then
     direnv reload
 fi
+
+# # >>> conda initialize >>>
+# # !! Contents within this block are managed by 'conda init' !!
+# __conda_setup="$('/Users/rodk/miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+# if [ $? -eq 0 ]; then
+#     eval "$__conda_setup"
+# else
+#     if [ -f "/Users/rodk/miniforge3/etc/profile.d/conda.sh" ]; then
+#         . "/Users/rodk/miniforge3/etc/profile.d/conda.sh"
+#     else
+#         export PATH="/Users/rodk/miniforge3/bin:$PATH"
+#     fi
+# fi
+# unset __conda_setup
+# # <<< conda initialize <<<
+
