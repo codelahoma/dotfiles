@@ -132,6 +132,10 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
 #+end_src
 ** Default Fonts
 #+begin_src emacs-lisp :noweb-ref dotspacemacs-default-font
+  ("JetBrainsMono Nerd Font"
+   :size 14.0
+   :weight normal
+   :width normal)
   ("FiraCode Nerd Font"
    :size 18.0
    :weight normal
