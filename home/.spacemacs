@@ -69,7 +69,10 @@ This function should only modify configuration layer settings."
                treemacs-use-filewatch-mode t)
      rust
      (javascript :variables
-                 javascript-repl 'nodejs) ;; includes Coffeescript support
+                 javascript-repl 'nodejs
+                 javascript-fmt-on-save t
+                 node-add-modules-path t
+                 javascript-fmt-tool 'prettier) ;; includes Coffeescript support
      (typescript :variables
                  typescript-backend 'tide
                  typescript-linter 'eslint
@@ -92,6 +95,7 @@ This function should only modify configuration layer settings."
      sql
      hy
      ess ; R
+     prettier
      react
      (mermaid :variables
               ob-mermaid-cli-path "/Users/rodk/personal/org-files/node_modules/.bin/mmdc")
@@ -182,7 +186,7 @@ This function should only modify configuration layer settings."
             close-window-with-terminal t)
      ;; private layers
      rk-layout
-     jekyll
+     ;;jekyll
      )
 
 
@@ -404,6 +408,8 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
+                         ef-autumn
+                         ef-winter
                          farmhouse-light
                          farmhouse-dark
                          majapahit-light
@@ -433,7 +439,7 @@ It should only modify the values of Spacemacs settings."
    ;; Point size is recommended, because it's device independent. (default 10.0)
    dotspacemacs-default-font '(
                                ("JetBrainsMono Nerd Font"
-                                :size 14.0
+                                :size 18.0
                                 :weight normal
                                 :width normal)
                                ("FiraCode Nerd Font"
@@ -1060,11 +1066,12 @@ before packages are loaded."
       (org-babel-do-load-languages
        'org-babel-load-languages
        '((emacs-lisp . t)
+         (mermaid . T)
+         (plantuml . T)
          (http . t)
          (lua . t)
          (python . t)
          (shell . t)
-         (elasticsearch . t)
          (R . t)))
       (setq org-confirm-babel-evaluate nil
             org-src-fontify-natively t
