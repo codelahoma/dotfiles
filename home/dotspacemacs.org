@@ -287,12 +287,19 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
           )
 #+end_src
 
+*** Hy
+#+begin_src emacs-lisp :noweb-ref config-layers
+  hy
+#+end_src
+
+#+begin_src emacs-lisp :noweb-ref additional-packages
+  ob-hy
+#+end_src
 ** Other
 #+begin_src emacs-lisp :noweb-ref config-layers
   emacs-lisp
   prolog
   sql
-  hy
   ess ; R
   prettier
 #+end_src
@@ -429,7 +436,6 @@ Let's not rearrange the windows when we open the special edit window, instead us
 #+begin_src emacs-lisp :noweb-ref config-layers
   html
   markdown
-  elasticsearch
 #+end_src
 
 ** PlantUML
@@ -610,6 +616,7 @@ Let's not rearrange the windows when we open the special edit window, instead us
          (lua . t)
          (python . t)
          (shell . t)
+         (hy . t)
          (R . t)))
       (setq org-confirm-babel-evaluate nil
             org-src-fontify-natively t
@@ -1129,7 +1136,7 @@ Configures the base distribution and the layers I want installed and configure.
      ;; refer to the DOCUMENTATION.org for more info on how to create your own
      ;; spaceline theme. Value can be a symbol or list with additional properties.
      ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-     dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
+     dotspacemacs-mode-line-theme '(all-the-icons :separator wave :separator-scale 1.5)
 
      ;; If non-nil the cursor color matches the state color in GUI Emacs.
      ;; (default t)
