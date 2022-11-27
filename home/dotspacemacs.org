@@ -133,7 +133,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
 ** Default Fonts
 #+begin_src emacs-lisp :noweb-ref dotspacemacs-default-font
   ("JetBrainsMono Nerd Font"
-   :size 14.0
+   :size 18.0
    :weight normal
    :width normal)
   ("FiraCode Nerd Font"
@@ -214,6 +214,8 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
 #+end_src
 *** default themes
 #+begin_src emacs-lisp :noweb-ref dotspacemacs-themes
+  ef-autumn
+  ef-winter
   farmhouse-light
   farmhouse-dark
   majapahit-light
@@ -242,7 +244,10 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
 ** Javascript
 #+begin_src emacs-lisp :noweb-ref config-layers
   (javascript :variables
-              javascript-repl 'nodejs) ;; includes Coffeescript support
+              javascript-repl 'nodejs
+              javascript-fmt-on-save t
+              node-add-modules-path t
+              javascript-fmt-tool 'prettier) ;; includes Coffeescript support
 #+end_src
 
 ** Typescript
@@ -281,6 +286,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
   sql
   hy
   ess ; R
+  prettier
 #+end_src
 
 * Frameworks
@@ -590,11 +596,12 @@ Let's not rearrange the windows when we open the special edit window, instead us
       (org-babel-do-load-languages
        'org-babel-load-languages
        '((emacs-lisp . t)
+         (mermaid . T)
+         (plantuml . T)
          (http . t)
          (lua . t)
          (python . t)
          (shell . t)
-         (elasticsearch . t)
          (R . t)))
       (setq org-confirm-babel-evaluate nil
             org-src-fontify-natively t
@@ -894,7 +901,7 @@ Configures the base distribution and the layers I want installed and configure.
        <<config-layers>>
        ;; private layers
        rk-layout
-       jekyll
+       ;;jekyll
        )
 
 

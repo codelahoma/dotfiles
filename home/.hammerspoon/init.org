@@ -279,6 +279,7 @@ The KSheet spoon provides for showing the keybindings for the currently active a
     hotkey.bind(hyper, "b", appLauncher('Bitbucket'))
     hotkey.bind(hyper, "c", hs.toggleConsole)
     hotkey.bind(hyper, "d", appLauncher('Dash'))
+    hotkey.bind(hyper, "f", appLauncher('DBeaver'))
     hotkey.bind(hyper, "g", appLauncher('Atlas Jupyter'))
     hotkey.bind(hyper, "h", appLauncher('Docker Desktop'))
     hotkey.bind(hyper, "i", appLauncher('iTerm'))
@@ -298,6 +299,7 @@ The KSheet spoon provides for showing the keybindings for the currently active a
     hotkey.bind(hyper, "s", hs.grid.show)
     hotkey.bind(hyper, "u", appLauncher(Qutebrowser))
     hotkey.bind(hyper, "v", pasteLauncher())
+    hotkey.bind(hyper, "w", appLauncher('Warp'))
     hotkey.bind(hyper, "y", appLauncher('Jira'))
     hotkey.bind(hyper, "z", centerOnMainDisplay)
     hotkey.bind(hyper, ";", appLauncher('Spotify'))
@@ -320,6 +322,8 @@ The KSheet spoon provides for showing the keybindings for the currently active a
     hotkey.bind(hyper, ";", appLauncher('Spotify'))
   end
 #+end_src
+
+#+RESULTS:
 
 If it's my work laptop, the work set, otherwise my personal set.
 
