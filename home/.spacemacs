@@ -93,10 +93,10 @@ This function should only modify configuration layer settings."
              python-formatter 'black
              python-format-on-save t
              )
+     hy
      emacs-lisp
      prolog
      sql
-     hy
      ess ; R
      prettier
      react
@@ -120,7 +120,6 @@ This function should only modify configuration layer settings."
           org-start-notification-daemon-on-startup t)
      html
      markdown
-     elasticsearch
      (plantuml :variables
                plantuml-jar-path "/opt/homebrew/opt/plantuml/libexec/plantuml.jar"
                org-plantuml-jar-path "/opt/homebrew/opt/plantuml/libexec/plantuml.jar")
@@ -208,6 +207,7 @@ This function should only modify configuration layer settings."
                                       highlight-indent-guides
                                       ef-themes
                                       
+                                      ob-hy
                                       ob-async
                                       org-jira
                                       (org-ql :quelpa (org-ql :fetcher github :repo "alphapapa/org-ql"
@@ -431,7 +431,7 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
+   dotspacemacs-mode-line-theme '(all-the-icons :separator wave :separator-scale 1.5)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -1089,6 +1089,7 @@ before packages are loaded."
          (lua . t)
          (python . t)
          (shell . t)
+         (hy . t)
          (R . t)))
       (setq org-confirm-babel-evaluate nil
             org-src-fontify-natively t
