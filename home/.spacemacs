@@ -40,11 +40,14 @@ This function should only modify configuration layer settings."
                       auto-completion-return-key-behavior 'complete
                       auto-completion-tab-key-behavior 'cycle
                       auto-completion-minimum-prefix-length 2
+                      auto-completion-complete-with-key-sequence "jk"
+                      auto-completion-complete-with-key-sequence-delay 0.1
                       auto-completion-idle-delay 0.2
                       auto-completion-private-snippets-directory nil
                       auto-completion-enable-snippets-in-popup t
-                      auto-completion-enable-help-tooltip t
-                      auto-completion-use-company-box t
+                      auto-completion-enable-help-tooltip 'manual
+                      ;; auto-completion-use-company-box t
+                      auto-completion-use-company-posframe t
                       auto-completion-enable-sort-by-usage t)
      (colors :variables
              colors-colorize-identifiers 'variables)
@@ -787,7 +790,16 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
   (require 'asdf)
   (asdf-enable)
 
-  (load-file "/Users/rodk/.emacs.d/private/local/narrow-indirect.el"))
+  (load-file "/Users/rodk/.emacs.d/private/local/narrow-indirect.el")
+
+
+  (defun file-notify-rm-all-watches ()
+    "Remove all existing file notification watches from Emacs."
+    (interactive)
+    (maphash
+     (lambda (key _value)
+       (file-notify-rm-watch key))
+     file-notify-descriptors)))
 (defun dotspacemacs/user-load ()
   "Library to load while dumping.
 This function is called only while dumping Spacemacs configuration. You can
@@ -844,6 +856,11 @@ before packages are loaded."
   ;;    `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
   ;;    `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
   ;;    `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
+  (custom-set-faces
+   '(company-tooltip-common
+     ((t (:inherit company-tooltip :weight bold :underline nil))))
+   '(company-tooltip-common-selection
+     ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
   (let* ((variable-tuple
           (cond ((x-list-fonts "Fira Sans")       '(:font "Fira Sans"))
                 ((x-list-fonts "Avenir Next") '(:font "Avenir Next"))

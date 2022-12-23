@@ -9,8 +9,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-agenda-files
+   '("/Users/rodk/personal/org-files/gtd.org" "/Users/rodk/personal/org-files/inbox.org" "/Users/rodk/personal/org-files/babel-sandbox.org" "/Users/rodk/personal/org-files/diary.org" "/Users/rodk/personal/org-files/elfeed.org" "/Users/rodk/personal/org-files/home.org" "/Users/rodk/personal/org-files/ian.org" "/Users/rodk/personal/org-files/journal.org" "/Users/rodk/personal/org-files/mac-migration.org" "/Users/rodk/personal/org-files/pinboard-playground.org" "/Users/rodk/personal/org-files/primary_keys.org" "/Users/rodk/personal/org-files/reference.org" "/Users/rodk/personal/org-files/someday.org" "/Users/rodk/personal/org-files/test-transclude.org" "/Users/rodk/personal/org-files/tickler.org" "/Users/rodk/personal/org-files/til.org"))
  '(safe-local-variable-values
-   '((projectile-project-name . "org-files")
+   '((flycheck-checker . flake8)
+     (projectile-project-name . "org-files")
      (typescript-backend . tide)
      (typescript-backend . lsp)
      (javascript-backend . tide)
