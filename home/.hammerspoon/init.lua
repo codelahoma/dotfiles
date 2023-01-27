@@ -193,6 +193,7 @@ if work_machines[machine] ~= nil then
   end
   hotkey.bind(hyper, "r", hs.reload)
   hotkey.bind(hyper, "s", hs.grid.show)
+  hotkey.bind(hyper, "t", appLauncher("DEVONthink 3"))
   hotkey.bind(hyper, "u", appLauncher(Qutebrowser))
   hotkey.bind(hyper, "v", pasteLauncher())
   hotkey.bind(hyper, "w", appLauncher('Warp'))
