@@ -103,7 +103,17 @@ if home_machines[machine] ~= nil then
 
 end
 
+local function setHeadphones()
+  hs.audiodevice.findOutputByName("Sennheiser Main Audio"):setDefaultOutputDevice()
+end
+
+local function setSpeakers()
+  hs.audiodevice.findOutputByName("CalDigit USB-C Pro Audio"):setDefaultOutputDevice()
+end
+
 hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
+hotkey.bind(magic, 'h', setHeadphones)
+hotkey.bind(magic, 's', setSpeakers)
 
 Install:andUse("KSheet", {
                  hotkeys = {
@@ -187,7 +197,7 @@ if work_machines[machine] ~= nil then
   hotkey.bind(hyper, "v", pasteLauncher())
   hotkey.bind(hyper, "w", appLauncher('Warp'))
   hotkey.bind(hyper, "y", appLauncher('Jira'))
-  hotkey.bind(hyper, "z", centerOnMainDisplay)
+  hotkey.bind(hyper, "z", appLauncher("zoom.us"))
   hotkey.bind(hyper, ";", appLauncher('Spotify'))
   hotkey.bind(hyper, "0", centerOnMainDisplay)
 else
