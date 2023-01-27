@@ -201,7 +201,17 @@ The [[http://www.hammerspoon.org/Spoons/WindowGrid.html][WindowGrid]] spoon sets
 What's playing?
 
 #+begin_src lua
+  local function setHeadphones()
+    hs.audiodevice.findOutputByName("Sennheiser Main Audio"):setDefaultOutputDevice()
+  end
+
+  local function setSpeakers()
+    hs.audiodevice.findOutputByName("CalDigit USB-C Pro Audio"):setDefaultOutputDevice()
+  end
+
   hotkey.bind(magic, 'space', spotify.displayCurrentTrack)
+  hotkey.bind(magic, 'h', setHeadphones)
+  hotkey.bind(magic, 's', setSpeakers)
 #+end_src
 
 * Show application keybindings
@@ -301,7 +311,7 @@ The KSheet spoon provides for showing the keybindings for the currently active a
     hotkey.bind(hyper, "v", pasteLauncher())
     hotkey.bind(hyper, "w", appLauncher('Warp'))
     hotkey.bind(hyper, "y", appLauncher('Jira'))
-    hotkey.bind(hyper, "z", centerOnMainDisplay)
+    hotkey.bind(hyper, "z", appLauncher("zoom.us"))
     hotkey.bind(hyper, ";", appLauncher('Spotify'))
     hotkey.bind(hyper, "0", centerOnMainDisplay)
   else
