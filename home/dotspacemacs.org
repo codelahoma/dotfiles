@@ -91,18 +91,8 @@ Trying out a Hammerspoon Spoon for system-wide emacs editing
 
 * Interface
 ** Appearance
-Currently commented out:
 *** Company Box
 #+begin_src emacs-lisp :noweb-ref user-config
-  ;; (require 'color)
-
-  ;; (let ((bg (face-attribute 'default :background)))
-  ;;   (custom-set-faces
-  ;;    '(company-tooltip ((t (:weight bold :foreground "dark red" :background "khaki1" :inherit default))))
-  ;;    `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
-  ;;    `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
-  ;;    `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
-  ;;    `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
   (custom-set-faces
    '(company-tooltip-common
      ((t (:inherit company-tooltip :weight bold :underline nil))))
@@ -197,6 +187,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
   emoji
   evil-better-jumper
   helm
+  ;; compleseus
   multiple-cursors
   (osx :variables
        osx-command-as nil)
@@ -654,6 +645,15 @@ Let's not rearrange the windows when we open the special edit window, instead us
        lsp-headerline-breadcrumb-enable t
        lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols)
        )
+#+end_src
+
+*** Tree-Sitter
+#+begin_src emacs-lisp :noweb-ref config-layers
+  (tree-sitter :variables
+               spacemacs-tree-sitter-hl-black-list '(js2-mode rjsx-mode)
+               tree-sitter-syntax-highlight-enable t
+               tree-sitter-fold-enable t
+               tree-sitter-fold-indicators-enable nil)
 #+end_src
 
 * External App Integrations
@@ -1136,7 +1136,7 @@ Configures the base distribution and the layers I want installed and configure.
      ;; refer to the DOCUMENTATION.org for more info on how to create your own
      ;; spaceline theme. Value can be a symbol or list with additional properties.
      ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-     dotspacemacs-mode-line-theme '(all-the-icons :separator wave :separator-scale 1.5)
+     dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
 
      ;; If non-nil the cursor color matches the state color in GUI Emacs.
      ;; (default t)
@@ -1450,10 +1450,15 @@ Configures the base distribution and the layers I want installed and configure.
   It is mostly for variables that should be set before packages are loaded.
   If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
-    ;;asdf
+    ;; add the private directory
     (add-to-list 'load-path "/Users/rodk/.emacs.d/private/")
+
+    ;;asdf
     (require 'asdf)
     (asdf-enable)
+
+    ;;chatgpt
+    (require 'chatgpt)
 
     (load-file "/Users/rodk/.emacs.d/private/local/narrow-indirect.el")
 

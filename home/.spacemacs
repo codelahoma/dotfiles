@@ -54,6 +54,7 @@ This function should only modify configuration layer settings."
      emoji
      evil-better-jumper
      helm
+     ;; compleseus
      multiple-cursors
      (osx :variables
           osx-command-as nil)
@@ -138,6 +139,11 @@ This function should only modify configuration layer settings."
           lsp-headerline-breadcrumb-enable t
           lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols)
           )
+     (tree-sitter :variables
+                  spacemacs-tree-sitter-hl-black-list '(js2-mode rjsx-mode)
+                  tree-sitter-syntax-highlight-enable t
+                  tree-sitter-fold-enable t
+                  tree-sitter-fold-indicators-enable nil)
      pass
      chrome
      docker
@@ -431,7 +437,7 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(all-the-icons :separator wave :separator-scale 1.5)
+   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -785,10 +791,15 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
-  ;;asdf
+  ;; add the private directory
   (add-to-list 'load-path "/Users/rodk/.emacs.d/private/")
+
+  ;;asdf
   (require 'asdf)
   (asdf-enable)
+
+  ;;chatgpt
+  (require 'chatgpt)
 
   (load-file "/Users/rodk/.emacs.d/private/local/narrow-indirect.el")
 
@@ -847,15 +858,6 @@ before packages are loaded."
       (load-theme 'modus-vivendi t )))
   
   (load "~/github/editWithEmacs.spoon/hammerspoon.el")
-  ;; (require 'color)
-  
-  ;; (let ((bg (face-attribute 'default :background)))
-  ;;   (custom-set-faces
-  ;;    '(company-tooltip ((t (:weight bold :foreground "dark red" :background "khaki1" :inherit default))))
-  ;;    `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
-  ;;    `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
-  ;;    `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
-  ;;    `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
   (custom-set-faces
    '(company-tooltip-common
      ((t (:inherit company-tooltip :weight bold :underline nil))))
