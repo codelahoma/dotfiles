@@ -18,31 +18,31 @@
 ## READING Sourcery (1988)
 
 
-## TO-READ Wyrd Sisters (Witches)
+## TO-READ Wyrd Sisters (1988)
 
 
 ## TO-READ Pyramids (1989)
 
 
-## TO-READ Guards! Guards! (City Watch)
+## TO-READ Guards! Guards! (1989)
 
 
 ## TO-READ Eric (1990)
 
 
-## TO-READ Moving Pictures (Industrial Revolution)
+## TO-READ Moving Pictures (1990)
 
 
 ## TO-READ Reaper Man (1991)
 
 
-## TO-READ Witches Abroad (Witches)
+## TO-READ Witches Abroad (1991)
 
 
 ## TO-READ Small Gods (1992)
 
 
-## TO-READ Lords and Ladies (Witches)
+## TO-READ Lords and Ladies (1992)
 
 
 ## TO-READ Men at Arms (1993)
@@ -51,7 +51,7 @@
 ## READ Soul Music (1994)
 
 
-## READ Interesting Times (Rincewind)
+## READ Interesting Times (1994)
 
 
 ## TO-READ Maskerade (1995)
@@ -60,7 +60,7 @@
 ## TO-READ Feet of Clay (1996)
 
 
-## TO-READ Hogfather (Death)
+## TO-READ Hogfather (1996)
 
 
 ## TO-READ Jingo (1997)
@@ -69,7 +69,7 @@
 ## TO-READ The Last Continent (1998)
 
 
-## TO-READ Carpe Jugulum (Witches)
+## TO-READ Carpe Jugulum (1998)
 
 
 ## TO-READ The Fifth Elephant (1999)
@@ -81,10 +81,10 @@
 ## TO-READ Thief of Time (2001)
 
 
-## TO-READ The Last Hero (Rincewind)
+## TO-READ The Last Hero (2001)
 
 
-## TO-READ The Amazing Maurice and His Educated Rodents (Überwald)
+## TO-READ The Amazing Maurice and His Educated Rodents (2001)
 
 
 ## TO-READ Night Watch (2002)
@@ -93,13 +93,13 @@
 ## TO-READ The Wee Free Men (2003)
 
 
-## TO-READ Monstrous Regiment (Industrial Revolution)
+## TO-READ Monstrous Regiment (2003)
 
 
 ## TO-READ A Hat Full of Sky (2004)
 
 
-## TO-READ Going Postal (Moist von Lipwig)
+## TO-READ Going Postal (2004)
 
 
 ## TO-READ Thud! (2005)
