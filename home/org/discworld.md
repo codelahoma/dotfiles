@@ -1,6 +1,6 @@
 
 
-# Discworld 2023 Reading List <code>[6/41]</code>
+# Discworld 2023 Reading List <code>[6/7]</code>
 
 
 ## READ The Colour of Magic (1983)
@@ -18,34 +18,34 @@
 ## READING Sourcery (1988)
 
 
-## TO-READ Wyrd Sisters (1988)
+## Wyrd Sisters (1988)
 
 
-## TO-READ Pyramids (1989)
+## Pyramids (1989)
 
 
-## TO-READ Guards! Guards! (1989)
+## Guards! Guards! (1989)
 
 
-## TO-READ Eric (1990)
+## Eric (1990)
 
 
-## TO-READ Moving Pictures (1990)
+## Moving Pictures (1990)
 
 
-## TO-READ Reaper Man (1991)
+## Reaper Man (1991)
 
 
-## TO-READ Witches Abroad (1991)
+## Witches Abroad (1991)
 
 
-## TO-READ Small Gods (1992)
+## Small Gods (1992)
 
 
-## TO-READ Lords and Ladies (1992)
+## Lords and Ladies (1992)
 
 
-## TO-READ Men at Arms (1993)
+## Men at Arms (1993)
 
 
 ## READ Soul Music (1994)
@@ -54,74 +54,74 @@
 ## READ Interesting Times (1994)
 
 
-## TO-READ Maskerade (1995)
+## Maskerade (1995)
 
 
-## TO-READ Feet of Clay (1996)
+## Feet of Clay (1996)
 
 
-## TO-READ Hogfather (1996)
+## Hogfather (1996)
 
 
-## TO-READ Jingo (1997)
+## Jingo (1997)
 
 
-## TO-READ The Last Continent (1998)
+## The Last Continent (1998)
 
 
-## TO-READ Carpe Jugulum (1998)
+## Carpe Jugulum (1998)
 
 
-## TO-READ The Fifth Elephant (1999)
+## The Fifth Elephant (1999)
 
 
-## TO-READ The Truth (2000)
+## The Truth (2000)
 
 
-## TO-READ Thief of Time (2001)
+## Thief of Time (2001)
 
 
-## TO-READ The Last Hero (2001)
+## The Last Hero (2001)
 
 
-## TO-READ The Amazing Maurice and His Educated Rodents (2001)
+## The Amazing Maurice and His Educated Rodents (2001)
 
 
-## TO-READ Night Watch (2002)
+## Night Watch (2002)
 
 
-## TO-READ The Wee Free Men (2003)
+## The Wee Free Men (2003)
 
 
-## TO-READ Monstrous Regiment (2003)
+## Monstrous Regiment (2003)
 
 
-## TO-READ A Hat Full of Sky (2004)
+## A Hat Full of Sky (2004)
 
 
-## TO-READ Going Postal (2004)
+## Going Postal (2004)
 
 
-## TO-READ Thud! (2005)
+## Thud! (2005)
 
 
-## TO-READ Wintersmith (2006)
+## Wintersmith (2006)
 
 
-## TO-READ Making Money (2007)
+## Making Money (2007)
 
 
-## TO-READ Unseen Academicals (2009)
+## Unseen Academicals (2009)
 
 
-## TO-READ I Shall Wear Midnight (2010)
+## I Shall Wear Midnight (2010)
 
 
-## TO-READ Snuff (2011)
+## Snuff (2011)
 
 
-## TO-READ Raising Steam (2013)
+## Raising Steam (2013)
 
 
-## TO-READ The Shepherd's Crown (2015)
+## The Shepherd's Crown (2015)
 
