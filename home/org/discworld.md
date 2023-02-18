@@ -1,6 +1,6 @@
 
 
-# Discworld 2023 Reading List
+# Discworld 2023 Reading List <code>[6/41]</code>
 
 
 ## READ The Colour of Magic (1983)
