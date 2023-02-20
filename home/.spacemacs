@@ -40,14 +40,14 @@ This function should only modify configuration layer settings."
                       auto-completion-return-key-behavior 'complete
                       auto-completion-tab-key-behavior 'cycle
                       auto-completion-minimum-prefix-length 2
-                      auto-completion-complete-with-key-sequence "jk"
-                      auto-completion-complete-with-key-sequence-delay 0.1
+                      ;; auto-completion-complete-with-key-sequence "jk"
+                      ;; auto-completion-complete-with-key-sequence-delay 0.1
                       auto-completion-idle-delay 0.2
                       auto-completion-private-snippets-directory nil
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-enable-help-tooltip 'manual
                       ;; auto-completion-use-company-box t
-                      auto-completion-use-company-posframe t
+                      ;; auto-completion-use-company-posframe t
                       auto-completion-enable-sort-by-usage t)
      (colors :variables
              colors-colorize-identifiers 'variables)
@@ -139,11 +139,11 @@ This function should only modify configuration layer settings."
           lsp-headerline-breadcrumb-enable t
           lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols)
           )
-     (tree-sitter :variables
-                  spacemacs-tree-sitter-hl-black-list '(js2-mode rjsx-mode)
-                  tree-sitter-syntax-highlight-enable t
-                  tree-sitter-fold-enable t
-                  tree-sitter-fold-indicators-enable nil)
+     ;; (tree-sitter :variables
+     ;;              spacemacs-tree-sitter-hl-black-list '(js2-mode rjsx-mode)
+     ;;              tree-sitter-syntax-highlight-enable t
+     ;;              tree-sitter-fold-enable t
+     ;;              tree-sitter-fold-indicators-enable nil)
      pass
      chrome
      docker
@@ -437,7 +437,7 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
+   dotspacemacs-mode-line-theme '(spacemacs :separator curve)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -917,6 +917,7 @@ before packages are loaded."
           '(("TODO" . ?🔳)
             ("NEXT" . ?👀)
             ("IN-PROGRESS" . ?🚀)
+            ("CODE-COMPLETE" . ?💾)
             ("NEEDS-REFINEMENT" . ?🔍)
             ("NOT-APPLICABLE" . ?💩)
             ("WAITING" . ?☕)
@@ -1071,6 +1072,7 @@ before packages are loaded."
                "WAITING(w)"
                "NEXT(n)"
                "IN-PROGRESS(i)"
+               "CODE-COMPLETE"
                "NEEDS-REFINEMENT(r)"
                "|"
                "NOT-APPLICABLE"
@@ -1259,11 +1261,23 @@ before packages are loaded."
     (advice-add 'evil-avy-goto-char-timer :after #'evil-scroll-line-to-center)
     (add-hook 'bookmark-after-jump-hook 'evil-scroll-line-to-center)
   
+  
+    (add-hook 'lsp-managed-mode-hook
+              (lambda ()
+                (when (derived-mode-p 'python-mode)
+                  (progn
+                    (flycheck-add-next-checker 'lsp 'python-flake8)
+                    (flycheck-disable-checker 'python-mypy)
+                    (flycheck-disable-checker 'python-pylint))
+                  )))
     ;; Python
-    (with-eval-after-load 'python-mode
-      (flycheck-select-checker 'python-flake8))
-    ;; (add-hook 'python-mode-hook
-    ;;           '(flycheck-select-checker 'python-flake8))
+    ;; (add-hook 'python-mode-hook (lambda ()
+    ;;                                     (flycheck-mode 1)
+    ;;                                     (semantic-mode 1)
+    ;;                                     (setq flycheck-checker 'lsp)
+    ;;                                     (flycheck-remove-next-checker 'python-flake8 'python-mypy)
+    ;;                                     (flycheck-remove-next-checker 'python-flake8 'python-pylint)
+    ;;                                     (flycheck-add-next-checker 'lsp 'python-flake8)))
   
     ;; Elfeed
   
@@ -1348,7 +1362,7 @@ before packages are loaded."
   
     ;; EWW
   
-    (setq browse-url-browser-function 'eww-browse-url)
+    ;; (setq browse-url-browser-function 'eww-browse-url)
     (defun url-found-p (url)
       "Return non-nil if URL is found, i.e. HTTP 200."
       (with-current-buffer (url-retrieve-synchronously url nil t 5)
