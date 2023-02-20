@@ -1,6 +1,6 @@
 
 
-# Discworld 2023 Reading List <code>[6/41]</code>
+# Discworld 2023 Reading List <code>[7/41]</code>
 
 
 ## READ The Colour of Magic (1983)
@@ -15,10 +15,10 @@
 ## READ Mort (Death)
 
 
-## READING Sourcery (1988)
+## READ Sourcery (1988)
 
 
-## UNREAD Wyrd Sisters (1988)
+## READING Wyrd Sisters (1988)
 
 
 ## UNREAD Pyramids (1989)
