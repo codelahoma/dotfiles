@@ -25,6 +25,10 @@ It consists of a brief [[*.spacemacs Preamble][preamble]], followed by a [[*The 
   <<dotspacemacs-user-config>>
   <<the-rest>>
 #+end_src
+
+#+RESULTS:
+: dotspacemacs/user-config
+
 * noweb-ref Legend
 The following special values of the =noweb-ref= header argument will cause a code block  to behave in the follow manner, allowing better grouping of all configuration by modes.
 
@@ -54,6 +58,10 @@ My attempt at [[file:~/personal/org-files/home.org::*tmux/vterm pairing][giving 
 
 
 #+end_src
+
+#+RESULTS:
+: rk/vterm
+
 ** 
 ** rk/go-modus
 Playing around with [[https://github.com/protesilaos/modus-themes/][Modus Themes]], as seen on [[https://systemcrafters.net/emacs-from-scratch/the-modus-themes/][Style Your Emacs with the Modus Themes - System Crafters]] 
@@ -80,6 +88,10 @@ Playing around with [[https://github.com/protesilaos/modus-themes/][Modus Themes
       (load-theme 'modus-vivendi t )))
 
 #+end_src
+
+#+RESULTS:
+: rk/go-modus
+
 ** editWithEmacs
 Trying out a Hammerspoon Spoon for system-wide emacs editing
 #+begin_src emacs-lisp :noweb-ref user-config
@@ -99,20 +111,23 @@ Trying out a Hammerspoon Spoon for system-wide emacs editing
    '(company-tooltip-common-selection
      ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
 #+end_src
+
+#+RESULTS:
+
 ** Auto Completion
 #+begin_src emacs-lisp :noweb-ref config-layers
   (auto-completion :variables
                    auto-completion-return-key-behavior 'complete
                    auto-completion-tab-key-behavior 'cycle
                    auto-completion-minimum-prefix-length 2
-                   auto-completion-complete-with-key-sequence "jk"
-                   auto-completion-complete-with-key-sequence-delay 0.1
+                   ;; auto-completion-complete-with-key-sequence "jk"
+                   ;; auto-completion-complete-with-key-sequence-delay 0.1
                    auto-completion-idle-delay 0.2
                    auto-completion-private-snippets-directory nil
                    auto-completion-enable-snippets-in-popup t
                    auto-completion-enable-help-tooltip 'manual
                    ;; auto-completion-use-company-box t
-                   auto-completion-use-company-posframe t
+                   ;; auto-completion-use-company-posframe t
                    auto-completion-enable-sort-by-usage t)
 #+end_src
 ** Folding
@@ -402,6 +417,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
           '(("TODO" . ?🔳)
             ("NEXT" . ?👀)
             ("IN-PROGRESS" . ?🚀)
+            ("CODE-COMPLETE" . ?💾)
             ("NEEDS-REFINEMENT" . ?🔍)
             ("NOT-APPLICABLE" . ?💩)
             ("WAITING" . ?☕)
@@ -587,6 +603,7 @@ Let's not rearrange the windows when we open the special edit window, instead us
                "WAITING(w)"
                "NEXT(n)"
                "IN-PROGRESS(i)"
+               "CODE-COMPLETE"
                "NEEDS-REFINEMENT(r)"
                "|"
                "NOT-APPLICABLE"
@@ -649,11 +666,11 @@ Let's not rearrange the windows when we open the special edit window, instead us
 
 *** Tree-Sitter
 #+begin_src emacs-lisp :noweb-ref config-layers
-  (tree-sitter :variables
-               spacemacs-tree-sitter-hl-black-list '(js2-mode rjsx-mode)
-               tree-sitter-syntax-highlight-enable t
-               tree-sitter-fold-enable t
-               tree-sitter-fold-indicators-enable nil)
+  ;; (tree-sitter :variables
+  ;;              spacemacs-tree-sitter-hl-black-list '(js2-mode rjsx-mode)
+  ;;              tree-sitter-syntax-highlight-enable t
+  ;;              tree-sitter-fold-enable t
+  ;;              tree-sitter-fold-indicators-enable nil)
 #+end_src
 
 * External App Integrations
@@ -1136,7 +1153,7 @@ Configures the base distribution and the layers I want installed and configure.
      ;; refer to the DOCUMENTATION.org for more info on how to create your own
      ;; spaceline theme. Value can be a symbol or list with additional properties.
      ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-     dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
+     dotspacemacs-mode-line-theme '(spacemacs :separator curve)
 
      ;; If non-nil the cursor color matches the state color in GUI Emacs.
      ;; (default t)
@@ -1569,11 +1586,23 @@ Configures the base distribution and the layers I want installed and configure.
     (advice-add 'evil-avy-goto-char-timer :after #'evil-scroll-line-to-center)
     (add-hook 'bookmark-after-jump-hook 'evil-scroll-line-to-center)
 
+
+    (add-hook 'lsp-managed-mode-hook
+              (lambda ()
+                (when (derived-mode-p 'python-mode)
+                  (progn
+                    (flycheck-add-next-checker 'lsp 'python-flake8)
+                    (flycheck-disable-checker 'python-mypy)
+                    (flycheck-disable-checker 'python-pylint))
+                  )))
     ;; Python
-    (with-eval-after-load 'python-mode
-      (flycheck-select-checker 'python-flake8))
-    ;; (add-hook 'python-mode-hook
-    ;;           '(flycheck-select-checker 'python-flake8))
+    ;; (add-hook 'python-mode-hook (lambda ()
+    ;;                                     (flycheck-mode 1)
+    ;;                                     (semantic-mode 1)
+    ;;                                     (setq flycheck-checker 'lsp)
+    ;;                                     (flycheck-remove-next-checker 'python-flake8 'python-mypy)
+    ;;                                     (flycheck-remove-next-checker 'python-flake8 'python-pylint)
+    ;;                                     (flycheck-add-next-checker 'lsp 'python-flake8)))
 
     ;; Elfeed
 
@@ -1658,7 +1687,7 @@ Configures the base distribution and the layers I want installed and configure.
 
     ;; EWW
 
-    (setq browse-url-browser-function 'eww-browse-url)
+    ;; (setq browse-url-browser-function 'eww-browse-url)
     (defun url-found-p (url)
       "Return non-nil if URL is found, i.e. HTTP 200."
       (with-current-buffer (url-retrieve-synchronously url nil t 5)
