@@ -1,6 +1,6 @@
 #+TODO: UNREAD READING | READ
 #+OPTIONS: toc:nil
-* Discworld 2023 Reading List [7/41]
+* Discworld 2023 Reading List [8/41]
 ** READ The Colour of Magic (1983)
 ** READ The Light Fantastic (1986)
 CLOSED: [2023-02-18 Sat 11:34]
@@ -10,8 +10,9 @@ CLOSED: [2023-02-18 Sat 11:34]
 CLOSED: [2023-02-18 Sat 11:35]
 ** READ Sourcery (1988)
 CLOSED: [2023-02-20 Mon 08:51]
-** READING Wyrd Sisters (1988)
-** UNREAD Pyramids (1989)
+** READ Wyrd Sisters (1988)
+CLOSED: [2023-02-24 Fri 12:05]
+** READING Pyramids (1989)
 ** UNREAD Guards! Guards! (1989)
 ** UNREAD Eric (1990)
 ** UNREAD Moving Pictures (1990)
