@@ -42,7 +42,7 @@ This function should only modify configuration layer settings."
                       auto-completion-minimum-prefix-length 2
                       ;; auto-completion-complete-with-key-sequence "jk"
                       ;; auto-completion-complete-with-key-sequence-delay 0.1
-                      auto-completion-idle-delay 0.2
+                      auto-completion-idle-delay 0.0
                       auto-completion-private-snippets-directory nil
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-enable-help-tooltip 'manual
@@ -225,6 +225,10 @@ This function should only modify configuration layer settings."
                                       ox-slack
                                       direnv
                                       pinboard
+                                      (copilot :location (recipe
+                                                          :fetcher github
+                                                          :repo "zerolfx/copilot.el"
+                                                          :files ("*.el" "dist")))
                                       atomic-chrome
                                       editorconfig
                                       fold-this
@@ -1108,6 +1112,18 @@ before packages are loaded."
       )
   (add-hook 'find-file-hook 'direnv-update-directory-environment)
   
+  (with-eval-after-load 'company
+    ;; disable inline previews
+    (delq 'company-preview-if-just-one-frontend company-frontends))
+  
+  (with-eval-after-load 'copilot
+    (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+    (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion))
+  
+  (add-hook 'prog-mode-hook 'copilot-mode)
+  
+  (define-key evil-insert-state-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
+  (define-key evil-insert-state-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
   
   (setq mu4e-contexts
         (list
