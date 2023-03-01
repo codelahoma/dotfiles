@@ -1,6 +1,6 @@
 
 
-# Discworld 2023 Reading List <code>[7/41]</code>
+# Discworld 2023 Reading List <code>[9/41]</code>
 
 
 ## READ The Colour of Magic (1983)
@@ -18,10 +18,10 @@
 ## READ Sourcery (1988)
 
 
-## READING Wyrd Sisters (1988)
+## READ Wyrd Sisters (1988)
 
 
-## UNREAD Pyramids (1989)
+## READ Pyramids (1989)
 
 
 ## UNREAD Guards! Guards! (1989)
