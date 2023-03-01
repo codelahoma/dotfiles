@@ -172,7 +172,7 @@ end
 
 if work_machines[machine] ~= nil then
   -- hotkey.bind(hyper, "a", appLauncher('Arduino IDE'))
-  hotkey.bind(hyper, "b", appLauncher('Bitbucket'))
+  hotkey.bind(hyper, "b", appLauncher('Github'))
   hotkey.bind(hyper, "c", hs.toggleConsole)
   hotkey.bind(hyper, "d", appLauncher('Dash'))
   hotkey.bind(hyper, "f", appLauncher('DBeaver'))
