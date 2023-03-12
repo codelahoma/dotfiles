@@ -1,6 +1,6 @@
 
 
-# Discworld 2023 Reading List <code>[9/41]</code>
+# Discworld 2023 Reading List <code>[11/41]</code>
 
 
 ## READ The Colour of Magic (1983)
@@ -24,13 +24,13 @@
 ## READ Pyramids (1989)
 
 
-## READING Guards! Guards! (1989)
+## READ Guards! Guards! (1989)
 
 
-## UNREAD Eric (1990)
+## READ Eric (1990)
 
 
-## UNREAD Moving Pictures (1990)
+## READING Moving Pictures (1990)
 
 
 ## UNREAD Reaper Man (1991)
