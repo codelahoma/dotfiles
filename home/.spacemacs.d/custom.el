@@ -9,11 +9,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files
-   '("/Users/rodk/personal/org-files/gtd.org" "/Users/rodk/personal/org-files/inbox.org" "/Users/rodk/personal/org-files/babel-sandbox.org" "/Users/rodk/personal/org-files/diary.org" "/Users/rodk/personal/org-files/elfeed.org" "/Users/rodk/personal/org-files/home.org" "/Users/rodk/personal/org-files/ian.org" "/Users/rodk/personal/org-files/journal.org" "/Users/rodk/personal/org-files/mac-migration.org" "/Users/rodk/personal/org-files/pinboard-playground.org" "/Users/rodk/personal/org-files/primary_keys.org" "/Users/rodk/personal/org-files/reference.org" "/Users/rodk/personal/org-files/someday.org" "/Users/rodk/personal/org-files/test-transclude.org" "/Users/rodk/personal/org-files/tickler.org" "/Users/rodk/personal/org-files/til.org"))
+ '(package-selected-packages
+   '(bundler chruby counsel-gtags counsel swiper ivy enh-ruby-mode ggtags helm-gtags minitest rake rbenv robe inf-ruby rspec-mode rubocop rubocopfmt ruby-hash-syntax ruby-refactor ruby-test-mode ruby-tools rvm seeing-is-believing auto-yasnippet cmake-mode color-identifiers-mode company csv-mode dap-mode editorconfig evil-cleverparens evil-collection smartparens evil-matchit evil-visual-mark-mode flycheck-elsa helm git-link git-modes gnuplot graphviz-dot-mode lsp-mode helm-core hl-todo inspector keycast posframe modus-themes vterm projectile org-re-reveal websocket org-transclusion org-wild-notifier orgit-forge orgit forge markdown-mode ghub closql emacsql-sqlite emacsql magit magit-section git-commit transient with-editor compat auctex tide flycheck ht volatile-highlights web-mode yasnippet-snippets async evil writeroom-mode monokai-theme plantuml-mode busybee-theme smyx-theme gotham-theme helm-mu impatient-mode ansible-doc birds-of-paradise-plus-theme bm hide-comnt edit-server pinboard evil-lion organic-green-theme winum ibuffer-projectile helm-themes elfeed-org pylookup restclient-helm google-translate paradox js2-refactor evil-iedit-state treemacs-magit macrostep holy-mode elisp-def doom-themes soft-stone-theme sql-indent cherry-blossom-theme elfeed-goodies atomic-chrome indent-guide professional-theme ace-jump-helm-line evil-escape evil-easymotion ox-twbs org-superstar django-theme helm-ls-git web-beautify ox-jira darktooth-theme org-pomodoro flatui-theme evil-textobj-line dockerfile-mode ron-mode pcre2el term-cursor osx-trash flatland-theme twilight-theme badwolf-theme tango-plus-theme ujelly-theme helm-c-yasnippet zenburn-theme helm-ctest aggressive-indent elisp-slime-nav soothe-theme symon tango-2-theme treemacs-projectile rebecca-theme mu4e-alert emoji-cheat-sheet-plus bui space-doc treepy scss-mode nameless highlight-numbers typescript-mode spacemacs-whitespace-cleanup jazz-theme texfrag annalist help-fns+ devdocs org-appear afternoon-theme copy-as-format gruber-darker-theme obsidian-theme direnv company-ansible persistent-scratch clean-aindent-mode slim-mode ob-restclient diminish helm-company highlight-parentheses drag-stuff esh-help string-inflection material-theme nodejs-repl evil-unimpaired company-statistics browse-at-remote gmail-message-mode js-doc unkillable-scratch osx-dictionary chocolate-theme org-projectile company-restclient toxi-theme vi-tilde-fringe json-mode ox-hugo sass-mode expand-region launchctl soft-charcoal-theme helm-make dakrone-theme phoenix-dark-mono-theme ob-mermaid madhat2r-theme darkmine-theme uuidgen anti-zenburn-theme spacemacs-purpose-popwin livid-mode evil-anzu importmagic jira-markup-mode hybrid-mode helm-css-scss cargo fuzzy solarized-theme engine-mode which-key vim-powerline osx-clipboard hy-mode emr lorem-ipsum majapahit-theme fancy-battery flx-ido gh-md ef-themes helm-pydoc naquadah-theme helm-mode-manager omtose-phellack-theme alect-themes planet-theme rainbow-mode helm-projectile soft-morning-theme sunny-day-theme cyberpunk-theme tagedit wsd-mode gandalf-theme dumb-jump lsp-python-ms minimal-theme purple-haze-theme gitignore-templates pippel terminal-here evil-surround evil-lisp-state zonokai-emacs lsp-docker eval-sexp-fu prettier-js markdown-toc org-rich-yank sicp emojify flymd seti-theme undo-tree zen-and-art-theme mustang-theme emmet-mode org-contrib golden-ratio hc-zenburn-theme pytest bubbleberry-theme company-lua helm-git-grep auto-highlight-symbol goto-chg pug-mode rjsx-mode ob-http color-theme-sanityinc-tomorrow multi-term evil-visualstar keychain-environment wakatime-mode ob-async helm-pass lush-theme farmhouse-themes org-download tangotango-theme ess-R-data-view flycheck-rust ir-black-theme evil-mc pyenv-mode helm-purpose dotenv-mode blacken password-store-otp ace-link font-lock+ ox-slack fira-code-mode json-reformat apropospriate-theme docker org-jira toc-org nose color-theme-sanityinc-solarized shell-pop railscasts-theme ob-hy jinja2-mode sphinx-doc helm-ag kaolin-themes smeargle toml-mode restart-emacs espresso-theme eziam-themes yapfify flycheck-pos-tip company-quickhelp ansible evil-goggles moe-theme lsp-ui git-timemachine highlight-indentation evil-numbers light-soap-theme ample-theme tao-theme clues-theme evil-tutor subatomic-theme reverse-theme lsp-treemacs evil-exchange sublime-themes helm-descbinds info+ fold-this lsp-pyright npm-mode monochrome-theme evil-args eshell-prompt-extras hungry-delete add-node-modules-path inkpot-theme grandshell-theme noctilux-theme lsp-origami mu4e-maildirs-extension pydoc spaceline-all-the-icons heroku-theme yaml-mode ws-butler flycheck-package twilight-anti-bright-theme company-web flyspell-correct-helm column-enforce-mode eshell-z twilight-bright-theme quickrun multi-line command-log-mode open-junk-file treemacs-persp helpful multi-vterm evil-org rainbow-delimiters white-sand-theme rainbow-identifiers json-navigator pdf-view-restore helm-lsp reveal-in-osx-finder overseer spacegray-theme dracula-theme code-cells poetry helm-xref treemacs-evil centered-cursor-mode highlight-indent-guides evil-indent-plus darkokai-theme helm-swoop subatomic256-theme auto-dictionary symbol-overlay xterm-color git-gutter-fringe evil-nerd-commenter org-cliplink org-roam-ui underwater-theme evil-evilified-state cython-mode live-py-mode ein pipenv auto-compile occidental-theme molokai-theme helm-org-ql oldlace-theme password-generator phoenix-dark-pink-theme string-edit-at-point dired-quick-sort pip-requirements org-mime jbeans-theme gruvbox-theme ac-ispell eyebrowse treemacs-icons-dired company-anaconda ample-zen-theme py-isort better-jumper org-sticky-header mmm-mode hemisu-theme org-present helm-org-rifle git-messenger ediprolog company-emoji rust-mode org-journal exotica-theme))
  '(safe-local-variable-values
-   '((flycheck-checker . flake8)
-     (projectile-project-name . "org-files")
+   '((projectile-project-name . "org-files")
      (typescript-backend . tide)
      (typescript-backend . lsp)
      (javascript-backend . tide)
@@ -24,29 +23,5 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(fixed-pitch ((t (:family "FiraCode Nerd Font" :height 1.0))))
- '(org-block ((t (:inherit fixed-pitch :height 0.8))))
- '(org-code ((t (:inherit (shadow fixed-pitch)))))
- '(org-date ((t (:inherit (font-lock-comment-face fixed-pitch) :height 0.9))))
- '(org-document-info ((t (:foreground "dark orange"))))
- '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
- '(org-document-title ((t (:inherit default :weight normal :font "Fira Sans" :height 2.5 :underline nil))))
- '(org-done ((t (:font "Fira Sans" :height 0.6 :background nil))))
- '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
- '(org-level-1 ((t (:inherit default :weight normal :font "Fira Sans" :height 2.0))))
- '(org-level-2 ((t (:inherit default :weight normal :font "Fira Sans" :height 1.8))))
- '(org-level-3 ((t (:inherit default :weight normal :font "Fira Sans" :height 1.6))))
- '(org-level-4 ((t (:inherit default :weight normal :font "Fira Sans" :height 1.4))))
- '(org-level-5 ((t (:inherit default :weight normal :font "Fira Sans" :height 1.2))))
- '(org-level-6 ((t (:inherit default :weight normal :font "Fira Sans" :height 1.2))))
- '(org-level-7 ((t (:inherit default :weight normal :font "Fira Sans" :height 1.2))))
- '(org-level-8 ((t (:inherit default :weight normal :font "Fira Sans" :height 1.2))))
- '(org-link ((t (:foreground "royal blue" :underline t))))
- '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
- '(org-property-value ((t (:inherit fixed-pitch))) t)
- '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
- '(org-table ((t (:inherit fixed-pitch))))
- '(org-tag ((t (:inherit (shadow fixed-pitch) :height 0.5))))
- '(org-todo ((t (:font "Fira Sans" :height 0.8))))
- '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
- '(variable-pitch ((t (:family "Fira Sans" :height 1.1)))))
+ '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
+ '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))

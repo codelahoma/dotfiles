@@ -645,6 +645,21 @@ Let's not rearrange the windows when we open the special edit window, instead us
 #+end_src
 
 * Development Tools
+
+** ChatGPT
+#+begin_src emacs-lisp :noweb-ref additional-packages
+  (chatgpt :location (recipe
+                      :fetcher github
+                      :repo "joshcho/ChatGPT.el"))
+
+#+end_src
+
+#+begin_src emacs-lisp :noweb-ref user-config
+  (require 'python)
+  (setq chatgpt-repo-path (expand-file-name "chatgpt/" quelpa-build-dir))
+  (global-set-key (kbd "C-c q") #'chatgpt-query)
+
+#+end_src
 ** Other
 #+begin_src emacs-lisp :noweb-ref config-layers
   ansible
@@ -1499,7 +1514,7 @@ Configures the base distribution and the layers I want installed and configure.
     (asdf-enable)
 
     ;;chatgpt
-    (require 'chatgpt)
+    ;; (require 'chatgpt)
 
     (load-file "/Users/rodk/.emacs.d/private/local/narrow-indirect.el")
 
