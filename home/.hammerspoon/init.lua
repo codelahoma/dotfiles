@@ -175,6 +175,7 @@ if work_machines[machine] ~= nil then
   hotkey.bind(hyper, "b", appLauncher('Github'))
   hotkey.bind(hyper, "c", hs.toggleConsole)
   hotkey.bind(hyper, "d", appLauncher('Dash'))
+  hotkey.bind(magic, "d", appLauncher('Discord'))
   hotkey.bind(hyper, "f", appLauncher('DBeaver'))
   hotkey.bind(hyper, "g", appLauncher('Atlas Jupyter'))
   hotkey.bind(hyper, "h", appLauncher('Docker Desktop'))
