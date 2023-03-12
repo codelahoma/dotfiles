@@ -223,6 +223,10 @@ This function should only modify configuration layer settings."
                                                             :files ("helm-org-ql.el")))
                                       ox-jira
                                       ox-slack
+                                      (chatgpt :location (recipe
+                                                          :fetcher github
+                                                          :repo "joshcho/ChatGPT.el"))
+                                      
                                       direnv
                                       pinboard
                                       (copilot :location (recipe
@@ -803,7 +807,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
   (asdf-enable)
 
   ;;chatgpt
-  (require 'chatgpt)
+  ;; (require 'chatgpt)
 
   (load-file "/Users/rodk/.emacs.d/private/local/narrow-indirect.el")
 
@@ -1110,6 +1114,10 @@ before packages are loaded."
                                   "#+title: %<%Y-%m-%d>\n"))))
       (org-roam-db-autosync-mode)
       )
+  (require 'python)
+  (setq chatgpt-repo-path (expand-file-name "chatgpt/" quelpa-build-dir))
+  (global-set-key (kbd "C-c q") #'chatgpt-query)
+  
   (add-hook 'find-file-hook 'direnv-update-directory-environment)
   
   (with-eval-after-load 'company
