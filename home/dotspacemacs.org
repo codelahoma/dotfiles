@@ -1,4 +1,4 @@
-#+STARTUP: show2levels
+#+STARTUP: show2level
 #+TITLE:My Spacemacs Init
 #+AUTHOR: Rod Knowlton
 #+EMAIL: codelahoma@gmail.com
@@ -933,7 +933,137 @@ Make sure our custom lisp directory is in =load-path= (effective noop if already
          shell-default-full-span nil
          close-window-with-terminal t)
 #+end_src
+* 750 words
+** Functions to assist with maintaining my 750words.com habit, courtesy of ChatGPT-4
+#+begin_src emacs-lisp :noweb-ref user-config
+  ;; rk/open-daily-writing function
+  (defun rk/open-daily-writing ()
+    "Open the daily writing file, create a new entry if needed, and position the cursor at the end of the entry."
+    (interactive)
+    (let* ((daily-writing-file (rk/org-file "750words.org"))
+           (date-string (format-time-string "%Y-%m-%d"))
+           (entry-heading (concat "* " date-string)))
+      ;; Open the daily writing file
+      (find-file daily-writing-file)
+      ;; Go to the beginning of the buffer
+      (goto-char (point-min))
+      ;; Check if today's entry exists
+      (unless (search-forward entry-heading nil t)
+        ;; If the entry does not exist, create a new entry at the top
+        (goto-char (point-min))
+        (insert entry-heading "\n\n")
+        (forward-line -1))
+      ;; Position the cursor at the end of today's entry
+      (org-end-of-subtree)
+      ;; Turn on automatic word count updates for the buffer
+      (setq rk/auto-update-word-count-enabled t)
+      ;; Switch to distraction-free mode
+      (writeroom-mode)))
+
+  ;; Function to update the word count in an org entry heading
+  (defun rk/update-word-count-in-heading ()
+    "Store or update the word count of the current org entry in its heading."
+    (interactive)
+    (if (not (eq major-mode 'org-mode))
+        (message "Not in org-mode")
+      (save-excursion
+        ;; while the progn/point structure of the following code isn't semantically
+        ;; necessary (the two org functions already return point), it makes it easier to read and understand
+        (let* ((beg (progn (org-back-to-heading t) (point)))
+               (end (progn (org-end-of-subtree t t) (point)))
+               (wc 0))
+          ;; Calculate the word count
+          (goto-char beg)
+          (while (< (point) end)
+            (forward-word)
+            (setq wc (1+ wc)))
+          ;; Update the word count in the heading
+          (goto-char beg)
+          (let ((case-fold-search t)
+                (word-count-regexp "\\[\\([0-9]+\\) words\\]"))
+            (if (re-search-forward word-count-regexp (line-end-position) t)
+                ;; If the word count is already in the heading, update it
+                (replace-match (format "[%d words]" wc) nil t)
+              ;; Otherwise, append the word count to the heading
+              (end-of-line)
+              (insert (format " [%d words]" wc))))
+          (message "Word count updated: %d" wc)))))
+
+  ;; Buffer-local variable to control automatic word count updates
+  (defvar-local rk/auto-update-word-count-enabled nil
+    "Enable or disable automatic word count updates for the current buffer.")
+
+  ;; Function to automatically update the word count in an org entry heading
+  (defun rk/auto-update-word-count ()
+    "Automatically update the word count of the current org entry in its heading."
+    (when (and (eq major-mode 'org-mode) rk/auto-update-word-count-enabled)
+      (rk/update-word-count-in-heading)))
+
+  ;; Idle timer to update the word count of the current org entry in its heading
+  (defvar rk/auto-update-word-count-timer
+    (run-with-idle-timer 1.5 t 'rk/auto-update-word-count)
+    "Idle timer to update the word count of the current org entry in its heading.")
+
+  ;; Function to toggle automatic word count updates
+  (defun rk/toggle-auto-update-word-count ()
+    "Toggle automatic word count updates for the current buffer."
+    (interactive)
+    (setq rk/auto-update-word-count-enabled (not rk/auto-update-word-count-enabled))
+    (message "Automatic word count updates %s" (if rk/auto-update-word-count-enabled "enabled" "disabled")))
+
+  ;; Function to enable automatic word count updates for the current file
+  (defun rk/enable-auto-update-word-count-for-file ()
+    "Enable automatic word count updates for the current file."
+    (interactive)
+    (add-file-local-variable 'rk/auto-update-word-count-enabled t)
+    (message "Enabled automatic word count updates for the current file."))
+
+  ;; Function to enable automatic word count updates for the current org entry(defun rk/enable-auto-update-word-count-for-entry ()
+  (defun rk/enable-auto-update-word-count-for-entry ()
+    "Enable automatic word count updates for the current org entry."
+    (interactive)
+    (if (not (eq major-mode 'org-mode))
+        (message "Not in org-mode")
+      (save-excursion
+        (org-back-to-heading t)
+        (let ((property-drawer (org-entry-properties nil 'standard)))
+          (if (assoc "VARIABLES" property-drawer)
+              (org-entry-put nil "VARIABLES" (concat (cdr (assoc "VARIABLES" property-drawer)) " rk/auto-update-word-count-enabled=t"))
+            (org-entry-put nil "VARIABLES" "rk/auto-update-word-count-enabled=t"))))
+      (message "Enabled automatic word count updates for the current entry.")))
+
+  ;; Function to disable automatic word count updates for the current file
+  (defun rk/disable-auto-update-word-count-for-file ()
+    "Disable automatic word count updates for the current file."
+    (interactive)
+    (delete-file-local-variable 'rk/auto-update-word-count-enabled)
+    (message "Disabled automatic word count updates for the current file."))
+
+  ;; Function to disable automatic word count updates for the current org entry
+  (defun rk/disable-auto-update-word-count-for-entry ()
+    "Disable automatic word count updates for the current org entry."
+    (interactive)
+    (if (not (eq major-mode 'org-mode))
+        (message "Not in org-mode")
+      (save-excursion
+        (org-back-to-heading t)
+        (let ((property-drawer (org-entry-properties nil 'standard)))
+          (if (assoc "VARIABLES" property-drawer)
+              (let ((updated-variables (replace-regexp-in-string " ?rk/auto-update-word-count-enabled=t" "" (cdr (assoc "VARIABLES" property-drawer)))))
+                (org-entry-put nil "VARIABLES" updated-variables))
+            (message "rk/auto-update-word-count-enabled not set for the current entry."))))
+      (message "Disabled automatic word count updates for the current entry.")))
+
+  ;; Function advice to automatically update the word count in an org entry heading when saving the buffer
+  (defun rk/update-word-count-before-save (&rest _args)
+    "Update the word count of the current org entry before saving the buffer."
+    (when (and (eq major-mode 'org-mode) rk/auto-update-word-count-enabled)
+      (rk/update-word-count-in-heading)))
+
+  (advice-add 'save-buffer :before #'rk/update-word-count-before-save)
+#+end_src
 * The functions
+
 ** dotspacemacs/layers
 Configures the base distribution and the layers I want installed and configure.
 
@@ -1594,6 +1724,7 @@ Configures the base distribution and the layers I want installed and configure.
     (spacemacs/declare-prefix "oojc" "comments")
     (spacemacs/declare-prefix "oojt" "todos")
     (spacemacs/set-leader-keys
+      "oojd" 'rk/open-daily-writing
       "oojj" 'org-roam-dailies-capture-today
       "oojf" 'org-roam-dailies-goto-today
       "oorj" 'org-roam-dailies-capture-today)
