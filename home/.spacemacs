@@ -1220,10 +1220,12 @@ before packages are loaded."
       (find-file daily-writing-file)
       ;; Go to the beginning of the buffer
       (goto-char (point-min))
+      ;; Search for the first org-heading after any metadata lines
+      (re-search-forward "^\\* " nil t)
+      (beginning-of-line)
       ;; Check if today's entry exists
       (unless (search-forward entry-heading nil t)
-        ;; If the entry does not exist, create a new entry at the top
-        (goto-char (point-min))
+        ;; If the entry does not exist, create a new entry at the current position
         (insert entry-heading "\n\n")
         (forward-line -1))
       ;; Position the cursor at the end of today's entry
@@ -1240,9 +1242,7 @@ before packages are loaded."
     (if (not (eq major-mode 'org-mode))
         (message "Not in org-mode")
       (save-excursion
-        ;; while the progn/point structure of the following code isn't semantically
-        ;; necessary (the two org functions already return point), it makes it easier to read and understand
-        (let* ((beg (progn (org-back-to-heading t) (point)))
+        (let* ((beg (progn (org-back-to-heading t) (forward-line) (point)))
                (end (progn (org-end-of-subtree t t) (point)))
                (wc 0))
           ;; Calculate the word count
@@ -1252,15 +1252,21 @@ before packages are loaded."
             (setq wc (1+ wc)))
           ;; Update the word count in the heading
           (goto-char beg)
+          (goto-char (progn (org-back-to-heading t) (beginning-of-line) (point)))
           (let ((case-fold-search t)
                 (word-count-regexp "\\[\\([0-9]+\\) words\\]"))
             (if (re-search-forward word-count-regexp (line-end-position) t)
                 ;; If the word count is already in the heading, update it
-                (replace-match (format "[%d words]" wc) nil t)
+                (replace-match (format "[%d words]" (- wc 1)) nil t)
               ;; Otherwise, append the word count to the heading
               (end-of-line)
-              (insert (format " [%d words]" wc))))
-          (message "Word count updated: %d" wc)))))
+              (insert (format " [%d words]" (- wc 1)))))
+          (message "Word count updated: %d" (- wc 1))))))
+  
+  
+  
+  
+  
   
   ;; Buffer-local variable to control automatic word count updates
   (defvar-local rk/auto-update-word-count-enabled nil
@@ -1334,6 +1340,16 @@ before packages are loaded."
       (rk/update-word-count-in-heading)))
   
   (advice-add 'save-buffer :before #'rk/update-word-count-before-save)
+  (defun rk/insert-clipboard-markdown-as-org ()
+    "Convert the clipboard contents from Markdown to Org and insert it at point."
+    (interactive)
+    (let* ((temp-file (make-temp-file "clipboard-md" nil ".md"))
+           (org-output (with-temp-buffer
+                         (insert (gui-get-selection 'CLIPBOARD))
+                         (write-region nil nil temp-file nil 'quiet)
+                         (shell-command-to-string (format "pandoc -f markdown -t org %s" temp-file)))))
+      (insert org-output)
+      (delete-file temp-file)))
     ;; Org Appearance
   
   
