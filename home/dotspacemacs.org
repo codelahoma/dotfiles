@@ -635,6 +635,20 @@ Let's not rearrange the windows when we open the special edit window, instead us
                "* %<%H:%M>  %?"
                :target (file+head "%<%Y-%m-%d>.org"
                                   "#+title: %<%Y-%m-%d>\n"))))
+      (setq org-roam-capture-templates
+            '(("d" "default" plain "%?"
+               :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                                  "#+title: ${title}\n")
+               :unnarrowed t)
+              ("i" "Interaction Log" plain
+               (function org-roam-capture--get-point)
+               "%?"
+               :target (file+head "interactions/%<%Y%m%d%H%M%S>-${slug}.org"
+                                  "#+title: Interaction with ChatGPT\n#+roam_tags: interaction chatgpt\n\n")
+               :unnarrowed t
+               :immediate-finish t
+               :jump-to-captured t)))
+
       (org-roam-db-autosync-mode)
       )
 #+end_src
@@ -648,16 +662,19 @@ Let's not rearrange the windows when we open the special edit window, instead us
 
 ** ChatGPT
 #+begin_src emacs-lisp :noweb-ref additional-packages
-  (chatgpt :location (recipe
-                      :fetcher github
-                      :repo "joshcho/ChatGPT.el"))
-
+  ;; (chatgpt :location (recipe
+  ;;                     :fetcher github
+  ;;                     :repo "joshcho/ChatGPT.el"))
+  gptel
 #+end_src
 
+
 #+begin_src emacs-lisp :noweb-ref user-config
-  (require 'python)
-  (setq chatgpt-repo-path (expand-file-name "chatgpt/" quelpa-build-dir))
-  (global-set-key (kbd "C-c q") #'chatgpt-query)
+  ;; (require 'python)
+  ;; (setq chatgpt-repo-path (expand-file-name "chatgpt/" quelpa-build-dir))
+  ;; (global-set-key (kbd "C-c q") #'chatgpt-query)
+  (require 'gptel)
+  (setq gptel-default-mode 'org-mode)
 
 #+end_src
 ** Other
@@ -1085,6 +1102,45 @@ Make sure our custom lisp directory is in =load-path= (effective noop if already
       (delete-file temp-file)))
 #+end_src
 * The functions
+** Helpful for editing this file
+#+begin_src emacs-lisp :noweb-ref user-config
+  (defun rk/insert-spacemacs-config-block ()
+  "Insert org-babel source block for Spacemacs config."
+  (interactive)
+  (let* ((targets (rk/get-spacemacs-config-targets))
+         (target (completing-read "Choose target or specify new: " targets nil t)))
+    (setq rk/last-inserted-config-target target)
+    (insert (format "#+begin_src emacs-lisp :noweb-ref %s\n\n" target)
+            (format "  ;; insert your code here\n\n")
+            "#+end_src\n")))
+
+  (defun rk/get-spacemacs-config-targets ()
+    "Get list of unique Spacemacs config targets from noweb references in source blocks with matching header."
+    (interactive)
+    (let ((targets '()))
+      (save-excursion
+        (goto-char (point-min))
+        (while (re-search-forward "^#\\+begin_src emacs-lisp :noweb-ref \\([^,[:space:]]+\\)[,[:space:]]" nil t)
+          (let ((target (match-string 1)))
+            (unless (member target targets)
+              (push target targets)))))
+      targets))
+
+  (global-set-key (kbd "C-c i") #'rk/insert-spacemacs-config-block)
+#+end_src
+
+#+begin_src emacs-lisp :noweb-ref user-config
+  (defun gptel--get-api-key-from-authinfo ()
+    "Get the OpenAI API key from the .authinfo or .authinfo.gpg file."
+    (require 'auth-source)
+    (let ((auth-info (auth-source-search :max 1
+                                         :host "openai-api-key"
+                                         :user "codelahoma@gmail.com")))
+      (if auth-info
+          (funcall (plist-get (car auth-info) :secret))
+        nil)))
+#+end_src
+
 
 ** dotspacemacs/layers
 Configures the base distribution and the layers I want installed and configure.

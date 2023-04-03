@@ -223,10 +223,10 @@ This function should only modify configuration layer settings."
                                                             :files ("helm-org-ql.el")))
                                       ox-jira
                                       ox-slack
-                                      (chatgpt :location (recipe
-                                                          :fetcher github
-                                                          :repo "joshcho/ChatGPT.el"))
-                                      
+                                      ;; (chatgpt :location (recipe
+                                      ;;                     :fetcher github
+                                      ;;                     :repo "joshcho/ChatGPT.el"))
+                                      gptel
                                       direnv
                                       pinboard
                                       (copilot :location (recipe
@@ -1112,11 +1112,27 @@ before packages are loaded."
                "* %<%H:%M>  %?"
                :target (file+head "%<%Y-%m-%d>.org"
                                   "#+title: %<%Y-%m-%d>\n"))))
+      (setq org-roam-capture-templates
+            '(("d" "default" plain "%?"
+               :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                                  "#+title: ${title}\n")
+               :unnarrowed t)
+              ("i" "Interaction Log" plain
+               (function org-roam-capture--get-point)
+               "%?"
+               :target (file+head "interactions/%<%Y%m%d%H%M%S>-${slug}.org"
+                                  "#+title: Interaction with ChatGPT\n#+roam_tags: interaction chatgpt\n\n")
+               :unnarrowed t
+               :immediate-finish t
+               :jump-to-captured t)))
+  
       (org-roam-db-autosync-mode)
       )
-  (require 'python)
-  (setq chatgpt-repo-path (expand-file-name "chatgpt/" quelpa-build-dir))
-  (global-set-key (kbd "C-c q") #'chatgpt-query)
+  ;; (require 'python)
+  ;; (setq chatgpt-repo-path (expand-file-name "chatgpt/" quelpa-build-dir))
+  ;; (global-set-key (kbd "C-c q") #'chatgpt-query)
+  (require 'gptel)
+  (setq gptel-default-mode 'org-mode)
   
   (add-hook 'find-file-hook 'direnv-update-directory-environment)
   
@@ -1235,6 +1251,7 @@ before packages are loaded."
       ;; Switch to distraction-free mode
       (writeroom-mode)))
   
+  
   ;; Function to update the word count in an org entry heading
   (defun rk/update-word-count-in-heading ()
     "Store or update the word count of the current org entry in its heading."
@@ -1350,6 +1367,38 @@ before packages are loaded."
                          (shell-command-to-string (format "pandoc -f markdown -t org %s" temp-file)))))
       (insert org-output)
       (delete-file temp-file)))
+  (defun rk/insert-spacemacs-config-block ()
+  "Insert org-babel source block for Spacemacs config."
+  (interactive)
+  (let* ((targets (rk/get-spacemacs-config-targets))
+         (target (completing-read "Choose target or specify new: " targets nil t)))
+    (setq rk/last-inserted-config-target target)
+    (insert (format "#+begin_src emacs-lisp :noweb-ref %s\n\n" target)
+            (format "  ;; insert your code here\n\n")
+            "#+end_src\n")))
+  
+  (defun rk/get-spacemacs-config-targets ()
+    "Get list of unique Spacemacs config targets from noweb references in source blocks with matching header."
+    (interactive)
+    (let ((targets '()))
+      (save-excursion
+        (goto-char (point-min))
+        (while (re-search-forward "^#\\+begin_src emacs-lisp :noweb-ref \\([^,[:space:]]+\\)[,[:space:]]" nil t)
+          (let ((target (match-string 1)))
+            (unless (member target targets)
+              (push target targets)))))
+      targets))
+  
+  (global-set-key (kbd "C-c i") #'rk/insert-spacemacs-config-block)
+  (defun gptel--get-api-key-from-authinfo ()
+    "Get the OpenAI API key from the .authinfo or .authinfo.gpg file."
+    (require 'auth-source)
+    (let ((auth-info (auth-source-search :max 1
+                                         :host "openai-api-key"
+                                         :user "codelahoma@gmail.com")))
+      (if auth-info
+          (funcall (plist-get (car auth-info) :secret))
+        nil)))
     ;; Org Appearance
   
   
