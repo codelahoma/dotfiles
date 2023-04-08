@@ -46,7 +46,7 @@ This function should only modify configuration layer settings."
                       auto-completion-private-snippets-directory nil
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-enable-help-tooltip 'manual
-                      auto-completion-use-company-box t
+                      ;; auto-completion-use-company-box t
                       ;; auto-completion-use-company-posframe t
                       auto-completion-enable-sort-by-usage t)
      (colors :variables
