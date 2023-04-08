@@ -123,52 +123,93 @@ Install:andUse("KSheet", {
 
 _centeredWindowsFormerPositions = {}
 
-local function centerOnMainDisplay()
-   local win = window.focusedWindow()
-   local formerPosition = _centeredWindowsFormerPositions[win:id()]
-   local bigScreen = screen.find('LG HDR 4K')
+  local function centerOnMainDisplay()
+     local win = window.focusedWindow()
+     local formerPosition = _centeredWindowsFormerPositions[win:id()]
+     local bigScreen = screen.find('LG HDR 4K')
 
-   hs.console.printStyledtext(hs.inspect(formerPosition))
+     hs.console.printStyledtext(hs.inspect(formerPosition))
 
-   if formerPosition then
-      win:move(formerPosition)
-      _centeredWindowsFormerPositions[win:id()] = nil
-   else 
-      _centeredWindowsFormerPositions[win:id()] = win:frame()
-      win:centerOnScreen()
-      if bigScreen then
-         win:centerOnScreen(bigScreen)
-      else
-         win:centerOnScreen()
+     if formerPosition then
+        win:move(formerPosition)
+        _centeredWindowsFormerPositions[win:id()] = nil
+     else 
+        _centeredWindowsFormerPositions[win:id()] = win:frame()
+        win:centerOnScreen()
+        if bigScreen then
+           win:centerOnScreen(bigScreen)
+        else
+           win:centerOnScreen()
+        end
+     end
+  end
+
+  local function appLauncher(app)
+    return function()
+      launched = application.launchOrFocus(app) 
+      if not launched then
+        launched = application.launchOrFocusByBundleID(app)
       end
-   end
-end
 
-local function appLauncher(app)
-  return function()
-    launched = application.launchOrFocus(app) 
-    if not launched then
-      launched = application.launchOrFocusByBundleID(app)
-    end
+      wonkyAppsThatFocusButReturnFalse = {'Teams', 'iTerm', '/Applications/Emacs.app'}
+      for _, v in ipairs(wonkyAppsThatFocusButReturnFalse) do
+         if v == app then
+            return
+         end
+      end
 
-    wonkyAppsThatFocusButReturnFalse = {'Teams', 'iTerm', '/Applications/Emacs.app'}
-    for _, v in ipairs(wonkyAppsThatFocusButReturnFalse) do
-       if v == app then
-          return
-       end
-    end
-
-    if not launched then
-          hs.alert(app .. " not found")
+      if not launched then
+            hs.alert(app .. " not found")
+      end
     end
   end
-end
 
-local function pasteLauncher()
-   return function()
-      hs.eventtap.keyStroke({"ctrl", "alt", "cmd"}, "p")
-   end
-end
+  local function pasteLauncher()
+     return function()
+        hs.eventtap.keyStroke({"ctrl", "alt", "cmd"}, "p")
+     end
+  end
+
+  function open750()
+    local url = "https://new.750words.com"
+    local script = string.format([[
+# shows all url+titles of Chrome along with front window+tab url+title
+set titleString to ""
+set windowFound to false
+set tabFound to false
+
+tell application "Google Chrome"
+  set window_list to every window # get the windows
+
+  repeat with the_window in window_list # for every window
+    set tab_list to every tab in the_window # get the tabs
+    set tab_index to 0
+    repeat with the_tab in tab_list # for every tab
+      set tab_index to tab_index + 1
+      set the_title to the title of the_tab
+      if the_title contains "V2 - 750 Words" then
+        set windowFound to true
+        set tabFound to true
+        set active tab index of the_window to tab_index
+      end if
+    end repeat
+    if windowFound then exit repeat
+  end repeat
+  if not tabFound then
+    set newTab to make new tab at end of tabs of window 1
+    set URL of newTab to "https://new.750words.com"
+
+  end if
+
+  activate
+
+end tell
+
+tell application "System Events" to keystroke "f" using {control down, command down}
+      ]], url, url)
+
+    hs.osascript.applescript(script)
+  end
 
 if work_machines[machine] ~= nil then
   -- hotkey.bind(hyper, "a", appLauncher('Arduino IDE'))
@@ -195,7 +236,7 @@ if work_machines[machine] ~= nil then
   hotkey.bind(hyper, "r", hs.reload)
   hotkey.bind(hyper, "s", hs.grid.show)
   hotkey.bind(hyper, "t", appLauncher("DEVONthink 3"))
-  hotkey.bind(hyper, "u", appLauncher(Qutebrowser))
+  hotkey.bind(hyper, "u", open750)
   hotkey.bind(hyper, "v", pasteLauncher())
   hotkey.bind(hyper, "w", appLauncher('Warp'))
   hotkey.bind(hyper, "y", appLauncher('Jira'))
@@ -214,6 +255,7 @@ else
   hotkey.bind(hyper, "p", appLauncher('Preview'))
   hotkey.bind(hyper, "r", hs.reload)
   hotkey.bind(hyper, "s", hs.grid.show)
+  hotkey.bind(hyper, "u", open750)
   hotkey.bind(hyper, "v", pasteLauncher())
   hotkey.bind(hyper, "0", centerOnMainDisplay)
   hotkey.bind(hyper, "q", appLauncher('1Password 7'))
@@ -244,7 +286,7 @@ end
 -- end
 
 -- function menuModal:exited()
---    hs.alert.closeSpecific(self.alertUID)
+--  i hs.alert.closeSpecific(self.alertUID)
 -- end
 
 -- -- in this example, Ctrl+Shift+h triggers this keybinding mode, which will allow us to use the ones defined below. A nice touch for usability: This also offers to show a message.
