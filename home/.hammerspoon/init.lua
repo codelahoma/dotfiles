@@ -205,7 +205,7 @@ tell application "Google Chrome"
 
 end tell
 
-tell application "System Events" to keystroke "f" using {control down, command down}
+
       ]], url, url)
 
     hs.osascript.applescript(script)
