@@ -832,39 +832,6 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
   (setq custom-file "~/.spacemacs.d/custom.el")
-  (require 'vterm)
-  
-  (defun rk/vterm (&optional term-name)
-    "create a vterm session wrapped around a minimal tmux session"
-    (interactive "sterm-name: ")
-    (let* ((the-term-name (if (stringp term-name) term-name "default term name"))
-           (the-project-dir (or (projectile-project-p) default-directory))
-           (vterm-shell (concat vterm-shell " -i -c " "'~/bin/tmux-session-launch " the-term-name " " the-project-dir "'")))
-      (message vterm-shell)
-      (vterm-other-window the-term-name)))
-  
-  
-  (require 'modus-themes)
-  (defun rk/go-modus ()
-    "Activate modus-theme"
-    (interactive)
-    (progn
-      (let ((bg (face-attribute 'default :background)))
-        (custom-set-faces
-         '(company-tooltip ((t (:weight bold :foreground "dark red" :background "khaki1" :inherit default))))))
-      (setq modus-themes-bold-constructs t
-            modus-themes-completions '((t . (extrabold intense)))
-            modus-themes-italic-constructs t
-            modus-themes-mixed-fonts t
-            modus-themes-org-blocks 'gray-background
-            modus-themes-syntax '(alt-syntax)
-            modus-themes-links '(italic bold background no-color no-underline)
-            modus-themes-prompts '(intense background)
-            modus-themes-hl-line '(intense)
-            modus-themes-mode-line '(accented borderless 1.1)
-            modus-themes-fringes '(intense))
-      (load-theme 'modus-vivendi t )))
-  
   (load "~/github/editWithEmacs.spoon/hammerspoon.el")
   (custom-set-faces
    '(company-tooltip-common
@@ -936,6 +903,11 @@ before packages are loaded."
             ("ANSWERED" . ?👍) 
             ("DONE" . ?✅)))
     (org-superstar-restart))
+  
+  ;; Org-reveal
+  (setq org-re-reveal-title-slide "<h1 class='title'>%t</h1><h2 class='author'>%a</h2><p class='email'>%e</p>")
+  (setq org-re-reveal-root "file:///Users/rodk/.emacs.d/private/reveal.js")
+  
   (setq org-src-window-setup 'split-window-below)
   (with-eval-after-load 'org
       (setq org-M-RET-may-split-line nil)
@@ -954,6 +926,8 @@ before packages are loaded."
       ;; org directories
       (setq org-directory "~/personal/org-files/")
       (setq org-roam-directory (concat org-directory "roam-notes/"))
+      (setq org-link-frame-setup '((file . find-file-no-select)))
+  
   
       ;; (setq elfeed-db-directory (concat org-directory "elfeed-db/")
       ;;       rmh-elfeed-org-files (list (concat org-directory "elfeed.org")))
@@ -1132,7 +1106,6 @@ before packages are loaded."
   ;; (setq chatgpt-repo-path (expand-file-name "chatgpt/" quelpa-build-dir))
   ;; (global-set-key (kbd "C-c q") #'chatgpt-query)
   (require 'gptel)
-  (setq gptel-default-mode 'org-mode)
   
   (add-hook 'find-file-hook 'direnv-update-directory-environment)
   
@@ -1390,6 +1363,9 @@ before packages are loaded."
       targets))
   
   (global-set-key (kbd "C-c i") #'rk/insert-spacemacs-config-block)
+  
+  (with-eval-after-load 'gptel
+  (setq gptel-default-mode 'org-mode)
   (defun gptel--get-api-key-from-authinfo ()
     "Get the OpenAI API key from the .authinfo or .authinfo.gpg file."
     (require 'auth-source)
@@ -1398,7 +1374,7 @@ before packages are loaded."
                                          :user "codelahoma@gmail.com")))
       (if auth-info
           (funcall (plist-get (car auth-info) :secret))
-        nil)))
+        nil))))
     ;; Org Appearance
   
   

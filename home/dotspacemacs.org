@@ -381,6 +381,15 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
     (org-superstar-restart))
 #+end_src
 
+*** Org-Reveal
+#+begin_src emacs-lisp :noweb-ref user-config
+
+  ;; Org-reveal
+  (setq org-re-reveal-title-slide "<h1 class='title'>%t</h1><h2 class='author'>%a</h2><p class='email'>%e</p>")
+  (setq org-re-reveal-root "file:///Users/rodk/.emacs.d/private/reveal.js")
+
+#+end_src
+
 *** Org-Babel
 Let's not rearrange the windows when we open the special edit window, instead using a horizontal split of the current window
 #+begin_src emacs-lisp :noweb-ref user-config
@@ -428,6 +437,8 @@ Let's not rearrange the windows when we open the special edit window, instead us
       ;; org directories
       (setq org-directory "~/personal/org-files/")
       (setq org-roam-directory (concat org-directory "roam-notes/"))
+      (setq org-link-frame-setup '((file . find-file-no-select)))
+
 
       ;; (setq elfeed-db-directory (concat org-directory "elfeed-db/")
       ;;       rmh-elfeed-org-files (list (concat org-directory "elfeed.org")))
@@ -625,7 +636,6 @@ Let's not rearrange the windows when we open the special edit window, instead us
   ;; (setq chatgpt-repo-path (expand-file-name "chatgpt/" quelpa-build-dir))
   ;; (global-set-key (kbd "C-c q") #'chatgpt-query)
   (require 'gptel)
-  (setq gptel-default-mode 'org-mode)
 
 #+end_src
 ** Other
@@ -1081,6 +1091,9 @@ Make sure our custom lisp directory is in =load-path= (effective noop if already
 #+end_src
 
 #+begin_src emacs-lisp :noweb-ref user-config
+
+  (with-eval-after-load 'gptel
+  (setq gptel-default-mode 'org-mode)
   (defun gptel--get-api-key-from-authinfo ()
     "Get the OpenAI API key from the .authinfo or .authinfo.gpg file."
     (require 'auth-source)
@@ -1089,7 +1102,7 @@ Make sure our custom lisp directory is in =load-path= (effective noop if already
                                          :user "codelahoma@gmail.com")))
       (if auth-info
           (funcall (plist-get (car auth-info) :secret))
-        nil)))
+        nil))))
 #+end_src
 
 
