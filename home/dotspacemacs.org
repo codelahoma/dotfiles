@@ -97,11 +97,11 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
 ** Default Fonts
 #+begin_src emacs-lisp :noweb-ref dotspacemacs-default-font
   ("JetBrainsMono Nerd Font"
-   :size 18.0
+   :size 24.0
    :weight normal
    :width normal)
   ("FiraCode Nerd Font"
-   :size 18.0
+   :size 24.0
    :weight normal
    :width normal)
   ("Inconsolata Nerd Font"
@@ -389,6 +389,12 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
   (setq org-re-reveal-root "file:///Users/rodk/.emacs.d/private/reveal.js")
 
 #+end_src
+
+*** Org-Roam
+#+begin_src emacs-lisp :noweb-ref user-config
+  (org-roam-db-autosync-mode)
+#+end_src
+
 
 *** Org-Babel
 Let's not rearrange the windows when we open the special edit window, instead using a horizontal split of the current window
@@ -1062,6 +1068,22 @@ Make sure our custom lisp directory is in =load-path= (effective noop if already
       (insert org-output)
       (delete-file temp-file)))
 #+end_src
+* Helpful functions and hooks
+** Restore the default Info mode navigation keys
+#+begin_src emacs-lisp :noweb-ref user-config
+
+(defun my-info-mode-hook ()
+  (local-set-key (kbd "n") 'Info-next)
+  (local-set-key (kbd "p") 'Info-prev)
+  (local-set-key (kbd "u") 'Info-up)
+  (local-set-key (kbd "m") 'Info-menu)
+  (local-set-key (kbd "s") 'Info-search)
+  (local-set-key (kbd "f") 'Info-follow-nearest-node))
+
+(add-hook 'Info-mode-hook 'my-info-mode-hook)
+
+#+end_src
+
 * The functions
 ** Helpful for editing this file
 #+begin_src emacs-lisp :noweb-ref user-config
@@ -1765,11 +1787,30 @@ Configures the base distribution and the layers I want installed and configure.
     (spacemacs/declare-prefix "oojs" "subtasks")
     (spacemacs/declare-prefix "oojc" "comments")
     (spacemacs/declare-prefix "oojt" "todos")
+
+
+  (spacemacs/declare-prefix "or" "org-roam")
+    (spacemacs/declare-prefix "ord" "dailies")
+    (spacemacs/declare-prefix "ort" "tags")
+
     (spacemacs/set-leader-keys
-      "oojd" 'rk/open-daily-writing
-      "oojj" 'org-roam-dailies-capture-today
-      "oojf" 'org-roam-dailies-goto-today
-      "oorj" 'org-roam-dailies-capture-today)
+      "orjd" 'rk/open-daily-writing
+      "orjj" 'org-roam-dailies-capture-today
+      "orjf" 'org-roam-dailies-goto-today
+      "orrj" 'org-roam-dailies-capture-today
+      "ora" 'org-roam-alias-add
+      "orf" 'org-roam-node-find
+      "orc" 'org-roam-capture
+      "org" 'org-roam-graph
+      "ori" 'org-roam-node-insert
+      "oru" 'org-roam-ui-mode
+      "ordd" 'org-roam-dailies-goto-date
+      "ordt" 'org-roam-dailies-goto-today
+      "ordy" 'org-roam-dailies-goto-yesterday
+      "ordT" 'org-roam-dailies-goto-tomorrow
+      "orta" 'org-roam-tag-add
+      "ortr" 'org-roam-tag-remove
+      )
     ; CMD-C copies to system clipboard
     (define-key evil-visual-state-map (kbd "s-c") (kbd "\"+y"))
 
