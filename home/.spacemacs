@@ -456,11 +456,11 @@ It should only modify the values of Spacemacs settings."
    ;; Point size is recommended, because it's device independent. (default 10.0)
    dotspacemacs-default-font '(
                                ("JetBrainsMono Nerd Font"
-                                :size 18.0
+                                :size 24.0
                                 :weight normal
                                 :width normal)
                                ("FiraCode Nerd Font"
-                                :size 18.0
+                                :size 24.0
                                 :weight normal
                                 :width normal)
                                ("Inconsolata Nerd Font"
@@ -1340,6 +1340,7 @@ before packages are loaded."
                          (shell-command-to-string (format "pandoc -f markdown -t org %s" temp-file)))))
       (insert org-output)
       (delete-file temp-file)))
+  
   (defun rk/insert-spacemacs-config-block ()
   "Insert org-babel source block for Spacemacs config."
   (interactive)
@@ -1419,11 +1420,30 @@ before packages are loaded."
     (spacemacs/declare-prefix "oojs" "subtasks")
     (spacemacs/declare-prefix "oojc" "comments")
     (spacemacs/declare-prefix "oojt" "todos")
+  
+  
+  (spacemacs/declare-prefix "or" "org-roam")
+    (spacemacs/declare-prefix "ord" "dailies")
+    (spacemacs/declare-prefix "ort" "tags")
+  
     (spacemacs/set-leader-keys
-      "oojd" 'rk/open-daily-writing
-      "oojj" 'org-roam-dailies-capture-today
-      "oojf" 'org-roam-dailies-goto-today
-      "oorj" 'org-roam-dailies-capture-today)
+      "orjd" 'rk/open-daily-writing
+      "orjj" 'org-roam-dailies-capture-today
+      "orjf" 'org-roam-dailies-goto-today
+      "orrj" 'org-roam-dailies-capture-today
+      "ora" 'org-roam-alias-add
+      "orf" 'org-roam-node-find
+      "orc" 'org-roam-capture
+      "org" 'org-roam-graph
+      "ori" 'org-roam-node-insert
+      "oru" 'org-roam-ui-mode
+      "ordd" 'org-roam-dailies-goto-date
+      "ordt" 'org-roam-dailies-goto-today
+      "ordy" 'org-roam-dailies-goto-yesterday
+      "ordT" 'org-roam-dailies-goto-tomorrow
+      "orta" 'org-roam-tag-add
+      "ortr" 'org-roam-tag-remove
+      )
     ; CMD-C copies to system clipboard
     (define-key evil-visual-state-map (kbd "s-c") (kbd "\"+y"))
   
