@@ -64,6 +64,7 @@ Jira = "com.webcatalog.juli.jira"
 Chrome = "com.google.Chrome"
 Spotify = "com.spotify.client"
 Notion = "notion.id"
+Zoom = "us.zoom.xos"
 
 DefaultBrowser = Chrome
 if  work_machines[machine] ~= nil  then
@@ -76,7 +77,8 @@ if  work_machines[machine] ~= nil  then
                       { "https?://www.notion.so", Notion},
                       { "https?://bitbucket.org/kitewire", Bitbucket},
                       { "https?://bitbucket.org/", Bitbucket},
-                      { "https?://kitewire.atlassian.net", Jira}
+                      { "https?://kitewire.atlassian.net", Jira},
+                      { "https?://*.zoom.us", Zoom}
                     },
                     default_handler = DefaultBrowser
                   },
