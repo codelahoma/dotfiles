@@ -219,3 +219,7 @@ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 # JINA_CLI_END
 
 
+export LDFLAGS="-L/opt/homebrew/opt/sqlite/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/sqlite/include"
+export PKG_CONFIG_PATH="/opt/homebrew/opt/sqlite/lib/pkgconfig"
+export PATH="/opt/homebrew/opt/sqlite/bin:$PATH"

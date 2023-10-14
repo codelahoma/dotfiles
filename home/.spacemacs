@@ -46,7 +46,7 @@ This function should only modify configuration layer settings."
                       auto-completion-private-snippets-directory nil
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-enable-help-tooltip 'manual
-                      ;; auto-completion-use-company-box t
+                      auto-completion-use-company-box t
                       ;; auto-completion-use-company-posframe t
                       auto-completion-enable-sort-by-usage t)
      (colors :variables
@@ -212,6 +212,8 @@ This function should only modify configuration layer settings."
                                       fira-code-mode
                                       highlight-indent-guides
                                       ef-themes
+                                      sqlite3
+                                      all-the-icons
                                       
                                       ob-hy
                                       ob-async
@@ -455,12 +457,12 @@ It should only modify the values of Spacemacs settings."
    ;; a non-negative integer (pixel size), or a floating-point (point size).
    ;; Point size is recommended, because it's device independent. (default 10.0)
    dotspacemacs-default-font '(
-                               ("JetBrainsMono Nerd Font"
-                                :size 24.0
+                               ("FiraCode Nerd Font"
+                                :size 18.0
                                 :weight normal
                                 :width normal)
-                               ("FiraCode Nerd Font"
-                                :size 24.0
+                               ("JetBrainsMono Nerd Font"
+                                :size 18.0
                                 :weight normal
                                 :width normal)
                                ("Inconsolata Nerd Font"
@@ -928,6 +930,7 @@ before packages are loaded."
       (setq org-roam-directory (concat org-directory "roam-notes/"))
       (setq org-link-frame-setup '((file . find-file-no-select)))
   
+      (org-roam-db-autosync-mode)
   
       ;; (setq elfeed-db-directory (concat org-directory "elfeed-db/")
       ;;       rmh-elfeed-org-files (list (concat org-directory "elfeed.org")))
@@ -1106,6 +1109,7 @@ before packages are loaded."
   ;; (setq chatgpt-repo-path (expand-file-name "chatgpt/" quelpa-build-dir))
   ;; (global-set-key (kbd "C-c q") #'chatgpt-query)
   (require 'gptel)
+  (setq gptel-default-mode 'org-mode)
   
   (add-hook 'find-file-hook 'direnv-update-directory-environment)
   
@@ -1115,12 +1119,11 @@ before packages are loaded."
   
   (with-eval-after-load 'copilot
     (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-    (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion))
+    (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+    (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
+    (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word))
   
   (add-hook 'prog-mode-hook 'copilot-mode)
-  
-  (define-key evil-insert-state-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
-  (define-key evil-insert-state-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
   
   (setq mu4e-contexts
         (list
@@ -1341,6 +1344,16 @@ before packages are loaded."
       (insert org-output)
       (delete-file temp-file)))
   
+  (defun my-info-mode-hook ()
+    (local-set-key (kbd "n") 'Info-next)
+    (local-set-key (kbd "p") 'Info-prev)
+    (local-set-key (kbd "u") 'Info-up)
+    (local-set-key (kbd "m") 'Info-menu)
+    (local-set-key (kbd "s") 'Info-search)
+    (local-set-key (kbd "f") 'Info-follow-nearest-node))
+  
+  (add-hook 'Info-mode-hook 'my-info-mode-hook)
+  
   (defun rk/insert-spacemacs-config-block ()
   "Insert org-babel source block for Spacemacs config."
   (interactive)
@@ -1364,18 +1377,13 @@ before packages are loaded."
       targets))
   
   (global-set-key (kbd "C-c i") #'rk/insert-spacemacs-config-block)
+  (defun rk/gptel-before-advice (&rest args)
+    "Before advice for =gptel' function. Sets =api-key= parameter
+  from =auth-source-search' results."
+    (let ((auth-info (nth 0 (auth-source-search :host "openai.com"))))
+      (setq-local gptel-api-key (plist-get auth-info :secret))))
   
-  (with-eval-after-load 'gptel
-  (setq gptel-default-mode 'org-mode)
-  (defun gptel--get-api-key-from-authinfo ()
-    "Get the OpenAI API key from the .authinfo or .authinfo.gpg file."
-    (require 'auth-source)
-    (let ((auth-info (auth-source-search :max 1
-                                         :host "openai-api-key"
-                                         :user "codelahoma@gmail.com")))
-      (if auth-info
-          (funcall (plist-get (car auth-info) :secret))
-        nil))))
+  (advice-add 'gptel :before #'rk/gptel-before-advice)
     ;; Org Appearance
   
   
@@ -1437,6 +1445,7 @@ before packages are loaded."
       "org" 'org-roam-graph
       "ori" 'org-roam-node-insert
       "oru" 'org-roam-ui-mode
+      "ordc" 'org-roam-dailies-capture-today
       "ordd" 'org-roam-dailies-goto-date
       "ordt" 'org-roam-dailies-goto-today
       "ordy" 'org-roam-dailies-goto-yesterday
