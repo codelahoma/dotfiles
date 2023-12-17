@@ -229,6 +229,8 @@ This function should only modify configuration layer settings."
                                       ;;                     :fetcher github
                                       ;;                     :repo "joshcho/ChatGPT.el"))
                                       gptel
+                                      (gptel-extensions :location "/Users/rodk//.emacs.d/private/gptel-extensions.el/")
+                                      
                                       direnv
                                       pinboard
                                       (copilot :location (recipe
@@ -942,7 +944,7 @@ before packages are loaded."
       ;; file prefix aliases
       (defalias `rk/org-file (apply-partially 'concat org-directory))
   
-      (setq org-persp-startup-org-file (concat org-directory "inbox.org"))
+      (setq org-persp-startup-org-file (concat org-directory "gtd.org"))
       (setq org-id-track-globally t)
   
   
@@ -1109,6 +1111,7 @@ before packages are loaded."
   ;; (setq chatgpt-repo-path (expand-file-name "chatgpt/" quelpa-build-dir))
   ;; (global-set-key (kbd "C-c q") #'chatgpt-query)
   (require 'gptel)
+  (require 'gptel-extensions)
   (setq gptel-default-mode 'org-mode)
   
   (add-hook 'find-file-hook 'direnv-update-directory-environment)
@@ -1654,12 +1657,12 @@ before packages are loaded."
   
     (with-eval-after-load 'ansible
       (add-hook 'ansible-hook 'ansible-auto-decrypt-encrypt)
-      (add-hook 'yaml-mode-hook '(lambda () (ansible 1)))
+      (add-hook 'yaml-mode-hook #'(lambda () (ansible 1)))
       (add-to-list 'company-backends 'company-ansible))
   
     ;; XML
   
-    (add-hook 'nxml-mode-hook (lambda() (hs-minor-mode 1)))
+    (add-hook 'nxml-mode-hook #'(lambda() (hs-minor-mode 1)))
   
     (add-to-list 'hs-special-modes-alist
                  '(nxml-mode
