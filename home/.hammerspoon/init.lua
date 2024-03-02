@@ -215,7 +215,7 @@ end tell
 
 if work_machines[machine] ~= nil then
   -- hotkey.bind(hyper, "a", appLauncher('Arduino IDE'))
-  hotkey.bind(hyper, "b", appLauncher('Github'))
+  hotkey.bind(hyper, "b", appLauncher('ChatGPT'))
   hotkey.bind(hyper, "c", hs.toggleConsole)
   hotkey.bind(hyper, "d", appLauncher('Dash'))
   hotkey.bind(magic, "d", appLauncher('Discord'))
@@ -224,6 +224,7 @@ if work_machines[machine] ~= nil then
   hotkey.bind(hyper, "h", appLauncher('Docker Desktop'))
   hotkey.bind(hyper, "i", appLauncher('iTerm'))
   hotkey.bind(hyper, "j", appLauncher('Emacs'))
+  hotkey.bind(magic, "j", appLauncher('Zed'))
   hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
   hotkey.bind(hyper, "l", appLauncher('Google Calendar'))
   hotkey.bind(hyper, "m", appLauncher('GMail'))
@@ -251,6 +252,7 @@ else
   hotkey.bind(hyper, "d", appLauncher('Dash'))
   hotkey.bind(hyper, "i", appLauncher('iTerm'))
   hotkey.bind(hyper, "j", appLauncher('Emacs'))
+  hotkey.bind(magic, "j", appLauncher('Zed'))
   hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
   hotkey.bind(hyper, "m", appLauncher('MailMate'))
   hotkey.bind(hyper, "o", appLauncher('Slack'))
