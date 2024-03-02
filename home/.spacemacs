@@ -1074,8 +1074,8 @@ before packages are loaded."
       (org-babel-do-load-languages
        'org-babel-load-languages
        '((emacs-lisp . t)
-         (mermaid . T)
-         (plantuml . T)
+         (mermaid . t)
+         (plantuml . t)
          (http . t)
          (lua . t)
          (python . t)
