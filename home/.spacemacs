@@ -162,7 +162,7 @@ This function should only modify configuration layer settings."
            mu4e-enable-notifications t
            mu4e-enable-mode-line t
            mu4e-org-compose-support t
-           mu4e-headers-leave-behavior 'always
+           mu4e-headers-leave-behavior 'apply
            org-mu4e-convert-to-html t
            mu4e-enable-async-operations t
            mu4e-maildir "~/Maildir"
