@@ -213,6 +213,33 @@ end tell
     hs.osascript.applescript(script)
   end
 
+Fastmail = "com.webcatalog.juli.fastmail"  
+selectEmailModal = hs.hotkey.modal.new(hyper, "m")
+
+function selectEmailModal:entered()
+  hs.alert.show("Press 'g' for Gmail, 'f' for Fastmail")
+end
+
+selectEmailModal:bind("", "g", function()
+  selectEmailModal:exit()
+  appLauncher('GMail')()
+end)
+
+selectEmailModal:bind("", "f", function()
+  selectEmailModal:exit()
+  appLauncher(Fastmail)()
+end)
+
+selectEmailModal:bind("", "escape", function()
+  selectEmailModal:exit()
+end)
+hotkey.bind(magic, "m", function()
+              selectEmailModal:enter()
+end)
+
+
+
+
 if work_machines[machine] ~= nil then
   -- hotkey.bind(hyper, "a", appLauncher('Arduino IDE'))
   hotkey.bind(hyper, "b", appLauncher('ChatGPT'))
@@ -227,7 +254,7 @@ if work_machines[machine] ~= nil then
   hotkey.bind(magic, "j", appLauncher('Zed'))
   hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
   hotkey.bind(hyper, "l", appLauncher('Google Calendar'))
-  hotkey.bind(hyper, "m", appLauncher('GMail'))
+  -- hotkey.bind(hyper, "m", appLauncher('GMail'))
   hotkey.bind(hyper, "n", appLauncher('Notion'))
   hotkey.bind(hyper, "o", appLauncher('Slack'))
   hotkey.bind(hyper, "p", appLauncher('Postman'))
