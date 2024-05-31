@@ -259,6 +259,7 @@ This function should only modify configuration layer settings."
                                     ;; forge
                                     ;; closql
                                     ;; ghub
+                                    window-purpose
                                     )
 
    ;; Defines the behaviour of Spacemacs when installing packages.
@@ -460,15 +461,15 @@ It should only modify the values of Spacemacs settings."
    ;; Point size is recommended, because it's device independent. (default 10.0)
    dotspacemacs-default-font '(
                                ("FiraCode Nerd Font"
-                                :size 18.0
+                                :size 16.0
                                 :weight normal
                                 :width normal)
                                ("JetBrainsMono Nerd Font"
-                                :size 18.0
+                                :size 16.0
                                 :weight normal
                                 :width normal)
                                ("Inconsolata Nerd Font"
-                                :size 18.0
+                                :size 16.0
                                 :weight normal
                                 :width normal)
                                ("Monoid Nerd Font"
@@ -1387,6 +1388,8 @@ before packages are loaded."
       (setq-local gptel-api-key (plist-get auth-info :secret))))
   
   (advice-add 'gptel :before #'rk/gptel-before-advice)
+  
+    (setq helm-ag-use-grep-ignore-list nil)
     ;; Org Appearance
   
   

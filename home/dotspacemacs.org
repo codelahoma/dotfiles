@@ -97,15 +97,15 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
 ** Default Fonts
 #+begin_src emacs-lisp :noweb-ref dotspacemacs-default-font
   ("FiraCode Nerd Font"
-   :size 18.0
+   :size 16.0
    :weight normal
    :width normal)
   ("JetBrainsMono Nerd Font"
-   :size 18.0
+   :size 16.0
    :weight normal
    :width normal)
   ("Inconsolata Nerd Font"
-   :size 18.0
+   :size 16.0
    :weight normal
    :width normal)
   ("Monoid Nerd Font"
@@ -1199,6 +1199,7 @@ Configures the base distribution and the layers I want installed and configure.
                                       ;; forge
                                       ;; closql
                                       ;; ghub
+                                      window-purpose
                                       )
 
      ;; Defines the behaviour of Spacemacs when installing packages.
@@ -1747,6 +1748,8 @@ Configures the base distribution and the layers I want installed and configure.
 
 * user config yet to reorganize
 #+begin_src emacs-lisp :noweb no-export :noweb-ref to-organize
+
+    (setq helm-ag-use-grep-ignore-list nil)
     ;; Org Appearance
 
 
