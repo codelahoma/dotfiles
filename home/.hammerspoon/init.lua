@@ -217,7 +217,7 @@ Fastmail = "com.webcatalog.juli.fastmail"
 selectEmailModal = hs.hotkey.modal.new(hyper, "m")
 
 function selectEmailModal:entered()
-  hs.alert.show("Press 'g' for Gmail, 'f' for Fastmail")
+  hs.alert.show("Press 'g' for Gmail, 'f' for Fastmail", 0.5)
 end
 
 selectEmailModal:bind("", "g", function()
@@ -233,7 +233,7 @@ end)
 selectEmailModal:bind("", "escape", function()
   selectEmailModal:exit()
 end)
-hotkey.bind(magic, "m", function()
+hotkey.bind(hyper, "m", function()
               selectEmailModal:enter()
 end)
 
@@ -254,10 +254,9 @@ if work_machines[machine] ~= nil then
   hotkey.bind(magic, "j", appLauncher('Zed'))
   hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
   hotkey.bind(hyper, "l", appLauncher('Google Calendar'))
-  -- hotkey.bind(hyper, "m", appLauncher('GMail'))
   hotkey.bind(hyper, "n", appLauncher('Notion'))
   hotkey.bind(hyper, "o", appLauncher('Slack'))
-  hotkey.bind(hyper, "p", appLauncher('Postman'))
+  hotkey.bind(hyper, "p", appLauncher('Perplexity AI'))
   hotkey.bind(hyper, "q", appLauncher('1Password'))
   hotkey.bind(hyper, "r", hs.reload)
   hotkey.bind(hyper, "s", hs.grid.show)
@@ -277,7 +276,6 @@ else
   hotkey.bind(hyper, "j", appLauncher('Emacs'))
   hotkey.bind(magic, "j", appLauncher('Zed'))
   hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
-  hotkey.bind(hyper, "m", appLauncher('MailMate'))
   hotkey.bind(hyper, "o", appLauncher('Slack'))
   hotkey.bind(hyper, "p", appLauncher('Preview'))
   hotkey.bind(hyper, "r", hs.reload)
