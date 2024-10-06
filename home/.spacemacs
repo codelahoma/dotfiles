@@ -132,7 +132,6 @@ This function should only modify configuration layer settings."
      cmake
      graphviz
      restclient
-     ipython-notebook
      (lsp :variables
           lsp-file-watch-threshold 2000
           lsp-navigation 'peek
@@ -214,6 +213,7 @@ This function should only modify configuration layer settings."
                                       ef-themes
                                       sqlite3
                                       all-the-icons
+                                      mermaid-mode
                                       
                                       ob-hy
                                       ob-async
@@ -460,16 +460,20 @@ It should only modify the values of Spacemacs settings."
    ;; a non-negative integer (pixel size), or a floating-point (point size).
    ;; Point size is recommended, because it's device independent. (default 10.0)
    dotspacemacs-default-font '(
+                               ("Inconsolata Nerd Font"
+                                :size 16.0
+                                :weight normal
+                                :width normal)
+                               ("Cascadia Mono NF"
+                                :size 16.0
+                                :weight normal
+                                :width normal)
                                ("FiraCode Nerd Font"
-                                :size 20.0
+                                :size 16.0
                                 :weight normal
                                 :width normal)
                                ("JetBrainsMono Nerd Font"
-                                :size 20.0
-                                :weight normal
-                                :width normal)
-                               ("Inconsolata Nerd Font"
-                                :size 20.0
+                                :size 16.0
                                 :weight normal
                                 :width normal)
                                ("Monoid Nerd Font"
@@ -1365,6 +1369,70 @@ before packages are loaded."
   
   (add-hook 'Info-mode-hook 'my-info-mode-hook)
   
+  
+  (require 'elfeed)
+  (require 'org-roam)
+  (require 'org-roam-dailies)
+  
+  (defun elfeed-save-to-org-roam-dailies ()
+    "Save the current elfeed entry to org-roam dailies."
+    (interactive)
+    (let* ((entry (elfeed-search-selected :single))
+           (title (elfeed-entry-title entry))
+           (link (elfeed-entry-link entry))
+           (content (elfeed-deref (elfeed-entry-content entry)))
+           (date (format-time-string "%Y-%m-%d"))
+           (org-roam-dailies-dir (expand-file-name "dailies" org-roam-directory))
+           (daily-file (expand-file-name (concat date ".org") org-roam-dailies-dir)))
+      (unless (file-exists-p daily-file)
+        (with-temp-buffer (write-file daily-file)))
+      (with-current-buffer (find-file-noselect daily-file)
+        (goto-char (point-max))
+        (insert (concat "* " title "\n"))
+        (insert (concat "[[" link "][" link "]]\n\n"))
+        (insert (concat content "\n"))
+        (save-buffer))))
+  
+  ;; Bind the function to a key for easy access
+  (define-key elfeed-search-mode-map (kbd "o") 'elfeed-save-to-org-roam-dailies)
+  (defun renumber-region (start end)
+    "Renumber the lines in the region from START to END."
+    (interactive "r")
+    (let ((line-number 1))
+      (goto-char start)
+      (while (and (< (point) end) (not (eobp)))
+        (if (re-search-forward "^\\([0-9]+\\)\\(\\..*\\)$" (line-end-position) t)
+            (replace-match (format "%d\\2" line-number))
+          (forward-line 1))
+        (setq line-number (1+ line-number))
+        (forward-line 1))))
+  
+  (global-set-key (kbd "C-c r") 'renumber-region)
+  (setq helm-ag-use-grep-ignore-list nil)
+  (defun insert-current-date-time ()
+    "Insert the current date and time."
+    (interactive)
+    (insert (format-time-string "%Y-%m-%d %H:%M:%S")))
+  
+  (spacemacs/set-leader-keys "otd" 'insert-current-date-time)
+  
+  (defun org-copy-current-source-block ()
+    "Copy the current source block's content to the clipboard, without including the BEGIN and END markers."
+    (interactive)
+    (when (org-in-src-block-p)
+      (save-excursion
+        (let (beg end)
+          (goto-char (org-babel-where-is-src-block-head))
+          (forward-line)
+          (setq beg (point))
+          (goto-char (org-babel-where-is-src-block-result 'post))
+          (backward-line 2)
+          (setq end (point))
+          (kill-ring-save beg end)))))
+  
+  (global-unset-key (kbd "s-k"))
+  ;; nil
+  (global-set-key (kbd "C-c C-x C-c") 'org-copy-current-source-block)
   (defun rk/insert-spacemacs-config-block ()
   "Insert org-babel source block for Spacemacs config."
   (interactive)

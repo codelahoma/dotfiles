@@ -226,9 +226,9 @@ tmux_conf_theme_right_separator_sub="|"
 #     - #{uptime_s}
 #     - #{username}
 #     - #{username_ssh}
-tmux_conf_theme_status_left=" #{circled_session_name} | ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} "
-tmux_conf_theme_status_right=" #{prefix}#{pairing}#{synchronized} | #{?window_zoomed_flag, ,🔍 | #{username}#{root} | #{hostname} "
-# tmux_conf_theme_status_right='#{pairing}#{synchronized} #{cpu_bg_color} CPU: #{cpu_icon} #{cpu_percentage} |#{ram_bg_color} MEM: #{ram_icon} #{ram_percentage} | #(curl -m 1 wttr.in?format=1 2>/dev/null; sleep 900) | %R , %d %b '
+tmux_conf_theme_status_left=" #{circled_session_name} | ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} | #{loadavg} "
+# tmux_conf_theme_status_right=" #{prefix}#{pairing}#{synchronized} | #{?window_zoomed_flag, ,🔍 | #{username}#{root} | #{hostname} | Continuum status: #{continuum_status} "
+tmux_conf_theme_status_right='#{battery_hbar} | #(curl -m 1 wttr.in?format=1\&u 2>/dev/null; sleep 900) | %R , %d %b | #{continuum_status}'
 
 #
 # status left style
@@ -402,14 +402,12 @@ tmux_conf_update_plugins_on_reload=true
 # to enable a plugin, use the 'set -g @plugin' syntax:
 # visit https://github.com/tmux-plugins for available plugins
 set -g @plugin 'tmux-plugins/tmux-copycat'
-set -g @plugin 'tmux-plugins/tmux-logging''
-# set -g @plugin 'tmux-plugins/tmux-cpu'
-# set -g @plugin 'laktak/extrakto'
-# set -g @plugin 'tmux-plugins/tmux-prefix-highlight'
+set -g @plugin 'tmux-plugins/tmux-logging'
+set -g @plugin 'laktak/extrakto'
 set -g @plugin 'tmux-plugins/tmux-resurrect'
 set -g @plugin 'tmux-plugins/tmux-continuum'
 set -g @continuum-restore 'on'
-
+set -g @continuum-save-interval '60'
 
 # -- custom variables ----------------------------------------------------------
 
