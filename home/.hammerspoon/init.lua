@@ -200,7 +200,7 @@ tell application "Google Chrome"
   if not tabFound then
     set newTab to make new tab at end of tabs of window 1
     set URL of newTab to "https://new.750words.com"
-
+	
   end if
 
   activate
@@ -247,6 +247,7 @@ if work_machines[machine] ~= nil then
   hotkey.bind(hyper, "d", appLauncher('Dash'))
   hotkey.bind(magic, "d", appLauncher('Discord'))
   hotkey.bind(hyper, "f", appLauncher('DBeaver'))
+  hotkey.bind(magic, "f", appLauncher("Safari"))
   hotkey.bind(hyper, "g", appLauncher('Atlas Jupyter'))
   hotkey.bind(hyper, "h", appLauncher('Docker Desktop'))
   hotkey.bind(hyper, "i", appLauncher('iTerm'))
