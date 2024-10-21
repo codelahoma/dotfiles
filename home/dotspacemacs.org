@@ -917,6 +917,12 @@ Make sure our custom lisp directory is in =load-path= (effective noop if already
                   spell-checking-enable-by-default nil)
   (version-control :variables
                    version-control-diff-side 'left)
+
+  (tree-sitter :variables
+                spacemacs-tree-sitter-hl-black-list '(js2-mode rjsx-mode)
+                tree-sitter-syntax-highlight-enable t
+                tree-sitter-fold-enable t
+                tree-sitter-fold-indicators-enable nil)
 #+end_src
 ** shell
 #+begin_src emacs-lisp :noweb-ref config-layers

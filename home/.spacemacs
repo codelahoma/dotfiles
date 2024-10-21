@@ -182,6 +182,12 @@ This function should only modify configuration layer settings."
                      spell-checking-enable-by-default nil)
      (version-control :variables
                       version-control-diff-side 'left)
+     
+     (tree-sitter :variables
+                   spacemacs-tree-sitter-hl-black-list '(js2-mode rjsx-mode)
+                   tree-sitter-syntax-highlight-enable t
+                   tree-sitter-fold-enable t
+                   tree-sitter-fold-indicators-enable nil)
      (shell :variables
             shell-default-shell 'vterm
             shell-default-term-shell "/bin/zsh"

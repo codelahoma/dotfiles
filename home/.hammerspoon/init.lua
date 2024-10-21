@@ -227,7 +227,7 @@ end)
 
 selectEmailModal:bind("", "f", function()
   selectEmailModal:exit()
-  appLauncher(Fastmail)()
+  appLauncher('Spark Mail')()
 end)
 
 selectEmailModal:bind("", "escape", function()
@@ -251,7 +251,7 @@ if work_machines[machine] ~= nil then
   hotkey.bind(hyper, "g", appLauncher('Atlas Jupyter'))
   hotkey.bind(hyper, "h", appLauncher('Docker Desktop'))
   hotkey.bind(hyper, "i", appLauncher('iTerm'))
-  hotkey.bind(hyper, "j", appLauncher('Emacs'))
+  hotkey.bind(hyper, "j", appLauncher('/Applications/Emacs.app'))
   hotkey.bind(magic, "j", appLauncher('Zed'))
   hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
   hotkey.bind(hyper, "l", appLauncher('Google Calendar'))
