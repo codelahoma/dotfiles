@@ -84,15 +84,9 @@ alias -g C='| wc -l'
 alias hl='highlight -O xterm256'
 alias -g HL='|highlight -O xterm256 -'
 alias -g F='| fx'
-alias xmlf='xmllint --format '
-alias susalt='ssh saltmaster-3 sudo salt'
-alias ss="script/stop && script/start -d && script/attach --tail=100 &"
 alias emc="emacsclient -nw"
-alias bsalt="ssh -t saltmaster vim /srv"
-alias esalt="ssh -t saltmaster sudo vim /srv"
 alias ccat='/bin/cat'
 alias cat='/opt/homebrew/bin/bat'
-alias org='emacsclient -nw ~/Dropbox/org/gtd/gtd.org'
 alias Make=`which make`
 alias make="$(which make) --"
 autoload edit-command-line

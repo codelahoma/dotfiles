@@ -109,6 +109,7 @@ This function should only modify configuration layer settings."
           org-enable-bootstrap-support t
           org-enable-org-contacts-support nil
           org-enable-hugo-support t
+          org-enable-modern-support t
           org-enable-jira-support t
           org-enable-org-journal-support t
           org-enable-notifications t
