@@ -96,6 +96,10 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
 #+end_src
 ** Default Fonts
 #+begin_src emacs-lisp :noweb-ref dotspacemacs-default-font
+  ("MesloLGS Nerd Font Mono"
+   :size 18.0
+   :weight normal
+   :width normal)
   ("Inconsolata Nerd Font"
    :size 16.0
    :weight normal
@@ -156,8 +160,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
           colors-colorize-identifiers 'variables)
   emoji
   evil-better-jumper
-  helm
-  ;; compleseus
+  ;; helm
   multiple-cursors
   (osx :variables
        osx-command-as nil)
@@ -165,7 +168,6 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
   spacemacs-org
   spacemacs-navigation
   syntax-checking
-
 #+end_src
 *** Additional Packages
 #+begin_src emacs-lisp :noweb-ref additional-packages
@@ -313,6 +315,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
                         :files ("helm-org-ql.el")))
   ox-jira
   ox-slack
+  window-purpose
 #+end_src
 
 *** Appearance
@@ -904,6 +907,54 @@ Make sure our custom lisp directory is in =load-path= (effective noop if already
 # #+begin_src emacs-lisp :noweb-ref user-config :results silent
 #   (require 'mu4e-dashboard)
 # #+end_src
+
+** Compleseus
+
+*** layer config
+#+begin_src emacs-lisp :noweb-ref config-layers
+  ;; (compleseus :variables
+  ;;             compleseus-enable-marginalia t  ;; Enable annotations
+  ;;             compleseus-enable-consult t     ;; Enable Consult for advanced commands
+  ;;             compleseus-enable-orderless t   ;; Use Orderless for flexible matching
+  ;;             compleseus-enable-corfu t       ;; Enable Corfu for completion-at-point
+  ;;             compleseus-corfu-auto t         ;; Auto popup completions in Corfu
+  ;;             compleseus-enable-embark t)     ;; Enable Embark for candidate actions
+
+#+end_src
+
+
+ 
+
+*** config
+#+begin_src emacs-lisp :noweb-ref user-config
+  ;; ;; Enable Vertico globally
+  ;; ;; (vertico-mode 1)
+
+  ;; ;; Enable Marginalia annotations
+  ;; (marginalia-mode 2)
+
+  ;; ;; Configure Orderless matching
+  ;; (with-eval-after-load 'orderless
+  ;;   (setq completion-styles '(orderless)
+  ;;         completion-category-overrides '((file (styles . (partial-completion))))))
+
+  ;; ;; Embark key bindings
+  ;; (global-set-key (kbd "C-.") #'embark-act)        ;; Act on candidate
+  ;; (global-set-key (kbd "C-,") #'embark-dwim)      ;; Default action
+  ;; (setq embark-action-indicator
+  ;;       (lambda (map) (which-key--show-keymap "Embark Actions" map nil nil 'no-paging))
+  ;;       embark-become-indicator embark-action-indicator)
+
+  ;; ;; Corfu configuration
+  ;; (setq corfu-auto t                  ;; Enable auto-popup
+  ;;       corfu-cycle t)                ;; Allow cycling through candidates
+  ;; (global-corfu-mode 1)
+
+  ;; ;; Additional Consult settings
+  ;; (setq consult-narrow-key "<")       ;; Narrowing prefix key
+  ;; (setq consult-project-root-function #'projectile-project-root) ;; Use Projectile for root detection
+#+end_src
+
 
 ** Other
 #+begin_src emacs-lisp :noweb-ref config-layers
