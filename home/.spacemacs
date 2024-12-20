@@ -53,8 +53,7 @@ This function should only modify configuration layer settings."
              colors-colorize-identifiers 'variables)
      emoji
      evil-better-jumper
-     helm
-     ;; compleseus
+     ;; helm
      multiple-cursors
      (osx :variables
           osx-command-as nil)
@@ -62,7 +61,6 @@ This function should only modify configuration layer settings."
      spacemacs-org
      spacemacs-navigation
      syntax-checking
-     
      theming
      themes-megapack
      (treemacs :variables
@@ -172,6 +170,14 @@ This function should only modify configuration layer settings."
            mu4e-date-format "%y/%m/%d"
            mu4e-headers-date-format "%Y/%m/%d"
            mu4e-change-filenames-when-moving t)
+     ;; (compleseus :variables
+     ;;             compleseus-enable-marginalia t  ;; Enable annotations
+     ;;             compleseus-enable-consult t     ;; Enable Consult for advanced commands
+     ;;             compleseus-enable-orderless t   ;; Use Orderless for flexible matching
+     ;;             compleseus-enable-corfu t       ;; Enable Corfu for completion-at-point
+     ;;             compleseus-corfu-auto t         ;; Auto popup completions in Corfu
+     ;;             compleseus-enable-embark t)     ;; Enable Embark for candidate actions
+     
      bm
      command-log
      copy-as-format
@@ -232,6 +238,7 @@ This function should only modify configuration layer settings."
                                                             :files ("helm-org-ql.el")))
                                       ox-jira
                                       ox-slack
+                                      window-purpose
                                       ;; (chatgpt :location (recipe
                                       ;;                     :fetcher github
                                       ;;                     :repo "joshcho/ChatGPT.el"))
@@ -467,6 +474,10 @@ It should only modify the values of Spacemacs settings."
    ;; a non-negative integer (pixel size), or a floating-point (point size).
    ;; Point size is recommended, because it's device independent. (default 10.0)
    dotspacemacs-default-font '(
+                               ("MesloLGS Nerd Font Mono"
+                                :size 18.0
+                                :weight normal
+                                :width normal)
                                ("Inconsolata Nerd Font"
                                 :size 16.0
                                 :weight normal
@@ -1223,6 +1234,32 @@ before packages are loaded."
                             ("view in browser" . mu4e-action-view-in-browser)
                             ("bview in qutebrowser" . rk/mu4e-view-in-external-browser)
                             ("show this thread" . mu4e-action-show-thread)))
+  ;; ;; Enable Vertico globally
+  ;; ;; (vertico-mode 1)
+  
+  ;; ;; Enable Marginalia annotations
+  ;; (marginalia-mode 2)
+  
+  ;; ;; Configure Orderless matching
+  ;; (with-eval-after-load 'orderless
+  ;;   (setq completion-styles '(orderless)
+  ;;         completion-category-overrides '((file (styles . (partial-completion))))))
+  
+  ;; ;; Embark key bindings
+  ;; (global-set-key (kbd "C-.") #'embark-act)        ;; Act on candidate
+  ;; (global-set-key (kbd "C-,") #'embark-dwim)      ;; Default action
+  ;; (setq embark-action-indicator
+  ;;       (lambda (map) (which-key--show-keymap "Embark Actions" map nil nil 'no-paging))
+  ;;       embark-become-indicator embark-action-indicator)
+  
+  ;; ;; Corfu configuration
+  ;; (setq corfu-auto t                  ;; Enable auto-popup
+  ;;       corfu-cycle t)                ;; Allow cycling through candidates
+  ;; (global-corfu-mode 1)
+  
+  ;; ;; Additional Consult settings
+  ;; (setq consult-narrow-key "<")       ;; Narrowing prefix key
+  ;; (setq consult-project-root-function #'projectile-project-root) ;; Use Projectile for root detection
   ;; rk/open-daily-writing function
   (defun rk/open-daily-writing ()
     "Open the daily writing file, create a new entry if needed, and position the cursor at the end of the entry."
