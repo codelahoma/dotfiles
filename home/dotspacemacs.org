@@ -15,7 +15,7 @@ I'll probably want to eventually break things down into separate elisp files, bu
 
 It consists of a brief [[*.spacemacs Preamble][preamble]], followed by a [[*The functions][handful of functions]].
 
-#+begin_src emacs-lisp :noweb no-export  :tangle .spacemacs :comments no
+#+begin_src emacs-lisp :noweb no-export  :tangle .spacemacs.d/init.el :comments no
   <<preamble>>
   <<dotspacemacs-layers>>
   <<dotspacemacs-init>>
