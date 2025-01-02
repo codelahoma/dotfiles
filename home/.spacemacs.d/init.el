@@ -148,10 +148,10 @@ This function should only modify configuration layer settings."
      (wakatime :variables
                wakatime-api-key "REDACTED_WAKATIME_KEY"
                wakatime-cli-path "/opt/homebrew/bin/wakatime-cli")
-     
+
      (elfeed :variables
              elfeed-db-directory "~/personal/org-files/elfeed-db"
-             rmh-elfeed-org-files (list "~/personal/org-files/elfeed.org")) 
+             rmh-elfeed-org-files (list "~/personal/org-files/elfeed.org"))
      (mu4e :variables
            user-email-address "codelahoma@gmail.com"
            mu4e-use-maildirs-extension nil
@@ -176,7 +176,7 @@ This function should only modify configuration layer settings."
      ;;             compleseus-enable-corfu t       ;; Enable Corfu for completion-at-point
      ;;             compleseus-corfu-auto t         ;; Auto popup completions in Corfu
      ;;             compleseus-enable-embark t)     ;; Enable Embark for candidate actions
-     
+
      bm
      command-log
      copy-as-format
@@ -188,12 +188,12 @@ This function should only modify configuration layer settings."
                      spell-checking-enable-by-default nil)
      (version-control :variables
                       version-control-diff-side 'left)
-     
+
      (tree-sitter :variables
-                   spacemacs-tree-sitter-hl-black-list '(js2-mode rjsx-mode)
-                   tree-sitter-syntax-highlight-enable t
-                   tree-sitter-fold-enable t
-                   tree-sitter-fold-indicators-enable nil)
+                  spacemacs-tree-sitter-hl-black-list '(js2-mode rjsx-mode)
+                  tree-sitter-syntax-highlight-enable t
+                  tree-sitter-fold-enable t
+                  tree-sitter-fold-indicators-enable nil)
      (shell :variables
             shell-default-shell 'vterm
             shell-default-term-shell "/bin/zsh"
@@ -229,7 +229,8 @@ This function should only modify configuration layer settings."
                                       org-roam-bibtex
                                       org-noter
                                       org-noter-pdftools
-                                      
+                                      hyperbole
+
                                       ob-hy
                                       ob-async
                                       org-jira
@@ -245,7 +246,7 @@ This function should only modify configuration layer settings."
                                       ;;                     :repo "joshcho/ChatGPT.el"))
                                       gptel
                                       (gptel-extensions :location "/Users/rodk//.emacs.d/private/gptel-extensions.el/")
-                                      
+
                                       direnv
                                       pinboard
                                       (copilot :location (recipe
@@ -371,7 +372,7 @@ It should only modify the values of Spacemacs settings."
    ;; (default 'vim)
    dotspacemacs-editing-style '(vim :variables
                                     vim-style-visual-line-move-text t
-                                )
+                                    )
 
    ;; If non-nil show the version string in the Spacemacs buffer. It will
    ;; appear as (spacemacs version)@(emacs version)
@@ -516,9 +517,9 @@ It should only modify the values of Spacemacs settings."
                                 :weight normal
                                 :width normal)
                                ("Hack Nerd Font"
-                               :size 20.0
-                               :weight normal
-                               :width normal)
+                                :size 20.0
+                                :weight normal
+                                :width normal)
                                ("Hack"
                                 :size 20.0
                                 :weight normal
@@ -531,7 +532,7 @@ It should only modify the values of Spacemacs settings."
                                 :size 20.0
                                 :weight normal
                                 :width normal)
-                               
+
                                )
 
    ;; The leader key (default "SPC")
@@ -689,16 +690,16 @@ It should only modify the values of Spacemacs settings."
    ;; When used in a plist, `visual' takes precedence over `relative'.
    ;; (default nil)
    dotspacemacs-line-numbers '(:relative nil
-                              :visible t
-                              :disabled-for-modes dired-mode
-                                                  doc-view-mode
-                                                  markdown-mode
-                                                  org-mode
-                                                  pdf-view-mode
-                                                  text-mode
-                                                  xml-mode
-                                                  sgml-mode
-                              :size-limit-kb 1000)
+                                         :visible t
+                                         :disabled-for-modes dired-mode
+                                         doc-view-mode
+                                         markdown-mode
+                                         org-mode
+                                         pdf-view-mode
+                                         text-mode
+                                         xml-mode
+                                         sgml-mode
+                                         :size-limit-kb 1000)
    ;; dotspacemacs-line-numbers nil
 
    ;; Code folding method. Possible values are `evil', `origami' and `vimish'.
@@ -877,7 +878,7 @@ before packages are loaded."
                 (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
          (headline           `(:inherit default :weight normal ))
          )
-  
+
     (custom-theme-set-faces
      'user
      '(fixed-pitch ((t ( :family "FiraMono Nerd Font" :height 1.0))))
@@ -928,18 +929,18 @@ before packages are loaded."
             ("MEETING" . ?⏰)
             ("CANCELLED" . ?❌)
             ("ATTENDED" . ?📝)
-            ("ANSWERED" . ?👍) 
+            ("ANSWERED" . ?👍)
             ("DONE" . ?✅)))
     (org-superstar-restart))
-  
+
   ;; Org-reveal
   (setq org-re-reveal-title-slide "<h1 class='title'>%t</h1><h2 class='author'>%a</h2><p class='email'>%e</p>")
   (setq org-re-reveal-root "file:///Users/rodk/.emacs.d/private/reveal.js")
-  
+
   (setq org-src-window-setup 'split-window-below)
   (with-eval-after-load 'org
     (setq org-M-RET-may-split-line nil)
-  
+
     (font-lock-add-keywords 'org-mode
                             '(("^ *\\([-]\\) "
                                (0 (prog1 ()
@@ -950,67 +951,67 @@ before packages are loaded."
     (setq alert-default-style 'notifications)
     (add-hook 'org-mode-hook 'variable-pitch-mode)
     (add-hook 'org-mode-hook 'visual-line-mode)
-  
+
     ;; org directories
     (setq org-directory "~/personal/org-files/")
     (setq org-roam-directory (concat org-directory "roam-notes/"))
     (setq org-link-frame-setup '((file . find-file-no-select)))
-  
+
     (org-roam-db-autosync-mode)
-  
+
     ;; (setq elfeed-db-directory (concat org-directory "elfeed-db/")
     ;;       rmh-elfeed-org-files (list (concat org-directory "elfeed.org")))
-  
+
     ;; default to all top level org files for agenda
     (unless org-agenda-files
       (setq org-agenda-files (directory-files org-directory nil "org$")))
-  
+
     ;; file prefix aliases
     (defalias `rk/org-file (apply-partially 'concat org-directory))
-  
+
     (setq org-persp-startup-org-file (concat org-directory "gtd.org"))
     (setq org-id-track-globally t)
-  
-  
+
+
     (setq org-roam-completion-everywhere t)
     (add-to-list 'spacemacs-default-company-backends 'company-capf)
-  
+
     (add-to-list 'org-modules 'org-protocol)
     (add-to-list 'org-modules 'org-tempo)
     (add-to-list 'org-modules 'org-checklist)
-  
+
     (setq org-tags-exclude-from-inheritance '("project"))
     (setq org-list-allow-alphabetical t)
-  
+
     (setq org-capture-templates `(
                                   ("t" "Todos")
                                   ("tl" "Todo with Link" entry (file ,(rk/org-file "inbox.org")) "* TODO %?\n  %i\n  %a")
                                   ("tt" "Todo" entry (file ,(rk/org-file "inbox.org")) "* TODO %?\n  %i\n")
                                   ("tT" "Tickler" entry (file+headline ,(rk/org-file "tickler.org") "Tickler") "* %i%? \n %U"))
           )
-  
+
     (global-set-key "\C-cb" 'org-switchb)
-  
+
     (setq diary-file (rk/org-file "diary.org"))
     (setq org-agenda-include-diary t)
-  
+
     (setq org-journal-dir "~/personal/org-files/journal/"
           org-journal-date-prefix "#+TITLE: "
           org-journal-date-format "%A, %B %d %Y"
           org-journal-time-prefix "* "
           )
-  
-  
-  
+
+
+
     (setq rk/work-org-files (-flatten (list
-  
+
                                        (rk/org-file "inbox.org")
                                        (rk/org-file "gtd.org")
                                        (rk/org-file "tickler.org")
                                        (rk/org-file "someday.org")
                                        (rk/org-file "reference.org")
                                        )))
-  
+
     (setq rk/home-org-files (list
                              (rk/org-file "inbox.org")
                              (rk/org-file "home.org")
@@ -1018,7 +1019,7 @@ before packages are loaded."
                              (rk/org-file "tickler.org")
                              (rk/org-file "someday.org")
                              ))
-  
+
     (setq org-agenda-custom-commands
           '(("h" "Home"
              ((agenda "" ((org-agenda-span 3)))
@@ -1047,9 +1048,9 @@ before packages are loaded."
               ;; (tags "30days" ((org-agenda-overriding-header "30 Day Plan")))
               ;; (tags "60days" ((org-agenda-overriding-header "60 Day Plan")))
               ;; (tags "90days" ((org-agenda-overriding-header "90 Day Plan")))
-  
-  
-  
+
+
+
               ;; (tags "-@home-home+TODO=\"IN-PROGRESS\"" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/work-org-files)))
               ()))
             ("kW" "Weekly review"
@@ -1073,17 +1074,17 @@ before packages are loaded."
                    ))
     (setq org-startup-indented t)
     (add-to-list 'org-file-apps '(directory . emacs))
-  
+
     ;; Refiling refinements
     ;; source: https://blog.aaronbieber.com/2017/03/19/organizing-notes-with-refile.html
-  
+
     (setq org-refile-targets '((org-agenda-files :maxlevel . 6)))
     (setq org-refile-use-outline-path 'file)
     (setq org-outline-path-complete-in-steps nil)
     (setq org-refile-allow-creating-parent-nodes 'confirm)
     (setq org-clock-persist 'history)
     (org-clock-persistence-insinuate)
-  
+
     (setq org-todo-keywords
           '((sequence
              "TODO(t)"
@@ -1098,9 +1099,9 @@ before packages are loaded."
              )
             (sequence "QUESTION" "|" "ANSWERED(@)")
             (sequence "MEETING(m)" "|" "ATTENDED(a@)" "IGNORED(t)" "CANCELLED(l@)")))
-  
+
     (setq org-catch-invisible-edits 'smart)
-  
+
     (org-babel-do-load-languages
      'org-babel-load-languages
      '((emacs-lisp . t)
@@ -1115,7 +1116,7 @@ before packages are loaded."
     (setq org-confirm-babel-evaluate nil
           org-src-fontify-natively t
           org-src-tab-acts-natively t)
-  
+
     (setq org-roam-dailies-capture-templates
           '(("d" "default" entry
              "* %<%H:%M>  %?"
@@ -1133,10 +1134,10 @@ before packages are loaded."
              :unnarrowed t
              :immediate-finish t
              :jump-to-captured t) ("g" "GPTel Interaction" plain "%?" :target
-            (file+head "interactions/%<%Y%m%d%H%M%S>-${slug}.org"
-                       "#+title: ${title}\n#+roam_tags: interaction gptel\n#+date: %U\n\n* Context\n** Purpose\n\n* Key Questions\n\n* Insights\n\n* Follow-up Actions\n\n* Raw Interaction\n:PROPERTIES:\n:CAPTURED_ON: %U\n:MODEL: %^{Model}\n:END:\n\n")
-            :unnarrowed t) ))
-  
+             (file+head "interactions/%<%Y%m%d%H%M%S>-${slug}.org"
+                        "#+title: ${title}\n#+roam_tags: interaction gptel\n#+date: %U\n\n* Context\n** Purpose\n\n* Key Questions\n\n* Insights\n\n* Follow-up Actions\n\n* Raw Interaction\n:PROPERTIES:\n:CAPTURED_ON: %U\n:MODEL: %^{Model}\n:END:\n\n")
+             :unnarrowed t) ))
+
     (org-roam-db-autosync-mode)
     )
   ;; (require 'python)
@@ -1145,21 +1146,21 @@ before packages are loaded."
   (require 'gptel)
   (require 'gptel-extensions)
   (setq gptel-default-mode 'org-mode)
-  
+
   (add-hook 'find-file-hook 'direnv-update-directory-environment)
-  
+
   (with-eval-after-load 'company
     ;; disable inline previews
     (delq 'company-preview-if-just-one-frontend company-frontends))
-  
+
   (with-eval-after-load 'copilot
     (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
     (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
     (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
     (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word))
-  
+
   (add-hook 'prog-mode-hook 'copilot-mode)
-  
+
   (setq mu4e-contexts
         (list
          ;; Work account
@@ -1184,7 +1185,7 @@ before packages are loaded."
                                              (:maildir "/Gmail/[Gmail]/Trash" :key ?t)
                                              (:maildir "/Gmail/[Gmail]/Spam" :key ?j)))
                   ))
-  
+
          ;; Personal account
          (make-mu4e-context
           :name "Personal"
@@ -1210,55 +1211,55 @@ before packages are loaded."
   (add-to-list 'load-path "~/.spacemacs.d/lisp/")
   (require 'mu4e)
   (require 'smtpmail)
-  
+
   (setq mu4e-headers-leave-behavior 'apply
         message-send-mail-function 'message-send-mail-with-sendmail
         sendmail-program "/opt/homebrew/bin/msmtp")
   (setq mu4e-bookmarks '((:name "Recent Unread Inbox"
-                               :query "maildir:/Fastmail/INBOX AND flag:unread AND date:3d..now"
-                               :key ?r)
-                        (:name "Unread messages"
-                               :query "flag:unread AND NOT flag:trashed"
-                               :key 117)
-                        (:name "Today's messages"
-                               :query "date:today..now"
-                               :key 116)))
+                                :query "maildir:/Fastmail/INBOX AND flag:unread AND date:3d..now"
+                                :key ?r)
+                         (:name "Unread messages"
+                                :query "flag:unread AND NOT flag:trashed"
+                                :key 117)
+                         (:name "Today's messages"
+                                :query "date:today..now"
+                                :key 116)))
   (setq mu4e-maildir-shortcuts
         '((:maildir "/Fastmail/INBOX" :key ?f)
           (:maildir "/Gmail/Inbox" :key ?g)))
   (require 'browse-url)
-  
+
   (defun rk/mu4e-view-in-external-browser (msg)
     (let ((browse-url-browser-function 'browse-url-default-macosx-browser))
-    mu4e-action-view-in-browser))
-  
+      mu4e-action-view-in-browser))
+
   (setq mu4e-view-actions '(("capture message" . mu4e-action-capture-message)
                             ("view in browser" . mu4e-action-view-in-browser)
                             ("bview in qutebrowser" . rk/mu4e-view-in-external-browser)
                             ("show this thread" . mu4e-action-show-thread)))
   ;; ;; Enable Vertico globally
   ;; ;; (vertico-mode 1)
-  
+
   ;; ;; Enable Marginalia annotations
   ;; (marginalia-mode 2)
-  
+
   ;; ;; Configure Orderless matching
   ;; (with-eval-after-load 'orderless
   ;;   (setq completion-styles '(orderless)
   ;;         completion-category-overrides '((file (styles . (partial-completion))))))
-  
+
   ;; ;; Embark key bindings
   ;; (global-set-key (kbd "C-.") #'embark-act)        ;; Act on candidate
   ;; (global-set-key (kbd "C-,") #'embark-dwim)      ;; Default action
   ;; (setq embark-action-indicator
   ;;       (lambda (map) (which-key--show-keymap "Embark Actions" map nil nil 'no-paging))
   ;;       embark-become-indicator embark-action-indicator)
-  
+
   ;; ;; Corfu configuration
   ;; (setq corfu-auto t                  ;; Enable auto-popup
   ;;       corfu-cycle t)                ;; Allow cycling through candidates
   ;; (global-corfu-mode 1)
-  
+
   ;; ;; Additional Consult settings
   ;; (setq consult-narrow-key "<")       ;; Narrowing prefix key
   ;; (setq consult-project-root-function #'projectile-project-root) ;; Use Projectile for root detection
@@ -1287,8 +1288,8 @@ before packages are loaded."
       (setq rk/auto-update-word-count-enabled t)
       ;; Switch to distraction-free mode
       (writeroom-mode)))
-  
-  
+
+
   ;; Function to update the word count in an org entry heading
   (defun rk/update-word-count-in-heading ()
     "Store or update the word count of the current org entry in its heading."
@@ -1316,41 +1317,41 @@ before packages are loaded."
               (end-of-line)
               (insert (format " [%d words]" (- wc 1)))))
           (message "Word count updated: %d" (- wc 1))))))
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
   ;; Buffer-local variable to control automatic word count updates
   (defvar-local rk/auto-update-word-count-enabled nil
     "Enable or disable automatic word count updates for the current buffer.")
-  
+
   ;; Function to automatically update the word count in an org entry heading
   (defun rk/auto-update-word-count ()
     "Automatically update the word count of the current org entry in its heading."
     (when (and (eq major-mode 'org-mode) rk/auto-update-word-count-enabled)
       (rk/update-word-count-in-heading)))
-  
+
   ;; Idle timer to update the word count of the current org entry in its heading
   (defvar rk/auto-update-word-count-timer
     (run-with-idle-timer 1.5 t 'rk/auto-update-word-count)
     "Idle timer to update the word count of the current org entry in its heading.")
-  
+
   ;; Function to toggle automatic word count updates
   (defun rk/toggle-auto-update-word-count ()
     "Toggle automatic word count updates for the current buffer."
     (interactive)
     (setq rk/auto-update-word-count-enabled (not rk/auto-update-word-count-enabled))
     (message "Automatic word count updates %s" (if rk/auto-update-word-count-enabled "enabled" "disabled")))
-  
+
   ;; Function to enable automatic word count updates for the current file
   (defun rk/enable-auto-update-word-count-for-file ()
     "Enable automatic word count updates for the current file."
     (interactive)
     (add-file-local-variable 'rk/auto-update-word-count-enabled t)
     (message "Enabled automatic word count updates for the current file."))
-  
+
   ;; Function to enable automatic word count updates for the current org entry(defun rk/enable-auto-update-word-count-for-entry ()
   (defun rk/enable-auto-update-word-count-for-entry ()
     "Enable automatic word count updates for the current org entry."
@@ -1364,14 +1365,14 @@ before packages are loaded."
               (org-entry-put nil "VARIABLES" (concat (cdr (assoc "VARIABLES" property-drawer)) " rk/auto-update-word-count-enabled=t"))
             (org-entry-put nil "VARIABLES" "rk/auto-update-word-count-enabled=t"))))
       (message "Enabled automatic word count updates for the current entry.")))
-  
+
   ;; Function to disable automatic word count updates for the current file
   (defun rk/disable-auto-update-word-count-for-file ()
     "Disable automatic word count updates for the current file."
     (interactive)
     (delete-file-local-variable 'rk/auto-update-word-count-enabled)
     (message "Disabled automatic word count updates for the current file."))
-  
+
   ;; Function to disable automatic word count updates for the current org entry
   (defun rk/disable-auto-update-word-count-for-entry ()
     "Disable automatic word count updates for the current org entry."
@@ -1386,13 +1387,13 @@ before packages are loaded."
                 (org-entry-put nil "VARIABLES" updated-variables))
             (message "rk/auto-update-word-count-enabled not set for the current entry."))))
       (message "Disabled automatic word count updates for the current entry.")))
-  
+
   ;; Function advice to automatically update the word count in an org entry heading when saving the buffer
   (defun rk/update-word-count-before-save (&rest _args)
     "Update the word count of the current org entry before saving the buffer."
     (when (and (eq major-mode 'org-mode) rk/auto-update-word-count-enabled)
       (rk/update-word-count-in-heading)))
-  
+
   (advice-add 'save-buffer :before #'rk/update-word-count-before-save)
   (defun rk/insert-clipboard-markdown-as-org ()
     "Convert the clipboard contents from Markdown to Org and insert it at point."
@@ -1404,7 +1405,7 @@ before packages are loaded."
                          (shell-command-to-string (format "pandoc -f markdown -t org %s" temp-file)))))
       (insert org-output)
       (delete-file temp-file)))
-  
+
   (defun my-info-mode-hook ()
     (local-set-key (kbd "n") 'Info-next)
     (local-set-key (kbd "p") 'Info-prev)
@@ -1412,14 +1413,14 @@ before packages are loaded."
     (local-set-key (kbd "m") 'Info-menu)
     (local-set-key (kbd "s") 'Info-search)
     (local-set-key (kbd "f") 'Info-follow-nearest-node))
-  
+
   (add-hook 'Info-mode-hook 'my-info-mode-hook)
-  
-  
+
+
   (require 'elfeed)
   (require 'org-roam)
   (require 'org-roam-dailies)
-  
+
   (defun elfeed-save-to-org-roam-dailies ()
     "Save the current elfeed entry to org-roam dailies."
     (interactive)
@@ -1438,7 +1439,7 @@ before packages are loaded."
         (insert (concat "[[" link "][" link "]]\n\n"))
         (insert (concat content "\n"))
         (save-buffer))))
-  
+
   ;; Bind the function to a key for easy access
   (define-key elfeed-search-mode-map (kbd "o") 'elfeed-save-to-org-roam-dailies)
   (defun renumber-region (start end)
@@ -1452,16 +1453,16 @@ before packages are loaded."
           (forward-line 1))
         (setq line-number (1+ line-number))
         (forward-line 1))))
-  
+
   (global-set-key (kbd "C-c r") 'renumber-region)
   (setq helm-ag-use-grep-ignore-list nil)
   (defun insert-current-date-time ()
     "Insert the current date and time."
     (interactive)
     (insert (format-time-string "%Y-%m-%d %H:%M:%S")))
-  
+
   (spacemacs/set-leader-keys "otd" 'insert-current-date-time)
-  
+
   (defun org-copy-current-source-block ()
     "Copy the current source block's content to the clipboard, without including the BEGIN and END markers."
     (interactive)
@@ -1475,20 +1476,20 @@ before packages are loaded."
           (backward-line 2)
           (setq end (point))
           (kill-ring-save beg end)))))
-  
+
   (global-unset-key (kbd "s-k"))
   ;; nil
   (global-set-key (kbd "C-c C-x C-c") 'org-copy-current-source-block)
   (defun rk/insert-spacemacs-config-block ()
-  "Insert org-babel source block for Spacemacs config."
-  (interactive)
-  (let* ((targets (rk/get-spacemacs-config-targets))
-         (target (completing-read "Choose target or specify new: " targets nil t)))
-    (setq rk/last-inserted-config-target target)
-    (insert (format "#+begin_src emacs-lisp :noweb-ref %s\n\n" target)
-            (format "  ;; insert your code here\n\n")
-            "#+end_src\n")))
-  
+    "Insert org-babel source block for Spacemacs config."
+    (interactive)
+    (let* ((targets (rk/get-spacemacs-config-targets))
+           (target (completing-read "Choose target or specify new: " targets nil t)))
+      (setq rk/last-inserted-config-target target)
+      (insert (format "#+begin_src emacs-lisp :noweb-ref %s\n\n" target)
+              (format "  ;; insert your code here\n\n")
+              "#+end_src\n")))
+
   (defun rk/get-spacemacs-config-targets ()
     "Get list of unique Spacemacs config targets from noweb references in source blocks with matching header."
     (interactive)
@@ -1500,26 +1501,26 @@ before packages are loaded."
             (unless (member target targets)
               (push target targets)))))
       targets))
-  
+
   (global-set-key (kbd "C-c i") #'rk/insert-spacemacs-config-block)
   (defun rk/gptel-before-advice (&rest args)
     "Before advice for =gptel' function. Sets =api-key= parameter
   from =auth-source-search' results."
     (let ((auth-info (nth 0 (auth-source-search :host "openai.com"))))
       (setq-local gptel-api-key (plist-get auth-info :secret))))
-  
+
   (advice-add 'gptel :before #'rk/gptel-before-advice)
   (setq helm-ag-use-grep-ignore-list nil)
   ;; Org Appearance
-  
-  
-  
-  
-  
+
+
+
+
+
   (setq org-ellipsis " ▼ ")
-  
+
   ;; Private Key Mappings
-  
+
   (spacemacs/declare-prefix "of" "folding")
   (spacemacs/set-leader-keys
     "off" 'fold-this
@@ -1528,39 +1529,39 @@ before packages are loaded."
   (spacemacs/declare-prefix "oa" "applications")
   (spacemacs/set-leader-keys
     "oap" 'pinboard)
-  
+
   (spacemacs/declare-prefix "ob" "buffer")
   (spacemacs/set-leader-keys "obn" 'spacemacs/new-empty-buffer)
-  
+
   (spacemacs/declare-prefix "oc" "copy")
   (spacemacs/set-leader-keys "ocl" 'avy-copy-line)
   (spacemacs/set-leader-keys "ocp" 'forge-copy-url-at-point-as-kill)
-  
-  
+
+
   (spacemacs/declare-prefix "ox" "text")
   (spacemacs/set-leader-keys "oxt" 'xah-title-case-region-or-line)
-  
+
   (spacemacs/declare-prefix "oh" "Hammerspoon")
   (spacemacs/set-leader-keys "ohr" 'rk/reset-hammerspoon)
-  
+
   (spacemacs/declare-prefix "oo" "org")
   (spacemacs/set-leader-keys "oos" 'org-save-all-org-buffers)
   (spacemacs/declare-prefix "oor" "org-roam")
-  
-  
-  
+
+
+
   (spacemacs/declare-prefix "ooj" "journal")
   (spacemacs/declare-prefix "oojp" "projects")
   (spacemacs/declare-prefix "ooji" "issues")
   (spacemacs/declare-prefix "oojs" "subtasks")
   (spacemacs/declare-prefix "oojc" "comments")
   (spacemacs/declare-prefix "oojt" "todos")
-  
-  
+
+
   (spacemacs/declare-prefix "or" "org-roam")
   (spacemacs/declare-prefix "ord" "dailies")
   (spacemacs/declare-prefix "ort" "tags")
-  
+
   (spacemacs/set-leader-keys
     "orjd" 'rk/open-daily-writing
     "orjj" 'org-roam-dailies-capture-today
@@ -1581,36 +1582,36 @@ before packages are loaded."
     "ortr" 'org-roam-tag-remove
     "orb" 'org-roam-buffer-toggle
     )
-                                          ; CMD-C copies to system clipboard
+                                        ; CMD-C copies to system clipboard
   (define-key evil-visual-state-map (kbd "s-c") (kbd "\"+y"))
-  
-                                          ; Misc spacemacs keys
-  
+
+                                        ; Misc spacemacs keys
+
   (evil-leader/set-key "q q" 'spacemacs/frame-killer)
   (evil-leader/set-key "/" 'spacemacs/helm-project-do-ag)
-  
+
   ;; end Key Mappings
-  
+
   ;; mu4e
   ;; (fset 'my-move-to-trash "mTrash")
   ;; (define-key mu4e-headers-mode-map (kbd "d") 'my-move-to-trash)
   ;; (define-key mu4e-view-mode-map (kbd "d") 'my-move-to-trash)
-  
+
   (with-eval-after-load 'mu4e-alert
     (mu4e-alert-set-default-style 'notifier))
-  
+
   ;; evil-easymotion
   (use-package evil-easymotion
     :init (evilem-default-keybindings "\\"))
-  
+
   ;; Nav Advice and hooks
   (advice-add 'evil-avy-goto-line :after #'evil-scroll-line-to-center)
   (advice-add 'org-open-at-point :after #'evil-scroll-line-to-center)
   (advice-add 'evil-ex-search-next :after #'evil-scroll-line-to-center)
   (advice-add 'evil-avy-goto-char-timer :after #'evil-scroll-line-to-center)
   (add-hook 'bookmark-after-jump-hook 'evil-scroll-line-to-center)
-  
-  
+
+
   (add-hook 'lsp-managed-mode-hook
             (lambda ()
               (when (derived-mode-p 'python-mode)
@@ -1627,9 +1628,9 @@ before packages are loaded."
   ;;                                     (flycheck-remove-next-checker 'python-flake8 'python-mypy)
   ;;                                     (flycheck-remove-next-checker 'python-flake8 'python-pylint)
   ;;                                     (flycheck-add-next-checker 'lsp 'python-flake8)))
-  
+
   ;; Elfeed
-  
+
   ;; (with-eval-after-load 'elfeed
   ;;   (defun elfeed-goodies/search-header-draw ()
   ;; "Returns the string to be used as the Elfeed header."
@@ -1652,10 +1653,10 @@ before packages are loaded."
   ;;     (if (>= (window-width) (* (frame-width) elfeed-goodies/wide-threshold))
   ;;         (search-header/draw-wide separator-left separator-right search-filter stats db-time)
   ;;       (search-header/draw-tight separator-left separator-right search-filter stats db-time)))))
-  
+
   ;;   (defun elfeed-goodies/entry-line-draw (entry)
   ;;     "Print ENTRY to the buffer."
-  
+
   ;;     (let* ((title (or (elfeed-meta entry :title) (elfeed-entry-title entry) ""))
   ;;           (date (elfeed-search-format-date (elfeed-entry-date entry)))
   ;;           (title-faces (elfeed-search--faces (elfeed-entry-tags entry)))
@@ -1683,7 +1684,7 @@ before packages are loaded."
   ;;                                                   elfeed-goodies/feed-source-column-width
   ;;                                                   elfeed-goodies/feed-source-column-width)
   ;;                         :left)))
-  
+
   ;;       (if (>= (window-width) (* (frame-width) elfeed-goodies/wide-threshold))
   ;;           (progn
   ;;             (insert (propertize date 'face 'elfeed-search-date-face) " ")
@@ -1691,10 +1692,10 @@ before packages are loaded."
   ;;             (insert (propertize tag-column 'face 'elfeed-search-tag-face) " ")
   ;;             (insert (propertize title 'face title-faces 'kbd-help title)))
   ;;         (insert (propertize title 'face title-faces 'kbd-help title))))))
-  
+
   ;; Mode line
   (set-face-attribute 'mode-line nil :height 1.08)
-  
+
   ;; (defun rk-bump-mode-fonts()
   ;;   "Increase the mode-line font sizes for my old eyes"
   ;;   (let ((faces '(mode-line
@@ -1705,19 +1706,19 @@ before packages are loaded."
   ;;     (mapc
   ;;      (lambda (face) (set-face-attribute face nil :font "Inconsolata for Powerline-18"))
   ;;      faces)))
-  
+
   ;; (add-hook 'spacemacs-post-theme-change-hook
   ;;           'rk-bump-mode-fonts)
-  
+
   ;; EWW
-  
+
   ;; (setq browse-url-browser-function 'eww-browse-url)
   (defun url-found-p (url)
     "Return non-nil if URL is found, i.e. HTTP 200."
     (with-current-buffer (url-retrieve-synchronously url nil t 5)
       (prog1 (eq url-http-response-status 200)
         (kill-buffer))))
-  
+
   (defun eww--dwim-expand-url-around-advice (proc &rest args)
     (let* ((url (car args))
            (cached_url (replace-regexp-in-string "^" "http://webcache.googleusercontent.com/search?q=cache:" url)))
@@ -1729,67 +1730,67 @@ before packages are loaded."
       (let ((res (apply proc (list url))))
         res)))
   (advice-add 'eww--dwim-expand-url :around #'eww--dwim-expand-url-around-advice)
-  
+
   ;; Misc spacemacs variables
-  
+
   (setq projectile-enable-caching t
         spaceline-org-clock-p t
         vc-follow-symlinks t
         max-specpdl-size 6000)
-  
+
   (when (string= system-type "darwin")
     (setq dired-use-ls-dired nil))
-  
+
   (setq helm-ag-base-command "/opt/homebrew/bin/rg --vimgrep --no-heading --smart-case")
-  
+
   (setq multi-term-program "/bin/zsh")
-  
+
   (setq backup-directory-alist
         `(,(concat user-emacs-directory "backups")))
-  
+
   (setq create-lockfiles nil)
-  
-  
-  
+
+
+
   ;; React
   (add-hook 'rjsx-mode #'lsp-javascript-typescript-enable)
   (setq js2-strict-missing-semi-warning nil)
-  
+
   ;; Hammerspoon
   (defun rk/reset-hammerspoon ()
     (interactive)
     (shell-command "hs -c \"hs.reload()\""))
-  
-  
+
+
   ;; rk-layout
   (load-framegeometry)
-  
-  
+
+
   ;; Hyde Mode
   (setq hyde-home "~/github/codelahoma.github.io")
-  
+
   ;; end Hyde Mode
-  
+
   ;; fira-code-mode
-  
+
   (with-eval-after-load 'fira-code-mode
     (global-fira-code-mode))
   ;; direnv
-  
+
   (with-eval-after-load 'direnv
     (direnv-mode))
-  
-                                          ; ansible
-  
+
+                                        ; ansible
+
   (with-eval-after-load 'ansible
     (add-hook 'ansible-hook 'ansible-auto-decrypt-encrypt)
     (add-hook 'yaml-mode-hook #'(lambda () (ansible 1)))
     (add-to-list 'company-backends 'company-ansible))
-  
+
   ;; XML
-  
+
   (add-hook 'nxml-mode-hook #'(lambda() (hs-minor-mode 1)))
-  
+
   (add-to-list 'hs-special-modes-alist
                '(nxml-mode
                  "<!--\\|<[^/>]*[^/]>" ;; regexp for start block
@@ -1797,9 +1798,9 @@ before packages are loaded."
                  "<!--"
                  nxml-forward-element
                  nil))
-  
-  
-  
+
+
+
   ;; Completion
   (with-eval-after-load 'completion
     (defun spacemacs/helm-files-do-rg (&optional dir)
@@ -1814,31 +1815,31 @@ before packages are loaded."
                                      root-helm-ag-base-command)))
         (helm-do-ag dir)))
     )
-  
+
   ;; Markdown
-  
+
   (defun markdown-html (buffer)
     (princ (with-current-buffer buffer
              (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
            (current-buffer)))
-  
+
   (defun markdown-preview-like-god ()
     (interactive)
     (impatient-mode 1)
     (setq imp-user-filter #'markdown-html)
     (cl-incf imp-last-state)
     (imp--notify-clients))
-  
+
   ;; Org Mode
-  
+
   ;; End Org Mode
-  
+
   ;; Misc functions
   (defun codelahoma/insert-random-uid ()
     (interactive)
     (shell-command "printf %s \"$(uuidgen)\"" t))
-  
-  
+
+
   (defun copy-lines-matching-re (re)
     "find all lines matching the regexp RE in the current buffer
   putting the matching lines in a buffer named *matching*"
@@ -1854,9 +1855,9 @@ before packages are loaded."
                                                    (line-beginning-position 2))
                    result-buffer))))
       (pop-to-buffer result-buffer)))
-  
-                                          ; sort csv
-  
+
+                                        ; sort csv
+
   (defun apply-function-to-region (fn)
     "Apply a function to a region."
     (interactive "Function to apply to region: ")
@@ -1868,22 +1869,22 @@ before packages are loaded."
                        (buffer-substring-no-properties beg end))))
         (kill-region beg end)
         (insert resulting-text))))
-  
+
   (defun sort-csv (txt)
     "Sort a comma separated string."
     (mapconcat 'identity
                (sort (split-string txt ",") 'string< ) ","))
-  
+
   (defun sort-csv-region ()
     "Sort a region of comma separated text."
     (interactive)
     (apply-function-to-region 'sort-csv))
-  
-  
+
+
   (defun xah-title-case-region-or-line (@begin @end)
     "Title case text between nearest brackets, or current line, or text selection.
     Capitalize first letter of each word, except words like {to, of, the, a, in, or, and, …}. If a word already contains cap letters such as HTTP, URL, they are left as is.
-  
+
     When called in a elisp program, *begin *end are region boundaries.
     URL `http://ergoemacs.org/emacs/elisp_title_case_text.html'
     Version 2017-01-11"

@@ -180,7 +180,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
   org-roam-bibtex
   org-noter
   org-noter-pdftools
-
+  hyperbole
 #+end_src
 ** Themes
 *** layers
