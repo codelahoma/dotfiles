@@ -226,6 +226,9 @@ This function should only modify configuration layer settings."
                                       sqlite3
                                       all-the-icons
                                       mermaid-mode
+                                      org-roam-bibtex
+                                      org-noter
+                                      org-noter-pdftools
                                       
                                       ob-hy
                                       ob-async
@@ -237,7 +240,6 @@ This function should only modify configuration layer settings."
                                                             :files ("helm-org-ql.el")))
                                       ox-jira
                                       ox-slack
-                                      window-purpose
                                       ;; (chatgpt :location (recipe
                                       ;;                     :fetcher github
                                       ;;                     :repo "joshcho/ChatGPT.el"))
@@ -474,7 +476,7 @@ It should only modify the values of Spacemacs settings."
    ;; Point size is recommended, because it's device independent. (default 10.0)
    dotspacemacs-default-font '(
                                ("MesloLGS Nerd Font Mono"
-                                :size 18.0
+                                :size 14.0
                                 :weight normal
                                 :width normal)
                                ("Inconsolata Nerd Font"
@@ -1088,7 +1090,6 @@ before packages are loaded."
              "WAITING(w)"
              "NEXT(n)"
              "IN-PROGRESS(i)"
-             "CODE-COMPLETE"
              "NEEDS-REFINEMENT(r)"
              "|"
              "NOT-APPLICABLE"
@@ -1126,13 +1127,15 @@ before packages are loaded."
                                 "#+title: ${title}\n")
              :unnarrowed t)
             ("i" "Interaction Log" plain
-             (function org-roam-capture--get-point)
              "%?"
              :target (file+head "interactions/%<%Y%m%d%H%M%S>-${slug}.org"
                                 "#+title: Interaction with ChatGPT\n#+roam_tags: interaction chatgpt\n\n")
              :unnarrowed t
              :immediate-finish t
-             :jump-to-captured t)))
+             :jump-to-captured t) ("g" "GPTel Interaction" plain "%?" :target
+            (file+head "interactions/%<%Y%m%d%H%M%S>-${slug}.org"
+                       "#+title: ${title}\n#+roam_tags: interaction gptel\n#+date: %U\n\n* Context\n** Purpose\n\n* Key Questions\n\n* Insights\n\n* Follow-up Actions\n\n* Raw Interaction\n:PROPERTIES:\n:CAPTURED_ON: %U\n:MODEL: %^{Model}\n:END:\n\n")
+            :unnarrowed t) ))
   
     (org-roam-db-autosync-mode)
     )
@@ -1506,433 +1509,435 @@ before packages are loaded."
       (setq-local gptel-api-key (plist-get auth-info :secret))))
   
   (advice-add 'gptel :before #'rk/gptel-before-advice)
-  
-    (setq helm-ag-use-grep-ignore-list nil)
-    ;; Org Appearance
-  
+  (setq helm-ag-use-grep-ignore-list nil)
+  ;; Org Appearance
   
   
   
   
-    (setq org-ellipsis " ▼ ")
   
-    ;; Private Key Mappings 
+  (setq org-ellipsis " ▼ ")
   
-    (spacemacs/declare-prefix "of" "folding")
-    (spacemacs/set-leader-keys
-      "off" 'fold-this
-      "ofm" 'fold-this-all
-      "ofr" 'fold-this-unfold-all)
-    (spacemacs/declare-prefix "oa" "applications")
-    (spacemacs/set-leader-keys
-      "oap" 'pinboard)
+  ;; Private Key Mappings
   
-    (spacemacs/declare-prefix "ob" "buffer")
-    (spacemacs/set-leader-keys "obn" 'spacemacs/new-empty-buffer)
+  (spacemacs/declare-prefix "of" "folding")
+  (spacemacs/set-leader-keys
+    "off" 'fold-this
+    "ofm" 'fold-this-all
+    "ofr" 'fold-this-unfold-all)
+  (spacemacs/declare-prefix "oa" "applications")
+  (spacemacs/set-leader-keys
+    "oap" 'pinboard)
   
-    (spacemacs/declare-prefix "oc" "copy")
-    (spacemacs/set-leader-keys "ocl" 'avy-copy-line)
-    (spacemacs/set-leader-keys "ocp" 'forge-copy-url-at-point-as-kill)
+  (spacemacs/declare-prefix "ob" "buffer")
+  (spacemacs/set-leader-keys "obn" 'spacemacs/new-empty-buffer)
   
-  
-    (spacemacs/declare-prefix "ox" "text")
-    (spacemacs/set-leader-keys "oxt" 'xah-title-case-region-or-line)
-  
-    (spacemacs/declare-prefix "oh" "Hammerspoon")
-    (spacemacs/set-leader-keys "ohr" 'rk/reset-hammerspoon)
-  
-    (spacemacs/declare-prefix "oo" "org")
-    (spacemacs/set-leader-keys "oos" 'org-save-all-org-buffers)
-    (spacemacs/declare-prefix "oor" "org-roam")
+  (spacemacs/declare-prefix "oc" "copy")
+  (spacemacs/set-leader-keys "ocl" 'avy-copy-line)
+  (spacemacs/set-leader-keys "ocp" 'forge-copy-url-at-point-as-kill)
   
   
-    (spacemacs/declare-prefix "ooj" "journal")
-    (spacemacs/declare-prefix "oojp" "projects")
-    (spacemacs/declare-prefix "ooji" "issues")
-    (spacemacs/declare-prefix "oojs" "subtasks")
-    (spacemacs/declare-prefix "oojc" "comments")
-    (spacemacs/declare-prefix "oojt" "todos")
+  (spacemacs/declare-prefix "ox" "text")
+  (spacemacs/set-leader-keys "oxt" 'xah-title-case-region-or-line)
+  
+  (spacemacs/declare-prefix "oh" "Hammerspoon")
+  (spacemacs/set-leader-keys "ohr" 'rk/reset-hammerspoon)
+  
+  (spacemacs/declare-prefix "oo" "org")
+  (spacemacs/set-leader-keys "oos" 'org-save-all-org-buffers)
+  (spacemacs/declare-prefix "oor" "org-roam")
+  
+  
+  
+  (spacemacs/declare-prefix "ooj" "journal")
+  (spacemacs/declare-prefix "oojp" "projects")
+  (spacemacs/declare-prefix "ooji" "issues")
+  (spacemacs/declare-prefix "oojs" "subtasks")
+  (spacemacs/declare-prefix "oojc" "comments")
+  (spacemacs/declare-prefix "oojt" "todos")
   
   
   (spacemacs/declare-prefix "or" "org-roam")
-    (spacemacs/declare-prefix "ord" "dailies")
-    (spacemacs/declare-prefix "ort" "tags")
+  (spacemacs/declare-prefix "ord" "dailies")
+  (spacemacs/declare-prefix "ort" "tags")
   
-    (spacemacs/set-leader-keys
-      "orjd" 'rk/open-daily-writing
-      "orjj" 'org-roam-dailies-capture-today
-      "orjf" 'org-roam-dailies-goto-today
-      "orrj" 'org-roam-dailies-capture-today
-      "ora" 'org-roam-alias-add
-      "orf" 'org-roam-node-find
-      "orc" 'org-roam-capture
-      "org" 'org-roam-graph
-      "ori" 'org-roam-node-insert
-      "oru" 'org-roam-ui-mode
-      "ordc" 'org-roam-dailies-capture-today
-      "ordd" 'org-roam-dailies-goto-date
-      "ordt" 'org-roam-dailies-goto-today
-      "ordy" 'org-roam-dailies-goto-yesterday
-      "ordT" 'org-roam-dailies-goto-tomorrow
-      "orta" 'org-roam-tag-add
-      "ortr" 'org-roam-tag-remove
-      )
-    ; CMD-C copies to system clipboard
-    (define-key evil-visual-state-map (kbd "s-c") (kbd "\"+y"))
+  (spacemacs/set-leader-keys
+    "orjd" 'rk/open-daily-writing
+    "orjj" 'org-roam-dailies-capture-today
+    "orjf" 'org-roam-dailies-goto-today
+    "orrj" 'org-roam-dailies-capture-today
+    "ora" 'org-roam-alias-add
+    "orf" 'org-roam-node-find
+    "orc" 'org-roam-capture
+    "org" 'org-roam-graph
+    "ori" 'org-roam-node-insert
+    "oru" 'org-roam-ui-mode
+    "ordc" 'org-roam-dailies-capture-today
+    "ordd" 'org-roam-dailies-goto-date
+    "ordt" 'org-roam-dailies-goto-today
+    "ordy" 'org-roam-dailies-goto-yesterday
+    "ordT" 'org-roam-dailies-goto-tomorrow
+    "orta" 'org-roam-tag-add
+    "ortr" 'org-roam-tag-remove
+    "orb" 'org-roam-buffer-toggle
+    )
+                                          ; CMD-C copies to system clipboard
+  (define-key evil-visual-state-map (kbd "s-c") (kbd "\"+y"))
   
-    ; Misc spacemacs keys
-    (evil-leader/set-key "q q" 'spacemacs/frame-killer)
-    (evil-leader/set-key "/" 'spacemacs/helm-project-do-ag)
+                                          ; Misc spacemacs keys
   
-    ;; end Key Mappings
+  (evil-leader/set-key "q q" 'spacemacs/frame-killer)
+  (evil-leader/set-key "/" 'spacemacs/helm-project-do-ag)
   
-    ;; mu4e
-    ;; (fset 'my-move-to-trash "mTrash")
-    ;; (define-key mu4e-headers-mode-map (kbd "d") 'my-move-to-trash)
+  ;; end Key Mappings
+  
+  ;; mu4e
+  ;; (fset 'my-move-to-trash "mTrash")
+  ;; (define-key mu4e-headers-mode-map (kbd "d") 'my-move-to-trash)
   ;; (define-key mu4e-view-mode-map (kbd "d") 'my-move-to-trash)
   
-    (with-eval-after-load 'mu4e-alert
-      (mu4e-alert-set-default-style 'notifier))
+  (with-eval-after-load 'mu4e-alert
+    (mu4e-alert-set-default-style 'notifier))
   
-    ;; evil-easymotion
-    (use-package evil-easymotion
-      :init (evilem-default-keybindings "\\"))
+  ;; evil-easymotion
+  (use-package evil-easymotion
+    :init (evilem-default-keybindings "\\"))
   
-    ;; Nav Advice and hooks
-    (advice-add 'evil-avy-goto-line :after #'evil-scroll-line-to-center)
-    (advice-add 'org-open-at-point :after #'evil-scroll-line-to-center)
-    (advice-add 'evil-ex-search-next :after #'evil-scroll-line-to-center)
-    (advice-add 'evil-avy-goto-char-timer :after #'evil-scroll-line-to-center)
-    (add-hook 'bookmark-after-jump-hook 'evil-scroll-line-to-center)
-  
-  
-    (add-hook 'lsp-managed-mode-hook
-              (lambda ()
-                (when (derived-mode-p 'python-mode)
-                  (progn
-                    (flycheck-add-next-checker 'lsp 'python-flake8)
-                    (flycheck-disable-checker 'python-mypy)
-                    (flycheck-disable-checker 'python-pylint))
-                  )))
-    ;; Python
-    ;; (add-hook 'python-mode-hook (lambda ()
-    ;;                                     (flycheck-mode 1)
-    ;;                                     (semantic-mode 1)
-    ;;                                     (setq flycheck-checker 'lsp)
-    ;;                                     (flycheck-remove-next-checker 'python-flake8 'python-mypy)
-    ;;                                     (flycheck-remove-next-checker 'python-flake8 'python-pylint)
-    ;;                                     (flycheck-add-next-checker 'lsp 'python-flake8)))
-  
-    ;; Elfeed
-  
-    ;; (with-eval-after-load 'elfeed
-    ;;   (defun elfeed-goodies/search-header-draw ()
-    ;; "Returns the string to be used as the Elfeed header."
-    ;; (if (zerop (elfeed-db-last-update))
-    ;;     (elfeed-search--intro-header)
-    ;;   (let* ((separator-left (intern (format "powerline-%s-%s"
-    ;;                                          elfeed-goodies/powerline-default-separator
-    ;;                                          (car powerline-default-separator-dir))))
-    ;;          (separator-right (intern (format "powerline-%s-%s"
-    ;;                                           elfeed-goodies/powerline-default-separator
-    ;;                                           (cdr powerline-default-separator-dir))))
-    ;;          (db-time (seconds-to-time (elfeed-db-last-update)))
-    ;;          (stats (-elfeed/feed-stats))
-    ;;          (search-filter (cond
-    ;;                          (elfeed-search-filter-active
-    ;;                           "")
-    ;;                          (elfeed-search-filter
-    ;;                           elfeed-search-filter)
-    ;;                          (""))))
-    ;;     (if (>= (window-width) (* (frame-width) elfeed-goodies/wide-threshold))
-    ;;         (search-header/draw-wide separator-left separator-right search-filter stats db-time)
-    ;;       (search-header/draw-tight separator-left separator-right search-filter stats db-time)))))
-  
-    ;;   (defun elfeed-goodies/entry-line-draw (entry)
-    ;;     "Print ENTRY to the buffer."
-  
-    ;;     (let* ((title (or (elfeed-meta entry :title) (elfeed-entry-title entry) ""))
-    ;;           (date (elfeed-search-format-date (elfeed-entry-date entry)))
-    ;;           (title-faces (elfeed-search--faces (elfeed-entry-tags entry)))
-    ;;           (feed (elfeed-entry-feed entry))
-    ;;           (feed-title
-    ;;             (when feed
-    ;;               (or (elfeed-meta feed :title) (elfeed-feed-title feed))))
-    ;;           (tags (mapcar #'symbol-name (elfeed-entry-tags entry)))
-    ;;           (tags-str (concat "[" (mapconcat 'identity tags ",") "]"))
-    ;;           (title-width (- (window-width) elfeed-goodies/feed-source-column-width
-    ;;                           elfeed-goodies/tag-column-width 4))
-    ;;           (title-column (elfeed-format-column
-    ;;                           title (elfeed-clamp
-    ;;                                 elfeed-search-title-min-width
-    ;;                                 title-width
-    ;;                                 title-width)
-    ;;                           :left))
-    ;;           (tag-column (elfeed-format-column
-    ;;                         tags-str (elfeed-clamp (length tags-str)
-    ;;                                               elfeed-goodies/tag-column-width
-    ;;                                               elfeed-goodies/tag-column-width)
-    ;;                         :left))
-    ;;           (feed-column (elfeed-format-column
-    ;;                         feed-title (elfeed-clamp elfeed-goodies/feed-source-column-width
-    ;;                                                   elfeed-goodies/feed-source-column-width
-    ;;                                                   elfeed-goodies/feed-source-column-width)
-    ;;                         :left)))
-  
-    ;;       (if (>= (window-width) (* (frame-width) elfeed-goodies/wide-threshold))
-    ;;           (progn
-    ;;             (insert (propertize date 'face 'elfeed-search-date-face) " ")
-    ;;             (insert (propertize feed-column 'face 'elfeed-search-feed-face) " ")
-    ;;             (insert (propertize tag-column 'face 'elfeed-search-tag-face) " ")
-    ;;             (insert (propertize title 'face title-faces 'kbd-help title)))
-    ;;         (insert (propertize title 'face title-faces 'kbd-help title))))))
-  
-    ;; Mode line
-    (set-face-attribute 'mode-line nil :height 1.08)
-  
-    ;; (defun rk-bump-mode-fonts()
-    ;;   "Increase the mode-line font sizes for my old eyes"
-    ;;   (let ((faces '(mode-line
-    ;;                  mode-line-buffer-id
-    ;;                  mode-line-emphasis
-    ;;                  mode-line-highlight
-    ;;                  mode-line-inactive)))
-    ;;     (mapc
-    ;;      (lambda (face) (set-face-attribute face nil :font "Inconsolata for Powerline-18"))
-    ;;      faces)))
-  
-    ;; (add-hook 'spacemacs-post-theme-change-hook
-    ;;           'rk-bump-mode-fonts)
-  
-    ;; EWW
-  
-    ;; (setq browse-url-browser-function 'eww-browse-url)
-    (defun url-found-p (url)
-      "Return non-nil if URL is found, i.e. HTTP 200."
-      (with-current-buffer (url-retrieve-synchronously url nil t 5)
-        (prog1 (eq url-http-response-status 200)
-          (kill-buffer))))
-  
-    (defun eww--dwim-expand-url-around-advice (proc &rest args)
-      (let* ((url (car args))
-             (cached_url (replace-regexp-in-string "^" "http://webcache.googleusercontent.com/search?q=cache:" url)))
-        (if (and (or (string-match-p "towardsdatascience" url)
-                     (string-match-p "medium.com" url))
-                 (not (string-match-p "webcache.google" url))
-                 (url-found-p cached_url))
-            (setq url cached_url))
-        (let ((res (apply proc (list url))))
-          res)))
-    (advice-add 'eww--dwim-expand-url :around #'eww--dwim-expand-url-around-advice)
-  
-    ;; Misc spacemacs variables
-  
-    (setq projectile-enable-caching t
-          spaceline-org-clock-p t
-          vc-follow-symlinks t
-          max-specpdl-size 6000)
-  
-    (when (string= system-type "darwin")
-      (setq dired-use-ls-dired nil))
-  
-    (setq helm-ag-base-command "/opt/homebrew/bin/rg --vimgrep --no-heading --smart-case")
-  
-    (setq multi-term-program "/bin/zsh")
-  
-    (setq backup-directory-alist
-          `(,(concat user-emacs-directory "backups")))
-  
-    (setq create-lockfiles nil)
+  ;; Nav Advice and hooks
+  (advice-add 'evil-avy-goto-line :after #'evil-scroll-line-to-center)
+  (advice-add 'org-open-at-point :after #'evil-scroll-line-to-center)
+  (advice-add 'evil-ex-search-next :after #'evil-scroll-line-to-center)
+  (advice-add 'evil-avy-goto-char-timer :after #'evil-scroll-line-to-center)
+  (add-hook 'bookmark-after-jump-hook 'evil-scroll-line-to-center)
   
   
+  (add-hook 'lsp-managed-mode-hook
+            (lambda ()
+              (when (derived-mode-p 'python-mode)
+                (progn
+                  (flycheck-add-next-checker 'lsp 'python-flake8)
+                  (flycheck-disable-checker 'python-mypy)
+                  (flycheck-disable-checker 'python-pylint))
+                )))
+  ;; Python
+  ;; (add-hook 'python-mode-hook (lambda ()
+  ;;                                     (flycheck-mode 1)
+  ;;                                     (semantic-mode 1)
+  ;;                                     (setq flycheck-checker 'lsp)
+  ;;                                     (flycheck-remove-next-checker 'python-flake8 'python-mypy)
+  ;;                                     (flycheck-remove-next-checker 'python-flake8 'python-pylint)
+  ;;                                     (flycheck-add-next-checker 'lsp 'python-flake8)))
   
-    ;; React
-    (add-hook 'rjsx-mode #'lsp-javascript-typescript-enable)
-    (setq js2-strict-missing-semi-warning nil)
+  ;; Elfeed
   
-    ;; Hammerspoon
-    (defun rk/reset-hammerspoon ()
+  ;; (with-eval-after-load 'elfeed
+  ;;   (defun elfeed-goodies/search-header-draw ()
+  ;; "Returns the string to be used as the Elfeed header."
+  ;; (if (zerop (elfeed-db-last-update))
+  ;;     (elfeed-search--intro-header)
+  ;;   (let* ((separator-left (intern (format "powerline-%s-%s"
+  ;;                                          elfeed-goodies/powerline-default-separator
+  ;;                                          (car powerline-default-separator-dir))))
+  ;;          (separator-right (intern (format "powerline-%s-%s"
+  ;;                                           elfeed-goodies/powerline-default-separator
+  ;;                                           (cdr powerline-default-separator-dir))))
+  ;;          (db-time (seconds-to-time (elfeed-db-last-update)))
+  ;;          (stats (-elfeed/feed-stats))
+  ;;          (search-filter (cond
+  ;;                          (elfeed-search-filter-active
+  ;;                           "")
+  ;;                          (elfeed-search-filter
+  ;;                           elfeed-search-filter)
+  ;;                          (""))))
+  ;;     (if (>= (window-width) (* (frame-width) elfeed-goodies/wide-threshold))
+  ;;         (search-header/draw-wide separator-left separator-right search-filter stats db-time)
+  ;;       (search-header/draw-tight separator-left separator-right search-filter stats db-time)))))
+  
+  ;;   (defun elfeed-goodies/entry-line-draw (entry)
+  ;;     "Print ENTRY to the buffer."
+  
+  ;;     (let* ((title (or (elfeed-meta entry :title) (elfeed-entry-title entry) ""))
+  ;;           (date (elfeed-search-format-date (elfeed-entry-date entry)))
+  ;;           (title-faces (elfeed-search--faces (elfeed-entry-tags entry)))
+  ;;           (feed (elfeed-entry-feed entry))
+  ;;           (feed-title
+  ;;             (when feed
+  ;;               (or (elfeed-meta feed :title) (elfeed-feed-title feed))))
+  ;;           (tags (mapcar #'symbol-name (elfeed-entry-tags entry)))
+  ;;           (tags-str (concat "[" (mapconcat 'identity tags ",") "]"))
+  ;;           (title-width (- (window-width) elfeed-goodies/feed-source-column-width
+  ;;                           elfeed-goodies/tag-column-width 4))
+  ;;           (title-column (elfeed-format-column
+  ;;                           title (elfeed-clamp
+  ;;                                 elfeed-search-title-min-width
+  ;;                                 title-width
+  ;;                                 title-width)
+  ;;                           :left))
+  ;;           (tag-column (elfeed-format-column
+  ;;                         tags-str (elfeed-clamp (length tags-str)
+  ;;                                               elfeed-goodies/tag-column-width
+  ;;                                               elfeed-goodies/tag-column-width)
+  ;;                         :left))
+  ;;           (feed-column (elfeed-format-column
+  ;;                         feed-title (elfeed-clamp elfeed-goodies/feed-source-column-width
+  ;;                                                   elfeed-goodies/feed-source-column-width
+  ;;                                                   elfeed-goodies/feed-source-column-width)
+  ;;                         :left)))
+  
+  ;;       (if (>= (window-width) (* (frame-width) elfeed-goodies/wide-threshold))
+  ;;           (progn
+  ;;             (insert (propertize date 'face 'elfeed-search-date-face) " ")
+  ;;             (insert (propertize feed-column 'face 'elfeed-search-feed-face) " ")
+  ;;             (insert (propertize tag-column 'face 'elfeed-search-tag-face) " ")
+  ;;             (insert (propertize title 'face title-faces 'kbd-help title)))
+  ;;         (insert (propertize title 'face title-faces 'kbd-help title))))))
+  
+  ;; Mode line
+  (set-face-attribute 'mode-line nil :height 1.08)
+  
+  ;; (defun rk-bump-mode-fonts()
+  ;;   "Increase the mode-line font sizes for my old eyes"
+  ;;   (let ((faces '(mode-line
+  ;;                  mode-line-buffer-id
+  ;;                  mode-line-emphasis
+  ;;                  mode-line-highlight
+  ;;                  mode-line-inactive)))
+  ;;     (mapc
+  ;;      (lambda (face) (set-face-attribute face nil :font "Inconsolata for Powerline-18"))
+  ;;      faces)))
+  
+  ;; (add-hook 'spacemacs-post-theme-change-hook
+  ;;           'rk-bump-mode-fonts)
+  
+  ;; EWW
+  
+  ;; (setq browse-url-browser-function 'eww-browse-url)
+  (defun url-found-p (url)
+    "Return non-nil if URL is found, i.e. HTTP 200."
+    (with-current-buffer (url-retrieve-synchronously url nil t 5)
+      (prog1 (eq url-http-response-status 200)
+        (kill-buffer))))
+  
+  (defun eww--dwim-expand-url-around-advice (proc &rest args)
+    (let* ((url (car args))
+           (cached_url (replace-regexp-in-string "^" "http://webcache.googleusercontent.com/search?q=cache:" url)))
+      (if (and (or (string-match-p "towardsdatascience" url)
+                   (string-match-p "medium.com" url))
+               (not (string-match-p "webcache.google" url))
+               (url-found-p cached_url))
+          (setq url cached_url))
+      (let ((res (apply proc (list url))))
+        res)))
+  (advice-add 'eww--dwim-expand-url :around #'eww--dwim-expand-url-around-advice)
+  
+  ;; Misc spacemacs variables
+  
+  (setq projectile-enable-caching t
+        spaceline-org-clock-p t
+        vc-follow-symlinks t
+        max-specpdl-size 6000)
+  
+  (when (string= system-type "darwin")
+    (setq dired-use-ls-dired nil))
+  
+  (setq helm-ag-base-command "/opt/homebrew/bin/rg --vimgrep --no-heading --smart-case")
+  
+  (setq multi-term-program "/bin/zsh")
+  
+  (setq backup-directory-alist
+        `(,(concat user-emacs-directory "backups")))
+  
+  (setq create-lockfiles nil)
+  
+  
+  
+  ;; React
+  (add-hook 'rjsx-mode #'lsp-javascript-typescript-enable)
+  (setq js2-strict-missing-semi-warning nil)
+  
+  ;; Hammerspoon
+  (defun rk/reset-hammerspoon ()
+    (interactive)
+    (shell-command "hs -c \"hs.reload()\""))
+  
+  
+  ;; rk-layout
+  (load-framegeometry)
+  
+  
+  ;; Hyde Mode
+  (setq hyde-home "~/github/codelahoma.github.io")
+  
+  ;; end Hyde Mode
+  
+  ;; fira-code-mode
+  
+  (with-eval-after-load 'fira-code-mode
+    (global-fira-code-mode))
+  ;; direnv
+  
+  (with-eval-after-load 'direnv
+    (direnv-mode))
+  
+                                          ; ansible
+  
+  (with-eval-after-load 'ansible
+    (add-hook 'ansible-hook 'ansible-auto-decrypt-encrypt)
+    (add-hook 'yaml-mode-hook #'(lambda () (ansible 1)))
+    (add-to-list 'company-backends 'company-ansible))
+  
+  ;; XML
+  
+  (add-hook 'nxml-mode-hook #'(lambda() (hs-minor-mode 1)))
+  
+  (add-to-list 'hs-special-modes-alist
+               '(nxml-mode
+                 "<!--\\|<[^/>]*[^/]>" ;; regexp for start block
+                 "-->\\|</[^/>]*[^/]>" ;; regexp for end block
+                 "<!--"
+                 nxml-forward-element
+                 nil))
+  
+  
+  
+  ;; Completion
+  (with-eval-after-load 'completion
+    (defun spacemacs/helm-files-do-rg (&optional dir)
+      "Search in files with `rg'."
       (interactive)
-      (shell-command "hs -c \"hs.reload()\""))
+      ;; --line-number forces line numbers (disabled by default on windows)
+      ;; no --vimgrep because it adds column numbers that wgrep can't handle
+      ;; see https://github.com/syl20bnr/spacemacs/pull/8065
+      (let* ((root-helm-ag-base-command "rg --smart-case --pcre2 --no-heading --color=never --line-number")
+             (helm-ag-base-command (if spacemacs-helm-rg-max-column-number
+                                       (concat root-helm-ag-base-command " --max-columns=" (number-to-string spacemacs-helm-rg-max-column-number))
+                                     root-helm-ag-base-command)))
+        (helm-do-ag dir)))
+    )
+  
+  ;; Markdown
+  
+  (defun markdown-html (buffer)
+    (princ (with-current-buffer buffer
+             (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
+           (current-buffer)))
+  
+  (defun markdown-preview-like-god ()
+    (interactive)
+    (impatient-mode 1)
+    (setq imp-user-filter #'markdown-html)
+    (cl-incf imp-last-state)
+    (imp--notify-clients))
+  
+  ;; Org Mode
+  
+  ;; End Org Mode
+  
+  ;; Misc functions
+  (defun codelahoma/insert-random-uid ()
+    (interactive)
+    (shell-command "printf %s \"$(uuidgen)\"" t))
   
   
-    ;; rk-layout
-    (load-framegeometry)
-  
-  
-    ;; Hyde Mode
-    (setq hyde-home "~/github/codelahoma.github.io")
-  
-    ;; end Hyde Mode
-  
-    ;; fira-code-mode
-  
-    (with-eval-after-load 'fira-code-mode
-      (global-fira-code-mode))
-    ;; direnv
-  
-    (with-eval-after-load 'direnv
-      (direnv-mode))
-  
-    ; ansible
-  
-    (with-eval-after-load 'ansible
-      (add-hook 'ansible-hook 'ansible-auto-decrypt-encrypt)
-      (add-hook 'yaml-mode-hook #'(lambda () (ansible 1)))
-      (add-to-list 'company-backends 'company-ansible))
-  
-    ;; XML
-  
-    (add-hook 'nxml-mode-hook #'(lambda() (hs-minor-mode 1)))
-  
-    (add-to-list 'hs-special-modes-alist
-                 '(nxml-mode
-                   "<!--\\|<[^/>]*[^/]>" ;; regexp for start block
-                   "-->\\|</[^/>]*[^/]>" ;; regexp for end block
-                   "<!--"
-                   nxml-forward-element
-                   nil))
-  
-  
-  
-    ;; Completion
-    (with-eval-after-load 'completion
-      (defun spacemacs/helm-files-do-rg (&optional dir)
-        "Search in files with `rg'."
-        (interactive)
-        ;; --line-number forces line numbers (disabled by default on windows)
-        ;; no --vimgrep because it adds column numbers that wgrep can't handle
-        ;; see https://github.com/syl20bnr/spacemacs/pull/8065
-        (let* ((root-helm-ag-base-command "rg --smart-case --pcre2 --no-heading --color=never --line-number")
-               (helm-ag-base-command (if spacemacs-helm-rg-max-column-number
-                                         (concat root-helm-ag-base-command " --max-columns=" (number-to-string spacemacs-helm-rg-max-column-number))
-                                       root-helm-ag-base-command)))
-          (helm-do-ag dir)))
-      )
-  
-    ;; Markdown
-  
-    (defun markdown-html (buffer)
-      (princ (with-current-buffer buffer
-               (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
-             (current-buffer)))
-  
-    (defun markdown-preview-like-god ()
-      (interactive)
-      (impatient-mode 1)
-      (setq imp-user-filter #'markdown-html)
-      (cl-incf imp-last-state)
-      (imp--notify-clients))
-  
-    ;; Org Mode
-  
-    ;; End Org Mode
-  
-    ;; Misc functions
-    (defun codelahoma/insert-random-uid ()
-      (interactive)
-      (shell-command "printf %s \"$(uuidgen)\"" t))
-  
-  
-    (defun copy-lines-matching-re (re)
-      "find all lines matching the regexp RE in the current buffer
+  (defun copy-lines-matching-re (re)
+    "find all lines matching the regexp RE in the current buffer
   putting the matching lines in a buffer named *matching*"
-      (interactive "sRegexp to match: ")
-      (let ((result-buffer (get-buffer-create "*matching*")))
-        (with-current-buffer result-buffer
-          (erase-buffer))
-        (save-match-data
-          (save-excursion
-            (goto-char (point-min))
-            (while (re-search-forward re nil t)
-              (princ (buffer-substring-no-properties (line-beginning-position)
-                                                     (line-beginning-position 2))
-                     result-buffer))))
-        (pop-to-buffer result-buffer)))
+    (interactive "sRegexp to match: ")
+    (let ((result-buffer (get-buffer-create "*matching*")))
+      (with-current-buffer result-buffer
+        (erase-buffer))
+      (save-match-data
+        (save-excursion
+          (goto-char (point-min))
+          (while (re-search-forward re nil t)
+            (princ (buffer-substring-no-properties (line-beginning-position)
+                                                   (line-beginning-position 2))
+                   result-buffer))))
+      (pop-to-buffer result-buffer)))
   
-    ; sort csv
+                                          ; sort csv
   
-    (defun apply-function-to-region (fn)
-      "Apply a function to a region."
-      (interactive "Function to apply to region: ")
-      (save-excursion
-        (let* ((beg (region-beginning))
-               (end (region-end))
-               (resulting-text
-                (funcall fn
-                         (buffer-substring-no-properties beg end))))
-          (kill-region beg end)
-          (insert resulting-text))))
+  (defun apply-function-to-region (fn)
+    "Apply a function to a region."
+    (interactive "Function to apply to region: ")
+    (save-excursion
+      (let* ((beg (region-beginning))
+             (end (region-end))
+             (resulting-text
+              (funcall fn
+                       (buffer-substring-no-properties beg end))))
+        (kill-region beg end)
+        (insert resulting-text))))
   
-    (defun sort-csv (txt)
-      "Sort a comma separated string."
-      (mapconcat 'identity
-                 (sort (split-string txt ",") 'string< ) ","))
+  (defun sort-csv (txt)
+    "Sort a comma separated string."
+    (mapconcat 'identity
+               (sort (split-string txt ",") 'string< ) ","))
   
-    (defun sort-csv-region ()
-      "Sort a region of comma separated text."
-      (interactive)
-      (apply-function-to-region 'sort-csv))
+  (defun sort-csv-region ()
+    "Sort a region of comma separated text."
+    (interactive)
+    (apply-function-to-region 'sort-csv))
   
   
-    (defun xah-title-case-region-or-line (@begin @end)
-      "Title case text between nearest brackets, or current line, or text selection.
+  (defun xah-title-case-region-or-line (@begin @end)
+    "Title case text between nearest brackets, or current line, or text selection.
     Capitalize first letter of each word, except words like {to, of, the, a, in, or, and, …}. If a word already contains cap letters such as HTTP, URL, they are left as is.
   
     When called in a elisp program, *begin *end are region boundaries.
     URL `http://ergoemacs.org/emacs/elisp_title_case_text.html'
     Version 2017-01-11"
-      (interactive
-      (if (use-region-p)
-          (list (region-beginning) (region-end))
-        (let (
-              $p1
-              $p2
-              ($skipChars "^\"<>(){}[]“”‘’‹›«»「」『』【】〖〗《》〈〉〔〕"))
-          (progn
-            (skip-chars-backward $skipChars (line-beginning-position))
-            (setq $p1 (point))
-            (skip-chars-forward $skipChars (line-end-position))
-            (setq $p2 (point)))
-          (list $p1 $p2))))
-      (let* (
-            ($strPairs [
-                        [" A " " a "]
-                        [" And " " and "]
-                        [" At " " at "]
-                        [" As " " as "]
-                        [" By " " by "]
-                        [" Be " " be "]
-                        [" Into " " into "]
-                        [" In " " in "]
-                        [" Is " " is "]
-                        [" It " " it "]
-                        [" For " " for "]
-                        [" Of " " of "]
-                        [" Or " " or "]
-                        [" On " " on "]
-                        [" Via " " via "]
-                        [" The " " the "]
-                        [" That " " that "]
-                        [" To " " to "]
-                        [" Vs " " vs "]
-                        [" With " " with "]
-                        [" From " " from "]
-                        ["'S " "'s "]
-                        ["'T " "'t "]
-                        ]))
-        (save-excursion
-          (save-restriction
-            (narrow-to-region @begin @end)
-            (upcase-initials-region (point-min) (point-max))
-            (let ((case-fold-search nil))
-              (mapc
-              (lambda ($x)
-                (goto-char (point-min))
-                (while
-                    (search-forward (aref $x 0) nil t)
-                  (replace-match (aref $x 1) "FIXEDCASE" "LITERAL")))
-              $strPairs))))))
+    (interactive
+     (if (use-region-p)
+         (list (region-beginning) (region-end))
+       (let (
+             $p1
+             $p2
+             ($skipChars "^\"<>(){}[]“”‘’‹›«»「」『』【】〖〗《》〈〉〔〕"))
+         (progn
+           (skip-chars-backward $skipChars (line-beginning-position))
+           (setq $p1 (point))
+           (skip-chars-forward $skipChars (line-end-position))
+           (setq $p2 (point)))
+         (list $p1 $p2))))
+    (let* (
+           ($strPairs [
+                       [" A " " a "]
+                       [" And " " and "]
+                       [" At " " at "]
+                       [" As " " as "]
+                       [" By " " by "]
+                       [" Be " " be "]
+                       [" Into " " into "]
+                       [" In " " in "]
+                       [" Is " " is "]
+                       [" It " " it "]
+                       [" For " " for "]
+                       [" Of " " of "]
+                       [" Or " " or "]
+                       [" On " " on "]
+                       [" Via " " via "]
+                       [" The " " the "]
+                       [" That " " that "]
+                       [" To " " to "]
+                       [" Vs " " vs "]
+                       [" With " " with "]
+                       [" From " " from "]
+                       ["'S " "'s "]
+                       ["'T " "'t "]
+                       ]))
+      (save-excursion
+        (save-restriction
+          (narrow-to-region @begin @end)
+          (upcase-initials-region (point-min) (point-max))
+          (let ((case-fold-search nil))
+            (mapc
+             (lambda ($x)
+               (goto-char (point-min))
+               (while
+                   (search-forward (aref $x 0) nil t)
+                 (replace-match (aref $x 1) "FIXEDCASE" "LITERAL")))
+             $strPairs))))))
 
   (when (file-exists-p custom-file)
     (load-file custom-file)))

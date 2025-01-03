@@ -15,8 +15,8 @@
               anti-zenburn-theme apropospriate-theme atomic-chrome auto-compile
               auto-dictionary auto-highlight-symbol auto-yasnippet badwolf-theme
               better-jumper birds-of-paradise-plus-theme blacken bm
-              browse-at-remote bubbleberry-theme busybee-theme
-              centered-cursor-mode cherry-blossom-theme chocolate-theme
+              browse-at-remote bubbleberry-theme bundler busybee-theme
+              centered-cursor-mode cherry-blossom-theme chocolate-theme chruby
               clean-aindent-mode clues-theme cmake-mode code-cells code-review
               color-identifiers-mode color-theme-sanityinc-solarized
               color-theme-sanityinc-tomorrow column-enforce-mode
@@ -30,43 +30,43 @@
               dockerfile-mode doom-themes dotenv-mode dracula-theme drag-stuff
               dumb-jump eat ediprolog edit-server ef-themes elfeed-goodies
               elfeed-org elisp-def elisp-demos elisp-slime-nav embark-consult
-              emmet-mode emoji-cheat-sheet-plus emr engine-mode esh-help
-              eshell-prompt-extras eshell-z espresso-theme ess-R-data-view
-              eval-sexp-fu evil-anzu evil-args evil-cleverparens evil-collection
-              evil-easymotion evil-escape evil-evilified-state evil-exchange
-              evil-goggles evil-iedit-state evil-indent-plus evil-lion
-              evil-lisp-state evil-matchit evil-mc evil-nerd-commenter
+              emmet-mode emoji-cheat-sheet-plus emr engine-mode enh-ruby-mode
+              esh-help eshell-prompt-extras eshell-z espresso-theme
+              ess-R-data-view eval-sexp-fu evil-anzu evil-args evil-cleverparens
+              evil-collection evil-easymotion evil-escape evil-evilified-state
+              evil-exchange evil-goggles evil-iedit-state evil-indent-plus
+              evil-lion evil-lisp-state evil-matchit evil-mc evil-nerd-commenter
               evil-numbers evil-org evil-surround evil-textobj-line evil-tutor
               evil-unimpaired evil-visual-mark-mode evil-visualstar
               exotica-theme expand-region eyebrowse eziam-themes fancy-battery
               farmhouse-themes fira-code-mode flatland-theme flatui-theme
               flx-ido flycheck-elsa flycheck-package flycheck-pos-tip flymd
-              flyspell-correct-popup fold-this gandalf-theme gh-md git-link
-              git-messenger git-modes git-timemachine gitignore-templates
-              gmail-message-mode gnuplot golden-ratio google-translate
-              gotham-theme gptel grandshell-theme graphviz-dot-mode
-              gruber-darker-theme gruvbox-theme hc-zenburn-theme helm-make
-              helm-org-ql helpful hemisu-theme heroku-theme hide-comnt
-              highlight-indent-guides highlight-indentation highlight-numbers
-              highlight-parentheses hl-todo holy-mode hungry-delete hy-mode
-              hybrid-mode hyperbole ibuffer-projectile impatient-mode
-              importmagic indent-guide info+ inkpot-theme inspector
-              ir-black-theme jazz-theme jbeans-theme jinja2-mode
-              jira-markup-mode js-doc js2-refactor json-mode json-navigator
-              json-reformat kaolin-themes keycast keychain-environment launchctl
-              light-soap-theme live-py-mode livid-mode lorem-ipsum lsp-origami
-              lsp-pyright lsp-ui lush-theme macrostep madhat2r-theme
-              majapahit-themes marginalia markdown-toc material-theme
-              mermaid-mode minimal-theme modus-themes moe-theme molokai-theme
-              monochrome-theme monokai-theme mu4e-alert multi-line multi-term
-              multi-vterm mustang-theme nameless naquadah-theme noctilux-theme
-              nodejs-repl npm-mode nyan-mode ob-async ob-http ob-hy ob-mermaid
-              ob-restclient obsidian-theme occidental-theme oldlace-theme
-              omtose-phellack-themes open-junk-file orderless org-appear
-              org-cliplink org-contrib org-download org-jira org-journal
-              org-mime org-modern org-pomodoro org-present org-projectile
-              org-re-reveal org-rich-yank org-roam-ui org-sticky-header
-              org-superstar org-transclusion org-wild-notifier
+              flyspell-correct-popup fold-this gandalf-theme ggtags gh-md
+              git-link git-messenger git-modes git-timemachine
+              gitignore-templates gmail-message-mode gnuplot golden-ratio
+              google-translate gotham-theme gptel grandshell-theme
+              graphviz-dot-mode gruber-darker-theme gruvbox-theme
+              hc-zenburn-theme helm-make helm-org-ql helpful hemisu-theme
+              heroku-theme hide-comnt highlight-indent-guides
+              highlight-indentation highlight-numbers highlight-parentheses
+              hl-todo holy-mode hungry-delete hy-mode hybrid-mode hyperbole
+              ibuffer-projectile impatient-mode importmagic indent-guide
+              inf-ruby info+ inkpot-theme inspector ir-black-theme jazz-theme
+              jbeans-theme jinja2-mode jira-markup-mode js-doc js2-refactor
+              json-mode json-navigator json-reformat kaolin-themes keycast
+              keychain-environment launchctl light-soap-theme live-py-mode
+              livid-mode lorem-ipsum lsp-origami lsp-pyright lsp-ui lush-theme
+              macrostep madhat2r-theme majapahit-themes marginalia markdown-toc
+              material-theme mermaid-mode minimal-theme minitest modus-themes
+              moe-theme molokai-theme monochrome-theme monokai-theme mu4e-alert
+              multi-line multi-term multi-vterm mustang-theme nameless
+              naquadah-theme noctilux-theme nodejs-repl npm-mode nyan-mode
+              ob-async ob-http ob-hy ob-mermaid ob-restclient obsidian-theme
+              occidental-theme oldlace-theme omtose-phellack-themes
+              open-junk-file orderless org-appear org-cliplink org-contrib
+              org-download org-jira org-journal org-mime org-modern org-pomodoro
+              org-present org-projectile org-re-reveal org-rich-yank org-roam-ui
+              org-sticky-header org-superstar org-transclusion org-wild-notifier
               organic-green-theme orgit-forge osx-clipboard osx-dictionary
               osx-trash overseer ox-hugo ox-jira ox-slack ox-twbs paradox
               password-generator password-store-otp pcre2el pdf-view-restore
@@ -75,10 +75,12 @@
               poetry prettier-js professional-theme pug-mode purple-haze-theme
               py-isort pydoc pyenv-mode pylookup pytest quickrun
               railscasts-theme rainbow-delimiters rainbow-identifiers
-              rainbow-mode rebecca-theme restart-emacs reveal-in-osx-finder
-              reverse-theme rjsx-mode ron-mode rustic sass-mode scss-mode
-              seti-theme shell-pop sicp slim-mode smeargle smyx-theme
-              soft-charcoal-theme soft-morning-theme soft-stone-theme
+              rainbow-mode rake rbenv rebecca-theme restart-emacs
+              reveal-in-osx-finder reverse-theme rjsx-mode robe ron-mode
+              rspec-mode rubocop rubocopfmt ruby-hash-syntax ruby-refactor
+              ruby-test-mode ruby-tools rustic rvm sass-mode scss-mode
+              seeing-is-believing seti-theme shell-pop sicp slim-mode smeargle
+              smyx-theme soft-charcoal-theme soft-morning-theme soft-stone-theme
               solarized-theme soothe-theme space-doc spacegray-theme spaceline
               spacemacs-purpose-popwin spacemacs-whitespace-cleanup sphinx-doc
               sql-indent sqlite3 string-edit-at-point string-inflection
