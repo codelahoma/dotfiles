@@ -26,9 +26,6 @@ ITERM2_SQUELCH_MARK=1
 #     source ~/.p10k.zsh 
 # fi
 
-export ZSH_THEME="powerlevel10k/powerlevel10k"
-source ~/.p10k.zsh 
-
 # history setup
 HISTFILE=$HOME/.zhistory
 SAVEHIST=1000
@@ -261,6 +258,8 @@ ulimit -n 4096
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
 # JINA_CLI_END
+[ -n "$EAT_SHELL_INTEGRATION_DIR" ] && \
+    source "$EAT_SHELL_INTEGRATION_DIR/zsh"
 
 
 export LDFLAGS="-L/opt/homebrew/opt/sqlite/lib"
@@ -285,3 +284,7 @@ export HISTFILE=~/.zsh_history
 export HISTTIMEFORMAT="%d/%m/%y %T "
 export HISTCONTROL=ignoredups:erasedups
 export HISTIGNORE="ls:cd:cd -:pwd:exit:date:* --help"
+
+
+export ZSH_THEME="powerlevel10k/powerlevel10k"
+source ~/.p10k.zsh 
