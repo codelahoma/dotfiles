@@ -277,6 +277,7 @@ export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always --line-range :500 {}'"
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
 eval "$(fzf --zsh)"
+source ~/.p10k.zsh 
 
 export HISTSIZE=100000
 export SAVEHIST=100000
@@ -287,4 +288,3 @@ export HISTIGNORE="ls:cd:cd -:pwd:exit:date:* --help"
 
 
 export ZSH_THEME="powerlevel10k/powerlevel10k"
-source ~/.p10k.zsh 

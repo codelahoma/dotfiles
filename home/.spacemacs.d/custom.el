@@ -113,7 +113,13 @@
                         web-mode wgrep white-sand-theme winum writeroom-mode
                         ws-butler wsd-mode yaml-mode yasnippet-snippets
                         zen-and-art-theme zenburn-theme zonokai-emacs))
- '(safe-local-variable-directories '("/Users/rodk/personal/org-files/")))
+ '(safe-local-variable-directories '("/Users/rodk/personal/org-files/"))
+ '(safe-local-variable-values
+   '((evil-shift-width . 2) (org-enforce-todo-checkbox-dependencies . t)
+     (rk/auto-update-word-count-enabled . t) (evil-shift-width . 4)
+     (typescript-backend . tide) (typescript-backend . lsp)
+     (javascript-backend . tide) (javascript-backend . tern)
+     (javascript-backend . lsp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
