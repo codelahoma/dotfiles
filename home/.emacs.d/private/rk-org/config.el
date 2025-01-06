@@ -2,7 +2,7 @@
   ;; Org config goes here
   ;;
 
-  (setq org-directory "~/Dropbox/org/")
+  (setq org-directory "~/personal/org-files/")
   (setq gtd-directory (concat org-directory "gtd/"))
   (setq org-id-track-globally t)
   (defalias `rk/org-file (apply-partially 'concat org-directory))
@@ -43,7 +43,7 @@
       (when should-skip-entry
         (or (outline-next-heading)
             (goto-char (point-max))))))
-	
+
   (defun org-current-is-todo ()
     (string= "TODO" (org-get-todo-state)))
 
@@ -84,9 +84,9 @@
             (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
             (tags "-@kitewire+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
             (tags-todo "-@kitewire" (
-                                   (org-agenda-overriding-header "Todo")
-                                   (org-agenda-files rk/home-org-files)
-                                   (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
+                                     (org-agenda-overriding-header "Todo")
+                                     (org-agenda-files rk/home-org-files)
+                                     (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
             ()))
           ("k" . "Kitewire Views")
           ("kk" "Kitewire"
@@ -123,15 +123,6 @@
                  ))
   ;; (setq org-startup-indented t)
   (add-to-list 'org-file-apps '(directory . emacs))
-
-  ;; Org-Jira
-  (setq jiralib-url "https://summitesp.atlassian.net")
-  (setq org-jira-use-status-as-todo t)
-
-  ;; Org-Journal
-  (setq org-journal-dir "~/Dropbox/org/journal/")
-  (setq org-journal-file-type 'weekly)
-
 
   ;; Org-reveal
   (setq org-re-reveal-title-slide "<h1 class='title'>%t</h1><h2 class='author'>%a</h2><p class='email'>%e</p>")

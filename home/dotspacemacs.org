@@ -1,4 +1,5 @@
 #+STARTUP: show2level
+#+OPTIONS: toc:nil
 #+TITLE:My Spacemacs Init
 #+AUTHOR: Rod Knowlton
 #+EMAIL: codelahoma@gmail.com
@@ -29,20 +30,61 @@ It consists of a brief [[*.spacemacs Preamble][preamble]], followed by a [[*The 
 #+RESULTS:
 : dotspacemacs/user-config
 
+* Custom menu items
+
+** Org-mode
+#+begin_src emacs-lisp :noweb-ref private-key-bindings
+  (spacemacs/declare-prefix "oo" "org")
+  (spacemacs/set-leader-keys"ooa" 'org-agenda)
+  (spacemacs/set-leader-keys "oos" 'org-save-all-org-buffers)
+  (spacemacs/set-leader-keys "ooc" 'org-capture)
+  (spacemacs/set-leader-keys "oo/" 'helm-org-rifle)
+
+  (spacemacs/declare-prefix "ooT" "theming")
+  (spacemacs/set-leader-keys "ooTc" 'switch-org-colors)
+  (spacemacs/set-leader-keys "ooTb" 'rk/switch-org-bullets)
+
+
+  (spacemacs/declare-prefix "or" "org-roam")
+  (spacemacs/declare-prefix "ord" "dailies")
+  (spacemacs/declare-prefix "ort" "tags")
+
+  (spacemacs/set-leader-keys
+    "orjd" 'rk/open-daily-writing
+    "orjj" 'org-roam-dailies-capture-today
+    "orjf" 'org-roam-dailies-goto-today
+    "orrj" 'org-roam-dailies-capture-today
+    "ora" 'org-roam-alias-add
+    "orf" 'org-roam-node-find
+    "orc" 'org-roam-capture
+    "org" 'org-roam-graph
+    "ori" 'org-roam-node-insert
+    "oru" 'org-roam-ui-mode
+    "ordc" 'org-roam-dailies-capture-today
+    "ordd" 'org-roam-dailies-goto-date
+    "ordt" 'org-roam-dailies-goto-today
+    "ordy" 'org-roam-dailies-goto-yesterday
+    "ordT" 'org-roam-dailies-goto-tomorrow
+    "orta" 'org-roam-tag-add
+    "ortr" 'org-roam-tag-remove
+    "orb" 'org-roam-buffer-toggle
+    )
+#+end_src
+
+
 * noweb-ref Legend
 The following special values of the =noweb-ref= header argument will cause a code block  to behave in the follow manner, allowing better grouping of all configuration by modes.
 
-| noweb-ref                 | behavior (l)=add to list, (c)=insert code into               |
-|---------------------------+--------------------------------------------------------------|
+| noweb-ref                 | behavior (l)=add to list, (c)=insert code into                   |
+|---------------------------+------------------------------------------------------------------|
 | config-level              | (l) =dotspacemacs-configuration-layers= in =dotspacemacs/layers= |
 | additional-packages       | (l) =dotspacemacs-additional-packages= in =dotspacemacs/layers=  |
 | dotspacemacs-themes       | (l) =dotspacemacs-themes= in =dotspacemacs/init=                 |
 | dotspacemacs-default-font | (l) ~dotspacemacs-default-font~ in ~dotspacemacs/init~           |
-| user-config               | (c) dotspacemacs/user-config                                 |
-| private-key-bindings      | (c) dotspacemacs/user-config, in key-bindings section        |
-|---------------------------+--------------------------------------------------------------|
+| user-config               | (c) dotspacemacs/user-config                                     |
+| private-key-bindings      | (c) dotspacemacs/user-config, in key-bindings section            |
+|---------------------------+------------------------------------------------------------------|
 * Scratch (functions and such I'm working on/playing with)
-** 
 ** editWithEmacs
 Trying out a Hammerspoon Spoon for system-wide emacs editing
 #+begin_src emacs-lisp :noweb-ref user-config
@@ -66,21 +108,29 @@ Trying out a Hammerspoon Spoon for system-wide emacs editing
 #+RESULTS:
 
 ** Auto Completion
+
+*** Layer Variables
 #+begin_src emacs-lisp :noweb-ref config-layers
   (auto-completion :variables
                    auto-completion-return-key-behavior 'complete
                    auto-completion-tab-key-behavior 'cycle
                    auto-completion-minimum-prefix-length 2
-                   ;; auto-completion-complete-with-key-sequence "jk"
-                   ;; auto-completion-complete-with-key-sequence-delay 0.1
+                   auto-completion-complete-with-key-sequence "jk"
+                   auto-completion-complete-with-key-sequence-delay 0.1
                    auto-completion-idle-delay 0.0
                    auto-completion-private-snippets-directory nil
                    auto-completion-enable-snippets-in-popup t
-                   auto-completion-enable-help-tooltip 'manual
+                   auto-completion-enable-help-tooltip t
                    auto-completion-use-company-box t
-                   ;; auto-completion-use-company-posframe t
-                   auto-completion-enable-sort-by-usage t)
-#+end_src
+                   auto-completion-use-company-posframe t
+                   auto-completion-enable-sort-by-usage t
+
+                   spacemacs-default-company-backends '(company-files company-capf company-keywords))
+
+                   #+end_src
+
+
+
 ** Folding
 Using =fold-this= because vimish folding is unfortuntely too laggy on some large files (where folding is needed more than anywhere).
 #+begin_src emacs-lisp :noweb-ref additional-packages
@@ -154,13 +204,14 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
    :width normal)
 
 #+end_src
+
 ** Other
 #+begin_src emacs-lisp :noweb-ref config-layers
   (colors :variables
           colors-colorize-identifiers 'variables)
   emoji
   evil-better-jumper
-  ;; helm
+  helm
   (osx :variables
        osx-command-as nil)
   spacemacs-modeline
@@ -244,6 +295,9 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
 #+end_src
 
 ** Python
+
+
+*** Layer Variables
 #+begin_src emacs-lisp :noweb-ref config-layers
   (python :variables
           python-fill-column 99
@@ -254,6 +308,19 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
           python-format-on-save t
           )
 #+end_src
+
+*** Show a λ instead of ~lambda~
+#+begin_src emacs-lisp :noweb-ref user-config
+  (font-lock-add-keywords 'python-mode
+                          '(("\\(lambda\\) " 
+                             (0 (prog1 ()
+                                  (compose-region
+                                   (match-beginning 1)
+                                   (match-end 1)
+                                   "λ"))))))
+
+#+end_src
+
 
 *** Hy
 #+begin_src emacs-lisp :noweb-ref config-layers
@@ -292,9 +359,10 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
        org-appear-autolinks nil
        org-enable-bootstrap-support t
        org-enable-org-contacts-support nil
-       org-enable-hugo-support t
-       org-enable-modern-support t
-       org-enable-jira-support t
+       org-enable-github-support t
+       org-enable-hugo-support nil
+       org-enable-modern-support nil
+       org-enable-jira-support nil
        org-enable-org-journal-support t
        org-enable-notifications t
        org-enable-reveal-js-support t
@@ -302,6 +370,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
        org-enable-roam-ui t
        org-enable-sticky-header t
        org-enable-transclusion-support t
+       org-todo-dependencies-strategy 'semiauto
        org-projectile-file "TODOs.org"
        org-start-notification-daemon-on-startup t)
 #+end_src
@@ -309,40 +378,36 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
 *** Additional Packages
 #+begin_src emacs-lisp :noweb-ref additional-packages
   ob-async
-  org-jira
-  (org-ql :quelpa (org-ql :fetcher github :repo "alphapapa/org-ql"
-                          :files (:defaults (:exclude "helm-org-ql.el"))))
-  (helm-org-ql
-   :quelpa (helm-org-ql :fetcher github :repo "alphapapa/org-ql"
-                        :files ("helm-org-ql.el")))
-  ox-jira
   ox-slack
+  org-superstar
 #+end_src
 
 *** Appearance
 **** font faces
 #+begin_src emacs-lisp :noweb no-export :noweb-ref user-config
   (let* ((variable-tuple
-          (cond ((x-list-fonts "Fira Sans")       '(:font "Fira Sans"))
-                ((x-list-fonts "Avenir Next") '(:font "Avenir Next"))
-                ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
-                ((x-list-fonts "ETBembo") '(:font "ETBembo"))
-                ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
-                ((x-list-fonts "Verdana")         '(:font "Verdana"))
-                ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
-                (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
+          (cond
+           ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
+           ((x-list-fonts "Avenir Next") '(:font "Avenir Next"))
+           ((x-list-fonts "Verdana")         '(:font "Verdana"))
+           ;; ((x-list-fonts "Fira Sans")       '(:font "Fira Sans"))
+           ((x-list-fonts "ETBembo") '(:font "ETBembo"))
+           ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
+           ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
+           (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
          (headline           `(:inherit default :weight normal ))
          )
 
     (custom-theme-set-faces
      'user
      '(fixed-pitch ((t ( :family "FiraMono Nerd Font" :height 1.0))))
-     '(variable-pitch ((t (:family "Fira Sans" :height 1.1))))
+     '(variable-pitch ((t (:family "Source Sans Pro" :height 1.1))))
      `(org-document-title ((t (,@headline ,@variable-tuple :height 2.5 :underline nil))))
-     `(org-level-1 ((t (,@headline ,@variable-tuple :height 2.0))))
-     `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.8))))
-     `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.6))))
-     `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.4))))
+     ;; Ocean colors
+     `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.8 ))))
+     `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5 ))))
+     `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.4 ))))
+     `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.3 ))))
      `(org-level-5 ((t (,@headline ,@variable-tuple :height 1.2))))
      `(org-level-6 ((t (,@headline ,@variable-tuple :height 1.2))))
      `(org-level-7 ((t (,@headline ,@variable-tuple :height 1.2))))
@@ -352,18 +417,111 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
      '(org-date ((t (:inherit (font-lock-comment-face fixed-pitch) :height 0.9))))
      '(org-document-info ((t (:foreground "dark orange"))))
      '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
-     '(org-done ((t ( :font "Fira Sans" :height 0.6 :background nil))))
+     '(org-done ((t ( :font "Fira Sans" :height 0.6 :foreground "PaleGreen" :weight bold))))
      '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
      '(org-link ((t (:foreground "royal blue" :underline t))))
      '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-     '(org-property-value ((t (:inherit fixed-pitch))) t)
+     '(org-property-value ((t (:inherit fixed-pitch))))
      '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
      '(org-table ((t (:inherit fixed-pitch ))))
      '(org-tag ((t (:inherit (shadow fixed-pitch)  :height 0.5))))
-     '(org-todo ((t ( :font "Fira Sans" :height 0.8))))
+     '(org-todo ((t ( :font "Fira Sans" :height 0.8 ))))
      '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
      ))
 #+end_src
+***** Switch between org heading color themes
+
+#+begin_src emacs-lisp :noweb-ref user-config
+  (defvar org-heading-colors-schemes
+    '(("Arctic"    . ("LightCyan" "AliceBlue" "LavenderBlue" "GhostWhite"))
+      ("Autumn"    . ("OrangeRed" "DarkGoldenrod" "Sienna" "Peru"))
+      ("Candy"     . ("HotPink" "DeepPink" "VioletRed" "MediumVioletRed"))
+      ("Cyber"     . ("DeepPink" "Cyan" "SpringGreen" "BlueViolet"))
+      ("Desert"    . ("Tan4" "SandyBrown" "PeachPuff3" "Wheat4"))
+      ("Earth"     . ("Sienna" "RosyBrown" "DarkKhaki" "Tan"))
+      ("Forest"    . ("ForestGreen" "OliveDrab" "DarkOliveGreen" "YellowGreen"))
+      ("Galaxy"    . ("MediumSlateBlue" "MediumPurple" "Purple" "DarkViolet"))
+      ("Garden"    . ("MediumSeaGreen" "DarkSeaGreen" "PaleGreen" "LightGreen"))
+      ("Meadow"    . ("MediumAquamarine" "PaleGreen" "LightGreen" "DarkSeaGreen"))
+      ("Mountain"  . ("RoyalBlue4" "SteelBlue4" "DodgerBlue4" "SlateBlue4"))
+      ("Nordic"    . ("SteelBlue" "LightSteelBlue" "SlateGray" "LightSlateGray"))
+      ("Ocean"     . ("DeepSkyBlue1" "MediumSpringGreen" "Turquoise" "SlateBlue"))
+      ("Pastel"    . ("SkyBlue" "LightGoldenrod" "PaleGreen" "Salmon"))
+      ("Retro"     . ("Magenta3" "Cyan3" "Yellow3" "Green3"))
+      ("Royal"     . ("RoyalBlue" "MediumBlue" "Navy" "MidnightBlue"))
+      ("Seaside"   . ("CadetBlue" "LightBlue" "PowderBlue" "PaleTurquoise"))
+      ("Sunset"    . ("MediumVioletRed" "DeepPink" "HotPink" "LightPink"))
+      ("Twilight"  . ("MediumPurple" "SlateBlue" "DarkSlateBlue" "Navy"))
+      ("Vibrant"   . ("DodgerBlue1" "Gold1" "Chartreuse1" "OrangeRed1"))
+      ("Volcanic"  . ("OrangeRed" "Firebrick" "DarkRed" "IndianRed"))
+      ("Wine"      . ("Maroon" "VioletRed" "MediumVioletRed" "PaleVioletRed")))
+    "Alist of org heading color schemes.")
+
+  (defun preview-org-colors ()
+    "Preview all color schemes in a temporary buffer."
+    (interactive)
+    (let ((preview-buffer (get-buffer-create "*Org Color Schemes Preview*")))
+      (with-current-buffer preview-buffer
+        (erase-buffer)
+        (fundamental-mode)
+        (dolist (scheme org-heading-colors-schemes)
+          (let* ((scheme-name (car scheme))
+                 (colors (cdr scheme)))
+
+            ;; Insert the theme name
+            (let ((start-pos (point)))
+              (insert (format "* %s Theme\n" scheme-name))
+              (add-text-properties start-pos (point)
+                                   `(face (:weight bold :height 1.5))))
+
+            ;; Insert each level with its color
+            (dotimes (i 4)
+              (let ((start-pos (point)))
+                (insert (format "%s Level %d Heading (%s)\n"
+                                (make-string (1+ i) ?*)
+                                (1+ i)
+                                (nth i colors)))
+                (add-text-properties
+                 start-pos (point)
+                 `(face (:foreground ,(nth i colors) :height ,(- 1.4 (* i 0.1)))))))
+
+            (insert "\n"))))
+
+      (display-buffer preview-buffer)))
+
+
+  (defun switch-org-colors (scheme-name)
+    "Switch org heading colors to a predefined scheme.
+  SCHEME-NAME should be one of the defined color schemes."
+    (interactive
+     (list (completing-read "Choose color scheme: "
+                            (mapcar #'car org-heading-colors-schemes))))
+    (let* ((colors (cdr (assoc scheme-name org-heading-colors-schemes)))
+           (variable-tuple
+            (cond ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
+                  ((x-list-fonts "Avenir Next") '(:font "Avenir Next"))
+                  ((x-list-fonts "Verdana") '(:font "Verdana"))
+                  ((x-list-fonts "ETBembo") '(:font "ETBembo"))
+                  ((x-list-fonts "Lucida Grande") '(:font "Lucida Grande"))
+                  ((x-family-fonts "Sans Serif") '(:family "Sans Serif"))
+                  (nil (warn "Cannot find a Sans Serif Font. Install Source Sans Pro."))))
+           (headline `(:inherit default :weight normal)))
+
+      (custom-theme-set-faces
+       'user
+       `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.8 :foreground ,(nth 0 colors)))))
+       `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5 :foreground ,(nth 1 colors)))))
+       `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.4 :foreground ,(nth 2 colors)))))
+       `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.3 :foreground ,(nth 3 colors))))))
+
+      (message "Switched to %s color scheme" scheme-name)))
+#+end_src
+***** Set default org heading color theme
+#+begin_src emacs-lisp  :noweb-ref user-config
+  (with-eval-after-load 'org
+    (switch-org-colors "Cyber"))
+#+end_src
+#+RESULTS:
 
 **** org-superstar
 #+begin_src emacs-lisp :noweb-ref user-config
@@ -372,7 +530,8 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
           '((?* . ?•)
             (?+ . ?➤)
             (?- . ?•)))
-    (setq org-superstar-headline-bullets-list '(?\s))
+    (setq org-superstar-headline-bullets-list
+          '("⦿" "⬦" "○" "▷"))
     (setq org-superstar-special-todo-items t)
     (setq org-superstar-remove-leading-stars t)
     ;; Enable custom bullets for TODO items
@@ -393,12 +552,78 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
     (org-superstar-restart))
 #+end_src
 
+***** Select from amongst bullet sets
+#+begin_src emacs-lisp :noweb-ref user-config
+  (defvar rk/org-bullet-schemes
+    '(("Geometric" . ("◉" "○" "◈" "◇"))
+      ("Natural"   . ("❋" "✿" "❀" "✤"))
+      ("Stars"     . ("★" "☆" "✭" "✧"))
+      ("Circles"   . ("●" "◐" "◑" "○"))
+      ("Math"      . ("➊" "➋" "➌" "➍"))
+      ("Arrows"    . ("➤" "➢" "➣" "➼"))
+      ("Modern"    . ("◆" "▶" "▸" "▹"))
+      ("Celestial" . ("✶" "✸" "✹" "✺"))
+      ("Boxes"      . ("█" "▅" "▃" "▁"))
+      ("Diamonds"   . ("❖" "❈" "✧" "✦"))
+      ("Flowers"    . ("✾" "✽" "✼" "✻"))
+      ("Hearts"     . ("❤" "♥" "♡" "❥"))
+      ("Snowflakes" . ("❄" "❆" "❅" "❊"))
+      ("Chess"      . ("♔" "♕" "♖" "♗"))
+      ("Squares"    . ("⬣" "⬡" "⬢" "⬩"))
+      ("Weather"    . ("☀" "☁" "☂" "☃"))
+      ("Music"      . ("♬" "♫" "♪" "♩"))
+      ("Cards"      . ("♠" "♣" "♥" "♦"))
+      ("Buddhist"   . ("☸" "☯" "☮" "✴"))
+      ("Runes"      . ("ᛃ" "ᛒ" "ᛦ" "ᚻ"))
+      ("Tech"       . ("⌘" "⌥" "⇧" "⌤"))
+      ("Blocks"     . ("░" "▒" "▓" "█"))
+      ("Planets"    . ("☉" "☽" "☿" "♀"))
+      ("Zodiac"     . ("♈" "♉" "♊" "♋"))
+      ("Ancient"    . ("⚛" "☤" "⚕" "⚚"))
+      ("Symbolic"   . ("⚡" "☘" "☔" "☠"))
+      ("Checklist"  . ("☑" "☐" "⚀" "⚁")) )
+    "Alist of org heading bullet schemes.")
+
+  (defun rk/switch-org-bullets (scheme-name)
+    "Switch org heading bullets to a predefined scheme."
+    (interactive
+     (list (completing-read "Choose bullet scheme: "
+                            (mapcar #'car rk/org-bullet-schemes))))
+    (let ((bullets (cdr (assoc scheme-name rk/org-bullet-schemes))))
+      (setq org-superstar-headline-bullets-list bullets)
+      (org-superstar-restart)
+      (message "Switched to %s bullet scheme" scheme-name)))
+
+  (defun rk/preview-org-bullets ()
+    "Preview all bullet schemes in a temporary buffer."
+    (interactive)
+    (with-output-to-temp-buffer "*Org Bullet Schemes Preview*"
+      (with-current-buffer "*Org Bullet Schemes Preview*"
+        (org-mode)
+        (dolist (scheme org-bullet-schemes)
+          (insert (format "* %s\n" (car scheme)))
+          (let ((bullets (cdr scheme)))
+            (dolist (bullet bullets)
+              (insert (format "  %s %s\n" bullet bullet))))
+          (insert "\n")))))
+#+end_src
+
+***** Default bullet set
+#+begin_src emacs-lisp :noweb-ref user-config
+  (with-eval-after-load 'org-superstar
+    (rk/switch-org-bullets "Runes")
+    )
+#+end_src
+
+
 *** Org-Reveal
 #+begin_src emacs-lisp :noweb-ref user-config
 
   ;; Org-reveal
   (setq org-re-reveal-title-slide "<h1 class='title'>%t</h1><h2 class='author'>%a</h2><p class='email'>%e</p>")
-  (setq org-re-reveal-root "file:///Users/rodk/.emacs.d/private/reveal.js")
+  (setq org-re-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
+  (setq org-re-reveal-revealjs-version "5")
+
 
 #+end_src
 
@@ -412,25 +637,6 @@ Let's not rearrange the windows when we open the special edit window, instead us
 
 #+RESULTS:
 : split-window-below
-
-** Other
-#+begin_src emacs-lisp :noweb-ref config-layers
-  html
-  markdown
-#+end_src
-
-** PlantUML
-#+begin_src emacs-lisp :noweb-ref config-layers
-  (plantuml :variables
-            plantuml-jar-path "/opt/homebrew/opt/plantuml/libexec/plantuml.jar"
-            org-plantuml-jar-path "/opt/homebrew/opt/plantuml/libexec/plantuml.jar")
-#+end_src
-
-** Yaml
-#+begin_src emacs-lisp :noweb-ref config-layers
-  (yaml :variables
-        yaml-enable-lsp t)
-#+end_src
 
 *** Eval on Load
 #+begin_src emacs-lisp :noweb-ref user-config
@@ -446,7 +652,7 @@ Let's not rearrange the windows when we open the special edit window, instead us
                                      "•"))))))
     (setq alert-default-style 'notifications)
     (add-hook 'org-mode-hook 'variable-pitch-mode)
-    (add-hook 'org-mode-hook 'visual-line-mode)
+    ;; (add-hook 'org-mode-hook 'visual-line-mode)
 
     ;; org directories
     (setq org-directory "~/personal/org-files/")
@@ -470,7 +676,6 @@ Let's not rearrange the windows when we open the special edit window, instead us
 
 
     (setq org-roam-completion-everywhere t)
-    (add-to-list 'spacemacs-default-company-backends 'company-capf)
 
     (add-to-list 'org-modules 'org-protocol)
     (add-to-list 'org-modules 'org-tempo)
@@ -630,13 +835,32 @@ Let's not rearrange the windows when we open the special edit window, instead us
              :unnarrowed t
              :immediate-finish t
              :jump-to-captured t) ("g" "GPTel Interaction" plain "%?" :target
-            (file+head "interactions/%<%Y%m%d%H%M%S>-${slug}.org"
-                       "#+title: ${title}\n#+roam_tags: interaction gptel\n#+date: %U\n\n* Context\n** Purpose\n\n* Key Questions\n\n* Insights\n\n* Follow-up Actions\n\n* Raw Interaction\n:PROPERTIES:\n:CAPTURED_ON: %U\n:MODEL: %^{Model}\n:END:\n\n")
-            :unnarrowed t) ))
+             (file+head "interactions/%<%Y%m%d%H%M%S>-${slug}.org"
+                        "#+title: ${title}\n#+roam_tags: interaction gptel\n#+date: %U\n\n* Context\n** Purpose\n\n* Key Questions\n\n* Insights\n\n* Follow-up Actions\n\n* Raw Interaction\n:PROPERTIES:\n:CAPTURED_ON: %U\n:MODEL: %^{Model}\n:END:\n\n")
+             :unnarrowed t) ))
 
     (org-roam-db-autosync-mode)
     )
 #+end_src
+** Other
+#+begin_src emacs-lisp :noweb-ref config-layers
+  html
+  markdown
+#+end_src
+
+** PlantUML
+#+begin_src emacs-lisp :noweb-ref config-layers
+  (plantuml :variables
+            plantuml-jar-path "/opt/homebrew/opt/plantuml/libexec/plantuml.jar"
+            org-plantuml-jar-path "/opt/homebrew/opt/plantuml/libexec/plantuml.jar")
+#+end_src
+
+** Yaml
+#+begin_src emacs-lisp :noweb-ref config-layers
+  (yaml :variables
+        yaml-enable-lsp t)
+#+end_src
+
 * File Formats
 #+begin_src emacs-lisp :noweb-ref config-layers
   csv
@@ -646,6 +870,7 @@ Let's not rearrange the windows when we open the special edit window, instead us
 * Development Tools
 
 ** ChatGPT
+
 #+begin_src emacs-lisp :noweb-ref additional-packages
   ;; (chatgpt :location (recipe
   ;;                     :fetcher github
@@ -761,11 +986,41 @@ Set up a key binding to launch
 
 * Emacs Extensions and Applications
 ** elfeed (RSS Reader)
+*** Layer Variables
 #+begin_src emacs-lisp :noweb-ref config-layers
   (elfeed :variables
           elfeed-db-directory "~/personal/org-files/elfeed-db"
           rmh-elfeed-org-files (list "~/personal/org-files/elfeed.org")) 
 #+end_src
+*** Eval after load
+#+begin_src emacs-lisp :noweb-ref user-config
+  (with-eval-after-load 'elfeed
+    (require 'elfeed)
+    
+    (defun elfeed-save-to-org-roam-dailies ()
+      "Save the current elfeed entry to org-roam dailies."
+      (interactive)
+      (let* ((entry (elfeed-search-selected :single))
+             (title (elfeed-entry-title entry))
+             (link (elfeed-entry-link entry))
+             (content (elfeed-deref (elfeed-entry-content entry)))
+             (date (format-time-string "%Y-%m-%d"))
+             (org-roam-dailies-dir (expand-file-name "dailies" org-roam-directory))
+             (daily-file (expand-file-name (concat date ".org") org-roam-dailies-dir)))
+        (unless (file-exists-p daily-file)
+          (with-temp-buffer (write-file daily-file)))
+        (with-current-buffer (find-file-noselect daily-file)
+          (goto-char (point-max))
+          (insert (concat "* " title "\n"))
+          (insert (concat "[[" link "][" link "]]\n\n"))
+          (insert (concat content "\n"))
+          (save-buffer))))
+
+    ;; Bind the function to a key for easy access
+    (define-key elfeed-search-mode-map (kbd "o") 'elfeed-save-to-org-roam-dailies))
+
+#+end_src
+
 
 ** mu4e (Email)
 
@@ -890,7 +1145,7 @@ Make sure our custom lisp directory is in =load-path= (effective noop if already
 
   (defun rk/mu4e-view-in-external-browser (msg)
     (let ((browse-url-browser-function 'browse-url-default-macosx-browser))
-    mu4e-action-view-in-browser))
+    mu4e-action-view-in-browser msg))
 
   (setq mu4e-view-actions '(("capture message" . mu4e-action-capture-message)
                             ("view in browser" . mu4e-action-view-in-browser)
@@ -1144,7 +1399,6 @@ Make sure our custom lisp directory is in =load-path= (effective noop if already
 * Helpful functions and hooks
 ** Restore the default Info mode navigation keys
 #+begin_src emacs-lisp :noweb-ref user-config
-
   (defun my-info-mode-hook ()
     (local-set-key (kbd "n") 'Info-next)
     (local-set-key (kbd "p") 'Info-prev)
@@ -1156,31 +1410,30 @@ Make sure our custom lisp directory is in =load-path= (effective noop if already
   (add-hook 'Info-mode-hook 'my-info-mode-hook)
 
 
-  (require 'elfeed)
   (require 'org-roam)
   (require 'org-roam-dailies)
 
-  (defun elfeed-save-to-org-roam-dailies ()
-    "Save the current elfeed entry to org-roam dailies."
-    (interactive)
-    (let* ((entry (elfeed-search-selected :single))
-           (title (elfeed-entry-title entry))
-           (link (elfeed-entry-link entry))
-           (content (elfeed-deref (elfeed-entry-content entry)))
-           (date (format-time-string "%Y-%m-%d"))
-           (org-roam-dailies-dir (expand-file-name "dailies" org-roam-directory))
-           (daily-file (expand-file-name (concat date ".org") org-roam-dailies-dir)))
-      (unless (file-exists-p daily-file)
-        (with-temp-buffer (write-file daily-file)))
-      (with-current-buffer (find-file-noselect daily-file)
-        (goto-char (point-max))
-        (insert (concat "* " title "\n"))
-        (insert (concat "[[" link "][" link "]]\n\n"))
-        (insert (concat content "\n"))
-        (save-buffer))))
+  ;; (defun elfeed-save-to-org-roam-dailies ()
+  ;;   "Save the current elfeed entry to org-roam dailies."
+  ;;   (interactive)
+  ;;   (let* ((entry (elfeed-search-selected :single))
+  ;;          (title (elfeed-entry-title entry))
+  ;;          (link (elfeed-entry-link entry))
+  ;;          (content (elfeed-deref (elfeed-entry-content entry)))
+  ;;          (date (format-time-string "%Y-%m-%d"))
+  ;;          (org-roam-dailies-dir (expand-file-name "dailies" org-roam-directory))
+  ;;          (daily-file (expand-file-name (concat date ".org") org-roam-dailies-dir)))
+  ;;     (unless (file-exists-p daily-file)
+  ;;       (with-temp-buffer (write-file daily-file)))
+  ;;     (with-current-buffer (find-file-noselect daily-file)
+  ;;       (goto-char (point-max))
+  ;;       (insert (concat "* " title "\n"))
+  ;;       (insert (concat "[[" link "][" link "]]\n\n"))
+  ;;       (insert (concat content "\n"))
+  ;;       (save-buffer))))
 
-  ;; Bind the function to a key for easy access
-  (define-key elfeed-search-mode-map (kbd "o") 'elfeed-save-to-org-roam-dailies)
+  ;; ;; Bind the function to a key for easy access
+  ;; (define-key elfeed-search-mode-map (kbd "o") 'elfeed-save-to-org-roam-dailies)
   (defun renumber-region (start end)
     "Renumber the lines in the region from START to END."
     (interactive "r")
@@ -1334,7 +1587,6 @@ Configures the base distribution and the layers I want installed and configure.
                                       ;; forge
                                       ;; closql
                                       ;; ghub
-                                      window-purpose
                                       )
 
      ;; Defines the behaviour of Spacemacs when installing packages.
@@ -1890,7 +2142,7 @@ Configures the base distribution and the layers I want installed and configure.
 
 
 
-  (setq org-ellipsis " ▼ ")
+  ;; (setq org-ellipsis " ▼ ")
 
   ;; Private Key Mappings
 
@@ -1910,51 +2162,16 @@ Configures the base distribution and the layers I want installed and configure.
   (spacemacs/declare-prefix "oh" "Hammerspoon")
   (spacemacs/set-leader-keys "ohr" 'rk/reset-hammerspoon)
 
-  (spacemacs/declare-prefix "oo" "org")
-  (spacemacs/set-leader-keys "oos" 'org-save-all-org-buffers)
-  (spacemacs/declare-prefix "oor" "org-roam")
 
-
-
-  (spacemacs/declare-prefix "ooj" "journal")
-  (spacemacs/declare-prefix "oojp" "projects")
-  (spacemacs/declare-prefix "ooji" "issues")
-  (spacemacs/declare-prefix "oojs" "subtasks")
-  (spacemacs/declare-prefix "oojc" "comments")
-  (spacemacs/declare-prefix "oojt" "todos")
-
-
-  (spacemacs/declare-prefix "or" "org-roam")
-  (spacemacs/declare-prefix "ord" "dailies")
-  (spacemacs/declare-prefix "ort" "tags")
-
-  (spacemacs/set-leader-keys
-    "orjd" 'rk/open-daily-writing
-    "orjj" 'org-roam-dailies-capture-today
-    "orjf" 'org-roam-dailies-goto-today
-    "orrj" 'org-roam-dailies-capture-today
-    "ora" 'org-roam-alias-add
-    "orf" 'org-roam-node-find
-    "orc" 'org-roam-capture
-    "org" 'org-roam-graph
-    "ori" 'org-roam-node-insert
-    "oru" 'org-roam-ui-mode
-    "ordc" 'org-roam-dailies-capture-today
-    "ordd" 'org-roam-dailies-goto-date
-    "ordt" 'org-roam-dailies-goto-today
-    "ordy" 'org-roam-dailies-goto-yesterday
-    "ordT" 'org-roam-dailies-goto-tomorrow
-    "orta" 'org-roam-tag-add
-    "ortr" 'org-roam-tag-remove
-    "orb" 'org-roam-buffer-toggle
-    )
                                           ; CMD-C copies to system clipboard
   (define-key evil-visual-state-map (kbd "s-c") (kbd "\"+y"))
+                                          ; CMD-V pastes from system clipboard
+  (define-key evil-visual-state-map (kbd "s-v") (kbd "\"+p"))
 
                                           ; Misc spacemacs keys
 
   (evil-leader/set-key "q q" 'spacemacs/frame-killer)
-  (evil-leader/set-key "/" 'spacemacs/helm-project-do-ag)
+  (evil-leader/set-key "/" 'rk/helm-files-do-rg)
 
   ;; end Key Mappings
 
@@ -2169,7 +2386,7 @@ Configures the base distribution and the layers I want installed and configure.
 
   ;; Completion
   (with-eval-after-load 'completion
-    (defun spacemacs/helm-files-do-rg (&optional dir)
+    (defun rk/helm-files-do-rg (&optional dir)
       "Search in files with `rg'."
       (interactive)
       ;; --line-number forces line numbers (disabled by default on windows)
