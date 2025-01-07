@@ -70,10 +70,19 @@ alias ohmyzsh="emacsclient -n ~/.oh-my-zsh"
 # yyyy-mm-dd
 # HIST_STAMPS="mm/dd/yyyy"
 
+
+# Plugin configuration
+zstyle ":omz:plugins:eza" 'dirs-first' yes
+zstyle ":omz:plugins:eza" 'git-status' yes
+zstyle ":omz:plugins:eza" 'header' yes
+zstyle ":omz:plugins:eza" 'show-group' no
+zstyle ":omz:plugins:eza" 'icons' yes
+
+
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(asdf brew colored-man-pages common-aliases  iterm2 fasd fzf git github npm  macos wakatime zsh-autosuggestions)
+plugins=(1password asdf brew eza iterm2 fzf git github npm macos wakatime zsh-autosuggestions zoxide)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -95,14 +104,18 @@ alias -g C='| wc -l'
 alias hl='highlight -O xterm256'
 alias -g HL='|highlight -O xterm256 -'
 alias -g F='| fx'
+alias -g G='| grep'
+alias -g S='| sort'
+alias -g H='| head'
+
+
 alias emc="emacsclient -nw"
 alias ccat='/bin/cat'
 alias cat='/opt/homebrew/bin/bat'
 alias Make=`which make`
 alias make="$(which make) --"
 alias Ls="/bin/ls"
-alias ls="eza --icons=always"
-
+alias rm='rm -i'
 autoload edit-command-line
 zle -N edit-command-line
 
@@ -277,14 +290,12 @@ export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always --line-range :500 {}'"
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
 eval "$(fzf --zsh)"
-source ~/.p10k.zsh 
-
 export HISTSIZE=100000
 export SAVEHIST=100000
 export HISTFILE=~/.zsh_history
 export HISTTIMEFORMAT="%d/%m/%y %T "
 export HISTCONTROL=ignoredups:erasedups
 export HISTIGNORE="ls:cd:cd -:pwd:exit:date:* --help"
-
-
 export ZSH_THEME="powerlevel10k/powerlevel10k"
+eval "$(zoxide init zsh)"
+source ~/.p10k.zsh 
