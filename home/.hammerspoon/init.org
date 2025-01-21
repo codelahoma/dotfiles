@@ -15,6 +15,7 @@
 #+email: rod@codelahoma.com
 
 * Table of Contents :TOC_3:noexport:
+- [[#auto-reset-hammerspoon-on-tangle][Auto-reset Hammerspoon on Tangle]]
 - [[#general-variables-and-configuration][General Variables and Configuration]]
 - [[#spoon-management][Spoon Management]]
 - [[#edit-in-emacs][Edit in Emacs]]
@@ -30,6 +31,13 @@
 - [[#caffeinate][Caffeinate]]
 - [[#load-local-config][Load Local Config]]
 - [[#wrap-up][Wrap Up]]
+
+* Auto-reset Hammerspoon on Tangle
+#+NAME: my-tangle-hook
+#+BEGIN_SRC emacs-lisp :results silent :post "my-after-tangle-function"
+  (defun my-after-tangle-function ()
+    (rk/reset-hammerspoon))
+  #+end_src
 
 * General Variables and Configuration
 
@@ -355,7 +363,7 @@ The KSheet spoon provides for showing the keybindings for the currently active a
 
 
   if work_machines[machine] ~= nil then
-    -- hotkey.bind(hyper, "a", appLauncher('Arduino IDE'))
+    hotkey.bind(hyper, "a", appLauncher('Arduino IDE'))
     hotkey.bind(hyper, "b", appLauncher('ChatGPT'))
     hotkey.bind(hyper, "c", hs.toggleConsole)
     hotkey.bind(magic, "c", appLauncher('Claude'))

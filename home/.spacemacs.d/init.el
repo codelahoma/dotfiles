@@ -104,24 +104,25 @@ This function should only modify configuration layer settings."
      (mermaid :variables
               ob-mermaid-cli-path "/Users/rodk/personal/org-files/node_modules/.bin/mmdc")
      (org :variables
-          org-enable-appear-support t
           org-appear-autolinks nil
+          org-enable-appear-support t
           org-enable-bootstrap-support t
-          org-enable-org-contacts-support nil
           org-enable-github-support t
           org-enable-hugo-support nil
-          org-enable-modern-support nil
           org-enable-jira-support nil
-          org-enable-org-journal-support t
+          org-enable-modern-support t
           org-enable-notifications t
+          org-enable-org-contacts-support nil
+          org-enable-org-journal-support t
           org-enable-reveal-js-support t
           org-enable-roam-support t
           org-enable-roam-ui t
           org-enable-sticky-header t
           org-enable-transclusion-support t
-          org-todo-dependencies-strategy 'semiauto
+          org-enable-trello-support t
           org-projectile-file "TODOs.org"
-          org-start-notification-daemon-on-startup t)
+          org-start-notification-daemon-on-startup t
+          org-todo-dependencies-strategy 'semiauto)
      html
      markdown
      (plantuml :variables
@@ -190,15 +191,16 @@ This function should only modify configuration layer settings."
      ibuffer
      (search-engine)
      (spell-checking :variables
-                     spell-checking-enable-by-default nil)
+                     spell-checking-enable-by-default nil
+                     enable-flyspell-auto-completion t)
      (version-control :variables
                       version-control-diff-side 'left)
      
      (tree-sitter :variables
-                   spacemacs-tree-sitter-hl-black-list '(js2-mode rjsx-mode)
-                   tree-sitter-syntax-highlight-enable t
-                   tree-sitter-fold-enable t
-                   tree-sitter-fold-indicators-enable nil)
+                  spacemacs-tree-sitter-hl-black-list '(js2-mode rjsx-mode)
+                  tree-sitter-syntax-highlight-enable t
+                  tree-sitter-fold-enable t
+                  tree-sitter-fold-indicators-enable nil)
      (shell :variables
             shell-default-shell 'vterm
             shell-default-term-shell "/bin/zsh"
@@ -473,60 +475,60 @@ It should only modify the values of Spacemacs settings."
    ;; a non-negative integer (pixel size), or a floating-point (point size).
    ;; Point size is recommended, because it's device independent. (default 10.0)
    dotspacemacs-default-font '(
+                               ("FiraCode Nerd Font"
+                                :size 18.0
+                                :weight normal
+                                :width normal)
                                ("MesloLGS Nerd Font Mono"
-                                :size 14.0
+                                :size 18.0
                                 :weight normal
                                 :width normal)
                                ("Inconsolata Nerd Font"
-                                :size 16.0
+                                :size 18.0
                                 :weight normal
                                 :width normal)
                                ("Cascadia Mono NF"
-                                :size 16.0
-                                :weight normal
-                                :width normal)
-                               ("FiraCode Nerd Font"
-                                :size 16.0
+                                :size 18.0
                                 :weight normal
                                 :width normal)
                                ("JetBrainsMono Nerd Font"
-                                :size 16.0
+                                :size 18.0
                                 :weight normal
                                 :width normal)
                                ("Monoid Nerd Font"
-                                :size 20.0
+                                :size 18.0
                                 :weight normal
                                 :width normal)
                                ("VictorMono Nerd Font"
-                                :size 20.0
+                                :size 18.0
                                 :weight normal
                                 :width normal)
                                ("Iosevka Nerd Font"
-                                :size 20.0
+                                :size 18.0
                                 :weight normal
                                 :width normal)
                                ("Cousine Nerd Font"
-                                :size 20.0
+                                :size 18.0
                                 :weight normal
                                 :width normal)
                                ("IMWritingMonoS Nerd Font"
-                                :size 20.0
+                                :size 18.0
                                 :weight normal
                                 :width normal)
                                ("Hack Nerd Font"
-                               :size 20.0
+                               :size 18.0
                                :weight normal
                                :width normal)
                                ("Hack"
-                                :size 20.0
+                                :size 18.0
                                 :weight normal
                                 :width normal)
                                ("MesloLGS NF"
-                                :size 20.0
+                                :size 18.0
                                 :weight normal
                                 :width normal)
                                ("SauceCodePro Nerd Font"
-                                :size 20.0
+                                :size 18.0
                                 :weight normal
                                 :width normal)
                                
@@ -902,11 +904,10 @@ before packages are loaded."
      '(org-block ((t (:inherit fixed-pitch :height 0.8))))
      '(org-code ((t (:inherit (shadow fixed-pitch)))))
      '(org-date ((t (:inherit (font-lock-comment-face fixed-pitch) :height 0.9))))
-     '(org-document-info ((t (:foreground "dark orange"))))
      '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
-     '(org-done ((t ( :font "Fira Sans" :height 0.6 :foreground "PaleGreen" :weight bold))))
+     '(org-done ((t ( :font "Fira Sans" :height 1.0  :weight bold))))
      '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
-     '(org-link ((t (:foreground "royal blue" :underline t))))
+     '(org-link ((t (:underline t))))
      '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
      '(org-property-value ((t (:inherit fixed-pitch))))
      '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
@@ -916,29 +917,30 @@ before packages are loaded."
      '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
      ))
   (defvar org-heading-colors-schemes
-    '(("Arctic"    . ("LightCyan" "AliceBlue" "LavenderBlue" "GhostWhite"))
-      ("Autumn"    . ("OrangeRed" "DarkGoldenrod" "Sienna" "Peru"))
-      ("Candy"     . ("HotPink" "DeepPink" "VioletRed" "MediumVioletRed"))
-      ("Cyber"     . ("DeepPink" "Cyan" "SpringGreen" "BlueViolet"))
-      ("Desert"    . ("Tan4" "SandyBrown" "PeachPuff3" "Wheat4"))
-      ("Earth"     . ("Sienna" "RosyBrown" "DarkKhaki" "Tan"))
-      ("Forest"    . ("ForestGreen" "OliveDrab" "DarkOliveGreen" "YellowGreen"))
-      ("Galaxy"    . ("MediumSlateBlue" "MediumPurple" "Purple" "DarkViolet"))
-      ("Garden"    . ("MediumSeaGreen" "DarkSeaGreen" "PaleGreen" "LightGreen"))
-      ("Meadow"    . ("MediumAquamarine" "PaleGreen" "LightGreen" "DarkSeaGreen"))
-      ("Mountain"  . ("RoyalBlue4" "SteelBlue4" "DodgerBlue4" "SlateBlue4"))
-      ("Nordic"    . ("SteelBlue" "LightSteelBlue" "SlateGray" "LightSlateGray"))
-      ("Ocean"     . ("DeepSkyBlue1" "MediumSpringGreen" "Turquoise" "SlateBlue"))
-      ("Pastel"    . ("SkyBlue" "LightGoldenrod" "PaleGreen" "Salmon"))
-      ("Retro"     . ("Magenta3" "Cyan3" "Yellow3" "Green3"))
-      ("Royal"     . ("RoyalBlue" "MediumBlue" "Navy" "MidnightBlue"))
-      ("Seaside"   . ("CadetBlue" "LightBlue" "PowderBlue" "PaleTurquoise"))
-      ("Sunset"    . ("MediumVioletRed" "DeepPink" "HotPink" "LightPink"))
-      ("Twilight"  . ("MediumPurple" "SlateBlue" "DarkSlateBlue" "Navy"))
-      ("Vibrant"   . ("DodgerBlue1" "Gold1" "Chartreuse1" "OrangeRed1"))
-      ("Volcanic"  . ("OrangeRed" "Firebrick" "DarkRed" "IndianRed"))
-      ("Wine"      . ("Maroon" "VioletRed" "MediumVioletRed" "PaleVioletRed")))
-    "Alist of org heading color schemes.")
+    '(("Arctic"    . ("LightCyan" "AliceBlue" "LavenderBlue" "GhostWhite" "LightSteelBlue"))
+      ("Autumn"    . ("OrangeRed" "DarkGoldenrod" "Sienna" "Peru" "Wheat4"))
+      ("Candy"     . ("HotPink" "DeepPink" "VioletRed" "MediumVioletRed" "RosyBrown"))
+      ("Cyber"     . ("DeepPink" "Cyan" "SpringGreen" "BlueViolet" "DimGray"))
+      ("Desert"    . ("Tan4" "SandyBrown" "PeachPuff3" "Wheat4" "Bisque4"))
+      ("Earth"     . ("Sienna" "RosyBrown" "DarkKhaki" "Tan" "Wheat4"))
+      ("Forest"    . ("ForestGreen" "OliveDrab" "DarkOliveGreen" "YellowGreen" "DarkSeaGreen"))
+      ("Galaxy"    . ("MediumSlateBlue" "MediumPurple" "Purple" "DarkViolet" "SlateGray"))
+      ("Garden"    . ("MediumSeaGreen" "DarkSeaGreen" "PaleGreen" "LightGreen" "Gray"))
+      ("Meadow"    . ("MediumAquamarine" "PaleGreen" "LightGreen" "DarkSeaGreen" "LightSlateGray"))
+      ("Mountain"  . ("RoyalBlue4" "SteelBlue4" "DodgerBlue4" "SlateBlue4" "LightSlateGray"))
+      ("Nordic"    . ("SteelBlue" "LightSteelBlue" "SlateGray" "LightSlateGray" "Gray"))
+      ("Ocean"     . ("DeepSkyBlue1" "MediumSpringGreen" "Turquoise" "SlateBlue" "CadetBlue"))
+      ("Pastel"    . ("SkyBlue" "LightGoldenrod" "PaleGreen" "Salmon" "LightGray"))
+      ("Retro"     . ("Magenta3" "Cyan3" "Yellow3" "Green3" "Gray3"))
+      ("Royal"     . ("RoyalBlue" "MediumBlue" "Navy" "MidnightBlue" "SlateGray"))
+      ("Seaside"   . ("CadetBlue" "LightBlue" "PowderBlue" "PaleTurquoise" "LightSlateGray"))
+      ("Sunset"    . ("MediumVioletRed" "DeepPink" "HotPink" "LightPink" "RosyBrown"))
+      ("Twilight"  . ("MediumPurple" "SlateBlue" "DarkSlateBlue" "Navy" "DimGray"))
+      ("Vibrant"   . ("DodgerBlue1" "Gold1" "Chartreuse1" "OrangeRed1" "Gray50"))
+      ("Volcanic"  . ("OrangeRed" "Firebrick" "DarkRed" "IndianRed" "RosyBrown4"))
+      ("Wine"      . ("Maroon" "VioletRed" "MediumVioletRed" "PaleVioletRed" "RosyBrown")))
+    "Alist of org heading color schemes. Each scheme contains 5 colors:
+  4 for different heading levels and 1 for done states.")
   
   (defun preview-org-colors ()
     "Preview all color schemes in a temporary buffer."
@@ -955,30 +957,36 @@ before packages are loaded."
             (let ((start-pos (point)))
               (insert (format "* %s Theme\n" scheme-name))
               (add-text-properties start-pos (point)
-                                   `(face (:weight bold :height 1.5))))
+                                 `(face (:weight bold :height 1.5))))
   
             ;; Insert each level with its color
             (dotimes (i 4)
               (let ((start-pos (point)))
                 (insert (format "%s Level %d Heading (%s)\n"
-                                (make-string (1+ i) ?*)
-                                (1+ i)
-                                (nth i colors)))
+                              (make-string (1+ i) ?*)
+                              (1+ i)
+                              (nth i colors)))
                 (add-text-properties
                  start-pos (point)
                  `(face (:foreground ,(nth i colors) :height ,(- 1.4 (* i 0.1)))))))
   
+            ;; Add done state preview
+            (let ((start-pos (point)))
+              (insert (format "* DONE Example Done Heading (%s)\n" (nth 4 colors)))
+              (add-text-properties
+               start-pos (point)
+               `(face (:foreground ,(nth 4 colors) :height 1.3))))
+  
             (insert "\n"))))
   
       (display-buffer preview-buffer)))
-  
   
   (defun switch-org-colors (scheme-name)
     "Switch org heading colors to a predefined scheme.
   SCHEME-NAME should be one of the defined color schemes."
     (interactive
      (list (completing-read "Choose color scheme: "
-                            (mapcar #'car org-heading-colors-schemes))))
+                           (mapcar #'car org-heading-colors-schemes))))
     (let* ((colors (cdr (assoc scheme-name org-heading-colors-schemes)))
            (variable-tuple
             (cond ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
@@ -995,7 +1003,8 @@ before packages are loaded."
        `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.8 :foreground ,(nth 0 colors)))))
        `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5 :foreground ,(nth 1 colors)))))
        `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.4 :foreground ,(nth 2 colors)))))
-       `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.3 :foreground ,(nth 3 colors))))))
+       `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.3 :foreground ,(nth 3 colors)))))
+       `(org-done ((t (,@headline :foreground ,(nth 4 colors))))))
   
       (message "Switched to %s color scheme" scheme-name)))
   (with-eval-after-load 'org
@@ -1296,6 +1305,13 @@ before packages are loaded."
   (require 'gptel-extensions)
   (setq gptel-default-mode 'org-mode)
   
+  (defun rk/gptel-before-advice (&rest args)
+    "Before advice for =gptel' function. Sets =api-key= parameter
+  from =auth-source-search' results."
+    (let ((auth-info (nth 0 (auth-source-search :host "openai.com"))))
+      (setq-local gptel-api-key (plist-get auth-info :secret))))
+  
+  (advice-add 'gptel :before #'rk/gptel-before-advice)
   (add-hook 'find-file-hook 'direnv-update-directory-environment)
   
   (with-eval-after-load 'company
@@ -1675,13 +1691,6 @@ before packages are loaded."
       targets))
   
   (global-set-key (kbd "C-c i") #'rk/insert-spacemacs-config-block)
-  (defun rk/gptel-before-advice (&rest args)
-    "Before advice for =gptel' function. Sets =api-key= parameter
-  from =auth-source-search' results."
-    (let ((auth-info (nth 0 (auth-source-search :host "openai.com"))))
-      (setq-local gptel-api-key (plist-get auth-info :secret))))
-  
-  (advice-add 'gptel :before #'rk/gptel-before-advice)
   (setq helm-ag-use-grep-ignore-list nil)
   ;; Org Appearance
   
@@ -1693,6 +1702,11 @@ before packages are loaded."
   
   ;; Private Key Mappings
   
+  (spacemacs/declare-prefix "of" "folding")
+  (spacemacs/set-leader-keys
+    "off" 'fold-this
+    "ofm" 'fold-this-all
+    "ofr" 'fold-this-unfold-all)
   (spacemacs/declare-prefix "oo" "org")
   (spacemacs/set-leader-keys"ooa" 'org-agenda)
   (spacemacs/set-leader-keys "oos" 'org-save-all-org-buffers)
@@ -1728,11 +1742,6 @@ before packages are loaded."
     "ortr" 'org-roam-tag-remove
     "orb" 'org-roam-buffer-toggle
     )
-  (spacemacs/declare-prefix "of" "folding")
-  (spacemacs/set-leader-keys
-    "off" 'fold-this
-    "ofm" 'fold-this-all
-    "ofr" 'fold-this-unfold-all)
   (spacemacs/declare-prefix "oa" "applications")
   (spacemacs/set-leader-keys
     "oap" 'pinboard)
@@ -1781,6 +1790,8 @@ before packages are loaded."
   (advice-add 'org-open-at-point :after #'evil-scroll-line-to-center)
   (advice-add 'evil-ex-search-next :after #'evil-scroll-line-to-center)
   (advice-add 'evil-avy-goto-char-timer :after #'evil-scroll-line-to-center)
+  (advice-add 'better-jumper-jump-backward :after #'evil-scroll-line-to-center)
+  (advice-add 'better-jumper-jump-forward :after #'evil-scroll-line-to-center)
   (add-hook 'bookmark-after-jump-hook 'evil-scroll-line-to-center)
   
   
