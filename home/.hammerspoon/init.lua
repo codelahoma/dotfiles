@@ -299,6 +299,7 @@ if work_machines[machine] ~= nil then
   hotkey.bind(hyper, "j", appLauncher('/Applications/Emacs.app'))
   hotkey.bind(magic, "j", appLauncher('Zed'))
   hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
+  hotkey.bind(magic, "k", appLauncher('Marked'))
   hotkey.bind(hyper, "l", appLauncher('Google Calendar'))
   hotkey.bind(hyper, "n", appLauncher('Notion'))
   hotkey.bind(hyper, "o", appLauncher('Slack'))

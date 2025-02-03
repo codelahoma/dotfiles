@@ -820,33 +820,35 @@ default it calls `spacemacs/load-spacemacs-env' which loads the environment
 variables declared in `~/.spacemacs.env' or `~/.spacemacs.d/.spacemacs.env'.
 See the header of this file for more information."
   (spacemacs/load-spacemacs-env))
-(defun dotspacemacs/user-init ()
-  "Initialization for user code:
-This function is called immediately after `dotspacemacs/init', before layer
-configuration.
-It is mostly for variables that should be set before packages are loaded.
-If you are unsure, try setting them in `dotspacemacs/user-config' first."
+  (defun dotspacemacs/user-init ()
+    "Initialization for user code:
+  This function is called immediately after `dotspacemacs/init', before layer
+  configuration.
+  It is mostly for variables that should be set before packages are loaded.
+  If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
-  ;; add the private directory
-  (add-to-list 'load-path "/Users/rodk/.emacs.d/private/")
+    ;; add the private directory
+    (add-to-list 'load-path "/Users/rodk/.emacs.d/private/")
 
-  ;;asdf
-  (require 'asdf)
-  (asdf-enable)
+    ;;asdf
+    (require 'asdf)
+    (asdf-enable)
 
-  ;;chatgpt
-  ;; (require 'chatgpt)
+    ;;chatgpt
+    ;; (require 'chatgpt)
 
-  (load-file "/Users/rodk/.emacs.d/private/local/narrow-indirect.el")
+    (load-file "/Users/rodk/.emacs.d/private/local/narrow-indirect.el")
 
 
-  (defun file-notify-rm-all-watches ()
-    "Remove all existing file notification watches from Emacs."
-    (interactive)
-    (maphash
-     (lambda (key _value)
-       (file-notify-rm-watch key))
-     file-notify-descriptors)))
+    (defun file-notify-rm-all-watches ()
+      "Remove all existing file notification watches from Emacs."
+      (interactive)
+      (maphash
+       (lambda (key _value)
+         (file-notify-rm-watch key))
+       file-notify-descriptors)))
+(setq comp-deferred-compilation t)
+  
 (defun dotspacemacs/user-load ()
   "Library to load while dumping.
 This function is called only while dumping Spacemacs configuration. You can
@@ -904,16 +906,16 @@ before packages are loaded."
      'user
      '(fixed-pitch ((t ( :family "FiraMono Nerd Font" :height 1.0))))
      '(variable-pitch ((t (:family "Source Sans Pro" :height 1.1))))
-     `(org-document-title ((t (,@headline ,@variable-tuple :height 2.5 :underline nil))))
+     `(org-document-title ((t (,@headline :inherit fixed-pitch :height 2.5 :underline nil))))
      ;; Ocean colors
-     `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.8 ))))
-     `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5 ))))
-     `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.4 ))))
-     `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.3 ))))
-     `(org-level-5 ((t (,@headline ,@variable-tuple :height 1.2))))
-     `(org-level-6 ((t (,@headline ,@variable-tuple :height 1.2))))
-     `(org-level-7 ((t (,@headline ,@variable-tuple :height 1.2))))
-     `(org-level-8 ((t (,@headline ,@variable-tuple :height 1.2))))
+     `(org-level-1 ((t (,@headline :inherit fixed-pitch :height 1.8 ))))
+     `(org-level-2 ((t (,@headline :inherit fixed-pitch :height 1.5 ))))
+     `(org-level-3 ((t (,@headline :inherit fixed-pitch :height 1.4 ))))
+     `(org-level-4 ((t (,@headline :inherit fixed-pitch :height 1.3 ))))
+     `(org-level-5 ((t (,@headline :inherit fixed-pitch :height 1.2))))
+     `(org-level-6 ((t (,@headline :inherit fixed-pitch :height 1.2))))
+     `(org-level-7 ((t (,@headline :inherit fixed-pitch :height 1.2))))
+     `(org-level-8 ((t (,@headline :inherit fixed-pitch :height 1.2))))
      '(org-block ((t (:inherit fixed-pitch :height 0.8))))
      '(org-code ((t (:inherit (shadow fixed-pitch)))))
      '(org-date ((t (:inherit (font-lock-comment-face fixed-pitch) :height 0.9))))
@@ -1311,6 +1313,48 @@ before packages are loaded."
   
     (org-roam-db-autosync-mode)
     )
+  (defun rk/validate-xml-with-xmllint ()
+    "Validate the current XML file using xmllint and create a compilation-style error buffer."
+    (interactive)
+    (let* ((xml-file (buffer-file-name))
+           (xsd-file "/Users/rodk/work/atlas-up-ai/atlas_up/ai/prompts/xml/complete-llm-schema.xsd")  ; Replace with path to your XSD
+           (buffer-name "*XML Validation*")
+           (error-regexp
+            '("^\\(/.*\\.xml\\):\\([0-9]+\\): .*$" 1 2))
+           (command (format "xmllint --noout --schema %s %s 2>&1"
+                            (shell-quote-argument xsd-file)
+                            (shell-quote-argument xml-file))))
+  
+      ;; Kill existing validation buffer if it exists
+      (when (get-buffer buffer-name)
+        (kill-buffer buffer-name))
+  
+      ;; Run command and capture output
+      (with-current-buffer (get-buffer-create buffer-name)
+        (erase-buffer)
+        (insert (shell-command-to-string command))
+  
+        ;; Set compilation mode to enable error jumping
+        (compilation-mode)
+  
+        ;; Add error regexp for XML validation errors
+        (set (make-local-variable 'compilation-error-regexp-alist-alist)
+             (list (cons 'xml-error error-regexp)))
+        (set (make-local-variable 'compilation-error-regexp-alist)
+             '(xml-error))
+  
+        ;; Show the buffer
+        (display-buffer (current-buffer))
+  
+        ;; If no errors, close the buffer after a short delay
+        (if (= (buffer-size) 0)
+            (progn
+              (message "XML validation successful!")
+              (run-at-time 2 nil
+                           (lambda ()
+                             (when (get-buffer buffer-name)
+                               (kill-buffer buffer-name)))))
+          (message "XML validation failed. Check *XML Validation* buffer.")))))
   ;; (require 'python)
   ;; (setq chatgpt-repo-path (expand-file-name "chatgpt/" quelpa-build-dir))
   ;; (global-set-key (kbd "C-c q") #'chatgpt-query)
