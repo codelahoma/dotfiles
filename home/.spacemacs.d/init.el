@@ -109,7 +109,8 @@ This function should only modify configuration layer settings."
           org-enable-bootstrap-support t
           org-enable-github-support t
           org-enable-hugo-support nil
-          org-enable-jira-support nil
+          org-enable-jira-support t
+          jiralib-url "https://kitewire.atlassian.net:443"
           org-enable-modern-support t
           org-enable-notifications t
           org-enable-org-contacts-support nil

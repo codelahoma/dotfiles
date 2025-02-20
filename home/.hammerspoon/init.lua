@@ -149,7 +149,7 @@ if home_machines[machine] ~= nil then
 end
 
 local function setHeadphones()
-  hs.audiodevice.findOutputByName("Sennheiser Main Audio"):setDefaultOutputDevice()
+  hs.audiodevice.findOutputByName("Sennheiser Communication Audio"):setDefaultOutputDevice()
 end
 
 local function setSpeakers()
@@ -313,6 +313,7 @@ if work_machines[machine] ~= nil then
   hotkey.bind(hyper, "w", appLauncher('Warp'))
   hotkey.bind(hyper, "y", appLauncher('Jira'))
   hotkey.bind(hyper, "z", appLauncher("zoom.us"))
+  hotkey.bind(magic, "z", appLauncher("Zotero"))
   hotkey.bind(hyper, ";", appLauncher('Spotify'))
   hotkey.bind(hyper, "0", centerOnMainDisplay)
 else
