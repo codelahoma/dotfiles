@@ -149,6 +149,9 @@ This function should only modify configuration layer settings."
      ;;              tree-sitter-fold-enable t
      ;;              tree-sitter-fold-indicators-enable nil)
      pass
+     
+     github-copilot
+     
      chrome
      docker
      git
@@ -250,10 +253,10 @@ This function should only modify configuration layer settings."
                                       
                                       direnv
                                       pinboard
-                                      (copilot :location (recipe
-                                                          :fetcher github
-                                                          :repo "zerolfx/copilot.el"
-                                                          :files ("*.el" "dist")))
+                                      ;; (copilot :location (recipe
+                                      ;;                     :fetcher github
+                                      ;;                     :repo "zerolfx/copilot.el"
+                                      ;;                     :files ("*.el" "dist")))
                                       atomic-chrome
                                       editorconfig
                                       fold-this
@@ -1814,6 +1817,7 @@ before packages are loaded."
   
   (spacemacs/declare-prefix "ox" "text")
   (spacemacs/set-leader-keys "oxt" 'xah-title-case-region-or-line)
+  (spacemacs/set-leader-keys "oxw" 'white-space-cleanup)
   
   (spacemacs/declare-prefix "oh" "Hammerspoon")
   (spacemacs/set-leader-keys "ohr" 'rk/reset-hammerspoon)
@@ -2050,9 +2054,9 @@ before packages are loaded."
     ;; no --vimgrep because it adds column numbers that wgrep can't handle
     ;; see https://github.com/syl20bnr/spacemacs/pull/8065
     (let* ((root-helm-ag-base-command "rg --smart-case --pcre2 --no-heading --color=never --line-number")
-            (helm-ag-base-command (if spacemacs-helm-rg-max-column-number
-                                      (concat root-helm-ag-base-command " --max-columns=" (number-to-string spacemacs-helm-rg-max-column-number))
-                                    root-helm-ag-base-command)))
+           (helm-ag-base-command (if spacemacs-helm-rg-max-column-number
+                                     (concat root-helm-ag-base-command " --max-columns=" (number-to-string spacemacs-helm-rg-max-column-number))
+                                   root-helm-ag-base-command)))
       (helm-do-ag dir)))
   
   ;; Markdown
