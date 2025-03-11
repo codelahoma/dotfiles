@@ -299,3 +299,4 @@ export HISTIGNORE="ls:cd:cd -:pwd:exit:date:* --help"
 export ZSH_THEME="powerlevel10k/powerlevel10k"
 eval "$(zoxide init zsh)"
 source ~/.p10k.zsh 
+source /Users/rodk/.config/op/plugins.sh
