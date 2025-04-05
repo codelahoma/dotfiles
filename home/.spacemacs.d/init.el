@@ -1822,6 +1822,10 @@ before packages are loaded."
   (spacemacs/declare-prefix "oh" "Hammerspoon")
   (spacemacs/set-leader-keys "ohr" 'rk/reset-hammerspoon)
   
+  (spacemacs/declare-prefix "oC" "Claude")
+  (spacemacs/set-leader-keys "oCC" 'rk/clip-for-claude)
+  
+  
   
                                           ; CMD-C copies to system clipboard
   (define-key evil-visual-state-map (kbd "s-c") (kbd "\"+y"))
