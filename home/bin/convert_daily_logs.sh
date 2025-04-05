@@ -3,6 +3,7 @@
 # Script to convert Markdown daily logs to Org-mode format
 # Author: Claude
 # Date: 2025-03-11
+# Updated: 2025-03-12 - Added check for newer markdown files
 
 SOURCE_DIR="$HOME/work/atlas-up-ai/.rodk/daily_logs"
 TARGET_DIR="$HOME/personal/org-files/atlas_up_daily_logs"
@@ -26,18 +27,33 @@ for md_file in "$SOURCE_DIR"/*.md; do
         echo "No .md files found in $SOURCE_DIR"
         exit 0
     fi
-
+    
     # Get the basename and create target filename
     base_name=$(basename "$md_file" .md)
     org_file="$TARGET_DIR/$base_name.org"
-
-    # Check if the org file already exists
+    
+    # Check if the org file needs to be updated
+    needs_conversion=false
+    
+    # If org file doesn't exist, we need to convert
     if [ ! -f "$org_file" ]; then
-        echo "Converting $base_name.md to org format..."
-
+        needs_conversion=true
+        conversion_reason="new file"
+    else
+        # Check if md file is newer than org file
+        if [ "$md_file" -nt "$org_file" ]; then
+            needs_conversion=true
+            conversion_reason="markdown file is newer"
+        fi
+    fi
+    
+    # Perform conversion if needed
+    if [ "$needs_conversion" = true ]; then
+        echo "Converting $base_name.md to org format ($conversion_reason)..."
+        
         # Convert using pandoc
         pandoc -f markdown -t org "$md_file" -o "$org_file"
-
+        
         # Check if conversion was successful
         if [ $? -eq 0 ]; then
             echo "Successfully converted to $org_file"
@@ -46,7 +62,7 @@ for md_file in "$SOURCE_DIR"/*.md; do
             echo "Error converting $md_file"
         fi
     else
-        echo "Skipping $base_name.md (org file already exists)"
+        echo "Skipping $base_name.md (org file is up to date)"
     fi
 done
 

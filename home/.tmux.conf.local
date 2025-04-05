@@ -435,3 +435,8 @@ set -g @continuum-save-interval '60'
 #
 # "$@"
 # # /!\ do not remove the previous line
+
+# enable iTerm shell integrations
+set -g allow-passthrough on
+set -ga update-environment ITERM2_COOKIE
+set -ga update-environment TERM_PROGRAM
