@@ -284,7 +284,7 @@ end)
 
 
 if work_machines[machine] ~= nil then
-  hotkey.bind(hyper, "a", appLauncher('Arduino IDE'))
+  hotkey.bind(hyper, "a", appLauncher('Stickies'))
   hotkey.bind(hyper, "b", appLauncher('ChatGPT'))
   hotkey.bind(magic, "b", appLauncher('Bazecor'))
   hotkey.bind(hyper, "c", hs.toggleConsole)
