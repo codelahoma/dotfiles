@@ -307,6 +307,7 @@ if work_machines[machine] ~= nil then
   hotkey.bind(hyper, "q", appLauncher('1Password'))
   hotkey.bind(hyper, "r", hs.reload)
   hotkey.bind(hyper, "s", hs.grid.show)
+  hotkey.bind(magic, "s", appLauncher("Safari"))
   hotkey.bind(hyper, "t", appLauncher("DEVONthink 3"))
   hotkey.bind(hyper, "u", open750)
   hotkey.bind(hyper, "v", pasteLauncher())
