@@ -1,0 +1,83 @@
+#+TITLE: External Tools Configuration
+#+AUTHOR: Rod Knowlton
+
+* External Tools Integration
+
+This file contains configuration for external tools that integrate with Emacs.
+
+** Hyde Mode
+
+#+begin_src emacs-lisp :noweb-ref user-config
+  ;; Hyde Mode
+  (setq hyde-home "~/github/codelahoma.github.io")
+#+end_src
+
+** Direnv Integration
+
+#+begin_src emacs-lisp :noweb-ref user-config
+  ;; direnv
+  (with-eval-after-load 'direnv
+    (direnv-mode))
+#+end_src
+
+** Ansible Support
+
+#+begin_src emacs-lisp :noweb-ref user-config
+  ; ansible
+  (with-eval-after-load 'ansible
+    (add-hook 'ansible-hook 'ansible-auto-decrypt-encrypt)
+    (add-hook 'yaml-mode-hook #'(lambda () (ansible 1)))
+    (add-to-list 'company-backends 'company-ansible))
+#+end_src
+
+** Multi-term Configuration
+
+#+begin_src emacs-lisp :noweb-ref user-config
+  (setq multi-term-program "/bin/zsh")
+#+end_src
+
+** direnv Package
+
+#+begin_src emacs-lisp :noweb-ref additional-packages
+  direnv
+#+end_src
+
+** XML Folding
+
+#+begin_src emacs-lisp :noweb-ref user-config
+  ;; XML
+  (add-hook 'nxml-mode-hook #'(lambda() (hs-minor-mode 1)))
+
+  (add-to-list 'hs-special-modes-alist
+               '(nxml-mode
+                 "<!--\\|<[^/>]*[^/]>" ;; regexp for start block
+                 "-->\\|</[^/>]*[^/]>" ;; regexp for end block
+                 "<!--"
+                 nxml-forward-element
+                 nil))
+#+end_src
+
+** EWW Browser Enhancements
+
+#+begin_src emacs-lisp :noweb-ref user-config
+  ;; EWW
+
+  ;; (setq browse-url-browser-function 'eww-browse-url)
+  (defun url-found-p (url)
+    "Return non-nil if URL is found, i.e. HTTP 200."
+    (with-current-buffer (url-retrieve-synchronously url nil t 5)
+      (prog1 (eq url-http-response-status 200)
+        (kill-buffer))))
+
+  (defun eww--dwim-expand-url-around-advice (proc &rest args)
+    (let* ((url (car args))
+           (cached_url (replace-regexp-in-string "^" "http://webcache.googleusercontent.com/search?q=cache:" url)))
+      (if (and (or (string-match-p "towardsdatascience" url)
+                   (string-match-p "medium.com" url))
+               (not (string-match-p "webcache.google" url))
+               (url-found-p cached_url))
+          (setq url cached_url))
+      (let ((res (apply proc (list url))))
+        res)))
+  (advice-add 'eww--dwim-expand-url :around #'eww--dwim-expand-url-around-advice)
+#+end_src

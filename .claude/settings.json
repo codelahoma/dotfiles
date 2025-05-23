@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)"
+    ],
+    "deny": [
+      "Bash(git commit:*)"
+    ]
+  }
+}

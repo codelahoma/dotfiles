@@ -36,8 +36,8 @@ The following special values of the =noweb-ref= header argument will cause a cod
 
 | noweb-ref                 | behavior (l)=add to list, (c)=insert code into                   |
 |---------------------------+------------------------------------------------------------------|
-| config-level              | (l) =dotspacemacs-configuration-layers= in =dotspacemacs/layers= |
-| user-init    | (c) ~dotspacemacs/user-init~                                  |
+| config-layers             | (l) =dotspacemacs-configuration-layers= in =dotspacemacs/layers= |
+| user-init                 | (c) ~dotspacemacs/user-init~                                     |
 | additional-packages       | (l) =dotspacemacs-additional-packages= in =dotspacemacs/layers=  |
 | dotspacemacs-themes       | (l) =dotspacemacs-themes= in =dotspacemacs/init=                 |
 | dotspacemacs-default-font | (l) ~dotspacemacs-default-font~ in ~dotspacemacs/init~           |
@@ -112,22 +112,39 @@ Trying out a Hammerspoon Spoon for system-wide emacs editing
 
                    spacemacs-default-company-backends '(company-files company-capf company-keywords))
 
-                   #+end_src
-
-
-
-** Folding
-Using =fold-this= because vimish folding is unfortuntely too laggy on some large files (where folding is needed more than anywhere).
-#+begin_src emacs-lisp :noweb-ref additional-packages
-  fold-this
 #+end_src
 
+
+** Custom Keybindings
+This section defines various custom keybindings that were previously in the to-organize block.
+
 #+begin_src emacs-lisp :noweb-ref private-key-bindings
-  (spacemacs/declare-prefix "of" "folding")
-  (spacemacs/set-leader-keys
-    "off" 'fold-this
-    "ofm" 'fold-this-all
-    "ofr" 'fold-this-unfold-all)
+  (spacemacs/declare-prefix "ob" "buffer")
+  (spacemacs/set-leader-keys "obn" 'spacemacs/new-empty-buffer)
+
+  (spacemacs/declare-prefix "oc" "copy")
+  (spacemacs/set-leader-keys "ocl" 'avy-copy-line)
+  (spacemacs/set-leader-keys "ocp" 'forge-copy-url-at-point-as-kill)
+
+  (spacemacs/declare-prefix "ox" "text")
+  (spacemacs/set-leader-keys "oxt" 'xah-title-case-region-or-line)
+  (spacemacs/set-leader-keys "oxw" 'white-space-cleanup)
+
+  (spacemacs/declare-prefix "oh" "Hammerspoon")
+  (spacemacs/set-leader-keys "ohr" 'rk/reset-hammerspoon) ; Ensure rk/reset-hammerspoon is defined elsewhere (e.g. user-config)
+
+  (spacemacs/declare-prefix "oC" "Claude")
+  (spacemacs/set-leader-keys "oCC" 'rk/clip-for-claude) ; Ensure rk/clip-for-claude is defined elsewhere (e.g. user-config)
+
+  ;; System clipboard integration for visual state
+  (define-key evil-visual-state-map (kbd "s-c") (kbd "\"+y"))
+  (define-key evil-visual-state-map (kbd "s-v") (kbd "\"+p"))
+
+  ;; Override default Spacemacs frame killer or add alias
+  (evil-leader/set-key "q q" 'spacemacs/frame-killer)
+
+  ;; If you intend to use this, uncomment and ensure rk/helm-files-do-rg is defined elsewhere
+  ;; (evil-leader/set-key "/" 'rk/helm-files-do-rg)
 #+end_src
 ** Default Fonts
 #+begin_src emacs-lisp :noweb-ref dotspacemacs-default-font
@@ -190,6 +207,19 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
 
 #+end_src
 
+** Folding
+Using =fold-this= because vimish folding is unfortuntely too laggy on some large files (where folding is needed more than anywhere).
+#+begin_src emacs-lisp :noweb-ref additional-packages
+  fold-this
+#+end_src
+
+#+begin_src emacs-lisp :noweb-ref private-key-bindings
+  (spacemacs/declare-prefix "of" "folding")
+  (spacemacs/set-leader-keys
+    "off" 'fold-this
+    "ofm" 'fold-this-all
+    "ofr" 'fold-this-unfold-all)
+#+end_src
 ** Other
 #+begin_src emacs-lisp :noweb-ref config-layers
   (colors :variables
@@ -2215,8 +2245,9 @@ Configures the base distribution and the layers I want installed and configure.
   Put your configuration code here, except for variables that should be set
   before packages are loaded."
     (setq custom-file "~/.spacemacs.d/custom.el")
-    <<user-config>>
-    <<to-organize>>
+    <<user-config>>          ; Collects all general :noweb-ref user-config blocks
+    <<private-key-bindings>>; <<<--- ADD THIS LINE HERE
+    <<to-organize>>          ; Collects the remaining to-organize block
 
     (when (file-exists-p custom-file)
       (load-file custom-file)))
@@ -2231,43 +2262,6 @@ Configures the base distribution and the layers I want installed and configure.
 
 
 
-  ;; (setq org-ellipsis " ▼ ")
-
-  ;; Private Key Mappings
-
-  <<private-key-bindings>>
-
-  (spacemacs/declare-prefix "ob" "buffer")
-  (spacemacs/set-leader-keys "obn" 'spacemacs/new-empty-buffer)
-
-  (spacemacs/declare-prefix "oc" "copy")
-  (spacemacs/set-leader-keys "ocl" 'avy-copy-line)
-  (spacemacs/set-leader-keys "ocp" 'forge-copy-url-at-point-as-kill)
-
-
-  (spacemacs/declare-prefix "ox" "text")
-  (spacemacs/set-leader-keys "oxt" 'xah-title-case-region-or-line)
-  (spacemacs/set-leader-keys "oxw" 'white-space-cleanup)
-
-  (spacemacs/declare-prefix "oh" "Hammerspoon")
-  (spacemacs/set-leader-keys "ohr" 'rk/reset-hammerspoon)
-
-  (spacemacs/declare-prefix "oC" "Claude")
-  (spacemacs/set-leader-keys "oCC" 'rk/clip-for-claude)
-
-
-
-                                          ; CMD-C copies to system clipboard
-  (define-key evil-visual-state-map (kbd "s-c") (kbd "\"+y"))
-                                          ; CMD-V pastes from system clipboard
-  (define-key evil-visual-state-map (kbd "s-v") (kbd "\"+p"))
-
-                                          ; Misc spacemacs keys
-
-  (evil-leader/set-key "q q" 'spacemacs/frame-killer)
-  ;; (evil-leader/set-key "/" 'rk/helm-files-do-rg)
-
-  ;; end Key Mappings
 
   ;; mu4e
   ;; (fset 'my-move-to-trash "mTrash")
@@ -2620,8 +2614,7 @@ Configures the base distribution and the layers I want installed and configure.
 * .spacemacs Preamble
 A brief heading to the file, defining lexical binding and warning that the config is in this org file.
 
-#+NAME: preamble
-#+begin_src emacs-lisp :comments no
+#+begin_src emacs-lisp :noweb-ref preamble :comments no
   ;; -*- mode: emacs-lisp; lexical-binding: t -*-
   ;; This file is loaded by Spacemacs at startup.
   ;; It must be stored in your home directory.

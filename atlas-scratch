@@ -1,0 +1,380 @@
+(["*scratch*" ";; Evaluate this code in your *scratch* buffer to gather diagnostic information.
+
+(let ((helm-vars '(\"helm-find-files-actions\"
+                   \"helm-ff-transformer-show-only-basename\"
+                   \"helm-source-find-files\"
+                   \"helm-find-files-actions\"
+                   \"helm-find-files-action-transformer\"))
+      (results '()))
+  (dolist (var-name helm-vars)
+    (let ((sym (intern var-name)))
+      (if (boundp sym)
+          (push (format \"%s: %S\" var-name (symbol-value sym)) results)
+        (push (format \"%s: UNBOUND\" var-name) results))))
+  (with-current-buffer (get-buffer-create \"*Helm Diagnostics*\")
+    (erase-buffer)
+    (insert \"Helm Diagnostics:\\n\\n\")
+    (dolist (line (reverse results))
+      (insert line \"\\n\"))
+    (display-buffer (current-buffer))))
+
+
+
+(describe-function 'helm-find-files-action-transformer)
+
+(defun rk/clip-for-claude ()
+  \"Copy a reference to the current file (and line range if a region is active)
+to the kill-ring. The string will take the form:
+\\\"It is located in /path/to/file\\\"; if a region is active, it will append the
+line numbers (e.g., \\\"It is located in /path/to/file, lines 10-20\\\").\"
+  (interactive)
+  (unless buffer-file-name
+    (error \"Current buffer is not visiting a file\"))
+  (let ((file buffer-file-name)
+        (location (if (use-region-p)
+                      (format \"It is located in %s, lines %d-%d\"
+                              buffer-file-name
+                              (line-number-at-pos (region-beginning))
+                              (line-number-at-pos (region-end)))
+                    (format \"It is located in %s\" buffer-file-name))))
+    (kill-new location)
+    (message \"%s\" location)))
+
+
+
+(defun rk/validate-xml-with-xmllint ()
+  \"Validate the current XML file using xmllint and create a compilation-style error buffer.\"
+  (interactive)
+  (let* ((xml-file (buffer-file-name))
+         (xsd-file \"/Users/rodk/work/atlas-up-ai/atlas_up/ai/prompts/xml/complete-llm-schema.xsd\")  ; Replace with path to your XSD
+         (buffer-name \"*XML Validation*\")
+         (error-regexp
+          '(\"^\\\\(/.*\\\\.xml\\\\):\\\\([0-9]+\\\\): .*$\" 1 2))
+         (command (format \"xmllint --noout --schema %s %s 2>&1\"
+                          (shell-quote-argument xsd-file)
+                          (shell-quote-argument xml-file))))
+
+    ;; Kill existing validation buffer if it exists
+    (when (get-buffer buffer-name)
+      (kill-buffer buffer-name))
+
+    ;; Run command and capture output
+    (with-current-buffer (get-buffer-create buffer-name)
+      (erase-buffer)
+      (insert (shell-command-to-string command))
+
+      ;; Set compilation mode to enable error jumping
+      (compilation-mode)
+
+      ;; Add error regexp for XML validation errors
+      (set (make-local-variable 'compilation-error-regexp-alist-alist)
+           (list (cons 'xml-error error-regexp)))
+      (set (make-local-variable 'compilation-error-regexp-alist)
+           '(xml-error))
+
+      ;; Show the buffer
+      (display-buffer (current-buffer))
+
+      ;; If no errors, close the buffer after a short delay
+      (if (= (buffer-size) 0)
+          (progn
+            (message \"XML validation successful!\")
+            (run-at-time 2 nil
+                         (lambda ()
+                           (when (get-buffer buffer-name)
+                             (kill-buffer buffer-name)))))
+        (message \"XML validation failed. Check *XML Validation* buffer.\")))))
+
+
+
+
+(defun rk/switch-to-org-agenda ()
+  \"Switch to the *Org Agenda* buffer if it exists; otherwise, open the agenda.\"
+  (interactive)
+  (let ((agenda-buffer \"*Org Agenda*\"))
+    (if (get-buffer agenda-buffer)
+        (switch-to-buffer agenda-buffer)
+      (org-agenda-list))))
+
+(spacemacs/set-leader-keys \"oaa\" 'rk/switch-to-org-agenda)
+
+(setq org-startup-with-inline-images t)
+
+(defun wrap-region-in-markdown-shell-block ()
+  \"Wrap the selected region in a Markdown shell code block.\"
+  (interactive)
+  (if (use-region-p)
+      (let ((begin (region-beginning))
+            (end (region-end)))
+        (save-excursion
+          ;; Add the opening shell block
+          (goto-char begin)
+          (insert \"```shell\\n\")
+          ;; Add the closing block
+          (goto-char (+ end 8)) ;; Adjust for the length of the opening block
+          (insert \"\\n```\")))
+    (message \"No region selected.\")))
+(setq helm-ag-base-command \"rg --no-heading --line-number --color never\")
+
+(setq org-agenda-prefix-format
+      '(
+        (todo . \" %i %-12:c %(let ((heading (org-get-outline-path 'with-self))) (if heading (concat \\\"[\\\" (car (last heading)) \\\"]\\\") \\\"\\\"))\")
+        (tags . \" %i %-12:c %(let ((heading (org-get-outline-path 'with-self))) (if heading (concat \\\"[\\\" (car (last heading)) \\\"]\\\") \\\"\\\"))\")
+        (search . \" %i %-12:c %(let ((heading (org-get-outline-path 'with-self))) (if heading (concat \\\"[\\\" (car (last heading)) \\\"]\\\") \\\"\\\"))\")))
+
+(defun clean-markdown-headings ()
+  \"Clean up markdown headings in the current buffer.\"
+  (interactive)
+  (goto-char (point-min))
+  (while (re-search-forward \"^\\\\(+\\\\) \\\\[\\\\([^]]*\\\\)\\\\].*\" nil t)
+    (replace-match \"\\\\1 [\\\\2]\")))
+(setq helm-ag-base-command \"ag --nocolor --nogroup --ignore-case\")
+(global-set-key (kbd \"s-c\") (lambda ()
+                              (interactive)
+                              (evil-set-register ?+ (buffer-substring (region-beginning) (region-end)))))
+(with-eval-after-load 'code-cells
+  (let ((map code-cells-mode-map))
+    (define-key map [remap evil-search-next] (code-cells-speed-key 'code-cells-forward-cell)) ;; n
+    (define-key map [remap evil-paste-after] (code-cells-speed-key 'code-cells-backward-cell)) ;; p
+    (define-key map [remap evil-backward-word-begin] (code-cells-speed-key 'code-cells-eval-above)) ;; b
+    (define-key map [remap evil-forward-word-end] (code-cells-speed-key 'code-cells-eval)) ;; e
+    (define-key map [remap evil-jump-forward] (code-cells-speed-key 'outline-cycle)))) ;; TAB
+
+(defun add-llm-namespace-to-tags ()
+  \"Add 'llm:' namespace prefix to XML tags that don't already have a namespace,
+excluding XML declarations, comments, and already-namespaced tags.\"
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward \"<\\\\(/\\\\)?\\\\([^/:> \\n]+\\\\)\" nil t)
+      (let ((whole-match (match-string 0))
+            (slash (match-string 1))
+            (tag-name (match-string 2)))
+        ;; Skip if any of these conditions are true:
+        ;; 1. We're in a comment
+        ;; 2. This is an XML declaration
+        ;; 3. Tag already has a namespace
+        ;; 4. The tag already starts with \"llm:\"
+        (unless (or (save-match-data
+                     (save-excursion
+                       (goto-char (match-beginning 0))
+                       (looking-back \"<!--\" (- (point) 4))))
+                   (save-match-data
+                     (string-prefix-p \"<?xml\" whole-match))
+                   (string-match-p \":\" tag-name)
+                   (save-match-data
+                     (save-excursion
+                       (goto-char (match-beginning 0))
+                       (looking-at \"<\\\\(?:/\\\\)?llm:\"))))
+          ;; Replace the tag with namespaced version
+          (replace-match (concat \"<\" (or slash \"\") \"llm:\" tag-name)))))))
+
+(defun spacemacs-format-xml-buffer ()
+  \"Format the current buffer using xmllint.\"
+  (interactive)
+  (when (executable-find \"xmllint\")
+    (let ((current-point (point)))
+      (shell-command-on-region (point-min) (point-max) \"xmllint --format -\" (current-buffer) t)
+      (goto-char current-point))))
+(require 'elfeed)
+(require 'org-roam)
+(require 'org-roam-dailies)
+
+(defun elfeed-save-to-org-roam-dailies ()
+  \"Save the current elfeed entry to org-roam dailies.\"
+  (interactive)
+  (let* ((entry (elfeed-search-selected :single))
+         (title (elfeed-entry-title entry))
+         (link (elfeed-entry-link entry))
+         (content (elfeed-deref (elfeed-entry-content entry)))
+         (date (format-time-string \"%Y-%m-%d\"))
+         (org-roam-dailies-dir (expand-file-name \"dailies\" org-roam-directory))
+         (daily-file (expand-file-name (concat date \".org\") org-roam-dailies-dir)))
+    (unless (file-exists-p daily-file)
+      (with-temp-buffer (write-file daily-file)))
+    (with-current-buffer (find-file-noselect daily-file)
+      (goto-char (point-max))
+      (insert (concat \"* \" title \"\\n\"))
+      (insert (concat \"[[\" link \"][\" link \"]]\\n\\n\"))
+      (insert (concat content \"\\n\"))
+      (save-buffer))))
+
+
+;; Bind the function to a key for easy access
+(define-key elfeed-search-mode-map (kbd \"o\") 'elfeed-save-to-org-roam-dailies)
+(defun renumber-region (start end)
+  \"Renumber the lines in the region from START to END.\"
+  (interactive \"r\")
+  (let ((line-number 1))
+    (goto-char start)
+    (while (and (< (point) end) (not (eobp)))
+      (if (re-search-forward \"^\\\\([0-9]+\\\\)\\\\(\\\\..*\\\\)$\" (line-end-position) t)
+          (replace-match (format \"%d\\\\2\" line-number))
+        (forward-line 1))
+      (setq line-number (1+ line-number))
+      (forward-line 1))))
+
+(global-set-key (kbd \"C-c r\") 'renumber-region)
+(setq helm-ag-use-grep-ignore-list nil)
+(defun insert-current-date-time ()
+  \"Insert the current date and time.\"
+  (interactive)
+  (insert (format-time-string \"%Y-%m-%d %H:%M:%S\")))
+
+(spacemacs/set-leader-keys \"otd\" 'insert-current-date-time)
+
+(defun eww-open-link-in-external-browser ()
+  \"Open the link under the cursor in an external browser.\"
+  (interactive)
+  (let ((url (get-text-property (point) 'shr-url)))
+    (if url
+        (browse-web url)
+      (message \"No link under the cursor\"))))
+
+(define-key eww-mode-map (kbd \"C-c C-o\") 'eww-open-link-in-external-browser)
+
+(defun reverse-org-headings ()
+  \"Reverse the order of org-mode headings in the entire buffer.\"
+  (interactive)
+  (goto-char (point-min))
+  (let ((headings '()) (end-pos 0))
+    ;; Collect all headings and their content in a list
+    (while (re-search-forward \"^\\\\* \" nil t)
+      (let ((start (match-beginning 0))
+            (end (save-excursion (outline-next-visible-heading 1) (point))))
+        (setq end-pos (max end-pos end))
+        (push (buffer-substring start end) headings)))
+    ;; Clear the buffer and insert headings in reversed order
+    (delete-region (point-min) end-pos)
+    (dolist (heading headings)
+      (insert heading))))
+
+(defun convert-git-logs-to-org-mode ()
+  \"Convert the current buffer with git commit logs to org mode format.\"
+  (interactive)
+  (goto-char (point-min))
+  (while (re-search-forward \"\\\\(https://github\\\\.com/.+?commit/\\\\([a-f0-9]+\\\\)\\\\) - \\\\(.+\\\\)\" nil t)
+    (let ((url (match-string 1))
+          (hash (match-string 2))
+          (description (match-string 3)))
+      ;; Replace the original line with the org-mode formatted heading and link in the body
+      (replace-match (format \"* %s\\n  [[%s][%s]]\" description url hash) t t)))
+  (message \"Conversion to org mode completed.\"))
+
+(defun org-copy-current-source-block ()
+  \"Copy the current source block's content to the clipboard, without including the BEGIN and END markers.\"
+  (interactive)
+  (when (org-in-src-block-p)
+    (save-excursion
+      (let (beg end)
+        (goto-char (org-babel-where-is-src-block-head))
+        (forward-line)
+        (setq beg (point))
+        (goto-char (org-babel-where-is-src-block-result 'post))
+        (backward-line 2)
+        (setq end (point))
+        (kill-ring-save beg end)))))
+
+(global-unset-key (kbd \"s-k\"))
+;; nil
+(global-set-key (kbd \"C-c C-x C-c\") 'org-copy-current-source-block)
+
+(setq gptel-mode 'org-mode)
+(require 'flycheck)
+(gptel--get-api-key-from-authinfo)
+(flycheck-define-checker mypy-container
+  \"A mypy syntax checker using your custom script.\"
+  :command (\"/Users/rodk/work/atlas-up-ai/script/precommit_run_mypy\" source-original)
+  :error-patterns
+  ((error line-start (file-name) \":\" line \": error: \" (message) line-end)
+   (warning line-start (file-name) \":\" line \": warning: \" (message) line-end))
+  :modes python-mode)
+
+(add-to-list 'flycheck-checkers 'mypy-container)
+(setq flycheck-checkers (delq 'mypy-container flycheck-checkers))
+
+(setq python-interpreter \"python\")
+(mapc #'disable-theme (custom-available-themes))
+ (defun file-notify-rm-all-watches ()
+   \"Remove all existing file notification watches from Emacs.\"
+   (interactive)
+   (maphash
+    (lambda (key _value)
+      (file-notify-rm-watch key))
+    file-notify-descriptors))
+((mapc #'disable-theme (custom-available-themes))
+projectile-acquire-root)
+
+(add-hook 'find-file-hook 'direnv-update-directory-environment)
+(setq lsp-diagnostics-provider :none)
+
+ob-mermaid-cli-path
+org-enable-org-roam-support
+
+org-roam-dailies-capture-templates
+
+(ligature-generate-ligatures)
+()
+(use-package fira-code-mode
+  :custom (fira-code-mode-disabled-ligatures '(\"[]\" \"x\")):hook
+  prog-mode)                                         ; mode to enable fira-code-mode in
+
+org-roam-directory
+
+(setq colors-colorize-identifiers 'all)
+
+(defun rk-bump-mode-fonts ()
+  \"Increase the mode-line font sizes for my old eyes\"
+  (let ((faces '(mode-line mode-line-buffer-id mode-line-emphasis
+                           mode-line-highlight mode-line-inactive)))
+    (mapc (lambda (face)
+            (set-face-attribute face nil :font \"Inconsolata for Powerline-24\"))
+          faces)))
+
+(rk-bump-mode-fonts)
+(fira-code-mode-set-font
+
+(find-file \"https://raw.githubusercontent.com/dangirsh/neurosys/master/README.org\")
+
+(require 'vterm)
+(let ((vterm-shell (concat vterm-shell \" -c 'tmux -f /tmp/my_minimal_tmux.conf' -i\")))
+  (vterm-other-window \"*foo*\"))
+
+(defun rk/vterm (&optional term-name)
+   \"create a vterm session wrapped around a minimal tmux session\"
+   (interactive \"sterm-name: \")
+   (let* ((the-term-name (if (stringp term-name) term-name \"default term name\"))
+          (the-project-dir (or (projectile-project-p) default-directory))
+         (vterm-shell (concat vterm-shell \" -i -c \" \"'~/bin/tmux-session-launch \" the-term-name \" \" the-project-dir \"'\")))
+     (message vterm-shell)
+     (vterm-other-window the-term-name)))
+
+(setq org-capture-templates `(
+                              (\"t\" \"Todos\")
+                              (\"tl\" \"Todo with Link\" entry (file ,(rk/org-file \"inbox.org\"))
+                               '(s-join \"\\n\"
+                                       \"* TODO %?\"
+                                       \"%i\"
+                                       \"  %a\"))
+                              (\"tt\" \"Todo\" entry (file ,(rk/org-file \"inbox.org\"))
+                               '(s-join \"\\n\"
+                                       \"* TODO %?\"
+                                       \"with a second line here\"
+                                       \"  %i\"))
+                              (\"tT\" \"Tickler\" entry (file+headline ,(rk/org-file \"tickler.org\") \"Tickler\")
+                               '(s-join \"\\n\"
+                                       \"* %i%? \"
+                                       \" %U\"))))
+
+(require 'auth-source)
+modus-themes-operandi-color-overrides
+(rk/org-file \"gtd.org\")
+(defun my-flymd-browser-function (url)
+  (let ((process-environment (browse-url-process-environment)))
+    (apply 'start-process
+           (concat \"firefox \" url)
+           nil
+           \"/usr/bin/open\"
+           (list \"-a\" \"firefox\" url))))
+(setq flymd-browser-open-function 'my-flymd-browser-function)
+" (795 . 1) nil nil nil])

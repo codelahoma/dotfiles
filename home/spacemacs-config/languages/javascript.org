@@ -1,0 +1,51 @@
+#+TITLE: JavaScript and TypeScript Configuration
+#+AUTHOR: Rod Knowlton
+
+* JavaScript and TypeScript
+
+This file contains all JavaScript and TypeScript related configuration for Spacemacs.
+
+** JavaScript Configuration
+
+#+begin_src emacs-lisp :noweb-ref config-layers
+  (javascript :variables
+              javascript-repl 'nodejs
+              javascript-fmt-on-save t
+              node-add-modules-path t
+              javascript-fmt-tool 'prettier) ;; includes Coffeescript support
+#+end_src
+
+** TypeScript Configuration
+
+#+begin_src emacs-lisp :noweb-ref config-layers
+  (typescript :variables
+              typescript-backend 'tide
+              typescript-linter 'eslint
+              tide-tsserver-executable "/Users/rodk/.asdf/installs/nodejs/14.19.0/.npm/bin/tsserver")
+#+end_src
+
+** Prettier Support
+
+#+begin_src emacs-lisp :noweb-ref config-layers
+  prettier
+#+end_src
+
+** React Framework
+
+#+begin_src emacs-lisp :noweb-ref config-layers
+  react
+#+end_src
+
+** JavaScript Settings
+
+#+begin_src emacs-lisp :noweb-ref user-config
+  ;; React
+  (add-hook 'rjsx-mode #'lsp-javascript-typescript-enable)
+  (setq js2-strict-missing-semi-warning nil)
+#+end_src
+
+** Additional Packages
+
+#+begin_src emacs-lisp :noweb-ref additional-packages
+  ;; JavaScript/TypeScript specific packages can be added here
+#+end_src

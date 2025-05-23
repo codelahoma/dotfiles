@@ -1,0 +1,19 @@
+#+TITLE: Mermaid Configuration
+#+AUTHOR: Rod Knowlton
+
+* Mermaid Configuration
+
+This file contains all Mermaid diagram-related configuration for Spacemacs.
+
+** Layer Configuration
+
+#+begin_src emacs-lisp :noweb-ref config-layers
+  (mermaid :variables
+           ob-mermaid-cli-path "/Users/rodk/personal/org-files/node_modules/.bin/mmdc")
+#+end_src
+
+** Additional Packages
+
+#+begin_src emacs-lisp :noweb-ref additional-packages
+  mermaid-mode
+#+end_src
