@@ -149,7 +149,7 @@ if home_machines[machine] ~= nil then
 end
 
 local function setHeadphones()
-  hs.audiodevice.findOutputByName("Sennheiser Communication Audio"):setDefaultOutputDevice()
+  hs.audiodevice.findOutputByName("soundcore Space One"):setDefaultOutputDevice()
 end
 
 local function setSpeakers()
@@ -256,6 +256,48 @@ end tell
     hs.osascript.applescript(script)
   end
 
+
+-- **1. Define the profile identifiers (internal folder names from chrome://version):**
+local profileWork     = "Profile 1"      -- e.g. rod@atlasup.com profile's folder name
+local profilePersonal = "Default"        -- e.g. rod.knowlton@gmail.com profile's folder name
+
+-- **2. Define unique window name markers for each profile:**
+local winNameWork     = "rod@atlasup.com - Google Chrome"      -- Window name for Work profile (set via Chrome or flag)
+local winNamePersonal = "rod.knowlton@gmail.com - Google Chrome"  -- Window name for Personal profile
+
+-- **3. Function to focus an existing profile window or open a new one:**
+function focusOrOpenChromeProfile(profileDir, windowName, url)
+    -- Log the function call and parameters
+    hs.console.printStyledtext(string.format(
+        "🔍 Invoking focusOrOpenChromeProfile:\n  profileDir = %s\n  windowName = %s\n  url = %s\n",
+        profileDir, windowName, url
+    ))
+
+    local chromeWindows = hs.window.filter.new(false):setAppFilter("Google Chrome"):getWindows()
+    for _, win in ipairs(chromeWindows) do
+        local title = win:title():lower()
+        if title:find(windowName:lower(), 1, true) then
+            hs.console.printStyledtext("✅ Found matching Chrome window. Focusing it now.\n")
+            win:focus()
+            return
+        end
+    end
+
+    -- Log fallback
+    hs.console.printStyledtext("🚀 No matching window found. Launching new Chrome window...\n")
+
+    -- Launch new Chrome window with specified profile and URL
+    hs.task.new("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", nil, function()
+        hs.console.printStyledtext("📦 Chrome task finished (or failed to start).\n")
+        return false
+    end, {
+        "--profile-directory=" .. profileDir,
+        "--new-window",
+        "--window-name=" .. windowName,
+        url
+    }):start()
+end
+
 Fastmail = "com.webcatalog.juli.fastmail"  
 selectEmailModal = hs.hotkey.modal.new(hyper, "m")
 
@@ -280,11 +322,22 @@ hotkey.bind(hyper, "m", function()
               selectEmailModal:enter()
 end)
 
+function functionLauncher(func, args)
+  return function()
+    if type(func) == "function" then
+      func(args)
+    else
+      hs.execute(func)
+    end
+  end
+end
 
 
 
 if work_machines[machine] ~= nil then
   hotkey.bind(hyper, "a", appLauncher('Stickies'))
+  hotkey.bind(magic, "a", functionLauncher(focusOrOpenChromeProfile, {profileWork, winNameWork, "https://tenant1.localhost:8000/admin/"}))
+
   hotkey.bind(hyper, "b", appLauncher('ChatGPT'))
   hotkey.bind(magic, "b", appLauncher('Bazecor'))
   hotkey.bind(hyper, "c", hs.toggleConsole)
