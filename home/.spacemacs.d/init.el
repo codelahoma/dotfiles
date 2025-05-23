@@ -1751,18 +1751,33 @@ before packages are loaded."
               (push target targets)))))
       targets))
   
-  (global-set-key (kbd "C-c i") #'rk/insert-spacemacs-config-block)
-  (setq helm-ag-use-grep-ignore-list nil)
-  ;; Org Appearance
+  (global-set-key (kbd "C-c i") #'rk/insert-spacemacs-config-block)          ; Collects all general :noweb-ref user-config blocks
+  (spacemacs/declare-prefix "ob" "buffer")
+  (spacemacs/set-leader-keys "obn" 'spacemacs/new-empty-buffer)
   
+  (spacemacs/declare-prefix "oc" "copy")
+  (spacemacs/set-leader-keys "ocl" 'avy-copy-line)
+  (spacemacs/set-leader-keys "ocp" 'forge-copy-url-at-point-as-kill)
   
+  (spacemacs/declare-prefix "ox" "text")
+  (spacemacs/set-leader-keys "oxt" 'xah-title-case-region-or-line)
+  (spacemacs/set-leader-keys "oxw" 'white-space-cleanup)
   
+  (spacemacs/declare-prefix "oh" "Hammerspoon")
+  (spacemacs/set-leader-keys "ohr" 'rk/reset-hammerspoon) ; Ensure rk/reset-hammerspoon is defined elsewhere (e.g. user-config)
   
+  (spacemacs/declare-prefix "oC" "Claude")
+  (spacemacs/set-leader-keys "oCC" 'rk/clip-for-claude) ; Ensure rk/clip-for-claude is defined elsewhere (e.g. user-config)
   
-  ;; (setq org-ellipsis " ▼ ")
+  ;; System clipboard integration for visual state
+  (define-key evil-visual-state-map (kbd "s-c") (kbd "\"+y"))
+  (define-key evil-visual-state-map (kbd "s-v") (kbd "\"+p"))
   
-  ;; Private Key Mappings
+  ;; Override default Spacemacs frame killer or add alias
+  (evil-leader/set-key "q q" 'spacemacs/frame-killer)
   
+  ;; If you intend to use this, uncomment and ensure rk/helm-files-do-rg is defined elsewhere
+  ;; (evil-leader/set-key "/" 'rk/helm-files-do-rg)
   (spacemacs/declare-prefix "of" "folding")
   (spacemacs/set-leader-keys
     "off" 'fold-this
@@ -1805,39 +1820,14 @@ before packages are loaded."
     )
   (spacemacs/declare-prefix "oa" "applications")
   (spacemacs/set-leader-keys
-    "oap" 'pinboard)
-  
-  (spacemacs/declare-prefix "ob" "buffer")
-  (spacemacs/set-leader-keys "obn" 'spacemacs/new-empty-buffer)
-  
-  (spacemacs/declare-prefix "oc" "copy")
-  (spacemacs/set-leader-keys "ocl" 'avy-copy-line)
-  (spacemacs/set-leader-keys "ocp" 'forge-copy-url-at-point-as-kill)
-  
-  
-  (spacemacs/declare-prefix "ox" "text")
-  (spacemacs/set-leader-keys "oxt" 'xah-title-case-region-or-line)
-  (spacemacs/set-leader-keys "oxw" 'white-space-cleanup)
-  
-  (spacemacs/declare-prefix "oh" "Hammerspoon")
-  (spacemacs/set-leader-keys "ohr" 'rk/reset-hammerspoon)
-  
-  (spacemacs/declare-prefix "oC" "Claude")
-  (spacemacs/set-leader-keys "oCC" 'rk/clip-for-claude)
+    "oap" 'pinboard); <<<--- ADD THIS LINE HERE
+  (setq helm-ag-use-grep-ignore-list nil)
+  ;; Org Appearance
   
   
   
-                                          ; CMD-C copies to system clipboard
-  (define-key evil-visual-state-map (kbd "s-c") (kbd "\"+y"))
-                                          ; CMD-V pastes from system clipboard
-  (define-key evil-visual-state-map (kbd "s-v") (kbd "\"+p"))
   
-                                          ; Misc spacemacs keys
   
-  (evil-leader/set-key "q q" 'spacemacs/frame-killer)
-  ;; (evil-leader/set-key "/" 'rk/helm-files-do-rg)
-  
-  ;; end Key Mappings
   
   ;; mu4e
   ;; (fset 'my-move-to-trash "mTrash")
@@ -2185,7 +2175,7 @@ before packages are loaded."
                (while
                    (search-forward (aref $x 0) nil t)
                  (replace-match (aref $x 1) "FIXEDCASE" "LITERAL")))
-             $strPairs))))))
+             $strPairs))))))          ; Collects the remaining to-organize block
 
   (when (file-exists-p custom-file)
     (load-file custom-file)))

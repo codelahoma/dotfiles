@@ -1,0 +1,64 @@
+#+TITLE: Python Configuration
+#+AUTHOR: Rod Knowlton
+
+* Python Language Support
+
+This file contains all Python-related configuration for Spacemacs.
+
+** Layer Configuration
+
+#+begin_src emacs-lisp :noweb-ref config-layers
+  (python :variables
+          python-fill-column 99
+          python-test-runner 'pytest
+          python-backend 'lsp
+          python-lsp-server 'pyright
+          python-formatter 'black
+          python-format-on-save t)
+#+end_src
+
+** Visual Enhancements
+*** Show a λ instead of ~lambda~
+
+#+begin_src emacs-lisp :noweb-ref user-config
+  (font-lock-add-keywords 'python-mode
+                          '(("\\(lambda\\) " 
+                             (0 (prog1 ()
+                                  (compose-region
+                                   (match-beginning 1)
+                                   (match-end 1)
+                                   "λ"))))))
+#+end_src
+
+** Hy Support
+
+*** Layer Configuration
+#+begin_src emacs-lisp :noweb-ref config-layers
+  hy
+#+end_src
+
+*** Additional Packages
+#+begin_src emacs-lisp :noweb-ref additional-packages
+  ob-hy
+#+end_src
+
+** Keybindings
+
+#+begin_src emacs-lisp :noweb-ref private-key-bindings
+  ;; Python-specific keybindings
+  ;; (spacemacs/set-leader-keys-for-major-mode 'python-mode
+  ;;   "xx" 'some-python-function)
+#+end_src
+
+** Hooks and Configuration
+
+#+begin_src emacs-lisp :noweb-ref user-config
+  ;; LSP configuration for Python
+  (add-hook 'lsp-managed-mode-hook
+            (lambda ()
+              (when (derived-mode-p 'python-mode)
+                (progn
+                  (flycheck-add-next-checker 'lsp 'python-flake8)
+                  (flycheck-disable-checker 'python-mypy)
+                  (flycheck-disable-checker 'python-pylint)))))
+#+end_src

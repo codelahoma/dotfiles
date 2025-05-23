@@ -1,0 +1,174 @@
+#+TITLE: Interface Configuration
+#+AUTHOR: Rod Knowlton
+
+* Interface Configuration
+
+This file contains all UI-related configuration for Spacemacs.
+
+** Default Fonts
+
+#+begin_src emacs-lisp :noweb-ref dotspacemacs-default-font
+  ("FiraCode Nerd Font"
+   :size 18.0
+   :weight normal
+   :width normal)
+  ("MesloLGS Nerd Font Mono"
+   :size 18.0
+   :weight normal
+   :width normal)
+  ("Inconsolata Nerd Font"
+   :size 18.0
+   :weight normal
+   :width normal)
+  ("Cascadia Mono NF"
+   :size 18.0
+   :weight normal
+   :width normal)
+  ("JetBrainsMono Nerd Font"
+   :size 18.0
+   :weight normal
+   :width normal)
+  ("Monoid Nerd Font"
+   :size 18.0
+   :weight normal
+   :width normal)
+  ("VictorMono Nerd Font"
+   :size 18.0
+   :weight normal
+   :width normal)
+  ("Iosevka Nerd Font"
+   :size 18.0
+   :weight normal
+   :width normal)
+  ("Cousine Nerd Font"
+   :size 18.0
+   :weight normal
+   :width normal)
+  ("IMWritingMonoS Nerd Font"
+   :size 18.0
+   :weight normal
+   :width normal)
+  ("Hack Nerd Font"
+   :size 18.0
+   :weight normal
+   :width normal)
+  ("Hack"
+   :size 18.0
+   :weight normal
+   :width normal)
+  ("MesloLGS NF"
+   :size 18.0
+   :weight normal
+   :width normal)
+  ("SauceCodePro Nerd Font"
+   :size 18.0
+   :weight normal
+   :width normal)
+#+end_src
+
+** Themes
+
+*** Layer Configuration
+#+begin_src emacs-lisp :noweb-ref config-layers
+  theming
+  themes-megapack
+#+end_src
+
+*** Default Theme List
+#+begin_src emacs-lisp :noweb-ref dotspacemacs-themes
+  ef-autumn
+  ef-winter
+  farmhouse-light
+  farmhouse-dark
+  majapahit-light
+  dakrone
+  hc-zenburn
+  leuven
+  cyberpunk
+  gruvbox-light-hard
+  gruvbox-dark-hard
+#+end_src
+
+** Appearance Customizations
+
+*** Company Box
+#+begin_src emacs-lisp :noweb-ref user-config
+  (custom-set-faces
+   '(company-tooltip-common
+     ((t (:inherit company-tooltip :weight bold :underline nil))))
+   '(company-tooltip-common-selection
+     ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
+#+end_src
+
+*** Auto Font Size Based on Screen
+#+begin_src emacs-lisp :noweb-ref user-config
+  (defun rk/set-font-size-based-on-screen ()
+    (let ((screen-width (display-pixel-width))
+          (screen-height (display-pixel-height)))
+      (cond
+       ((and (> screen-width 1920) (> screen-height 1080))
+        (set-face-attribute 'default nil :height 180))  ;; Large screen
+       ((and (> screen-width 1366) (> screen-height 900))
+        (set-face-attribute 'default nil :height 160))   ;; Medium screen
+       (t
+        (set-face-attribute 'default nil :height 120)))))   ;; Small screen
+  
+  (add-hook 'window-setup-hook 'rk/set-font-size-based-on-screen)
+#+end_src
+
+** UI Layers
+
+#+begin_src emacs-lisp :noweb-ref config-layers
+  (colors :variables
+          colors-colorize-identifiers 'variables)
+  emoji
+  evil-better-jumper
+  helm
+  (osx :variables
+       osx-command-as nil)
+  spacemacs-modeline
+  spacemacs-org
+  spacemacs-navigation
+  syntax-checking
+#+end_src
+
+** Folding Support
+
+#+begin_src emacs-lisp :noweb-ref additional-packages
+  fold-this
+#+end_src
+
+** Treemacs Configuration
+
+#+begin_src emacs-lisp :noweb-ref config-layers
+  (treemacs :variables
+            treemacs-sorting 'alphabetic-asc
+            treemacs-use-git-mode 'deferred
+            treemacs-use-scope-type 'Perspectives
+            treemacs-use-filewatch-mode t)
+#+end_src
+
+** Additional UI Packages
+
+#+begin_src emacs-lisp :noweb-ref additional-packages
+  evil-easymotion
+  fira-code-mode
+  highlight-indent-guides
+  ef-themes
+  all-the-icons
+#+end_src
+
+** Modeline Configuration
+
+#+begin_src emacs-lisp :noweb-ref user-config
+  ;; Mode line
+  (set-face-attribute 'mode-line nil :height 1.08)
+#+end_src
+
+** Fira Code Configuration
+
+#+begin_src emacs-lisp :noweb-ref user-config
+  ;; fira-code-mode
+  (with-eval-after-load 'fira-code-mode
+    (global-fira-code-mode))
+#+end_src
