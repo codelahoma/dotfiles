@@ -304,3 +304,4 @@ source /Users/rodk/.config/op/plugins.sh
 # To customize prompt, run `p10k configure` or edit ~/.homesick/repos/dotfiles/home/.p10k.zsh.
 [[ ! -f ~/.homesick/repos/dotfiles/home/.p10k.zsh ]] || source ~/.homesick/repos/dotfiles/home/.p10k.zsh
 alias claude="/Users/rodk/.claude/local/claude"
+function gi() { curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@ ;}
