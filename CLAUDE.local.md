@@ -16,6 +16,7 @@ slashload flowloom/config/development
 - **FlowLoom Version**: 2.0.0
 - **Components**: core, command-system, testing-framework, session-management, memory-system
 - **Configuration Directory**: /Users/rodk/.homesick/repos/dotfiles/.flowloom
+- **Bin and Src Directories**: Located under .flowloom
 
 ## Demo Context: Last 24 Hours Development History
 
