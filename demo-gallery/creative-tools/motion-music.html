@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motion Music: Visual Theremin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Main Layout */
+        .container {
+            display: flex;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* Video Section */
+        .video-section {
+            flex: 1;
+            position: relative;
+            background: #000;
+        }
+
+        #videoCanvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #motionCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            mix-blend-mode: screen;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            width: 320px;
+            background: #1a1a1a;
+            padding: 20px;
+            overflow-y: auto;
+            border-left: 1px solid #333;
+        }
+
+        .control-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333;
+        }
+
+        .control-section:last-child {
+            border-bottom: none;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #00ff88;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #888;
+        }
+
+        /* Controls */
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #333;
+            outline: none;
+            -webkit-appearance: none;
+            border-radius: 3px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #00ff88;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 10px #00ff88;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px 12px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #00ff88;
+            border: none;
+            border-radius: 4px;
+            color: #000;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: #00cc70;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: #444;
+            color: #fff;
+        }
+
+        button.secondary:hover {
+            background: #555;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+        }
+
+        button.active {
+            background: #ff0055;
+            color: #fff;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* Waveform Visualizer */
+        .visualizer {
+            width: 100%;
+            height: 60px;
+            background: #0a0a0a;
+            border-radius: 4px;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #waveformCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Status Display */
+        .status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #0a0a0a;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 12px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            background: #ff0055;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.active {
+            background: #00ff88;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Grid Overlay */
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* Help Modal */
+        .help-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            padding: 50px;
+            overflow: auto;
+        }
+
+        .help-content {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+
+        .help-content h2 {
+            margin-bottom: 20px;
+        }
+
+        .help-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        .help-content ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .help-content li {
+            margin-bottom: 8px;
+            color: #ccc;
+        }
+
+        .close-help {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+            color: #888;
+            transition: color 0.3s;
+        }
+
+        .close-help:hover {
+            color: #fff;
+        }
+
+        /* Performance Mode */
+        .performance-mode .control-panel {
+            display: none;
+        }
+
+        .performance-mode .video-section {
+            width: 100%;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .control-panel {
+                width: 100%;
+                height: 50vh;
+                border-left: none;
+                border-top: 1px solid #333;
+            }
+
+            .video-section {
+                height: 50vh;
+            }
+        }
+
+        /* Loading Screen */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #333;
+            border-top-color: #00ff88;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Recording Indicator */
+        .recording-indicator {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #ff0055;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            animation: recordPulse 1s infinite;
+        }
+
+        .recording-indicator.show {
+            display: flex;
+        }
+
+        .recording-dot {
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            border-radius: 50%;
+            animation: recordDot 1s infinite;
+        }
+
+        @keyframes recordPulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes recordDot {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading" id="loadingScreen">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Video Section -->
+        <div class="video-section">
+            <video id="videoElement" autoplay muted></video>
+            <canvas id="videoCanvas"></canvas>
+            <canvas id="motionCanvas"></canvas>
+            <canvas class="grid-overlay" id="gridCanvas"></canvas>
+            <div class="recording-indicator" id="recordingIndicator">
+                <div class="recording-dot"></div>
+                <span>Recording</span>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <!-- Status -->
+            <div class="status">
+                <div class="status-item">
+                    <div class="status-indicator" id="cameraStatus"></div>
+                    <span>Camera</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-indicator" id="audioStatus"></div>
+                    <span>Audio</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-indicator" id="motionStatus"></div>
+                    <span>Motion</span>
+                </div>
+            </div>
+
+            <!-- Main Controls -->
+            <div class="control-section">
+                <h2>Main Controls</h2>
+                <div class="button-group">
+                    <button id="startBtn" class="primary">Start</button>
+                    <button id="stopBtn" class="secondary" disabled>Stop</button>
+                </div>
+                <button id="fullscreenBtn" class="secondary">Performance Mode</button>
+            </div>
+
+            <!-- Sound Settings -->
+            <div class="control-section">
+                <h2>Sound Settings</h2>
+                
+                <div class="control-group">
+                    <label for="scaleSelect">Scale</label>
+                    <select id="scaleSelect">
+                        <option value="major">Major</option>
+                        <option value="minor">Minor</option>
+                        <option value="pentatonic" selected>Pentatonic</option>
+                        <option value="chromatic">Chromatic</option>
+                        <option value="blues">Blues</option>
+                        <option value="arabic">Arabic</option>
+                        <option value="japanese">Japanese</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="instrumentSelect">Instrument</label>
+                    <select id="instrumentSelect">
+                        <option value="sine">Pure Tone</option>
+                        <option value="synth" selected>Synthesizer</option>
+                        <option value="piano">Piano</option>
+                        <option value="strings">Strings</option>
+                        <option value="choir">Choir</option>
+                        <option value="theremin">Theremin</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="octaveRange">Octave Range: <span id="octaveValue">C3-C5</span></label>
+                    <input type="range" id="octaveRange" min="1" max="6" value="3" step="1">
+                </div>
+
+                <div class="control-group">
+                    <label for="volumeRange">Master Volume: <span id="volumeValue">70%</span></label>
+                    <input type="range" id="volumeRange" min="0" max="100" value="70">
+                </div>
+            </div>
+
+            <!-- Motion Settings -->
+            <div class="control-section">
+                <h2>Motion Settings</h2>
+                
+                <div class="control-group">
+                    <label for="sensitivityRange">Sensitivity: <span id="sensitivityValue">50%</span></label>
+                    <input type="range" id="sensitivityRange" min="0" max="100" value="50">
+                </div>
+
+                <div class="control-group">
+                    <label for="smoothingRange">Smoothing: <span id="smoothingValue">30%</span></label>
+                    <input type="range" id="smoothingRange" min="0" max="100" value="30">
+                </div>
+
+                <div class="control-group">
+                    <label for="gridSize">Grid Size</label>
+                    <select id="gridSize">
+                        <option value="2x2">2x2</option>
+                        <option value="4x4" selected>4x4</option>
+                        <option value="6x6">6x6</option>
+                        <option value="8x8">8x8</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="showGrid" checked> Show Grid
+                    </label>
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="showTrails" checked> Motion Trails
+                    </label>
+                </div>
+            </div>
+
+            <!-- Effects -->
+            <div class="control-section">
+                <h2>Effects</h2>
+                
+                <div class="control-group">
+                    <label for="reverbRange">Reverb: <span id="reverbValue">20%</span></label>
+                    <input type="range" id="reverbRange" min="0" max="100" value="20">
+                </div>
+
+                <div class="control-group">
+                    <label for="delayRange">Delay: <span id="delayValue">0%</span></label>
+                    <input type="range" id="delayRange" min="0" max="100" value="0">
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="arpeggiator"> Arpeggiator
+                    </label>
+                </div>
+            </div>
+
+            <!-- Recording -->
+            <div class="control-section">
+                <h2>Recording</h2>
+                <div class="button-group">
+                    <button id="recordBtn" class="secondary">Record</button>
+                    <button id="playbackBtn" class="secondary" disabled>Playback</button>
+                </div>
+                <button id="exportBtn" class="secondary" disabled>Export Audio</button>
+                
+                <div class="visualizer">
+                    <canvas id="waveformCanvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Help -->
+            <div class="control-section">
+                <button id="helpBtn" class="secondary">Help & Instructions</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="help-modal" id="helpModal">
+        <div class="help-content">
+            <span class="close-help" id="closeHelp">&times;</span>
+            <h2>Motion Music: Visual Theremin</h2>
+            
+            <p>Transform your movements into music! This app uses your webcam to detect motion and convert it into musical notes.</p>
+            
+            <h3>How to Play:</h3>
+            <ul>
+                <li><strong>Vertical Position:</strong> Move up for higher notes, down for lower notes</li>
+                <li><strong>Motion Amount:</strong> More movement = louder volume</li>
+                <li><strong>Grid Zones:</strong> Each zone represents different notes in the selected scale</li>
+                <li><strong>Multiple Zones:</strong> Activate multiple zones to play chords</li>
+            </ul>
+            
+            <h3>Controls:</h3>
+            <ul>
+                <li><strong>Scale:</strong> Choose different musical scales for various moods</li>
+                <li><strong>Instrument:</strong> Select from different synthesized sounds</li>
+                <li><strong>Sensitivity:</strong> Adjust how much motion is needed to trigger notes</li>
+                <li><strong>Effects:</strong> Add reverb and delay for atmospheric sounds</li>
+            </ul>
+            
+            <h3>Tips:</h3>
+            <ul>
+                <li>Start with slow, deliberate movements</li>
+                <li>Try using different colored objects for more precise control</li>
+                <li>Use Performance Mode for full-screen experience</li>
+                <li>Record your performances and export as audio files</li>
+            </ul>
+            
+            <h3>Keyboard Shortcuts:</h3>
+            <ul>
+                <li><strong>Space:</strong> Start/Stop</li>
+                <li><strong>R:</strong> Record</li>
+                <li><strong>F:</strong> Fullscreen</li>
+                <li><strong>G:</strong> Toggle Grid</li>
+                <li><strong>T:</strong> Toggle Trails</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Global State
+        let isPlaying = false;
+        let isRecording = false;
+        let audioContext = null;
+        let analyser = null;
+        let video = null;
+        let videoCanvas = null;
+        let videoCtx = null;
+        let motionCanvas = null;
+        let motionCtx = null;
+        let gridCanvas = null;
+        let gridCtx = null;
+        let waveformCanvas = null;
+        let waveformCtx = null;
+        
+        // Motion Detection
+        let previousFrame = null;
+        let motionGrid = [];
+        let gridRows = 4;
+        let gridCols = 4;
+        let motionHistory = [];
+        
+        // Audio
+        let oscillators = [];
+        let gainNodes = [];
+        let masterGain = null;
+        let reverbNode = null;
+        let delayNode = null;
+        
+        // Recording
+        let recordedNotes = [];
+        let recordingStartTime = 0;
+        let playbackTimeouts = [];
+        
+        // Scales
+        const scales = {
+            major: [0, 2, 4, 5, 7, 9, 11],
+            minor: [0, 2, 3, 5, 7, 8, 10],
+            pentatonic: [0, 2, 4, 7, 9],
+            chromatic: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+            blues: [0, 3, 5, 6, 7, 10],
+            arabic: [0, 1, 4, 5, 7, 8, 11],
+            japanese: [0, 1, 5, 7, 8]
+        };
+        
+        // Initialize
+        async function init() {
+            // Get DOM elements
+            video = document.getElementById('videoElement');
+            videoCanvas = document.getElementById('videoCanvas');
+            videoCtx = videoCanvas.getContext('2d');
+            motionCanvas = document.getElementById('motionCanvas');
+            motionCtx = motionCanvas.getContext('2d');
+            gridCanvas = document.getElementById('gridCanvas');
+            gridCtx = gridCanvas.getContext('2d');
+            waveformCanvas = document.getElementById('waveformCanvas');
+            waveformCtx = waveformCanvas.getContext('2d');
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Request camera access
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                });
+                video.srcObject = stream;
+                
+                video.onloadedmetadata = () => {
+                    // Set canvas sizes
+                    videoCanvas.width = video.videoWidth;
+                    videoCanvas.height = video.videoHeight;
+                    motionCanvas.width = video.videoWidth;
+                    motionCanvas.height = video.videoHeight;
+                    gridCanvas.width = video.videoWidth;
+                    gridCanvas.height = video.videoHeight;
+                    
+                    // Initialize motion grid
+                    initializeMotionGrid();
+                    
+                    // Update camera status
+                    document.getElementById('cameraStatus').classList.add('active');
+                    
+                    // Hide loading screen
+                    document.getElementById('loadingScreen').style.display = 'none';
+                };
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                alert('Unable to access camera. Please ensure you have granted camera permissions.');
+            }
+            
+            // Initialize audio context
+            initAudio();
+            
+            // Start animation loop
+            animate();
+        }
+        
+        // Initialize Audio
+        function initAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create master gain
+            masterGain = audioContext.createGain();
+            masterGain.gain.value = 0.7;
+            
+            // Create analyser
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 2048;
+            
+            // Create reverb
+            reverbNode = createReverb();
+            
+            // Create delay
+            delayNode = audioContext.createDelay(1.0);
+            delayNode.delayTime.value = 0;
+            const delayFeedback = audioContext.createGain();
+            delayFeedback.gain.value = 0;
+            delayNode.connect(delayFeedback);
+            delayFeedback.connect(delayNode);
+            
+            // Connect nodes
+            masterGain.connect(analyser);
+            analyser.connect(audioContext.destination);
+            masterGain.connect(reverbNode);
+            reverbNode.connect(audioContext.destination);
+            masterGain.connect(delayNode);
+            delayNode.connect(audioContext.destination);
+            
+            // Update audio status
+            document.getElementById('audioStatus').classList.add('active');
+        }
+        
+        // Create Reverb
+        function createReverb() {
+            const convolver = audioContext.createConvolver();
+            const length = audioContext.sampleRate * 2;
+            const impulse = audioContext.createBuffer(2, length, audioContext.sampleRate);
+            
+            for (let channel = 0; channel < 2; channel++) {
+                const channelData = impulse.getChannelData(channel);
+                for (let i = 0; i < length; i++) {
+                    channelData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2);
+                }
+            }
+            
+            convolver.buffer = impulse;
+            const reverbGain = audioContext.createGain();
+            reverbGain.gain.value = 0.2;
+            convolver.connect(reverbGain);
+            
+            return reverbGain;
+        }
+        
+        // Initialize Motion Grid
+        function initializeMotionGrid() {
+            const [rows, cols] = document.getElementById('gridSize').value.split('x').map(Number);
+            gridRows = rows;
+            gridCols = cols;
+            
+            motionGrid = Array(gridRows).fill(null).map(() => Array(gridCols).fill(0));
+            
+            // Initialize oscillators for each grid cell
+            oscillators = [];
+            gainNodes = [];
+            
+            for (let i = 0; i < gridRows * gridCols; i++) {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                osc.connect(gain);
+                gain.connect(masterGain);
+                gain.gain.value = 0;
+                
+                osc.start();
+                oscillators.push(osc);
+                gainNodes.push(gain);
+            }
+        }
+        
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Control buttons
+            document.getElementById('startBtn').addEventListener('click', start);
+            document.getElementById('stopBtn').addEventListener('click', stop);
+            document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
+            document.getElementById('recordBtn').addEventListener('click', toggleRecording);
+            document.getElementById('playbackBtn').addEventListener('click', playback);
+            document.getElementById('exportBtn').addEventListener('click', exportAudio);
+            document.getElementById('helpBtn').addEventListener('click', showHelp);
+            document.getElementById('closeHelp').addEventListener('click', hideHelp);
+            
+            // Range inputs
+            const rangeInputs = document.querySelectorAll('input[type="range"]');
+            rangeInputs.forEach(input => {
+                input.addEventListener('input', updateRangeValue);
+            });
+            
+            // Select inputs
+            document.getElementById('gridSize').addEventListener('change', () => {
+                initializeMotionGrid();
+                drawGrid();
+            });
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', handleKeyboard);
+        }
+        
+        // Start Motion Detection
+        function start() {
+            isPlaying = true;
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            document.getElementById('motionStatus').classList.add('active');
+            
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        }
+        
+        // Stop Motion Detection
+        function stop() {
+            isPlaying = false;
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('motionStatus').classList.remove('active');
+            
+            // Silence all oscillators immediately and completely
+            gainNodes.forEach(gain => {
+                gain.gain.cancelScheduledValues(audioContext.currentTime);
+                gain.gain.setValueAtTime(0, audioContext.currentTime);
+            });
+            
+            // Also stop recording if active
+            if (isRecording) {
+                toggleRecording();
+            }
+        }
+        
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                // Draw video
+                videoCtx.drawImage(video, 0, 0, videoCanvas.width, videoCanvas.height);
+                
+                // Draw grid
+                if (document.getElementById('showGrid').checked) {
+                    drawGrid();
+                }
+                
+                // Detect motion
+                if (isPlaying) {
+                    detectMotion();
+                }
+                
+                // Draw waveform
+                drawWaveform();
+            }
+        }
+        
+        // Motion Detection
+        function detectMotion() {
+            const imageData = videoCtx.getImageData(0, 0, videoCanvas.width, videoCanvas.height);
+            const data = imageData.data;
+            
+            if (!previousFrame) {
+                previousFrame = new Uint8ClampedArray(data);
+                return;
+            }
+            
+            // Clear motion canvas
+            motionCtx.clearRect(0, 0, motionCanvas.width, motionCanvas.height);
+            
+            // Calculate cell dimensions
+            const cellWidth = videoCanvas.width / gridCols;
+            const cellHeight = videoCanvas.height / gridRows;
+            
+            // Reset motion grid
+            motionGrid = Array(gridRows).fill(null).map(() => Array(gridCols).fill(0));
+            
+            // Motion detection with trails
+            const sensitivity = document.getElementById('sensitivityRange').value / 100;
+            const threshold = 255 * (1 - sensitivity) * 0.3;
+            
+            for (let i = 0; i < data.length; i += 4) {
+                const diff = Math.abs(data[i] - previousFrame[i]) +
+                            Math.abs(data[i + 1] - previousFrame[i + 1]) +
+                            Math.abs(data[i + 2] - previousFrame[i + 2]);
+                
+                if (diff > threshold) {
+                    const x = (i / 4) % videoCanvas.width;
+                    const y = Math.floor((i / 4) / videoCanvas.width);
+                    
+                    // Update motion grid
+                    const gridX = Math.floor(x / cellWidth);
+                    const gridY = Math.floor(y / cellHeight);
+                    
+                    if (gridX >= 0 && gridX < gridCols && gridY >= 0 && gridY < gridRows) {
+                        motionGrid[gridY][gridX] += diff / 255;
+                    }
+                    
+                    // Draw motion trails
+                    if (document.getElementById('showTrails').checked) {
+                        motionCtx.fillStyle = `rgba(0, 255, 136, ${diff / 765})`;
+                        motionCtx.fillRect(x, y, 2, 2);
+                    }
+                }
+            }
+            
+            // Apply smoothing
+            const smoothing = document.getElementById('smoothingRange').value / 100;
+            for (let y = 0; y < gridRows; y++) {
+                for (let x = 0; x < gridCols; x++) {
+                    if (motionHistory[y] && motionHistory[y][x]) {
+                        motionGrid[y][x] = motionGrid[y][x] * (1 - smoothing) + 
+                                          motionHistory[y][x] * smoothing;
+                    }
+                }
+            }
+            
+            // Update motion history
+            motionHistory = motionGrid.map(row => [...row]);
+            
+            // Update oscillators based on motion
+            updateOscillators();
+            
+            // Store previous frame
+            previousFrame = new Uint8ClampedArray(data);
+        }
+        
+        // Update Oscillators
+        function updateOscillators() {
+            const scale = scales[document.getElementById('scaleSelect').value];
+            const instrument = document.getElementById('instrumentSelect').value;
+            const baseOctave = parseInt(document.getElementById('octaveRange').value);
+            const baseFreq = 261.63 * Math.pow(2, baseOctave - 3); // C note
+            
+            for (let y = 0; y < gridRows; y++) {
+                for (let x = 0; x < gridCols; x++) {
+                    const index = y * gridCols + x;
+                    const motion = Math.min(motionGrid[y][x] / 10, 1);
+                    
+                    if (motion > 0.1) {
+                        // Calculate note based on position
+                        const noteIndex = Math.floor(((gridRows - 1 - y) / gridRows) * scale.length);
+                        const octaveOffset = Math.floor(x / gridCols * 2);
+                        const semitone = scale[noteIndex % scale.length];
+                        const frequency = baseFreq * Math.pow(2, (semitone + octaveOffset * 12) / 12);
+                        
+                        // Set oscillator frequency
+                        oscillators[index].frequency.setTargetAtTime(frequency, audioContext.currentTime, 0.01);
+                        
+                        // Set oscillator type based on instrument
+                        switch (instrument) {
+                            case 'sine':
+                                oscillators[index].type = 'sine';
+                                break;
+                            case 'synth':
+                                oscillators[index].type = 'sawtooth';
+                                break;
+                            case 'piano':
+                                oscillators[index].type = 'triangle';
+                                break;
+                            case 'strings':
+                                oscillators[index].type = 'sawtooth';
+                                break;
+                            case 'choir':
+                                oscillators[index].type = 'sine';
+                                break;
+                            case 'theremin':
+                                oscillators[index].type = 'sine';
+                                break;
+                        }
+                        
+                        // Set gain based on motion
+                        const targetGain = motion * 0.1;
+                        gainNodes[index].gain.setTargetAtTime(targetGain, audioContext.currentTime, 0.05);
+                        
+                        // Record note if recording
+                        if (isRecording) {
+                            recordedNotes.push({
+                                time: audioContext.currentTime - recordingStartTime,
+                                frequency: frequency,
+                                gain: targetGain,
+                                duration: 0.1
+                            });
+                        }
+                        
+                        // Visual feedback
+                        const cellWidth = videoCanvas.width / gridCols;
+                        const cellHeight = videoCanvas.height / gridRows;
+                        
+                        gridCtx.fillStyle = `rgba(0, 255, 136, ${motion * 0.5})`;
+                        gridCtx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
+                    } else {
+                        // Fade out
+                        gainNodes[index].gain.cancelScheduledValues(audioContext.currentTime);
+                        gainNodes[index].gain.setTargetAtTime(0, audioContext.currentTime, 0.05);
+                    }
+                }
+            }
+        }
+        
+        // Draw Grid
+        function drawGrid() {
+            gridCtx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+            
+            if (!document.getElementById('showGrid').checked) return;
+            
+            const cellWidth = gridCanvas.width / gridCols;
+            const cellHeight = gridCanvas.height / gridRows;
+            
+            gridCtx.strokeStyle = 'rgba(0, 255, 136, 0.3)';
+            gridCtx.lineWidth = 1;
+            
+            // Draw vertical lines
+            for (let x = 0; x <= gridCols; x++) {
+                gridCtx.beginPath();
+                gridCtx.moveTo(x * cellWidth, 0);
+                gridCtx.lineTo(x * cellWidth, gridCanvas.height);
+                gridCtx.stroke();
+            }
+            
+            // Draw horizontal lines
+            for (let y = 0; y <= gridRows; y++) {
+                gridCtx.beginPath();
+                gridCtx.moveTo(0, y * cellHeight);
+                gridCtx.lineTo(gridCanvas.width, y * cellHeight);
+                gridCtx.stroke();
+            }
+        }
+        
+        // Draw Waveform
+        function drawWaveform() {
+            if (!analyser) return;
+            
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyser.getByteTimeDomainData(dataArray);
+            
+            waveformCtx.fillStyle = '#0a0a0a';
+            waveformCtx.fillRect(0, 0, waveformCanvas.width, waveformCanvas.height);
+            
+            waveformCtx.lineWidth = 2;
+            waveformCtx.strokeStyle = '#00ff88';
+            waveformCtx.beginPath();
+            
+            const sliceWidth = waveformCanvas.width / bufferLength;
+            let x = 0;
+            
+            for (let i = 0; i < bufferLength; i++) {
+                const v = dataArray[i] / 128.0;
+                const y = v * waveformCanvas.height / 2;
+                
+                if (i === 0) {
+                    waveformCtx.moveTo(x, y);
+                } else {
+                    waveformCtx.lineTo(x, y);
+                }
+                
+                x += sliceWidth;
+            }
+            
+            waveformCtx.lineTo(waveformCanvas.width, waveformCanvas.height / 2);
+            waveformCtx.stroke();
+        }
+        
+        // Update Range Value Display
+        function updateRangeValue(e) {
+            const input = e.target;
+            const valueSpan = document.getElementById(input.id.replace('Range', 'Value'));
+            
+            switch (input.id) {
+                case 'octaveRange':
+                    const octave = parseInt(input.value);
+                    valueSpan.textContent = `C${octave}-C${octave + 2}`;
+                    break;
+                case 'volumeRange':
+                    valueSpan.textContent = `${input.value}%`;
+                    masterGain.gain.value = input.value / 100;
+                    break;
+                case 'sensitivityRange':
+                    valueSpan.textContent = `${input.value}%`;
+                    break;
+                case 'smoothingRange':
+                    valueSpan.textContent = `${input.value}%`;
+                    break;
+                case 'reverbRange':
+                    valueSpan.textContent = `${input.value}%`;
+                    reverbNode.gain.value = input.value / 100 * 0.5;
+                    break;
+                case 'delayRange':
+                    valueSpan.textContent = `${input.value}%`;
+                    delayNode.delayTime.value = input.value / 100 * 0.5;
+                    break;
+            }
+        }
+        
+        // Toggle Recording
+        function toggleRecording() {
+            if (!isRecording) {
+                isRecording = true;
+                recordedNotes = [];
+                recordingStartTime = audioContext.currentTime;
+                document.getElementById('recordBtn').textContent = 'Stop Recording';
+                document.getElementById('recordBtn').classList.add('active');
+                document.getElementById('recordingIndicator').classList.add('show');
+            } else {
+                isRecording = false;
+                document.getElementById('recordBtn').textContent = 'Record';
+                document.getElementById('recordBtn').classList.remove('active');
+                document.getElementById('recordingIndicator').classList.remove('show');
+                document.getElementById('playbackBtn').disabled = recordedNotes.length === 0;
+                document.getElementById('exportBtn').disabled = recordedNotes.length === 0;
+            }
+        }
+        
+        // Playback Recording
+        function playback() {
+            if (recordedNotes.length === 0) return;
+            
+            // Clear any existing playback
+            playbackTimeouts.forEach(timeout => clearTimeout(timeout));
+            playbackTimeouts = [];
+            
+            // Schedule playback
+            recordedNotes.forEach(note => {
+                const timeout = setTimeout(() => {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    
+                    osc.frequency.value = note.frequency;
+                    osc.type = document.getElementById('instrumentSelect').value === 'sine' ? 'sine' : 'sawtooth';
+                    gain.gain.value = note.gain;
+                    
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+                    
+                    osc.start();
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + note.duration);
+                    osc.stop(audioContext.currentTime + note.duration + 0.1);
+                }, note.time * 1000);
+                
+                playbackTimeouts.push(timeout);
+            });
+        }
+        
+        // Export Audio (simplified - exports note data)
+        function exportAudio() {
+            const data = {
+                notes: recordedNotes,
+                scale: document.getElementById('scaleSelect').value,
+                instrument: document.getElementById('instrumentSelect').value,
+                duration: recordedNotes[recordedNotes.length - 1]?.time || 0
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `motion-music-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // Toggle Fullscreen
+        function toggleFullscreen() {
+            document.body.classList.toggle('performance-mode');
+            
+            if (document.body.classList.contains('performance-mode')) {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+        
+        // Show/Hide Help
+        function showHelp() {
+            document.getElementById('helpModal').style.display = 'block';
+        }
+        
+        function hideHelp() {
+            document.getElementById('helpModal').style.display = 'none';
+        }
+        
+        // Keyboard Shortcuts
+        function handleKeyboard(e) {
+            switch(e.key.toLowerCase()) {
+                case ' ':
+                    e.preventDefault();
+                    if (isPlaying) stop(); else start();
+                    break;
+                case 'r':
+                    toggleRecording();
+                    break;
+                case 'f':
+                    toggleFullscreen();
+                    break;
+                case 'g':
+                    document.getElementById('showGrid').checked = !document.getElementById('showGrid').checked;
+                    break;
+                case 't':
+                    document.getElementById('showTrails').checked = !document.getElementById('showTrails').checked;
+                    break;
+                case 'escape':
+                    hideHelp();
+                    break;
+            }
+        }
+        
+        // Initialize on load
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

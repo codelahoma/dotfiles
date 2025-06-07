@@ -1,0 +1,19 @@
+{
+  "allowedCommands": [
+    "flowloom",
+    "git",
+    "npm",
+    "python",
+    "pip",
+    "docker",
+    "kubectl",
+    "terraform"
+  ],
+  "allowedDirectories": [
+    "/Users/rodk/.homesick/repos/dotfiles/.flowloom"
+  ],
+  "permissionLevel": "development",
+  "allowSystemCommands": true,
+  "allowFileModification": true,
+  "allowNetworkAccess": true
+}

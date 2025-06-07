@@ -1,0 +1,242 @@
+#!/usr/bin/env bash
+# FlowLoom launcher - validates project and starts Claude with proper context
+
+set -euo pipefail
+
+# Color codes for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Script directory and project root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Source common functions if available
+if [[ -f "$SCRIPT_DIR/common-functions.sh" ]]; then
+    source "$SCRIPT_DIR/common-functions.sh"
+fi
+
+# Function to print colored output
+print_color() {
+    local color=$1
+    shift
+    echo -e "${color}$*${NC}"
+}
+
+# Function to check if we're in a FlowLoom project
+is_flowloom_project() {
+    local dir="${1:-$(pwd)}"
+    
+    # Check for FlowLoom markers
+    if [[ -f "$dir/flowloom.json" ]] || \
+       [[ -f "$dir/CLAUDE.md" && -f "$dir/CLAUDE.local.md" ]] || \
+       [[ -d "$dir/.knowledge" && -f "$dir/memory.json" ]]; then
+        return 0
+    fi
+    
+    return 1
+}
+
+# Function to find project root by searching upward
+find_project_root() {
+    local current_dir="$(pwd)"
+    
+    while [[ "$current_dir" != "/" ]]; do
+        if is_flowloom_project "$current_dir"; then
+            echo "$current_dir"
+            return 0
+        fi
+        current_dir="$(dirname "$current_dir")"
+    done
+    
+    return 1
+}
+
+# Function to initialize a new FlowLoom project
+init_project() {
+    print_color "$YELLOW" "Initializing new FlowLoom project..."
+    
+    # Run the installer
+    if [[ -x "$PROJECT_ROOT/install-flowloom.sh" ]]; then
+        "$PROJECT_ROOT/install-flowloom.sh"
+    else
+        print_color "$RED" "Error: FlowLoom installer not found"
+        return 1
+    fi
+}
+
+# Function to validate Claude is installed
+check_claude() {
+    # Try multiple possible Claude locations
+    local claude_cmd=""
+    local possible_paths=(
+        "$(command -v claude 2>/dev/null || true)"
+        "/usr/local/bin/claude"
+        "/opt/homebrew/bin/claude"
+        "$HOME/.local/bin/claude"
+        "$HOME/Library/Application Support/Code/User/globalStorage/anthropic.claude-code/claude/claude"
+    )
+    
+    for path in "${possible_paths[@]}"; do
+        if [[ -n "$path" && -x "$path" ]]; then
+            claude_cmd="$path"
+            break
+        fi
+    done
+    
+    if [[ -z "$claude_cmd" ]]; then
+        print_color "$RED" "Error: Claude Code not found"
+        print_color "$YELLOW" "Please install Claude Code from: https://claude.ai/download"
+        return 1
+    fi
+    
+    echo "$claude_cmd"
+}
+
+# Function to display project info
+show_project_info() {
+    local project_dir="$1"
+    
+    print_color "$BLUE" "FlowLoom Project Information:"
+    echo "  Directory: $project_dir"
+    
+    if [[ -f "$project_dir/flowloom.json" ]]; then
+        local project_name=$(jq -r '.name // "Unnamed Project"' "$project_dir/flowloom.json" 2>/dev/null || echo "Unnamed Project")
+        echo "  Project: $project_name"
+    fi
+    
+    # Check for knowledge directory
+    if [[ -d "$project_dir/.knowledge" ]]; then
+        local knowledge_count=$(find "$project_dir/.knowledge" -name "*.md" -type f 2>/dev/null | wc -l | xargs)
+        echo "  Knowledge articles: $knowledge_count"
+    fi
+    
+    # Check for active git branch
+    if [[ -d "$project_dir/.git" ]]; then
+        local branch=$(cd "$project_dir" && git branch --show-current 2>/dev/null || echo "")
+        if [[ -n "$branch" ]]; then
+            echo "  Git Branch: $branch"
+        fi
+    fi
+    
+    echo ""
+}
+
+# Main function
+main() {
+    local command="${1:-launch}"
+    shift || true
+    
+    case "$command" in
+        init)
+            init_project
+            ;;
+            
+        launch|start|"")
+            # Check if we're in a FlowLoom project
+            local project_dir=""
+            if is_flowloom_project; then
+                project_dir="$(pwd)"
+            else
+                # Try to find project root by searching upward
+                project_dir="$(find_project_root || true)"
+            fi
+            
+            if [[ -z "$project_dir" ]]; then
+                print_color "$YELLOW" "Not in a FlowLoom project directory"
+                read -p "Initialize FlowLoom in current directory? (y/N) " -n 1 -r
+                echo
+                if [[ $REPLY =~ ^[Yy]$ ]]; then
+                    init_project
+                    project_dir="$(pwd)"
+                else
+                    exit 1
+                fi
+            fi
+            
+            # Validate Claude is installed
+            local claude_cmd="$(check_claude)"
+            if [[ -z "$claude_cmd" ]]; then
+                exit 1
+            fi
+            
+            # Change to project directory
+            cd "$project_dir"
+            
+            # Show project info
+            show_project_info "$project_dir"
+            
+            # Run startup tasks if script exists
+            if [[ -f "$SCRIPT_DIR/flowloom-startup-tasks.sh" ]]; then
+                source "$SCRIPT_DIR/flowloom-startup-tasks.sh"
+                run_startup_tasks "$project_dir"
+            fi
+            
+            # Launch Claude
+            print_color "$GREEN" "Launching Claude Code..."
+            print_color "$BLUE" "Tip: Claude will read CLAUDE.md and CLAUDE.local.md for project context"
+            echo ""
+            
+            # Execute Claude with any additional arguments
+            exec "$claude_cmd" "$@"
+            ;;
+            
+        check)
+            # Just check if we're in a FlowLoom project
+            if is_flowloom_project; then
+                local project_dir="$(pwd)"
+                print_color "$GREEN" "✓ FlowLoom project detected"
+                show_project_info "$project_dir"
+            else
+                local project_dir="$(find_project_root || true)"
+                if [[ -n "$project_dir" ]]; then
+                    print_color "$YELLOW" "FlowLoom project found at: $project_dir"
+                    show_project_info "$project_dir"
+                else
+                    print_color "$RED" "✗ Not in a FlowLoom project"
+                    exit 1
+                fi
+            fi
+            ;;
+            
+        help|--help|-h)
+            cat << EOF
+FlowLoom - AI Development Framework for Claude Code
+
+Usage: flowloom [command] [args...]
+
+Commands:
+  launch, start   Launch Claude in the current FlowLoom project (default)
+  init           Initialize FlowLoom in the current directory
+  check          Check if current directory is a FlowLoom project
+  help           Show this help message
+
+Examples:
+  flowloom                    # Launch Claude in current project
+  flowloom init              # Initialize new FlowLoom project
+  flowloom check             # Verify FlowLoom setup
+  flowloom launch --help     # Pass arguments to Claude
+
+FlowLoom will:
+- Validate you're in a FlowLoom project directory
+- Find Claude Code installation
+- Launch Claude with proper project context
+- Offer to initialize if not in a project
+
+For more information: https://github.com/codelahoma/flowloom
+EOF
+            ;;
+            
+        *)
+            print_color "$RED" "Unknown command: $command"
+            echo "Run 'flowloom help' for usage information"
+            exit 1
+            ;;
+    esac
+}
+
+# Run main function
+main "$@"

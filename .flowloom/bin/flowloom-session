@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# FlowLoom Session Management wrapper
+# Handles package path and environment setup
+
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
+
+# Add packages directory to Python path
+export PYTHONPATH="$PROJECT_ROOT/packages:$PYTHONPATH"
+
+# Use uvrun if available, otherwise try direct python
+if [ -f "$SCRIPT_DIR/uvrun" ]; then
+    exec "$SCRIPT_DIR/uvrun" python -m flowloom_session.cli "$@"
+elif command -v uv >/dev/null 2>&1; then
+    cd "$PROJECT_ROOT"
+    export PATH="$HOME/.local/bin:$PATH"
+    if [ -n "$VIRTUAL_ENV" ]; then
+        exec uv run --active python -m flowloom_session.cli "$@"
+    else
+        exec uv run python -m flowloom_session.cli "$@"
+    fi
+else
+    # Fallback to system python
+    exec python3 -m flowloom_session.cli "$@"
+fi

@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Sandbox - Interactive Physics Playground</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+        }
+
+        .toolbar {
+            width: 200px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 10px;
+            overflow-y: auto;
+            border-right: 2px solid #444;
+        }
+
+        .tool-section {
+            margin-bottom: 20px;
+        }
+
+        .tool-section h3 {
+            color: #4CAF50;
+            margin-bottom: 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .tool-button {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 4px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .tool-button:hover {
+            background: #4CAF50;
+        }
+
+        .tool-button.active {
+            background: #4CAF50;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #gameCanvas {
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 60%, #8B4513 100%);
+            cursor: crosshair;
+            display: block;
+        }
+
+        .controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
+            margin: 0 4px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .control-btn:hover {
+            background: #45a049;
+        }
+
+        .control-btn.danger {
+            background: #f44336;
+        }
+
+        .control-btn.danger:hover {
+            background: #da190b;
+        }
+
+        .info-panel {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            max-width: 300px;
+        }
+
+        .material-selector {
+            margin-top: 10px;
+        }
+
+        .material-button {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            margin: 2px;
+            border: 2px solid #666;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .material-button.active {
+            border-color: #4CAF50;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+        }
+
+        .wood { background: #8B4513; }
+        .metal { background: #C0C0C0; }
+        .rubber { background: #FF1493; }
+        .glass { background: rgba(173, 216, 230, 0.7); }
+        .water { background: #0000FF; }
+        .lava { background: #FF4500; }
+
+        .challenge-panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            display: none;
+            z-index: 1000;
+        }
+
+        .objective {
+            margin: 10px 0;
+            padding: 10px;
+            background: #333;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="toolbar">
+            <div class="tool-section">
+                <h3>🔧 Build Tools</h3>
+                <button class="tool-button active" data-tool="box">📦 Box</button>
+                <button class="tool-button" data-tool="circle">⚪ Circle</button>
+                <button class="tool-button" data-tool="rope">🪢 Rope</button>
+                <button class="tool-button" data-tool="spring">🌀 Spring</button>
+                <button class="tool-button" data-tool="hinge">🔗 Hinge</button>
+                <button class="tool-button" data-tool="motor">⚙️ Motor</button>
+            </div>
+
+            <div class="tool-section">
+                <h3>💥 Destructive</h3>
+                <button class="tool-button" data-tool="bomb">💣 Bomb</button>
+                <button class="tool-button" data-tool="saw">🪚 Saw</button>
+                <button class="tool-button" data-tool="delete">🗑️ Delete</button>
+            </div>
+
+            <div class="tool-section">
+                <h3>🔌 Electrical</h3>
+                <button class="tool-button" data-tool="battery">🔋 Battery</button>
+                <button class="tool-button" data-tool="switch">💡 Switch</button>
+                <button class="tool-button" data-tool="motor">🔌 Electric Motor</button>
+                <button class="tool-button" data-tool="light">💡 Light</button>
+            </div>
+
+            <div class="tool-section">
+                <h3>🌊 Fluids</h3>
+                <button class="tool-button" data-tool="water">💧 Water</button>
+                <button class="tool-button" data-tool="lava">🌋 Lava</button>
+                <button class="tool-button" data-tool="pipe">🔧 Pipe</button>
+            </div>
+
+            <div class="tool-section">
+                <h3>📋 Materials</h3>
+                <div class="material-selector">
+                    <div class="material-button wood active" data-material="wood" title="Wood - Light, burnable"></div>
+                    <div class="material-button metal" data-material="metal" title="Metal - Heavy, conductive"></div>
+                    <div class="material-button rubber" data-material="rubber" title="Rubber - Bouncy, insulating"></div>
+                    <div class="material-button glass" data-material="glass" title="Glass - Fragile, transparent"></div>
+                </div>
+            </div>
+
+            <div class="tool-section">
+                <h3>💾 Save/Load</h3>
+                <button class="tool-button" onclick="saveScene()">💾 Save</button>
+                <button class="tool-button" onclick="loadScene()">📁 Load</button>
+                <button class="tool-button" onclick="shareScene()">🔗 Share</button>
+                <button class="tool-button" onclick="loadDemoPuzzle()" style="background: #FF6B35; color: white;">🧩 Demo Puzzle</button>
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="gameCanvas"></canvas>
+            
+            <div class="controls">
+                <button class="control-btn" onclick="togglePause()">⏸️ Pause</button>
+                <button class="control-btn" onclick="slowMotion()">🐌 Slow Mo</button>
+                <button class="control-btn" onclick="rewind()">⏪ Rewind</button>
+                <button class="control-btn" onclick="toggleDebug()">🔍 Debug</button>
+                <button class="control-btn danger" onclick="clearAll()">🧹 Clear</button>
+            </div>
+
+            <div class="info-panel">
+                <div><strong>Physics Sandbox</strong></div>
+                <div id="objectCount">Objects: 0</div>
+                <div id="fpsCounter">FPS: 60</div>
+                <div id="currentTool">Tool: Box</div>
+                <div id="instructions">Click and drag to create objects. Right-click to connect with constraints.</div>
+            </div>
+        </div>
+
+        <div class="challenge-panel" id="challengePanel">
+            <h2>🎯 Challenge Mode</h2>
+            <div class="objective" id="currentObjective">
+                Get the ball to the target zone using only 3 objects!
+            </div>
+            <button class="control-btn" onclick="startChallenge()">🚀 Start</button>
+            <button class="control-btn" onclick="closeChallengePanel()">❌ Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Physics Engine Core
+        class PhysicsEngine {
+            constructor() {
+                this.objects = [];
+                this.constraints = [];
+                this.particles = [];
+                this.gravity = { x: 0, y: 12.0 };
+                this.damping = 0.999;
+                this.iteration = 3;
+                this.timeStep = 1/60;
+                this.isPaused = false;
+                this.debugMode = false;
+                this.timeScale = 1.0;
+            }
+
+            addObject(obj) {
+                obj.id = Date.now() + Math.random();
+                this.objects.push(obj);
+                return obj;
+            }
+
+            addConstraint(constraint) {
+                this.constraints.push(constraint);
+                return constraint;
+            }
+
+            step() {
+                if (this.isPaused) return;
+
+                const dt = this.timeStep * this.timeScale;
+
+                // Apply gravity and update positions
+                this.objects.forEach(obj => {
+                    if (!obj.isStatic) {
+                        obj.vx += this.gravity.x * dt;
+                        obj.vy += this.gravity.y * dt;
+                        
+                        obj.vx *= this.damping;
+                        obj.vy *= this.damping;
+                        
+                        obj.x += obj.vx * dt;
+                        obj.y += obj.vy * dt;
+                    }
+                });
+
+                // Constraint solving
+                for (let i = 0; i < this.iteration; i++) {
+                    this.constraints.forEach(constraint => {
+                        constraint.solve();
+                    });
+                }
+
+                // Collision detection and response
+                this.resolveCollisions();
+
+                // Update particles
+                this.updateParticles(dt);
+
+                // Keep objects in bounds
+                this.objects.forEach(obj => {
+                    if (obj.y > canvas.height) {
+                        obj.y = canvas.height - obj.height;
+                        obj.vy *= -0.5;
+                    }
+                    if (obj.x < 0) {
+                        obj.x = 0;
+                        obj.vx *= -0.5;
+                    }
+                    if (obj.x > canvas.width) {
+                        obj.x = canvas.width - obj.width;
+                        obj.vx *= -0.5;
+                    }
+                });
+            }
+
+            resolveCollisions() {
+                for (let i = 0; i < this.objects.length; i++) {
+                    for (let j = i + 1; j < this.objects.length; j++) {
+                        const objA = this.objects[i];
+                        const objB = this.objects[j];
+                        
+                        if (this.isColliding(objA, objB)) {
+                            this.resolveCollision(objA, objB);
+                        }
+                    }
+                }
+            }
+
+            isColliding(a, b) {
+                return a.x < b.x + b.width &&
+                       a.x + a.width > b.x &&
+                       a.y < b.y + b.height &&
+                       a.y + a.height > b.y;
+            }
+
+            resolveCollision(a, b) {
+                const dx = (a.x + a.width/2) - (b.x + b.width/2);
+                const dy = (a.y + a.height/2) - (b.y + b.height/2);
+                const distance = Math.sqrt(dx*dx + dy*dy);
+                
+                if (distance === 0) return;
+
+                const nx = dx / distance;
+                const ny = dy / distance;
+                
+                const overlap = (a.width + b.width)/2 - distance;
+                if (overlap > 0) {
+                    if (!a.isStatic) {
+                        a.x += nx * overlap * 0.5;
+                        a.y += ny * overlap * 0.5;
+                    }
+                    if (!b.isStatic) {
+                        b.x -= nx * overlap * 0.5;
+                        b.y -= ny * overlap * 0.5;
+                    }
+
+                    // Velocity resolution
+                    const relativeVelocity = (a.vx - b.vx) * nx + (a.vy - b.vy) * ny;
+                    if (relativeVelocity > 0) return;
+
+                    const restitution = Math.min(a.material.restitution, b.material.restitution);
+                    const impulse = -(1 + restitution) * relativeVelocity;
+                    const totalMass = a.material.mass + b.material.mass;
+
+                    if (!a.isStatic) {
+                        a.vx += impulse * b.material.mass / totalMass * nx;
+                        a.vy += impulse * b.material.mass / totalMass * ny;
+                    }
+                    if (!b.isStatic) {
+                        b.vx -= impulse * a.material.mass / totalMass * nx;
+                        b.vy -= impulse * a.material.mass / totalMass * ny;
+                    }
+                }
+            }
+
+            updateParticles(dt) {
+                this.particles = this.particles.filter(particle => {
+                    particle.update(dt);
+                    return particle.life > 0;
+                });
+            }
+
+            addExplosion(x, y, force) {
+                for (let i = 0; i < 20; i++) {
+                    const angle = (Math.PI * 2 * i) / 20;
+                    const particle = new Particle(
+                        x, y,
+                        Math.cos(angle) * force,
+                        Math.sin(angle) * force,
+                        '#FF4500'
+                    );
+                    this.particles.push(particle);
+                }
+
+                // Apply force to nearby objects
+                this.objects.forEach(obj => {
+                    const dx = obj.x - x;
+                    const dy = obj.y - y;
+                    const distance = Math.sqrt(dx*dx + dy*dy);
+                    if (distance < 100) {
+                        const forceMultiplier = (100 - distance) / 100 * force;
+                        obj.vx += (dx / distance) * forceMultiplier;
+                        obj.vy += (dy / distance) * forceMultiplier;
+                    }
+                });
+            }
+        }
+
+        // Material definitions
+        const Materials = {
+            wood: { mass: 1, restitution: 0.4, friction: 0.7, color: '#8B4513', breakStrength: 50 },
+            metal: { mass: 3, restitution: 0.2, friction: 0.9, color: '#C0C0C0', breakStrength: 200 },
+            rubber: { mass: 0.5, restitution: 0.9, friction: 1.2, color: '#FF1493', breakStrength: 30 },
+            glass: { mass: 0.8, restitution: 0.1, friction: 0.3, color: 'rgba(173, 216, 230, 0.7)', breakStrength: 10 }
+        };
+
+        // Physics Object Classes
+        class PhysicsObject {
+            constructor(x, y, width, height, material = 'wood') {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.vx = 0;
+                this.vy = 0;
+                this.angle = 0;
+                this.angularVelocity = 0;
+                this.material = Materials[material];
+                this.isStatic = false;
+                this.health = this.material.breakStrength;
+                this.type = 'box';
+            }
+
+            draw(ctx) {
+                ctx.save();
+                ctx.translate(this.x + this.width/2, this.y + this.height/2);
+                ctx.rotate(this.angle);
+                ctx.fillStyle = this.material.color;
+                ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+                
+                if (physics.debugMode) {
+                    ctx.strokeStyle = '#00FF00';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(-this.width/2, -this.height/2, this.width, this.height);
+                }
+                ctx.restore();
+            }
+        }
+
+        class CircleObject extends PhysicsObject {
+            constructor(x, y, radius, material = 'wood') {
+                super(x, y, radius * 2, radius * 2, material);
+                this.radius = radius;
+                this.type = 'circle';
+            }
+
+            draw(ctx) {
+                ctx.save();
+                ctx.fillStyle = this.material.color;
+                ctx.beginPath();
+                ctx.arc(this.x + this.radius, this.y + this.radius, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                if (physics.debugMode) {
+                    ctx.strokeStyle = '#00FF00';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+        }
+
+        class Particle {
+            constructor(x, y, vx, vy, color, life = 1.0) {
+                this.x = x;
+                this.y = y;
+                this.vx = vx;
+                this.vy = vy;
+                this.color = color;
+                this.life = life;
+                this.maxLife = life;
+            }
+
+            update(dt) {
+                this.x += this.vx * dt * 60;
+                this.y += this.vy * dt * 60;
+                this.vy += 0.2; // gravity
+                this.life -= dt;
+            }
+
+            draw(ctx) {
+                const alpha = this.life / this.maxLife;
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        // Constraint classes
+        class RopeConstraint {
+            constructor(objA, objB, length = null) {
+                this.objA = objA;
+                this.objB = objB;
+                this.length = length || this.getDistance();
+                this.stiffness = 0.8;
+            }
+
+            getDistance() {
+                const dx = this.objB.x - this.objA.x;
+                const dy = this.objB.y - this.objA.y;
+                return Math.sqrt(dx*dx + dy*dy);
+            }
+
+            solve() {
+                const dx = this.objB.x - this.objA.x;
+                const dy = this.objB.y - this.objA.y;
+                const distance = Math.sqrt(dx*dx + dy*dy);
+                const difference = this.length - distance;
+                const percent = difference / distance * this.stiffness;
+                const offsetX = dx * percent * 0.5;
+                const offsetY = dy * percent * 0.5;
+
+                if (!this.objA.isStatic) {
+                    this.objA.x -= offsetX;
+                    this.objA.y -= offsetY;
+                }
+                if (!this.objB.isStatic) {
+                    this.objB.x += offsetX;
+                    this.objB.y += offsetY;
+                }
+            }
+
+            draw(ctx) {
+                ctx.strokeStyle = '#8B4513';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(this.objA.x + this.objA.width/2, this.objA.y + this.objA.height/2);
+                ctx.lineTo(this.objB.x + this.objB.width/2, this.objB.y + this.objB.height/2);
+                ctx.stroke();
+            }
+        }
+
+        class SpringConstraint extends RopeConstraint {
+            constructor(objA, objB, length = null, springConstant = 0.1) {
+                super(objA, objB, length);
+                this.springConstant = springConstant;
+                this.restLength = this.length;
+            }
+
+            solve() {
+                const dx = this.objB.x - this.objA.x;
+                const dy = this.objB.y - this.objA.y;
+                const distance = Math.sqrt(dx*dx + dy*dy);
+                const force = (distance - this.restLength) * this.springConstant;
+                const fx = (dx / distance) * force;
+                const fy = (dy / distance) * force;
+
+                if (!this.objA.isStatic) {
+                    this.objA.vx += fx;
+                    this.objA.vy += fy;
+                }
+                if (!this.objB.isStatic) {
+                    this.objB.vx -= fx;
+                    this.objB.vy -= fy;
+                }
+            }
+
+            draw(ctx) {
+                ctx.strokeStyle = '#4CAF50';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(this.objA.x + this.objA.width/2, this.objA.y + this.objA.height/2);
+                ctx.lineTo(this.objB.x + this.objB.width/2, this.objB.y + this.objB.height/2);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+        }
+
+        // Global variables
+        let canvas, ctx, physics;
+        let currentTool = 'box';
+        let currentMaterial = 'wood';
+        let isDrawing = false;
+        let isDragging = false;
+        let draggedObject = null;
+        let dragOffset = {x: 0, y: 0};
+        let startX, startY;
+        let selectedObjects = [];
+        let frameCount = 0;
+        let lastTime = 0;
+
+        // Initialize the game
+        function init() {
+            canvas = document.getElementById('gameCanvas');
+            ctx = canvas.getContext('2d');
+            physics = new PhysicsEngine();
+
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // Event listeners
+            canvas.addEventListener('mousedown', onMouseDown);
+            canvas.addEventListener('mousemove', onMouseMove);
+            canvas.addEventListener('mouseup', onMouseUp);
+            canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+            // Tool selection
+            document.querySelectorAll('.tool-button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tool-button').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentTool = btn.dataset.tool;
+                    document.getElementById('currentTool').textContent = `Tool: ${btn.textContent}`;
+                });
+            });
+
+            // Material selection
+            document.querySelectorAll('.material-button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.material-button').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentMaterial = btn.dataset.material;
+                });
+            });
+
+            // Add some ground
+            const ground = new PhysicsObject(0, canvas.height - 20, canvas.width, 20, 'metal');
+            ground.isStatic = true;
+            physics.addObject(ground);
+
+            // Start game loop
+            requestAnimationFrame(gameLoop);
+        }
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+
+        function gameLoop(currentTime) {
+            const deltaTime = currentTime - lastTime;
+            lastTime = currentTime;
+
+            physics.step();
+            render();
+            updateUI();
+
+            frameCount++;
+            if (frameCount % 60 === 0) {
+                const fps = Math.round(1000 / deltaTime);
+                document.getElementById('fpsCounter').textContent = `FPS: ${fps}`;
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function render() {
+            // Clear canvas with gradient background
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(0.6, '#E0F6FF');
+            gradient.addColorStop(1, '#8B4513');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Render all objects
+            physics.objects.forEach(obj => obj.draw(ctx));
+
+            // Render constraints
+            physics.constraints.forEach(constraint => constraint.draw(ctx));
+
+            // Render particles
+            physics.particles.forEach(particle => particle.draw(ctx));
+
+            // Draw current tool preview
+            if (isDrawing && (currentTool === 'box' || currentTool === 'circle')) {
+                ctx.strokeStyle = '#4CAF50';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([8, 4]);
+                
+                const width = Math.abs(mouseX - startX);
+                const height = Math.abs(mouseY - startY);
+                
+                if (currentTool === 'box') {
+                    ctx.strokeRect(
+                        Math.min(startX, mouseX), 
+                        Math.min(startY, mouseY), 
+                        width, 
+                        height
+                    );
+                } else if (currentTool === 'circle') {
+                    const radius = Math.min(width, height) / 2;
+                    if (radius > 5) {
+                        ctx.beginPath();
+                        ctx.arc(
+                            Math.min(startX, mouseX) + width/2, 
+                            Math.min(startY, mouseY) + height/2, 
+                            radius, 
+                            0, 
+                            Math.PI * 2
+                        );
+                        ctx.stroke();
+                    }
+                }
+                ctx.setLineDash([]);
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('objectCount').textContent = `Objects: ${physics.objects.length}`;
+        }
+
+        let mouseX = 0, mouseY = 0;
+
+        function getObjectAt(x, y) {
+            // Find object at position (check non-static objects first for dragging)
+            for (let i = physics.objects.length - 1; i >= 0; i--) {
+                const obj = physics.objects[i];
+                if (obj.type === 'circle') {
+                    const dx = x - (obj.x + obj.radius);
+                    const dy = y - (obj.y + obj.radius);
+                    if (Math.sqrt(dx*dx + dy*dy) <= obj.radius) {
+                        return obj;
+                    }
+                } else {
+                    if (x >= obj.x && x <= obj.x + obj.width &&
+                        y >= obj.y && y <= obj.y + obj.height) {
+                        return obj;
+                    }
+                }
+            }
+            return null;
+        }
+
+        function onMouseDown(e) {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+            startX = mouseX;
+            startY = mouseY;
+            
+            if (currentTool === 'delete') {
+                deleteObjectAt(mouseX, mouseY);
+                return;
+            } else if (currentTool === 'bomb') {
+                physics.addExplosion(mouseX, mouseY, 10);
+                return;
+            }
+            
+            // Check if clicking on an existing object for dragging
+            const clickedObject = getObjectAt(mouseX, mouseY);
+            if (clickedObject && !clickedObject.isStatic) {
+                // Start dragging the object
+                isDragging = true;
+                draggedObject = clickedObject;
+                dragOffset.x = mouseX - clickedObject.x;
+                dragOffset.y = mouseY - clickedObject.y;
+                // Stop object's current motion while dragging
+                clickedObject.vx = 0;
+                clickedObject.vy = 0;
+                return;
+            }
+            
+            // Only set drawing flag for tools that need dragging to create new objects
+            if (['box', 'circle', 'rope', 'spring'].includes(currentTool)) {
+                isDrawing = true;
+            }
+        }
+
+        function onMouseMove(e) {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+            
+            // Handle object dragging
+            if (isDragging && draggedObject) {
+                draggedObject.x = mouseX - dragOffset.x;
+                draggedObject.y = mouseY - dragOffset.y;
+                // Keep dragged object's velocity at zero while dragging
+                draggedObject.vx = 0;
+                draggedObject.vy = 0;
+            }
+        }
+
+        function onMouseUp(e) {
+            // Handle end of object dragging
+            if (isDragging && draggedObject) {
+                isDragging = false;
+                draggedObject = null;
+                return;
+            }
+            
+            if (!isDrawing) return;
+            isDrawing = false;
+
+            const rect = canvas.getBoundingClientRect();
+            const endX = e.clientX - rect.left;
+            const endY = e.clientY - rect.top;
+
+            const width = Math.abs(endX - startX);
+            const height = Math.abs(endY - startY);
+
+            // Minimum size check
+            if (width < 10 || height < 10) {
+                return;
+            }
+
+            let obj;
+            switch (currentTool) {
+                case 'box':
+                    obj = new PhysicsObject(
+                        Math.min(startX, endX),
+                        Math.min(startY, endY),
+                        width, height, currentMaterial
+                    );
+                    physics.addObject(obj);
+                    break;
+                
+                case 'circle':
+                    const radius = Math.min(width, height) / 2;
+                    obj = new CircleObject(
+                        Math.min(startX, endX), 
+                        Math.min(startY, endY), 
+                        radius, 
+                        currentMaterial
+                    );
+                    physics.addObject(obj);
+                    break;
+            }
+        }
+
+        function deleteObjectAt(x, y) {
+            const index = physics.objects.findIndex(obj => 
+                x >= obj.x && x <= obj.x + obj.width &&
+                y >= obj.y && y <= obj.y + obj.height
+            );
+            if (index !== -1) {
+                physics.objects.splice(index, 1);
+            }
+        }
+
+        // Control functions
+        function togglePause() {
+            physics.isPaused = !physics.isPaused;
+            const btn = event.target;
+            btn.textContent = physics.isPaused ? '▶️ Play' : '⏸️ Pause';
+        }
+
+        function slowMotion() {
+            // More robust timeScale toggle to handle floating point precision
+            if (physics.timeScale >= 0.9) {
+                physics.timeScale = 0.3; // Slow motion
+            } else {
+                physics.timeScale = 1.0; // Normal speed
+            }
+            
+            const btn = event.target;
+            btn.textContent = physics.timeScale >= 0.9 ? '🐌 Slow Mo' : '⚡ Normal';
+            
+            console.log('Time scale changed to:', physics.timeScale);
+        }
+
+        function rewind() {
+            // Simple rewind - just reverse velocities
+            physics.objects.forEach(obj => {
+                obj.vx *= -0.5;
+                obj.vy *= -0.5;
+            });
+        }
+
+        function toggleDebug() {
+            physics.debugMode = !physics.debugMode;
+            const btn = event.target;
+            btn.textContent = physics.debugMode ? '👁️ Normal' : '🔍 Debug';
+        }
+
+        function clearAll() {
+            if (confirm('Clear all objects? This cannot be undone.')) {
+                physics.objects = physics.objects.filter(obj => obj.isStatic);
+                physics.constraints = [];
+                physics.particles = [];
+            }
+        }
+
+        function saveScene() {
+            const sceneData = {
+                objects: physics.objects.filter(obj => !obj.isStatic),
+                constraints: physics.constraints
+            };
+            const dataStr = JSON.stringify(sceneData);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'physics-scene.json';
+            link.click();
+        }
+
+        function loadScene() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const sceneData = JSON.parse(e.target.result);
+                            clearAll();
+                            sceneData.objects.forEach(objData => {
+                                const obj = new PhysicsObject(
+                                    objData.x, objData.y, objData.width, objData.height,
+                                    Object.keys(Materials).find(key => 
+                                        Materials[key].color === objData.material.color
+                                    ) || 'wood'
+                                );
+                                physics.addObject(obj);
+                            });
+                        } catch (err) {
+                            alert('Error loading scene: ' + err.message);
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        function shareScene() {
+            const sceneData = {
+                objects: physics.objects.filter(obj => !obj.isStatic),
+                constraints: physics.constraints
+            };
+            const encodedData = btoa(JSON.stringify(sceneData));
+            const shareUrl = window.location.href + '?scene=' + encodedData;
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                alert('Scene URL copied to clipboard!');
+            });
+        }
+
+        function startChallenge() {
+            document.getElementById('challengePanel').style.display = 'block';
+        }
+
+        function loadDemoPuzzle() {
+            // Clear scene
+            physics.objects = physics.objects.filter(obj => obj.isStatic && obj.y > 1000); // Keep only main ground
+            physics.constraints = [];
+            physics.particles = [];
+
+            // Bridge Builder Challenge
+            // Left platform (starting point)
+            const leftPlatform = new PhysicsObject(50, 600, 150, 20, 'metal');
+            leftPlatform.isStatic = true;
+            physics.addObject(leftPlatform);
+
+            // Right platform (target area) 
+            const rightPlatform = new PhysicsObject(850, 500, 150, 20, 'metal');
+            rightPlatform.isStatic = true;
+            physics.addObject(rightPlatform);
+
+            // Target zone marker (visual guide)
+            const targetZone = new PhysicsObject(900, 480, 50, 20, 'glass');
+            targetZone.isStatic = true;
+            physics.addObject(targetZone);
+
+            // The challenge ball (pink rubber ball)
+            const challengeBall = new CircleObject(100, 550, 25, 'rubber');
+            physics.addObject(challengeBall);
+
+            // Middle obstacles
+            const obstacle1 = new PhysicsObject(400, 650, 30, 100, 'metal');
+            obstacle1.isStatic = true;
+            physics.addObject(obstacle1);
+
+            const obstacle2 = new PhysicsObject(600, 580, 30, 120, 'metal');
+            obstacle2.isStatic = true;
+            physics.addObject(obstacle2);
+
+            // Supply materials (moveable building blocks)
+            const buildMaterial1 = new PhysicsObject(200, 400, 80, 15, 'wood');
+            physics.addObject(buildMaterial1);
+
+            const buildMaterial2 = new PhysicsObject(300, 350, 80, 15, 'wood');
+            physics.addObject(buildMaterial2);
+
+            const buildMaterial3 = new PhysicsObject(500, 300, 80, 15, 'wood');
+            physics.addObject(buildMaterial3);
+
+            // Bouncy helper
+            const bouncePad = new PhysicsObject(300, 680, 60, 10, 'rubber');
+            bouncePad.isStatic = true;
+            physics.addObject(bouncePad);
+
+            // Add main ground back
+            const ground = new PhysicsObject(0, canvas.height - 20, canvas.width, 20, 'metal');
+            ground.isStatic = true;
+            physics.addObject(ground);
+
+            alert('Demo Puzzle Loaded!\n\nChallenge: Get the pink ball to the glass target zone!\n\nUse the wooden planks to build a bridge or ramp.\nDrag objects with mouse to reposition them.\nTry using the bouncy pink pad for extra help!');
+        }
+
+        function closeChallengePanel() {
+            document.getElementById('challengePanel').style.display = 'none';
+        }
+
+        // Load shared scene from URL
+        function loadSharedScene() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sceneParam = urlParams.get('scene');
+            if (sceneParam) {
+                try {
+                    const sceneData = JSON.parse(atob(sceneParam));
+                    clearAll();
+                    setTimeout(() => {
+                        sceneData.objects.forEach(objData => {
+                            const obj = new PhysicsObject(
+                                objData.x, objData.y, objData.width, objData.height,
+                                Object.keys(Materials).find(key => 
+                                    Materials[key].color === objData.material.color
+                                ) || 'wood'
+                            );
+                            physics.addObject(obj);
+                        });
+                    }, 100);
+                } catch (err) {
+                    console.error('Error loading shared scene:', err);
+                }
+            }
+        }
+
+        // Start the game
+        init();
+        loadSharedScene();
+    </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+#!/bin/bash
+# FlowLoom wrapper script
+echo "FlowLoom v2.0.0 - Python Installer"
+echo "Installation path: /Users/rodk/.homesick/repos/dotfiles/.flowloom"

@@ -1,0 +1,42 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-filesystem"
+      ],
+      "args": [],
+      "env": {}
+    },
+    "memory": {
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ],
+      "args": [],
+      "env": {}
+    },
+    "basic-memory": {
+      "command": [
+        "uvx",
+        "basic-memory",
+        "mcp"
+      ],
+      "args": [],
+      "env": {
+        "BASIC_MEMORY_PROJECT_PATH": "/Users/rodk/.homesick/repos/dotfiles/.flowloom/.knowledge"
+      }
+    },
+    "github": {
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "args": [],
+      "env": {}
+    }
+  }
+}

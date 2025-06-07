@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# review_plans - List recent plans and get git branch status
+# Usage: review_plans [num_results]
+
+NUM_RESULTS=${1:-10}
+
+# Show recent plans
+bin/recent_plans "$NUM_RESULTS"
+
+# Get current branch information
+CURRENT_BRANCH=$(git branch --show-current)
+JIRA_TICKET=$(echo "$CURRENT_BRANCH" | grep -o '[A-Z]\+-[0-9]\+' || echo "No JIRA ticket found in branch name")
+
+echo -e "\n=== Current Branch Information ==="
+echo "Current branch: $CURRENT_BRANCH"
+echo "JIRA ticket: $JIRA_TICKET"
+
+# If we have a JIRA ticket, show specific plans
+if [[ "$JIRA_TICKET" =~ [A-Z]+-[0-9]+ ]]; then
+  PLANS_DIR="plans/$JIRA_TICKET"
+  if [ -d "$PLANS_DIR" ]; then
+    echo -e "\n=== Plans for ticket $JIRA_TICKET ==="
+    find "$PLANS_DIR" -type f -not -path "*/\.*" | grep -v "\(README\|INDEX\|DS_Store\|\.gitignore\)" | while read file; do
+      mod_time=$(stat -f "%m" "$file")
+      formatted_date=$(date -r "$mod_time" "+%Y-%m-%d %H:%M:%S")
+      echo "- $file (modified $formatted_date)"
+    done | sort -r
+  fi
+
+  # Show recent commits
+  echo -e "\n=== Recent commits for $CURRENT_BRANCH ==="
+  git log --oneline -n 5
+fi

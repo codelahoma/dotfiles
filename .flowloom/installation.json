@@ -1,0 +1,76 @@
+{
+  "version": "2.0.0",
+  "installation_date": 1749328160.3640199,
+  "components": [
+    "core",
+    "memory-system",
+    "session-management",
+    "command-system",
+    "testing-framework"
+  ],
+  "config": {
+    "target_directory": "/Users/rodk/.homesick/repos/dotfiles/.flowloom",
+    "permission_level": "development",
+    "components": [
+      "core",
+      "session-management",
+      "memory-system",
+      "command-system",
+      "testing-framework"
+    ],
+    "mcp_servers": [
+      {
+        "name": "filesystem",
+        "command": [
+          "npx",
+          "-y",
+          "@modelcontextprotocol/server-filesystem"
+        ],
+        "args": [],
+        "env": {},
+        "enabled": true
+      },
+      {
+        "name": "memory",
+        "command": [
+          "npx",
+          "-y",
+          "@modelcontextprotocol/server-memory"
+        ],
+        "args": [],
+        "env": {},
+        "enabled": true
+      },
+      {
+        "name": "basic-memory",
+        "command": [
+          "uvx",
+          "basic-memory",
+          "mcp"
+        ],
+        "args": [],
+        "env": {
+          "BASIC_MEMORY_PROJECT_PATH": "/Users/rodk/.homesick/repos/dotfiles/.flowloom/.knowledge"
+        },
+        "enabled": true
+      },
+      {
+        "name": "github",
+        "command": [
+          "npx",
+          "-y",
+          "@modelcontextprotocol/server-github"
+        ],
+        "args": [],
+        "env": {},
+        "enabled": true
+      }
+    ],
+    "dry_run": false,
+    "backup_existing": true,
+    "create_symlinks": true,
+    "shell_integration": true,
+    "custom_config": {},
+    "installation_profile": "developer"
+  }
+}

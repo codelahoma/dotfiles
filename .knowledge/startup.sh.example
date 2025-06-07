@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Example FlowLoom project-specific startup script
+# Copy this to .flowloom/startup.sh and customize for your project
+
+# This script is sourced by flowloom before launching Claude
+# You can add any project-specific initialization here
+
+# Example: Set project-specific environment variables
+export MY_PROJECT_API_KEY="development"
+
+# Example: Activate Python virtual environment
+# if [[ -f "venv/bin/activate" ]]; then
+#     source venv/bin/activate
+#     echo "  Python virtual environment activated"
+# fi
+
+# Example: Start background services
+# if command -v docker-compose >/dev/null 2>&1; then
+#     if [[ -f "docker-compose.yml" ]]; then
+#         docker-compose up -d
+#         echo "  Docker services started"
+#     fi
+# fi
+
+# Example: Check for required tools
+# for tool in npm poetry cargo; do
+#     if ! command -v "$tool" >/dev/null 2>&1; then
+#         echo -e "  ${YELLOW}Warning: $tool not found${NC}"
+#     fi
+# done
+
+# Example: Load project-specific aliases
+# alias build="npm run build"
+# alias test="npm test"
+# alias deploy="./scripts/deploy.sh"
+
+# Add your custom startup tasks here...

@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# FlowLoom Commentary Tool
+# Usage: flowloom-comment "Your commentary message"
+# Or:    echo "Message" | flowloom-comment
+
+COMMENTARY_FILE="./tmp/claude-commentary.md"
+
+# Ensure tmp directory exists
+mkdir -p "./tmp"
+
+# Get message from argument or stdin
+if [ "$#" -eq 0 ]; then
+    # Read from stdin
+    MESSAGE=$(cat)
+else
+    # Use provided argument
+    MESSAGE="$1"
+fi
+
+# Get current timestamp
+TIMESTAMP=$(date '+%H:%M:%S')
+
+# Check if commentary file exists, if not create with header
+if [ ! -f "$COMMENTARY_FILE" ]; then
+    cat > "$COMMENTARY_FILE" << 'EOF'
+## 💬 FlowLoom Live Commentary
+
+*Real-time updates from FlowLoom during processing...*
+
+---
+
+EOF
+fi
+
+# Append new commentary with timestamp
+cat >> "$COMMENTARY_FILE" << EOF
+
+**[$TIMESTAMP]** $MESSAGE
+EOF
+
+echo "💬 Commentary added: $MESSAGE"

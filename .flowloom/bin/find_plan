@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# find_plan - Search for plans containing keyword(s)
+# Usage: find_plan <search_term> [max_results]
+# Example: find_plan "2FA security" 5
+
+if [ -z "$1" ]; then
+  echo "Error: No search term provided"
+  echo "Usage: find_plan <search_term> [max_results]"
+  exit 1
+fi
+
+SEARCH_TERM="$1"
+MAX_RESULTS=${2:-10}
+
+echo "=== Searching for plans containing: \"$SEARCH_TERM\" (max $MAX_RESULTS results) ==="
+
+# Use grep to search through plan files
+grep -l -i "$SEARCH_TERM" $(find plans -type f -not -path "*/\.*" | grep -v "\(README\|INDEX\|DS_Store\|\.gitignore\)") | while read file; do
+  # Get modification time as timestamp
+  mod_time=$(stat -f "%m" "$file")
+  # Format the timestamp as human-readable date
+  formatted_date=$(date -r "$mod_time" "+%Y-%m-%d %H:%M:%S")
+  # Output the file and timestamp
+  echo "$mod_time $file $formatted_date"
+done | sort -nr | head -n "$MAX_RESULTS" | awk '{print NR") " $2 " (modified " $3 " " $4 ")"}'
+
+# Show content preview for the top result
+TOP_RESULT=$(grep -l -i "$SEARCH_TERM" $(find plans -type f -not -path "*/\.*" | grep -v "\(README\|INDEX\|DS_Store\|\.gitignore\)") | head -1)
+
+if [ -n "$TOP_RESULT" ]; then
+  echo -e "\n=== Preview of top result: $TOP_RESULT ==="
+  echo "$(grep -i -A 3 -B 3 "$SEARCH_TERM" "$TOP_RESULT" | head -7)"
+  echo -e "\n(Use 'cat $TOP_RESULT' to view the full file)"
+fi

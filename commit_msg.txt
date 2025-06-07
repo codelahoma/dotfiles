@@ -1,0 +1,5 @@
+Remove .direnv directory from git tracking
+
+.direnv is already listed in .gitignore but files were accidentally tracked.
+This commit removes the tracked files from git's memory while leaving the
+local directory intact.

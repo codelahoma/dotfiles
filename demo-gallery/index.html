@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowLoom Single-File HTML App Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .stat-card .label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .category {
+            margin-bottom: 3rem;
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .category-icon {
+            width: 48px;
+            height: 48px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .category h2 {
+            color: #222;
+            font-size: 1.8rem;
+        }
+        
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .app-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .app-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+        
+        .app-card.placeholder {
+            border: 2px dashed #ddd;
+            background: #fafafa;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 0.5rem;
+            color: #999;
+        }
+        
+        .app-card.placeholder .icon {
+            font-size: 2rem;
+            opacity: 0.5;
+        }
+        
+        .app-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .app-header h3 {
+            color: #333;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .app-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .app-footer {
+            padding: 1rem 1.5rem;
+            background: #f8f9fa;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .app-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.5rem 1rem;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        
+        .app-link:hover {
+            background: #5a61d8;
+        }
+        
+        .app-link.secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .app-link.secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #4caf50;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .badge.new {
+            background: #ff5722;
+        }
+        
+        .badge.popular {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .footer {
+            margin-top: 4rem;
+            padding: 3rem 0;
+            background: #222;
+            color: white;
+            text-align: center;
+        }
+        
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>FlowLoom HTML App Gallery</h1>
+        <p>Self-contained HTML applications created in a single turn with AI. No dependencies, just pure web magic.</p>
+    </header>
+    
+    <div class="container">
+        <div class="stats">
+            <div class="stat-card">
+                <div class="number">40</div>
+                <div class="label">App Prompts</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">5</div>
+                <div class="label">Implemented</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">4</div>
+                <div class="label">Categories</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">∞</div>
+                <div class="label">Possibilities</div>
+            </div>
+        </div>
+        
+        <!-- Productivity Apps -->
+        <div class="category">
+            <div class="category-header">
+                <div class="category-icon">📊</div>
+                <h2>Productivity Apps</h2>
+            </div>
+            <div class="app-grid">
+                <!-- Task Manager -->
+                <div class="app-card placeholder">
+                    <div class="icon">✅</div>
+                    <h3>Task Manager</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Markdown Editor -->
+                <div class="app-card placeholder">
+                    <div class="icon">📝</div>
+                    <h3>Markdown Editor</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Finance Tracker -->
+                <div class="app-card placeholder">
+                    <div class="icon">💰</div>
+                    <h3>Finance Tracker</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Pomodoro Timer -->
+                <div class="app-card placeholder">
+                    <div class="icon">⏱️</div>
+                    <h3>Pomodoro Timer</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Code Snippets -->
+                <div class="app-card placeholder">
+                    <div class="icon">💻</div>
+                    <h3>Code Snippets</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Habit Tracker -->
+                <div class="app-card placeholder">
+                    <div class="icon">📈</div>
+                    <h3>Habit Tracker</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Mind Map -->
+                <div class="app-card">
+                    <span class="badge new">NEW</span>
+                    <div class="app-header">
+                        <h3>Mind Map Creator</h3>
+                        <p class="app-description">
+                            Visual thinking tool with drag-and-drop nodes, auto-layout, 
+                            and export to JSON/PNG/SVG. Perfect for brainstorming!
+                        </p>
+                    </div>
+                    <div class="app-footer">
+                        <a href="creative-tools/mind-map-creator.html" class="app-link">
+                            ▶️ Launch App
+                        </a>
+                        <a href="https://github.com/codelahoma/flowloom/blob/main/prompts/single_file_html_apps.prompt#L266" class="app-link secondary">
+                            📋 View Prompt
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Password Vault -->
+                <div class="app-card placeholder">
+                    <div class="icon">🔐</div>
+                    <h3>Password Vault</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Resume Builder -->
+                <div class="app-card placeholder">
+                    <div class="icon">📄</div>
+                    <h3>Resume Builder</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Beat Maker -->
+                <div class="app-card placeholder">
+                    <div class="icon">🎵</div>
+                    <h3>Beat Maker</h3>
+                    <p>Coming Soon</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Games -->
+        <div class="category">
+            <div class="category-header">
+                <div class="category-icon">🎮</div>
+                <h2>Games</h2>
+            </div>
+            <div class="app-grid">
+                <!-- Space Shooter -->
+                <div class="app-card placeholder">
+                    <div class="icon">🚀</div>
+                    <h3>Space Shooter</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Puzzle Platformer -->
+                <div class="app-card placeholder">
+                    <div class="icon">🏃</div>
+                    <h3>Puzzle Platformer</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Tower Defense -->
+                <div class="app-card placeholder">
+                    <div class="icon">🏰</div>
+                    <h3>Tower Defense</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Match-3 RPG -->
+                <div class="app-card placeholder">
+                    <div class="icon">💎</div>
+                    <h3>Match-3 RPG</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Endless Runner -->
+                <div class="app-card placeholder">
+                    <div class="icon">🏃‍♂️</div>
+                    <h3>Endless Runner</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- RTS Game -->
+                <div class="app-card placeholder">
+                    <div class="icon">⚔️</div>
+                    <h3>RTS Conquest</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Rhythm Game -->
+                <div class="app-card placeholder">
+                    <div class="icon">🎼</div>
+                    <h3>Rhythm Game</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Roguelike -->
+                <div class="app-card placeholder">
+                    <div class="icon">🗝️</div>
+                    <h3>Roguelike</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Physics Sandbox -->
+                <div class="app-card" data-status="completed-janky" data-timing-status="pre-tracking" data-disposition="functional but rough edges" data-note="built before proper timing system implemented">
+                    <span class="badge" style="background: #ff9800;">JANKY</span>
+                    <div class="app-header">
+                        <h3>Physics Sandbox</h3>
+                        <p class="app-description">
+                            Interactive physics playground with realistic gravity, materials, 
+                            explosions, and object dragging. Build bridges, solve puzzles!
+                            <br><small style="color: #999; font-style: italic;">
+                                Built before timing tracking • Enhancement iterations tracked
+                            </small>
+                        </p>
+                    </div>
+                    <div class="app-footer">
+                        <a href="games/physics-sandbox.html" class="app-link">
+                            ▶️ Launch App
+                        </a>
+                        <a href="https://github.com/codelahoma/flowloom/blob/main/prompts/single_file_html_games.prompt#L1" class="app-link secondary">
+                            📋 View Prompt
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Card Battle -->
+                <div class="app-card placeholder">
+                    <div class="icon">🃏</div>
+                    <h3>Card Battle</h3>
+                    <p>Coming Soon</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Creative Tools -->
+        <div class="category">
+            <div class="category-header">
+                <div class="category-icon">🎨</div>
+                <h2>Creative Tools</h2>
+            </div>
+            <div class="app-grid">
+                <!-- Vector Editor -->
+                <div class="app-card placeholder">
+                    <div class="icon">✏️</div>
+                    <h3>Vector Editor</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- DAW -->
+                <div class="app-card placeholder">
+                    <div class="icon">🎹</div>
+                    <h3>Digital Audio Workstation</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- 3D Modeler -->
+                <div class="app-card placeholder">
+                    <div class="icon">🎲</div>
+                    <h3>3D Modeler</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Photo Editor -->
+                <div class="app-card placeholder">
+                    <div class="icon">📷</div>
+                    <h3>Photo Editor</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Video Editor -->
+                <div class="app-card placeholder">
+                    <div class="icon">🎬</div>
+                    <h3>Video Editor</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Animation Studio -->
+                <div class="app-card placeholder">
+                    <div class="icon">🎞️</div>
+                    <h3>Animation Studio</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Diagram Designer -->
+                <div class="app-card placeholder">
+                    <div class="icon">📐</div>
+                    <h3>Diagram Designer</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Font Designer -->
+                <div class="app-card placeholder">
+                    <div class="icon">🔤</div>
+                    <h3>Font Designer</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Circuit Designer -->
+                <div class="app-card placeholder">
+                    <div class="icon">⚡</div>
+                    <h3>Circuit Designer</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Architecture Tool -->
+                <div class="app-card placeholder">
+                    <div class="icon">🏛️</div>
+                    <h3>Architecture Tool</h3>
+                    <p>Coming Soon</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Data Tools -->
+        <div class="category">
+            <div class="category-header">
+                <div class="category-icon">📊</div>
+                <h2>Data & Analytics Tools</h2>
+            </div>
+            <div class="app-grid">
+                <!-- Spreadsheet -->
+                <div class="app-card" data-status="completed" data-timing-status="properly-tracked" data-one-turn-duration="5 minutes" data-complexity="medium" data-shell-id="$shell_pid">
+                    <span class="badge new">NEW</span>
+                    <div class="app-header">
+                        <h3>Spreadsheet</h3>
+                        <p class="app-description">
+                            Full-featured spreadsheet with formulas (SUM, AVERAGE), CSV import/export, 
+                            charts, and local storage. Professional grid interface with real-time calculations.
+                        </p>
+                    </div>
+                    <div class="app-footer">
+                        <a href="data-tools/spreadsheet.html" class="app-link">
+                            ▶️ Launch App
+                        </a>
+                        <a href="https://github.com/codelahoma/flowloom/blob/main/prompts/single_file_html_data_tools.prompt#L1" class="app-link secondary">
+                            📋 View Prompt
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- SQL Database -->
+                <div class="app-card placeholder">
+                    <div class="icon">🗄️</div>
+                    <h3>SQL Database</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Data Viz -->
+                <div class="app-card placeholder">
+                    <div class="icon">📊</div>
+                    <h3>Data Visualization</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Log Analyzer -->
+                <div class="app-card placeholder">
+                    <div class="icon">📋</div>
+                    <h3>Log Analyzer</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- JSON Editor -->
+                <div class="app-card" data-status="completed" data-timing-status="properly-tracked" data-one-turn-duration="4 minutes" data-complexity="medium" data-shell-id="$shell_pid">
+                    <span class="badge new">NEW</span>
+                    <div class="app-header">
+                        <h3>JSON/XML Editor</h3>
+                        <p class="app-description">
+                            Professional code editor with syntax highlighting, real-time validation, 
+                            tree view, formatting, and search. Monaco-style dark theme interface.
+                        </p>
+                    </div>
+                    <div class="app-footer">
+                        <a href="data-tools/json-xml-editor.html" class="app-link">
+                            ▶️ Launch App
+                        </a>
+                        <a href="https://github.com/codelahoma/flowloom/blob/main/prompts/single_file_html_data_tools.prompt#L50" class="app-link secondary">
+                            📋 View Prompt
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Network Analyzer -->
+                <div class="app-card placeholder">
+                    <div class="icon">🌐</div>
+                    <h3>Network Analyzer</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Calculator -->
+                <div class="app-card" data-status="completed" data-timing-status="properly-tracked" data-one-turn-duration="4 minutes" data-complexity="medium" data-shell-id="$shell_pid">
+                    <span class="badge new">NEW</span>
+                    <div class="app-header">
+                        <h3>Scientific Calculator</h3>
+                        <p class="app-description">
+                            Advanced calculator with Basic, Scientific, and Programming modes. 
+                            Memory system, history, constants, and full keyboard support.
+                        </p>
+                    </div>
+                    <div class="app-footer">
+                        <a href="data-tools/scientific-calculator.html" class="app-link">
+                            ▶️ Launch App
+                        </a>
+                        <a href="https://github.com/codelahoma/flowloom/blob/main/prompts/single_file_html_data_tools.prompt#L100" class="app-link secondary">
+                            📋 View Prompt
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Project Manager -->
+                <div class="app-card placeholder">
+                    <div class="icon">📅</div>
+                    <h3>Project Manager</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- Form Builder -->
+                <div class="app-card placeholder">
+                    <div class="icon">📝</div>
+                    <h3>Form Builder</h3>
+                    <p>Coming Soon</p>
+                </div>
+                
+                <!-- BI Dashboard -->
+                <div class="app-card placeholder">
+                    <div class="icon">📉</div>
+                    <h3>BI Dashboard</h3>
+                    <p>Coming Soon</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <p>Part of the <a href="https://github.com/codelahoma/flowloom">FlowLoom</a> project</p>
+        <p>All applications are self-contained HTML files with no external dependencies</p>
+    </footer>
+    
+    <script>
+        // Update stats dynamically
+        function updateStats() {
+            const implemented = document.querySelectorAll('.app-card:not(.placeholder)').length;
+            document.querySelector('.stat-card:nth-child(2) .number').textContent = implemented;
+        }
+        
+        // Smooth scroll for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Initialize
+        updateStats();
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# FlowLoom uv wrapper - automatically handles direnv and other virtual environments
+
+# Ensure uv is in PATH
+export PATH="$HOME/.local/bin:$PATH"
+
+# Check if we're in a virtual environment
+if [ -n "$VIRTUAL_ENV" ]; then
+    # Use --active flag to avoid warnings
+    exec uv run --active "$@"
+else
+    exec uv run "$@"
+fi

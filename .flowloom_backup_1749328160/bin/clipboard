@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+# clipboard - Simple clipboard management script for FlowLoom
+# Usage: clipboard copy <text> or clipboard copy -f <file>
+#        clipboard paste
+#        clipboard copy-text <text> -tmp  (creates temp file, copies, auto-cleans)
+
+set -euo pipefail
+
+# Function to display usage
+usage() {
+    echo "Usage: $0 {copy|copy-text|paste} [options]"
+    echo ""
+    echo "Commands:"
+    echo "  copy <text>           Copy text to clipboard"
+    echo "  copy -f <file>        Copy file contents to clipboard"
+    echo "  copy-text <text>      Copy text via temporary file (auto-cleaned)"
+    echo "  paste                 Output clipboard contents"
+    echo ""
+    echo "Examples:"
+    echo "  $0 copy 'Hello, World!'"
+    echo "  $0 copy -f README.md"
+    echo "  $0 copy-text 'Multi-line text content'"
+    echo "  $0 paste"
+    exit 1
+}
+
+# Check if at least one argument is provided
+if [ $# -lt 1 ]; then
+    usage
+fi
+
+# Determine the clipboard command based on the OS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    COPY_CMD="pbcopy"
+    PASTE_CMD="pbpaste"
+elif command -v xclip &> /dev/null; then
+    # Linux with xclip
+    COPY_CMD="xclip -selection clipboard"
+    PASTE_CMD="xclip -selection clipboard -o"
+elif command -v xsel &> /dev/null; then
+    # Linux with xsel
+    COPY_CMD="xsel --clipboard --input"
+    PASTE_CMD="xsel --clipboard --output"
+else
+    echo "Error: No clipboard utility found. Please install xclip or xsel on Linux."
+    exit 1
+fi
+
+# Create a cleanup function for temporary files
+cleanup_temp() {
+    if [[ -n "${TEMP_FILE:-}" && -f "$TEMP_FILE" ]]; then
+        rm -f "$TEMP_FILE"
+    fi
+}
+
+# Set up trap to clean up on exit
+trap cleanup_temp EXIT
+
+# Main command processing
+case "$1" in
+    copy)
+        shift
+        if [ $# -eq 0 ]; then
+            echo "Error: No text or file specified for copy"
+            usage
+        fi
+        
+        if [ "$1" = "-f" ]; then
+            # Copy from file
+            shift
+            if [ $# -eq 0 ]; then
+                echo "Error: No file specified after -f"
+                usage
+            fi
+            
+            if [ ! -f "$1" ]; then
+                echo "Error: File '$1' not found"
+                exit 1
+            fi
+            
+            cat "$1" | $COPY_CMD
+            echo "Copied contents of '$1' to clipboard"
+        else
+            # Copy text directly
+            echo -n "$*" | $COPY_CMD
+            echo "Copied text to clipboard"
+        fi
+        ;;
+        
+    copy-text)
+        shift
+        if [ $# -eq 0 ]; then
+            echo "Error: No text specified for copy-text"
+            usage
+        fi
+        
+        # Create temporary file in current directory
+        TEMP_FILE=".tmp_clipboard_$$"
+        echo -n "$*" > "$TEMP_FILE"
+        
+        cat "$TEMP_FILE" | $COPY_CMD
+        echo "Copied text to clipboard via temporary file"
+        ;;
+        
+    paste)
+        $PASTE_CMD
+        ;;
+        
+    *)
+        echo "Error: Unknown command '$1'"
+        usage
+        ;;
+esac

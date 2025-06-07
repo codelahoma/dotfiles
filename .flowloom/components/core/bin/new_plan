@@ -1,0 +1,98 @@
+#!/bin/bash
+
+# new_plan - Create a new plan for a JIRA ticket
+# Usage: new_plan <ticket_id> <plan_name>
+# Example: new_plan AUP-1485 "2FA Implementation Plan"
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+  echo "Error: Missing required parameters"
+  echo "Usage: new_plan <ticket_id> <plan_name>"
+  exit 1
+fi
+
+TICKET_ID="$1"
+PLAN_NAME="$2"
+
+# Convert the plan name to a filename-friendly format
+FILENAME=$(echo "$PLAN_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '_').md
+
+# Create the ticket directory if it doesn't exist
+TICKET_DIR="plans/$TICKET_ID"
+if [ ! -d "$TICKET_DIR" ]; then
+  mkdir -p "$TICKET_DIR"
+  echo "Created directory: $TICKET_DIR"
+  
+  # Create README.md if it doesn't exist
+  if [ ! -f "$TICKET_DIR/README.md" ]; then
+    echo "# $TICKET_ID: Plans and Documentation" > "$TICKET_DIR/README.md"
+    echo "" >> "$TICKET_DIR/README.md"
+    echo "This directory contains planning documents for the $TICKET_ID ticket." >> "$TICKET_DIR/README.md"
+    echo "" >> "$TICKET_DIR/README.md"
+    echo "## Contents" >> "$TICKET_DIR/README.md"
+    echo "" >> "$TICKET_DIR/README.md"
+    echo "- [$FILENAME](./$FILENAME) - $PLAN_NAME" >> "$TICKET_DIR/README.md"
+    echo "Created README.md with initial content"
+  fi
+fi
+
+# Full path for the new plan
+PLAN_PATH="$TICKET_DIR/$FILENAME"
+
+# Create plan file with template if it doesn't exist
+if [ ! -f "$PLAN_PATH" ]; then
+  echo "# $PLAN_NAME" > "$PLAN_PATH"
+  echo "" >> "$PLAN_PATH"
+  echo "## Overview" >> "$PLAN_PATH"
+  echo "" >> "$PLAN_PATH"
+  echo "<!-- Provide a brief overview of this plan -->" >> "$PLAN_PATH"
+  echo "" >> "$PLAN_PATH"
+  echo "## Goals" >> "$PLAN_PATH"
+  echo "" >> "$PLAN_PATH"
+  echo "- Goal 1" >> "$PLAN_PATH"
+  echo "- Goal 2" >> "$PLAN_PATH"
+  echo "" >> "$PLAN_PATH"
+  echo "## Implementation Steps" >> "$PLAN_PATH"
+  echo "" >> "$PLAN_PATH"
+  echo "1. Step 1" >> "$PLAN_PATH"
+  echo "2. Step 2" >> "$PLAN_PATH"
+  echo "" >> "$PLAN_PATH"
+  echo "## Testing" >> "$PLAN_PATH"
+  echo "" >> "$PLAN_PATH"
+  echo "<!-- Outline testing approach -->" >> "$PLAN_PATH"
+  echo "" >> "$PLAN_PATH"
+  echo "Created new plan: $PLAN_PATH"
+  
+  # Also create matching docs directory if it doesn't exist
+  DOC_DIR="docs/$TICKET_ID"
+  if [ ! -d "$DOC_DIR" ]; then
+    mkdir -p "$DOC_DIR"
+    echo "Created directory: $DOC_DIR"
+    
+    # Create README.md if it doesn't exist
+    if [ ! -f "$DOC_DIR/README.md" ]; then
+      echo "# $TICKET_ID: Documentation" > "$DOC_DIR/README.md"
+      echo "" >> "$DOC_DIR/README.md"
+      echo "This directory contains documentation related to the $TICKET_ID ticket." >> "$DOC_DIR/README.md"
+      echo "" >> "$DOC_DIR/README.md"
+      echo "## Contents" >> "$DOC_DIR/README.md"
+      echo "" >> "$DOC_DIR/README.md"
+      echo "<!-- Add documentation files here -->" >> "$DOC_DIR/README.md"
+      echo "Created README.md in docs directory"
+    fi
+  fi
+
+  # Update INDEX.md to include the new plan
+  if grep -q "$TICKET_ID" plans/INDEX.md; then
+    echo "The ticket $TICKET_ID is already in INDEX.md. Please update manually if needed."
+  else
+    echo -e "\n### $TICKET_ID Plans\n" >> plans/INDEX.md
+    echo "- [$PLAN_NAME](./$TICKET_ID/$FILENAME) - New plan for $TICKET_ID" >> plans/INDEX.md
+    echo "Updated INDEX.md with new plan reference"
+  fi
+else
+  echo "Error: Plan already exists at $PLAN_PATH"
+  exit 1
+fi
+
+echo -e "\nPlan created successfully. You can edit it with your favorite editor."
+echo "Edit: $PLAN_PATH"

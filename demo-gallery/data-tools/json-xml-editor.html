@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON/XML Editor - Professional Data Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            overflow: hidden;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .app-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-primary {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+        }
+
+        .format-selector {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            color: white;
+            padding: 6px 10px;
+            font-size: 0.85rem;
+        }
+
+        .main-container {
+            display: flex;
+            height: calc(100vh - 60px);
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #252526;
+            border-right: 1px solid #3e3e42;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 12px 15px;
+            background: #2d2d30;
+            border-bottom: 1px solid #3e3e42;
+            font-weight: 600;
+            color: #cccccc;
+        }
+
+        .tree-view {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .tree-node {
+            padding: 4px 15px;
+            cursor: pointer;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85rem;
+            border-left: 3px solid transparent;
+        }
+
+        .tree-node:hover {
+            background: #2a2d2e;
+        }
+
+        .tree-node.selected {
+            background: #094771;
+            border-left-color: #007acc;
+        }
+
+        .tree-node.expandable::before {
+            content: '▶';
+            margin-right: 6px;
+            color: #cccccc;
+        }
+
+        .tree-node.expanded::before {
+            content: '▼';
+        }
+
+        .tree-node.key {
+            color: #9cdcfe;
+        }
+
+        .tree-node.string {
+            color: #ce9178;
+        }
+
+        .tree-node.number {
+            color: #b5cea8;
+        }
+
+        .tree-node.boolean {
+            color: #569cd6;
+        }
+
+        .tree-node.null {
+            color: #569cd6;
+        }
+
+        .editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-header {
+            background: #2d2d30;
+            padding: 8px 15px;
+            border-bottom: 1px solid #3e3e42;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .editor-tabs {
+            display: flex;
+            gap: 2px;
+        }
+
+        .editor-tab {
+            padding: 6px 12px;
+            background: #3c3c3c;
+            border: none;
+            border-radius: 4px 4px 0 0;
+            color: #cccccc;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .editor-tab.active {
+            background: #1e1e1e;
+            color: #ffffff;
+        }
+
+        .validation-status {
+            font-size: 0.85rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .status-valid {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status-invalid {
+            background: #f44336;
+            color: white;
+        }
+
+        .editor-content {
+            flex: 1;
+            display: flex;
+        }
+
+        .editor-textarea {
+            flex: 1;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border: none;
+            outline: none;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            padding: 15px;
+            resize: none;
+            white-space: pre;
+            overflow-wrap: normal;
+            overflow-x: auto;
+        }
+
+        .editor-textarea:focus {
+            background: #1e1e1e;
+        }
+
+        .line-numbers {
+            background: #1e1e1e;
+            color: #858585;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            padding: 15px 10px 15px 15px;
+            border-right: 1px solid #3e3e42;
+            white-space: pre;
+            user-select: none;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .search-bar {
+            background: #2d2d30;
+            padding: 10px 15px;
+            border-bottom: 1px solid #3e3e42;
+            display: none;
+        }
+
+        .search-input {
+            width: 100%;
+            background: #3c3c3c;
+            border: 1px solid #5a5a5a;
+            border-radius: 4px;
+            color: #d4d4d4;
+            padding: 6px 10px;
+            font-size: 0.9rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #007acc;
+        }
+
+        .error-panel {
+            background: #2d2d30;
+            border-top: 1px solid #3e3e42;
+            padding: 10px 15px;
+            max-height: 150px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .error-item {
+            padding: 4px 0;
+            font-size: 0.85rem;
+            color: #f44336;
+            font-family: monospace;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #2d2d30;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: 200px;
+                border-right: none;
+                border-bottom: 1px solid #3e3e42;
+            }
+            
+            .app-header {
+                padding: 10px 15px;
+            }
+            
+            .toolbar {
+                order: 2;
+                width: 100%;
+                margin-top: 8px;
+            }
+        }
+
+        /* Syntax highlighting */
+        .json-string { color: #ce9178; }
+        .json-number { color: #b5cea8; }
+        .json-boolean { color: #569cd6; }
+        .json-null { color: #569cd6; }
+        .json-key { color: #9cdcfe; }
+        .json-punctuation { color: #d4d4d4; }
+        
+        .xml-tag { color: #569cd6; }
+        .xml-attribute { color: #9cdcfe; }
+        .xml-text { color: #d4d4d4; }
+        .xml-comment { color: #6a9955; }
+    </style>
+</head>
+<body>
+    <div class="app-header">
+        <div class="app-title">
+            🗂️ JSON/XML Editor
+        </div>
+        <div class="toolbar">
+            <select class="format-selector" id="formatSelector" onchange="switchFormat()">
+                <option value="json">JSON</option>
+                <option value="xml">XML</option>
+            </select>
+            <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">
+                📁 Open
+            </button>
+            <button class="btn btn-secondary" onclick="downloadFile()">
+                💾 Save
+            </button>
+            <button class="btn btn-primary" onclick="formatDocument()">
+                ✨ Format
+            </button>
+            <button class="btn btn-primary" onclick="validateDocument()">
+                ✓ Validate
+            </button>
+            <button class="btn btn-secondary" onclick="toggleSearch()">
+                🔍 Search
+            </button>
+            <button class="btn btn-danger" onclick="clearEditor()">
+                🗑️ Clear
+            </button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="sidebar-header">Structure</div>
+            <div class="tree-view" id="treeView">
+                <div style="padding: 20px; text-align: center; color: #858585;">
+                    Enter JSON or XML to see structure
+                </div>
+            </div>
+        </div>
+
+        <div class="editor-container">
+            <div class="editor-header">
+                <div class="editor-tabs">
+                    <button class="editor-tab active" id="editorTab">Editor</button>
+                </div>
+                <div class="validation-status" id="validationStatus">Ready</div>
+            </div>
+
+            <div class="search-bar" id="searchBar">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search..." onkeyup="performSearch()">
+            </div>
+
+            <div class="editor-content">
+                <div class="line-numbers" id="lineNumbers">1</div>
+                <textarea class="editor-textarea" id="editor" placeholder="Enter your JSON or XML here..." oninput="onEditorChange()" onscroll="syncLineNumbers()" onkeydown="handleEditorKeydown(event)"></textarea>
+            </div>
+
+            <div class="error-panel" id="errorPanel">
+                <div id="errorList"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="helpModal">
+        <div class="modal-content">
+            <div class="modal-header">Keyboard Shortcuts</div>
+            <div class="modal-body">
+                <ul style="color: #cccccc; line-height: 1.6;">
+                    <li><strong>Ctrl+F</strong> - Search</li>
+                    <li><strong>Ctrl+S</strong> - Save</li>
+                    <li><strong>Ctrl+Shift+F</strong> - Format</li>
+                    <li><strong>Ctrl+Shift+V</strong> - Validate</li>
+                    <li><strong>Tab</strong> - Indent</li>
+                    <li><strong>Shift+Tab</strong> - Unindent</li>
+                    <li><strong>Ctrl+/</strong> - Toggle comment</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="fileInput" class="file-input" accept=".json,.xml,.txt" onchange="loadFile(event)">
+
+    <script>
+        let currentFormat = 'json';
+        let editorContent = '';
+        let validationErrors = [];
+
+        // Initialize editor
+        function initEditor() {
+            updateLineNumbers();
+            loadSampleData();
+        }
+
+        // Load sample data
+        function loadSampleData() {
+            const sampleJSON = {
+                "name": "Sample Data",
+                "version": "1.0.0",
+                "users": [
+                    {
+                        "id": 1,
+                        "name": "John Doe",
+                        "email": "john@example.com",
+                        "active": true
+                    },
+                    {
+                        "id": 2,
+                        "name": "Jane Smith",
+                        "email": "jane@example.com",
+                        "active": false
+                    }
+                ],
+                "settings": {
+                    "theme": "dark",
+                    "language": "en",
+                    "notifications": true
+                }
+            };
+
+            document.getElementById('editor').value = JSON.stringify(sampleJSON, null, 2);
+            onEditorChange();
+        }
+
+        // Switch format
+        function switchFormat() {
+            const selector = document.getElementById('formatSelector');
+            currentFormat = selector.value;
+            
+            if (currentFormat === 'xml' && document.getElementById('editor').value.trim() === '') {
+                loadSampleXML();
+            }
+            
+            updateTreeView();
+            validateDocument();
+        }
+
+        // Load sample XML
+        function loadSampleXML() {
+            const sampleXML = `<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <name>Sample Data</name>
+    <version>1.0.0</version>
+    <users>
+        <user id="1">
+            <name>John Doe</name>
+            <email>john@example.com</email>
+            <active>true</active>
+        </user>
+        <user id="2">
+            <name>Jane Smith</name>
+            <email>jane@example.com</email>
+            <active>false</active>
+        </user>
+    </users>
+    <settings>
+        <theme>dark</theme>
+        <language>en</language>
+        <notifications>true</notifications>
+    </settings>
+</root>`;
+            document.getElementById('editor').value = sampleXML;
+            onEditorChange();
+        }
+
+        // Editor change handler
+        function onEditorChange() {
+            editorContent = document.getElementById('editor').value;
+            updateLineNumbers();
+            updateTreeView();
+            autoValidate();
+        }
+
+        // Update line numbers
+        function updateLineNumbers() {
+            const editor = document.getElementById('editor');
+            const lineNumbers = document.getElementById('lineNumbers');
+            const lines = editor.value.split('\n').length;
+            
+            let numbers = '';
+            for (let i = 1; i <= lines; i++) {
+                numbers += i + '\n';
+            }
+            lineNumbers.textContent = numbers;
+        }
+
+        // Sync line numbers scroll
+        function syncLineNumbers() {
+            const editor = document.getElementById('editor');
+            const lineNumbers = document.getElementById('lineNumbers');
+            lineNumbers.scrollTop = editor.scrollTop;
+        }
+
+        // Handle editor keydown
+        function handleEditorKeydown(event) {
+            if (event.key === 'Tab') {
+                event.preventDefault();
+                insertTab(event.shiftKey);
+            } else if (event.ctrlKey || event.metaKey) {
+                switch (event.key) {
+                    case 'f':
+                        event.preventDefault();
+                        toggleSearch();
+                        break;
+                    case 's':
+                        event.preventDefault();
+                        downloadFile();
+                        break;
+                    case 'F':
+                        if (event.shiftKey) {
+                            event.preventDefault();
+                            formatDocument();
+                        }
+                        break;
+                    case 'V':
+                        if (event.shiftKey) {
+                            event.preventDefault();
+                            validateDocument();
+                        }
+                        break;
+                    case '/':
+                        event.preventDefault();
+                        toggleComment();
+                        break;
+                }
+            }
+        }
+
+        // Insert tab
+        function insertTab(unindent = false) {
+            const editor = document.getElementById('editor');
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            const value = editor.value;
+            
+            if (unindent) {
+                // Remove indentation
+                const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+                const line = value.substring(lineStart, value.indexOf('\n', start) || value.length);
+                
+                if (line.startsWith('    ')) {
+                    editor.value = value.substring(0, lineStart) + line.substring(4) + value.substring(lineStart + line.length);
+                    editor.selectionStart = editor.selectionEnd = start - 4;
+                } else if (line.startsWith('\t')) {
+                    editor.value = value.substring(0, lineStart) + line.substring(1) + value.substring(lineStart + line.length);
+                    editor.selectionStart = editor.selectionEnd = start - 1;
+                }
+            } else {
+                // Add indentation
+                editor.value = value.substring(0, start) + '    ' + value.substring(end);
+                editor.selectionStart = editor.selectionEnd = start + 4;
+            }
+            
+            onEditorChange();
+        }
+
+        // Toggle comment
+        function toggleComment() {
+            const editor = document.getElementById('editor');
+            const start = editor.selectionStart;
+            const value = editor.value;
+            const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+            const lineEnd = value.indexOf('\n', start);
+            const line = value.substring(lineStart, lineEnd === -1 ? value.length : lineEnd);
+            
+            let newLine;
+            if (currentFormat === 'json') {
+                // JSON doesn't support comments, so we'll use // for reference
+                if (line.trim().startsWith('//')) {
+                    newLine = line.replace(/^\s*\/\/\s?/, '');
+                } else {
+                    newLine = '// ' + line;
+                }
+            } else {
+                // XML comments
+                if (line.trim().startsWith('<!--') && line.trim().endsWith('-->')) {
+                    newLine = line.replace(/^\s*<!--\s?/, '').replace(/\s?-->\s*$/, '');
+                } else {
+                    newLine = '<!-- ' + line + ' -->';
+                }
+            }
+            
+            editor.value = value.substring(0, lineStart) + newLine + value.substring(lineEnd === -1 ? value.length : lineEnd);
+            onEditorChange();
+        }
+
+        // Format document
+        function formatDocument() {
+            const editor = document.getElementById('editor');
+            const content = editor.value.trim();
+            
+            if (!content) return;
+            
+            try {
+                if (currentFormat === 'json') {
+                    const parsed = JSON.parse(content);
+                    editor.value = JSON.stringify(parsed, null, 2);
+                } else {
+                    editor.value = formatXML(content);
+                }
+                onEditorChange();
+                showStatus('Formatted successfully', 'valid');
+            } catch (error) {
+                showStatus('Format error: ' + error.message, 'invalid');
+            }
+        }
+
+        // Format XML
+        function formatXML(xml) {
+            const formatted = xml.replace(/(>)(<)(\/*)/g, '$1\n$2$3');
+            const lines = formatted.split('\n');
+            let indentLevel = 0;
+            const indentStr = '  ';
+            
+            return lines.map(line => {
+                const trimmed = line.trim();
+                if (!trimmed) return '';
+                
+                if (trimmed.match(/^<\/\w/)) {
+                    indentLevel--;
+                }
+                
+                const indented = indentStr.repeat(indentLevel) + trimmed;
+                
+                if (trimmed.match(/^<\w[^>]*[^\/]>.*$/)) {
+                    indentLevel++;
+                }
+                
+                return indented;
+            }).join('\n');
+        }
+
+        // Validate document
+        function validateDocument() {
+            const editor = document.getElementById('editor');
+            const content = editor.value.trim();
+            
+            if (!content) {
+                showStatus('Ready', 'valid');
+                hideErrors();
+                return;
+            }
+            
+            validationErrors = [];
+            
+            try {
+                if (currentFormat === 'json') {
+                    JSON.parse(content);
+                } else {
+                    validateXML(content);
+                }
+                showStatus('Valid', 'valid');
+                hideErrors();
+            } catch (error) {
+                validationErrors.push(error.message);
+                showStatus('Invalid', 'invalid');
+                showErrors();
+            }
+        }
+
+        // Validate XML
+        function validateXML(xml) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(xml, 'text/xml');
+            const errors = doc.getElementsByTagName('parsererror');
+            
+            if (errors.length > 0) {
+                throw new Error(errors[0].textContent);
+            }
+        }
+
+        // Auto validate
+        function autoValidate() {
+            setTimeout(validateDocument, 500);
+        }
+
+        // Show status
+        function showStatus(message, type) {
+            const status = document.getElementById('validationStatus');
+            status.textContent = message;
+            status.className = 'validation-status status-' + type;
+        }
+
+        // Show errors
+        function showErrors() {
+            const errorPanel = document.getElementById('errorPanel');
+            const errorList = document.getElementById('errorList');
+            
+            errorList.innerHTML = '';
+            validationErrors.forEach(error => {
+                const errorItem = document.createElement('div');
+                errorItem.className = 'error-item';
+                errorItem.textContent = error;
+                errorList.appendChild(errorItem);
+            });
+            
+            errorPanel.style.display = 'block';
+        }
+
+        // Hide errors
+        function hideErrors() {
+            document.getElementById('errorPanel').style.display = 'none';
+        }
+
+        // Update tree view
+        function updateTreeView() {
+            const treeView = document.getElementById('treeView');
+            const content = document.getElementById('editor').value.trim();
+            
+            if (!content) {
+                treeView.innerHTML = '<div style="padding: 20px; text-align: center; color: #858585;">Enter JSON or XML to see structure</div>';
+                return;
+            }
+            
+            try {
+                if (currentFormat === 'json') {
+                    const parsed = JSON.parse(content);
+                    treeView.innerHTML = generateJSONTree(parsed);
+                } else {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(content, 'text/xml');
+                    treeView.innerHTML = generateXMLTree(doc.documentElement);
+                }
+            } catch (error) {
+                treeView.innerHTML = '<div style="padding: 20px; text-align: center; color: #f44336;">Invalid format</div>';
+            }
+        }
+
+        // Generate JSON tree
+        function generateJSONTree(obj, level = 0) {
+            let html = '';
+            const indent = '  '.repeat(level);
+            
+            if (typeof obj === 'object' && obj !== null) {
+                if (Array.isArray(obj)) {
+                    html += `<div class="tree-node expandable expanded" style="padding-left: ${level * 20}px;">Array[${obj.length}]</div>`;
+                    obj.forEach((item, index) => {
+                        html += `<div class="tree-node" style="padding-left: ${(level + 1) * 20}px;">[${index}]: ${generateJSONTree(item, level + 1)}</div>`;
+                    });
+                } else {
+                    html += `<div class="tree-node expandable expanded" style="padding-left: ${level * 20}px;">Object</div>`;
+                    Object.keys(obj).forEach(key => {
+                        html += `<div class="tree-node key" style="padding-left: ${(level + 1) * 20}px;">${key}: ${generateJSONTree(obj[key], level + 1)}</div>`;
+                    });
+                }
+            } else {
+                const type = typeof obj;
+                const className = type === 'string' ? 'string' : type === 'number' ? 'number' : type === 'boolean' ? 'boolean' : 'null';
+                const displayValue = type === 'string' ? `"${obj}"` : String(obj);
+                return `<span class="tree-node ${className}">${displayValue}</span>`;
+            }
+            
+            return html;
+        }
+
+        // Generate XML tree
+        function generateXMLTree(element, level = 0) {
+            let html = '';
+            
+            if (element.nodeType === 1) { // Element node
+                html += `<div class="tree-node expandable expanded xml-tag" style="padding-left: ${level * 20}px;">&lt;${element.tagName}&gt;</div>`;
+                
+                // Attributes
+                if (element.attributes.length > 0) {
+                    Array.from(element.attributes).forEach(attr => {
+                        html += `<div class="tree-node xml-attribute" style="padding-left: ${(level + 1) * 20}px;">@${attr.name}="${attr.value}"</div>`;
+                    });
+                }
+                
+                // Child nodes
+                Array.from(element.childNodes).forEach(child => {
+                    if (child.nodeType === 1) {
+                        html += generateXMLTree(child, level + 1);
+                    } else if (child.nodeType === 3 && child.textContent.trim()) {
+                        html += `<div class="tree-node xml-text" style="padding-left: ${(level + 1) * 20}px;">${child.textContent.trim()}</div>`;
+                    }
+                });
+            }
+            
+            return html;
+        }
+
+        // Toggle search
+        function toggleSearch() {
+            const searchBar = document.getElementById('searchBar');
+            const searchInput = document.getElementById('searchInput');
+            
+            if (searchBar.style.display === 'none' || !searchBar.style.display) {
+                searchBar.style.display = 'block';
+                searchInput.focus();
+            } else {
+                searchBar.style.display = 'none';
+                clearHighlights();
+            }
+        }
+
+        // Perform search
+        function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value;
+            const editor = document.getElementById('editor');
+            
+            clearHighlights();
+            
+            if (searchTerm) {
+                highlightSearchResults(searchTerm);
+            }
+        }
+
+        // Highlight search results
+        function highlightSearchResults(term) {
+            // Simple highlighting - in a real app, you'd want more sophisticated highlighting
+            console.log('Searching for:', term);
+        }
+
+        // Clear highlights
+        function clearHighlights() {
+            // Clear any existing highlights
+        }
+
+        // Load file
+        function loadFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('editor').value = e.target.result;
+                
+                // Auto-detect format
+                if (file.name.endsWith('.xml')) {
+                    document.getElementById('formatSelector').value = 'xml';
+                    currentFormat = 'xml';
+                } else {
+                    document.getElementById('formatSelector').value = 'json';
+                    currentFormat = 'json';
+                }
+                
+                onEditorChange();
+            };
+            reader.readAsText(file);
+        }
+
+        // Download file
+        function downloadFile() {
+            const content = document.getElementById('editor').value;
+            const extension = currentFormat === 'json' ? '.json' : '.xml';
+            const filename = 'document' + extension;
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+        }
+
+        // Clear editor
+        function clearEditor() {
+            if (confirm('Clear all content? This cannot be undone.')) {
+                document.getElementById('editor').value = '';
+                onEditorChange();
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('helpModal').style.display = 'none';
+        }
+
+        // Initialize on load
+        window.addEventListener('load', initEditor);
+
+        // Help shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F1') {
+                e.preventDefault();
+                document.getElementById('helpModal').style.display = 'flex';
+            }
+        });
+    </script>
+</body>
+</html>

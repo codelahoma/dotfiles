@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowLoom Spreadsheet - Professional Data Analysis Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            overflow: hidden;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            padding: 12px 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .app-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-primary {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #059669;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .formula-bar {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cell-ref {
+            font-weight: 600;
+            color: #374151;
+            min-width: 60px;
+        }
+
+        .formula-input {
+            flex: 1;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+        }
+
+        .formula-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .spreadsheet-container {
+            height: calc(100vh - 120px);
+            overflow: auto;
+            background: white;
+            position: relative;
+        }
+
+        .spreadsheet-table {
+            border-collapse: collapse;
+            background: white;
+            min-width: 100%;
+        }
+
+        .row-header {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            text-align: center;
+            font-weight: 600;
+            color: #6b7280;
+            width: 50px;
+            min-width: 50px;
+            font-size: 0.85rem;
+            position: sticky;
+            left: 0;
+            z-index: 2;
+        }
+
+        .col-header {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            text-align: center;
+            font-weight: 600;
+            color: #6b7280;
+            min-width: 100px;
+            padding: 8px;
+            font-size: 0.85rem;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .cell {
+            border: 1px solid #e5e7eb;
+            min-width: 100px;
+            padding: 0;
+            position: relative;
+        }
+
+        .cell-input {
+            width: 100%;
+            border: none;
+            padding: 8px;
+            font-size: 0.9rem;
+            background: transparent;
+            outline: none;
+            min-height: 32px;
+            font-family: inherit;
+        }
+
+        .cell-input:focus {
+            background: #fef3c7;
+            border: 2px solid #2563eb;
+            margin: -1px;
+        }
+
+        .cell.selected {
+            background: #dbeafe;
+            border: 2px solid #2563eb;
+        }
+
+        .cell.error {
+            background: #fecaca;
+        }
+
+        .cell.formula {
+            background: #ecfdf5;
+        }
+
+        .status-bar {
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            padding: 6px 20px;
+            font-size: 0.85rem;
+            color: #6b7280;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .chart-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 10;
+        }
+
+        .chart-canvas {
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .app-header {
+                padding: 10px 15px;
+            }
+            
+            .toolbar {
+                order: 2;
+                width: 100%;
+                margin-top: 8px;
+            }
+            
+            .formula-bar {
+                padding: 6px 15px;
+                flex-wrap: wrap;
+            }
+            
+            .cell-ref {
+                min-width: 50px;
+            }
+            
+            .col-header, .cell {
+                min-width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-header">
+        <div class="app-title">
+            📊 FlowLoom Spreadsheet
+        </div>
+        <div class="toolbar">
+            <button class="btn btn-secondary" onclick="newSheet()">
+                📄 New
+            </button>
+            <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">
+                📁 Import
+            </button>
+            <button class="btn btn-secondary" onclick="exportCSV()">
+                💾 Export
+            </button>
+            <button class="btn btn-primary" onclick="toggleChart()">
+                📈 Chart
+            </button>
+        </div>
+    </div>
+
+    <div class="formula-bar">
+        <div class="cell-ref" id="cellRef">A1</div>
+        <input type="text" class="formula-input" id="formulaInput" placeholder="Enter value or formula (=SUM(A1:A10))">
+    </div>
+
+    <div class="spreadsheet-container">
+        <table class="spreadsheet-table" id="spreadsheet">
+            <!-- Dynamic content will be generated here -->
+        </table>
+    </div>
+
+    <div class="chart-container" id="chartContainer">
+        <h3 style="margin-bottom: 10px; color: #374151;">Data Chart</h3>
+        <canvas class="chart-canvas" id="chartCanvas" width="300" height="200"></canvas>
+        <div style="margin-top: 10px;">
+            <button class="btn btn-secondary" onclick="toggleChart()">Close</button>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <div id="statusText">Ready</div>
+        <div>Rows: <span id="rowCount">20</span> | Cols: <span id="colCount">10</span> | Cells: <span id="cellCount">200</span></div>
+    </div>
+
+    <input type="file" id="fileInput" class="file-input" accept=".csv" onchange="importCSV(event)">
+
+    <script>
+        // Spreadsheet state
+        let currentCell = null;
+        let spreadsheetData = {};
+        let selectedRange = null;
+        let rows = 20;
+        let cols = 10;
+
+        // Initialize spreadsheet
+        function initSpreadsheet() {
+            createGrid();
+            loadFromStorage();
+            updateStats();
+            
+            // Set up formula input handler
+            const formulaInput = document.getElementById('formulaInput');
+            formulaInput.addEventListener('keydown', handleFormulaInput);
+            formulaInput.addEventListener('blur', updateCurrentCell);
+        }
+
+        // Create spreadsheet grid
+        function createGrid() {
+            const table = document.getElementById('spreadsheet');
+            table.innerHTML = '';
+
+            // Create header row
+            const headerRow = document.createElement('tr');
+            const cornerCell = document.createElement('th');
+            cornerCell.className = 'row-header';
+            cornerCell.style.background = '#e5e7eb';
+            headerRow.appendChild(cornerCell);
+
+            for (let col = 0; col < cols; col++) {
+                const th = document.createElement('th');
+                th.className = 'col-header';
+                th.textContent = getColumnName(col);
+                headerRow.appendChild(th);
+            }
+            table.appendChild(headerRow);
+
+            // Create data rows
+            for (let row = 0; row < rows; row++) {
+                const tr = document.createElement('tr');
+                
+                // Row header
+                const rowHeader = document.createElement('td');
+                rowHeader.className = 'row-header';
+                rowHeader.textContent = row + 1;
+                tr.appendChild(rowHeader);
+
+                // Data cells
+                for (let col = 0; col < cols; col++) {
+                    const td = document.createElement('td');
+                    td.className = 'cell';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'cell-input';
+                    input.dataset.row = row;
+                    input.dataset.col = col;
+                    input.addEventListener('focus', handleCellFocus);
+                    input.addEventListener('blur', handleCellBlur);
+                    input.addEventListener('keydown', handleCellKeydown);
+                    
+                    const cellId = getCellId(row, col);
+                    if (spreadsheetData[cellId]) {
+                        input.value = spreadsheetData[cellId].display || spreadsheetData[cellId].value || '';
+                    }
+                    
+                    td.appendChild(input);
+                    tr.appendChild(td);
+                }
+                table.appendChild(tr);
+            }
+        }
+
+        // Get column name (A, B, C, etc.)
+        function getColumnName(col) {
+            let result = '';
+            while (col >= 0) {
+                result = String.fromCharCode(65 + (col % 26)) + result;
+                col = Math.floor(col / 26) - 1;
+            }
+            return result;
+        }
+
+        // Get cell ID (A1, B2, etc.)
+        function getCellId(row, col) {
+            return getColumnName(col) + (row + 1);
+        }
+
+        // Parse cell ID to row/col
+        function parseCellId(cellId) {
+            const match = cellId.match(/^([A-Z]+)(\d+)$/);
+            if (!match) return null;
+            
+            const colStr = match[1];
+            const row = parseInt(match[2]) - 1;
+            
+            let col = 0;
+            for (let i = 0; i < colStr.length; i++) {
+                col = col * 26 + (colStr.charCodeAt(i) - 64);
+            }
+            col -= 1;
+            
+            return { row, col };
+        }
+
+        // Handle cell focus
+        function handleCellFocus(e) {
+            currentCell = e.target;
+            const row = parseInt(e.target.dataset.row);
+            const col = parseInt(e.target.dataset.col);
+            const cellId = getCellId(row, col);
+            
+            // Update cell reference
+            document.getElementById('cellRef').textContent = cellId;
+            
+            // Update formula input
+            const formulaInput = document.getElementById('formulaInput');
+            const cellData = spreadsheetData[cellId];
+            formulaInput.value = cellData ? cellData.formula || cellData.value || '' : '';
+            
+            // Highlight selected cell
+            document.querySelectorAll('.cell').forEach(cell => cell.classList.remove('selected'));
+            e.target.parentElement.classList.add('selected');
+        }
+
+        // Handle cell blur
+        function handleCellBlur(e) {
+            updateCell(e.target);
+        }
+
+        // Handle cell keydown
+        function handleCellKeydown(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                updateCell(e.target);
+                moveToNextCell(e.target, 'down');
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                updateCell(e.target);
+                moveToNextCell(e.target, e.shiftKey ? 'left' : 'right');
+            } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                if (e.target.selectionStart === e.target.selectionEnd) {
+                    e.preventDefault();
+                    const direction = e.key.replace('Arrow', '').toLowerCase();
+                    moveToNextCell(e.target, direction);
+                }
+            }
+        }
+
+        // Move to next cell
+        function moveToNextCell(currentInput, direction) {
+            const row = parseInt(currentInput.dataset.row);
+            const col = parseInt(currentInput.dataset.col);
+            let newRow = row;
+            let newCol = col;
+
+            switch (direction) {
+                case 'up': newRow = Math.max(0, row - 1); break;
+                case 'down': newRow = Math.min(rows - 1, row + 1); break;
+                case 'left': newCol = Math.max(0, col - 1); break;
+                case 'right': newCol = Math.min(cols - 1, col + 1); break;
+            }
+
+            const nextInput = document.querySelector(`[data-row="${newRow}"][data-col="${newCol}"]`);
+            if (nextInput) {
+                nextInput.focus();
+                nextInput.select();
+            }
+        }
+
+        // Handle formula input
+        function handleFormulaInput(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                updateCurrentCell();
+                if (currentCell) {
+                    moveToNextCell(currentCell, 'down');
+                }
+            }
+        }
+
+        // Update current cell from formula input
+        function updateCurrentCell() {
+            if (!currentCell) return;
+            
+            const formulaInput = document.getElementById('formulaInput');
+            const value = formulaInput.value;
+            currentCell.value = value;
+            updateCell(currentCell);
+        }
+
+        // Update cell value and recalculate
+        function updateCell(input) {
+            const row = parseInt(input.dataset.row);
+            const col = parseInt(input.dataset.col);
+            const cellId = getCellId(row, col);
+            const value = input.value;
+
+            // Store cell data
+            if (value === '') {
+                delete spreadsheetData[cellId];
+                input.parentElement.classList.remove('formula', 'error');
+            } else {
+                spreadsheetData[cellId] = {
+                    value: value,
+                    formula: value.startsWith('=') ? value : null
+                };
+
+                // Calculate result if formula
+                if (value.startsWith('=')) {
+                    try {
+                        const result = calculateFormula(value.substring(1));
+                        spreadsheetData[cellId].display = result;
+                        input.value = result;
+                        input.parentElement.classList.add('formula');
+                        input.parentElement.classList.remove('error');
+                    } catch (error) {
+                        spreadsheetData[cellId].display = '#ERROR';
+                        input.value = '#ERROR';
+                        input.parentElement.classList.add('error');
+                        input.parentElement.classList.remove('formula');
+                    }
+                } else {
+                    spreadsheetData[cellId].display = value;
+                    input.parentElement.classList.remove('formula', 'error');
+                }
+            }
+
+            // Recalculate dependent cells
+            recalculateAll();
+            saveToStorage();
+            updateStatus(`Updated cell ${cellId}`);
+        }
+
+        // Calculate formula
+        function calculateFormula(formula) {
+            // Replace cell references with values
+            const processedFormula = formula.replace(/[A-Z]+\d+/g, (match) => {
+                const cellData = spreadsheetData[match];
+                const value = cellData ? parseFloat(cellData.display || cellData.value || 0) : 0;
+                return isNaN(value) ? 0 : value;
+            });
+
+            // Handle range functions
+            if (formula.includes('SUM(') || formula.includes('AVERAGE(')) {
+                return calculateRangeFunction(formula);
+            }
+
+            // Simple math evaluation
+            try {
+                // Safe evaluation (basic math only)
+                const result = Function('"use strict"; return (' + processedFormula + ')')();
+                return typeof result === 'number' ? (Math.round(result * 100) / 100) : result;
+            } catch (e) {
+                throw new Error('Invalid formula');
+            }
+        }
+
+        // Calculate range functions (SUM, AVERAGE)
+        function calculateRangeFunction(formula) {
+            const sumMatch = formula.match(/SUM\(([A-Z]+\d+):([A-Z]+\d+)\)/);
+            const avgMatch = formula.match(/AVERAGE\(([A-Z]+\d+):([A-Z]+\d+)\)/);
+            
+            if (sumMatch) {
+                const [, start, end] = sumMatch;
+                const values = getRangeValues(start, end);
+                const sum = values.reduce((acc, val) => acc + val, 0);
+                return Math.round(sum * 100) / 100;
+            }
+            
+            if (avgMatch) {
+                const [, start, end] = avgMatch;
+                const values = getRangeValues(start, end);
+                const sum = values.reduce((acc, val) => acc + val, 0);
+                const avg = values.length > 0 ? sum / values.length : 0;
+                return Math.round(avg * 100) / 100;
+            }
+            
+            throw new Error('Unknown function');
+        }
+
+        // Get values from cell range
+        function getRangeValues(startCell, endCell) {
+            const start = parseCellId(startCell);
+            const end = parseCellId(endCell);
+            const values = [];
+
+            for (let row = start.row; row <= end.row; row++) {
+                for (let col = start.col; col <= end.col; col++) {
+                    const cellId = getCellId(row, col);
+                    const cellData = spreadsheetData[cellId];
+                    const value = parseFloat(cellData ? cellData.display || cellData.value || 0 : 0);
+                    if (!isNaN(value)) {
+                        values.push(value);
+                    }
+                }
+            }
+
+            return values;
+        }
+
+        // Recalculate all formulas
+        function recalculateAll() {
+            Object.keys(spreadsheetData).forEach(cellId => {
+                const cellData = spreadsheetData[cellId];
+                if (cellData.formula) {
+                    try {
+                        const result = calculateFormula(cellData.formula.substring(1));
+                        cellData.display = result;
+                        
+                        // Update display
+                        const parsed = parseCellId(cellId);
+                        const input = document.querySelector(`[data-row="${parsed.row}"][data-col="${parsed.col}"]`);
+                        if (input) {
+                            input.value = result;
+                            input.parentElement.classList.add('formula');
+                            input.parentElement.classList.remove('error');
+                        }
+                    } catch (error) {
+                        cellData.display = '#ERROR';
+                        const parsed = parseCellId(cellId);
+                        const input = document.querySelector(`[data-row="${parsed.row}"][data-col="${parsed.col}"]`);
+                        if (input) {
+                            input.value = '#ERROR';
+                            input.parentElement.classList.add('error');
+                            input.parentElement.classList.remove('formula');
+                        }
+                    }
+                }
+            });
+        }
+
+        // Save to localStorage
+        function saveToStorage() {
+            localStorage.setItem('flowloom-spreadsheet', JSON.stringify(spreadsheetData));
+        }
+
+        // Load from localStorage
+        function loadFromStorage() {
+            const stored = localStorage.getItem('flowloom-spreadsheet');
+            if (stored) {
+                spreadsheetData = JSON.parse(stored);
+                recalculateAll();
+            }
+        }
+
+        // New sheet
+        function newSheet() {
+            if (confirm('Create new sheet? Current data will be lost.')) {
+                spreadsheetData = {};
+                createGrid();
+                saveToStorage();
+                updateStatus('New sheet created');
+                updateStats();
+            }
+        }
+
+        // Export CSV
+        function exportCSV() {
+            const csvData = [];
+            
+            for (let row = 0; row < rows; row++) {
+                const rowData = [];
+                for (let col = 0; col < cols; col++) {
+                    const cellId = getCellId(row, col);
+                    const cellData = spreadsheetData[cellId];
+                    const value = cellData ? cellData.display || cellData.value || '' : '';
+                    rowData.push('"' + String(value).replace(/"/g, '""') + '"');
+                }
+                csvData.push(rowData.join(','));
+            }
+
+            const csvContent = csvData.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'spreadsheet.csv';
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            updateStatus('Spreadsheet exported to CSV');
+        }
+
+        // Import CSV
+        function importCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const csv = e.target.result;
+                const lines = csv.split('\n');
+                
+                // Clear current data
+                spreadsheetData = {};
+                
+                lines.forEach((line, rowIndex) => {
+                    if (rowIndex >= rows) return;
+                    
+                    const cells = parseCSVLine(line);
+                    cells.forEach((cell, colIndex) => {
+                        if (colIndex >= cols) return;
+                        
+                        const cellId = getCellId(rowIndex, colIndex);
+                        if (cell.trim()) {
+                            spreadsheetData[cellId] = {
+                                value: cell.trim(),
+                                formula: cell.trim().startsWith('=') ? cell.trim() : null
+                            };
+                        }
+                    });
+                });
+
+                createGrid();
+                recalculateAll();
+                saveToStorage();
+                updateStatus(`Imported ${lines.length} rows from CSV`);
+                updateStats();
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // Parse CSV line
+        function parseCSVLine(line) {
+            const cells = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    if (inQuotes && line[i + 1] === '"') {
+                        current += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    cells.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            cells.push(current);
+            return cells;
+        }
+
+        // Toggle chart
+        function toggleChart() {
+            const chartContainer = document.getElementById('chartContainer');
+            const isVisible = chartContainer.style.display !== 'none';
+            
+            if (isVisible) {
+                chartContainer.style.display = 'none';
+            } else {
+                generateChart();
+                chartContainer.style.display = 'block';
+            }
+        }
+
+        // Generate simple chart
+        function generateChart() {
+            const canvas = document.getElementById('chartCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Get data from first column
+            const data = [];
+            for (let row = 0; row < Math.min(10, rows); row++) {
+                const cellId = getCellId(row, 0);
+                const cellData = spreadsheetData[cellId];
+                const value = parseFloat(cellData ? cellData.display || cellData.value || 0 : 0);
+                if (!isNaN(value)) {
+                    data.push(value);
+                }
+            }
+
+            if (data.length === 0) {
+                ctx.fillStyle = '#6b7280';
+                ctx.font = '14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('No numeric data found', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            // Simple bar chart
+            const maxValue = Math.max(...data, 1);
+            const barWidth = canvas.width / data.length;
+            const barMaxHeight = canvas.height - 40;
+
+            data.forEach((value, index) => {
+                const barHeight = (value / maxValue) * barMaxHeight;
+                const x = index * barWidth;
+                const y = canvas.height - barHeight - 20;
+
+                // Draw bar
+                ctx.fillStyle = '#3b82f6';
+                ctx.fillRect(x + 2, y, barWidth - 4, barHeight);
+
+                // Draw value label
+                ctx.fillStyle = '#374151';
+                ctx.font = '10px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(value.toString(), x + barWidth / 2, canvas.height - 5);
+            });
+        }
+
+        // Update status
+        function updateStatus(message) {
+            document.getElementById('statusText').textContent = message;
+            setTimeout(() => {
+                document.getElementById('statusText').textContent = 'Ready';
+            }, 3000);
+        }
+
+        // Update statistics
+        function updateStats() {
+            const cellCount = Object.keys(spreadsheetData).length;
+            document.getElementById('rowCount').textContent = rows;
+            document.getElementById('colCount').textContent = cols;
+            document.getElementById('cellCount').textContent = cellCount;
+        }
+
+        // Initialize on load
+        window.addEventListener('load', initSpreadsheet);
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            // Recalculate chart if visible
+            const chartContainer = document.getElementById('chartContainer');
+            if (chartContainer.style.display !== 'none') {
+                generateChart();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.key) {
+                    case 's':
+                        e.preventDefault();
+                        exportCSV();
+                        break;
+                    case 'n':
+                        e.preventDefault();
+                        newSheet();
+                        break;
+                    case 'o':
+                        e.preventDefault();
+                        document.getElementById('fileInput').click();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

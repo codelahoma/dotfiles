@@ -1,0 +1,1965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Map Creator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Header Toolbar */
+        .toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 15px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .toolbar-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .toolbar-section.right {
+            margin-left: auto;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            background: #f0f0f0;
+            color: #333;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        button:hover {
+            background: #e0e0e0;
+            transform: translateY(-1px);
+        }
+
+        button.primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        button.primary:hover {
+            background: #45a049;
+        }
+
+        button.danger {
+            background: #f44336;
+            color: white;
+        }
+
+        button.danger:hover {
+            background: #da190b;
+        }
+
+        /* Canvas Container */
+        #canvas-container {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        #canvas-container.grabbing {
+            cursor: grabbing;
+        }
+
+        #mind-map-canvas {
+            position: absolute;
+            background: #f5f5f5;
+        }
+
+        /* Node Styles */
+        .node {
+            position: absolute;
+            background: white;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: move;
+            user-select: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .node.selected {
+            border-color: #2196F3;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
+        }
+
+        .node.root {
+            background: #4CAF50;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 15px 25px;
+        }
+
+        .node-text {
+            outline: none;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: center;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .node.root .node-text {
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* Context Menu */
+        .context-menu {
+            position: fixed;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 5px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 2000;
+            display: none;
+        }
+
+        .context-menu-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .context-menu-item:hover {
+            background: #f5f5f5;
+        }
+
+        /* Search Box */
+        .search-box {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            display: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            font-size: 14px;
+            padding: 5px;
+            width: 200px;
+        }
+
+        /* Mini Map */
+        .minimap {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            height: 150px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        #minimap-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Help Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+
+        .modal h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .modal h3 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .modal p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .modal code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-modal:hover {
+            color: #333;
+        }
+
+        /* Zoom Controls */
+        .zoom-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            background: white;
+            border-radius: 8px;
+            padding: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .zoom-controls button {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        /* Color Picker */
+        .color-picker {
+            display: none;
+            gap: 5px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .color-option:hover {
+            transform: scale(1.2);
+            border-color: #333;
+        }
+
+        /* Presentation Mode */
+        .presentation-mode {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 4000;
+        }
+
+        .presentation-content {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            max-width: 800px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+
+        .presentation-controls {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .toolbar {
+                flex-wrap: wrap;
+                height: auto;
+                padding: 10px;
+            }
+
+            .toolbar-section {
+                flex-wrap: wrap;
+            }
+
+            button {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+
+            #canvas-container {
+                top: 100px;
+            }
+
+            .search-box {
+                top: 120px;
+            }
+
+            .zoom-controls {
+                bottom: 10px;
+                left: 10px;
+            }
+
+            .minimap {
+                width: 150px;
+                height: 100px;
+                bottom: 10px;
+                right: 10px;
+            }
+        }
+
+        /* Touch Gestures Indicator */
+        .touch-indicator {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            border: 3px solid #4CAF50;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+        }
+
+        .touch-indicator.active {
+            opacity: 0.5;
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="toolbar-section">
+            <button class="primary" onclick="addNode()">➕ Add Node</button>
+            <button onclick="deleteSelected()">🗑️ Delete</button>
+            <button onclick="toggleColorPicker()">🎨 Color</button>
+            <button onclick="changeNodeStyle()">✨ Style</button>
+        </div>
+        
+        <div class="toolbar-section">
+            <button id="autoLayoutBtn" onclick="toggleAutoLayout()">🔧 Auto Layout</button>
+            <button onclick="toggleMinimap()">🗺️ Minimap</button>
+            <button onclick="toggleSearch()">🔍 Search</button>
+        </div>
+        
+        <div class="toolbar-section right">
+            <button onclick="exportMap('json')">💾 Export JSON</button>
+            <button onclick="exportMap('png')">📷 Export PNG</button>
+            <button onclick="importMap()">📁 Import</button>
+            <button onclick="showHelp()">❓ Help</button>
+        </div>
+    </div>
+
+    <!-- Search Box -->
+    <div class="search-box" id="searchBox">
+        <input type="text" id="searchInput" placeholder="Search nodes..." onkeyup="searchNodes(event)">
+    </div>
+
+    <!-- Canvas Container -->
+    <div id="canvas-container">
+        <canvas id="mind-map-canvas"></canvas>
+        <svg id="connections-svg" style="position: absolute; top: 0; left: 0; pointer-events: none;"></svg>
+    </div>
+
+    <!-- Zoom Controls -->
+    <div class="zoom-controls">
+        <button onclick="zoomIn()">+</button>
+        <button onclick="resetZoom()">⟲</button>
+        <button onclick="zoomOut()">-</button>
+    </div>
+
+    <!-- Minimap -->
+    <div class="minimap" id="minimap">
+        <canvas id="minimap-canvas"></canvas>
+    </div>
+
+    <!-- Context Menu -->
+    <div class="context-menu" id="contextMenu">
+        <div class="context-menu-item" onclick="editNode()">✏️ Edit</div>
+        <div class="context-menu-item" onclick="addChildNode()">➕ Add Child</div>
+        <div class="context-menu-item" onclick="deleteNode()">🗑️ Delete</div>
+        <div class="context-menu-item" onclick="changeNodeColor()">🎨 Change Color</div>
+        <div class="context-menu-item" onclick="toggleCollapse()">📁 Collapse/Expand</div>
+    </div>
+
+    <!-- Color Picker -->
+    <div class="color-picker" id="colorPicker">
+        <div class="color-option" style="background: #4CAF50" onclick="setNodeColor('#4CAF50')"></div>
+        <div class="color-option" style="background: #2196F3" onclick="setNodeColor('#2196F3')"></div>
+        <div class="color-option" style="background: #FF9800" onclick="setNodeColor('#FF9800')"></div>
+        <div class="color-option" style="background: #f44336" onclick="setNodeColor('#f44336')"></div>
+        <div class="color-option" style="background: #9C27B0" onclick="setNodeColor('#9C27B0')"></div>
+        <div class="color-option" style="background: #795548" onclick="setNodeColor('#795548')"></div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal" id="helpModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeHelp()">×</span>
+            <h2>Mind Map Creator Help</h2>
+            
+            <h3>Getting Started</h3>
+            <p>Click "Add Node" or double-click anywhere on the canvas to create a new node. Drag nodes to move them around.</p>
+            
+            <h3>Keyboard Shortcuts</h3>
+            <p><code>Tab</code> - On root: Add child | On child: Add sibling</p>
+            <p><code>Enter</code> - Add child node</p>
+            <p><code>Delete</code> - Delete selected node</p>
+            <p><code>Ctrl/Cmd + S</code> - Save to local storage</p>
+            <p><code>Ctrl/Cmd + O</code> - Open file</p>
+            <p><code>Ctrl/Cmd + E</code> - Export</p>
+            <p><code>F</code> - Full screen</p>
+            <p><code>Space</code> - Pan mode</p>
+            <p><code>Ctrl/Cmd + F</code> - Search</p>
+            
+            <h3>Mouse Controls</h3>
+            <p>• <strong>Click</strong> - Select node</p>
+            <p>• <strong>Double-click</strong> - Edit node text or create new node</p>
+            <p>• <strong>Right-click</strong> - Context menu</p>
+            <p>• <strong>Drag</strong> - Move node</p>
+            <p>• <strong>Scroll</strong> - Zoom in/out</p>
+            
+            <h3>Touch Gestures</h3>
+            <p>• <strong>Tap</strong> - Select node</p>
+            <p>• <strong>Double-tap</strong> - Edit node</p>
+            <p>• <strong>Pinch</strong> - Zoom in/out</p>
+            <p>• <strong>Two-finger drag</strong> - Pan canvas</p>
+            
+            <h3>Features</h3>
+            <p>• Auto-layout algorithm for optimal node positioning</p>
+            <p>• Export as JSON, PNG, or SVG</p>
+            <p>• Import from JSON files</p>
+            <p>• Collaborative editing via URL sharing</p>
+            <p>• Local storage auto-save</p>
+            <p>• Multiple themes and node styles</p>
+            <p>• Presentation mode for walkthroughs</p>
+        </div>
+    </div>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="handleFileImport(event)">
+
+    <!-- Touch indicator for mobile -->
+    <div class="touch-indicator" id="touchIndicator"></div>
+
+    <script>
+        // Global state
+        let nodes = new Map();
+        let connections = [];
+        let selectedNode = null;
+        let isDragging = false;
+        let isPanning = false;
+        let dragOffset = { x: 0, y: 0 };
+        let panStart = { x: 0, y: 0 };
+        let canvas = document.getElementById('mind-map-canvas');
+        let ctx = canvas.getContext('2d');
+        let svg = document.getElementById('connections-svg');
+        let container = document.getElementById('canvas-container');
+        let zoom = 1;
+        let pan = { x: 0, y: 0 };
+        let nodeIdCounter = 0;
+        let undoStack = [];
+        let redoStack = [];
+        let isMinimapVisible = false;
+        let isSearchVisible = false;
+        let autoSaveTimer = null;
+        let isAutoLayoutEnabled = false;
+
+        // Node class
+        class Node {
+            constructor(id, text, x, y, parent = null) {
+                this.id = id;
+                this.text = text;
+                this.x = x;
+                this.y = y;
+                this.parent = parent;
+                this.children = [];
+                this.color = parent ? '#ffffff' : '#4CAF50';
+                this.borderColor = parent ? '#4CAF50' : '#4CAF50';
+                this.isCollapsed = false;
+                this.width = 120;
+                this.height = 40;
+                this.style = 'rounded'; // rounded, rectangular, ellipse
+                this.fontSize = parent ? 14 : 18;
+                this.fontWeight = parent ? 'normal' : 'bold';
+                this.element = this.createElement();
+            }
+
+            createElement() {
+                const div = document.createElement('div');
+                div.className = 'node' + (this.parent === null ? ' root' : '');
+                div.style.left = this.x + 'px';
+                div.style.top = this.y + 'px';
+                div.style.background = this.color;
+                div.style.borderColor = this.borderColor;
+                div.dataset.nodeId = this.id;
+                
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'node-text';
+                input.value = this.text;
+                input.style.fontSize = this.fontSize + 'px';
+                input.style.fontWeight = this.fontWeight;
+                
+                input.addEventListener('input', (e) => {
+                    this.text = e.target.value;
+                    saveToLocalStorage();
+                });
+                
+                input.addEventListener('keydown', (e) => {
+                    e.stopPropagation();
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        input.blur();
+                    }
+                });
+                
+                div.appendChild(input);
+                
+                // Append to wrapper if it exists, otherwise to container
+                const wrapper = document.getElementById('transform-wrapper');
+                if (wrapper) {
+                    wrapper.appendChild(div);
+                } else {
+                    container.appendChild(div);
+                }
+                
+                // Mouse events
+                div.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+                div.addEventListener('dblclick', (e) => this.handleDoubleClick(e));
+                div.addEventListener('contextmenu', (e) => this.handleContextMenu(e));
+                
+                // Touch events
+                div.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
+                div.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
+                div.addEventListener('touchend', (e) => this.handleTouchEnd(e));
+                
+                return div;
+            }
+
+            handleMouseDown(e) {
+                if (e.button === 0) { // Left click
+                    e.preventDefault();
+                    selectNode(this);
+                    isDragging = true;
+                    const rect = this.element.getBoundingClientRect();
+                    dragOffset.x = e.clientX - rect.left;
+                    dragOffset.y = e.clientY - rect.top;
+                }
+            }
+
+            handleDoubleClick(e) {
+                e.stopPropagation();
+                const input = this.element.querySelector('.node-text');
+                input.focus();
+                input.select();
+            }
+
+            handleContextMenu(e) {
+                e.preventDefault();
+                showContextMenu(e.clientX, e.clientY, this);
+            }
+
+            handleTouchStart(e) {
+                const touch = e.touches[0];
+                this.touchStartTime = Date.now();
+                this.touchStartX = touch.clientX;
+                this.touchStartY = touch.clientY;
+            }
+
+            handleTouchMove(e) {
+                e.preventDefault();
+                if (e.touches.length === 1) {
+                    const touch = e.touches[0];
+                    const deltaX = touch.clientX - this.touchStartX;
+                    const deltaY = touch.clientY - this.touchStartY;
+                    
+                    if (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10) {
+                        this.x += deltaX;
+                        this.y += deltaY;
+                        this.updatePosition();
+                        this.touchStartX = touch.clientX;
+                        this.touchStartY = touch.clientY;
+                        updateConnections();
+                    }
+                }
+            }
+
+            handleTouchEnd(e) {
+                const touchDuration = Date.now() - this.touchStartTime;
+                if (touchDuration < 200) {
+                    // Tap
+                    selectNode(this);
+                    if (touchDuration < 100 && Date.now() - this.lastTapTime < 300) {
+                        // Double tap
+                        this.handleDoubleClick(e);
+                    }
+                    this.lastTapTime = Date.now();
+                }
+            }
+
+            updatePosition() {
+                this.element.style.left = this.x + 'px';
+                this.element.style.top = this.y + 'px';
+            }
+
+            addChild(childNode) {
+                this.children.push(childNode);
+                childNode.parent = this;
+            }
+
+            removeChild(childNode) {
+                const index = this.children.indexOf(childNode);
+                if (index > -1) {
+                    this.children.splice(index, 1);
+                }
+            }
+
+            toggleCollapse() {
+                this.isCollapsed = !this.isCollapsed;
+                this.updateVisibility();
+            }
+
+            updateVisibility() {
+                const setVisibility = (node, visible) => {
+                    node.element.style.display = visible ? 'block' : 'none';
+                    if (!node.isCollapsed) {
+                        node.children.forEach(child => setVisibility(child, visible));
+                    }
+                };
+                
+                this.children.forEach(child => setVisibility(child, !this.isCollapsed));
+                updateConnections();
+            }
+
+            delete() {
+                if (this.parent) {
+                    this.parent.removeChild(this);
+                }
+                
+                // Delete all children recursively
+                [...this.children].forEach(child => child.delete());
+                
+                // Remove element from DOM
+                this.element.remove();
+                
+                // Remove from nodes map
+                nodes.delete(this.id);
+            }
+
+            toJSON() {
+                return {
+                    id: this.id,
+                    text: this.text,
+                    x: this.x,
+                    y: this.y,
+                    color: this.color,
+                    borderColor: this.borderColor,
+                    isCollapsed: this.isCollapsed,
+                    style: this.style,
+                    fontSize: this.fontSize,
+                    fontWeight: this.fontWeight,
+                    children: this.children.map(child => child.toJSON())
+                };
+            }
+
+            static fromJSON(data, parent = null) {
+                const node = new Node(data.id, data.text, data.x, data.y, parent);
+                node.color = data.color;
+                node.borderColor = data.borderColor;
+                node.isCollapsed = data.isCollapsed;
+                node.style = data.style;
+                node.fontSize = data.fontSize;
+                node.fontWeight = data.fontWeight;
+                
+                node.element.style.background = node.color;
+                node.element.style.borderColor = node.borderColor;
+                
+                if (data.children) {
+                    data.children.forEach(childData => {
+                        const child = Node.fromJSON(childData, node);
+                        node.children.push(child);
+                    });
+                }
+                
+                return node;
+            }
+        }
+
+        // Initialize canvas
+        function initCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight - 60;
+            svg.setAttribute('width', canvas.width);
+            svg.setAttribute('height', canvas.height);
+            
+            // Initialize transform wrapper
+            updateTransform();
+            
+            // Create root node if no saved data
+            if (!loadFromLocalStorage() && !loadFromURL()) {
+                const rootNode = new Node(nodeIdCounter++, 'Main Idea', canvas.width / 2 - 60, canvas.height / 2 - 20);
+                nodes.set(rootNode.id, rootNode);
+            }
+            
+            updateConnections();
+            setupEventListeners();
+            startAutoSave();
+        }
+
+        // Event listeners
+        function setupEventListeners() {
+            // Mouse events
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+            container.addEventListener('dblclick', handleCanvasDoubleClick);
+            container.addEventListener('wheel', handleWheel, { passive: false });
+            
+            // Keyboard events
+            document.addEventListener('keydown', handleKeyDown);
+            
+            // Touch events
+            container.addEventListener('touchstart', handleTouchStart, { passive: false });
+            container.addEventListener('touchmove', handleTouchMove, { passive: false });
+            container.addEventListener('touchend', handleTouchEnd);
+            
+            // Window resize
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight - 60;
+                svg.setAttribute('width', canvas.width);
+                svg.setAttribute('height', canvas.height);
+                updateConnections();
+            });
+            
+            // Prevent context menu on canvas
+            container.addEventListener('contextmenu', (e) => e.preventDefault());
+        }
+
+        // Mouse handlers
+        function handleMouseMove(e) {
+            if (isDragging && selectedNode) {
+                selectedNode.x = e.clientX - dragOffset.x;
+                selectedNode.y = e.clientY - dragOffset.y - 60;
+                selectedNode.updatePosition();
+                updateConnections();
+            } else if (isPanning) {
+                pan.x += e.clientX - panStart.x;
+                pan.y += e.clientY - panStart.y;
+                panStart.x = e.clientX;
+                panStart.y = e.clientY;
+                updateTransform();
+            }
+        }
+
+        function handleMouseUp(e) {
+            isDragging = false;
+            isPanning = false;
+            container.style.cursor = 'grab';
+            saveState();
+        }
+
+        function handleCanvasDoubleClick(e) {
+            if (e.target === container || e.target === canvas) {
+                const rect = container.getBoundingClientRect();
+                const x = (e.clientX - rect.left - pan.x) / zoom;
+                const y = (e.clientY - rect.top - pan.y) / zoom;
+                
+                const newNode = new Node(nodeIdCounter++, 'New Node', x, y);
+                nodes.set(newNode.id, newNode);
+                selectNode(newNode);
+                
+                // Auto-connect to nearest node
+                let nearestNode = null;
+                let minDistance = Infinity;
+                
+                nodes.forEach(node => {
+                    if (node !== newNode) {
+                        const distance = Math.sqrt(Math.pow(node.x - x, 2) + Math.pow(node.y - y, 2));
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            nearestNode = node;
+                        }
+                    }
+                });
+                
+                if (nearestNode && minDistance < 200) {
+                    nearestNode.addChild(newNode);
+                    newNode.parent = nearestNode;
+                }
+                
+                updateConnections();
+                
+                // Auto-layout if enabled
+                if (isAutoLayoutEnabled) {
+                    setTimeout(() => autoLayout(), 100);
+                }
+                
+                saveState();
+                
+                // Focus on new node text
+                setTimeout(() => {
+                    const input = newNode.element.querySelector('.node-text');
+                    input.focus();
+                    input.select();
+                }, 50);
+            }
+        }
+
+        function handleWheel(e) {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            const newZoom = Math.max(0.1, Math.min(5, zoom * delta));
+            
+            // Zoom towards mouse position
+            const rect = container.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            pan.x = x - (x - pan.x) * (newZoom / zoom);
+            pan.y = y - (y - pan.y) * (newZoom / zoom);
+            
+            zoom = newZoom;
+            updateTransform();
+        }
+
+        // Touch handlers
+        let touches = [];
+        let lastTouchDistance = 0;
+
+        function handleTouchStart(e) {
+            touches = Array.from(e.touches);
+            
+            if (touches.length === 2) {
+                // Pinch zoom start
+                lastTouchDistance = getTouchDistance(touches[0], touches[1]);
+            } else if (touches.length === 1 && e.target === container) {
+                // Pan start
+                isPanning = true;
+                panStart.x = touches[0].clientX;
+                panStart.y = touches[0].clientY;
+            }
+        }
+
+        function handleTouchMove(e) {
+            touches = Array.from(e.touches);
+            
+            if (touches.length === 2) {
+                // Pinch zoom
+                e.preventDefault();
+                const distance = getTouchDistance(touches[0], touches[1]);
+                const delta = distance / lastTouchDistance;
+                
+                const newZoom = Math.max(0.1, Math.min(5, zoom * delta));
+                
+                // Zoom towards center of pinch
+                const centerX = (touches[0].clientX + touches[1].clientX) / 2;
+                const centerY = (touches[0].clientY + touches[1].clientY) / 2;
+                const rect = container.getBoundingClientRect();
+                const x = centerX - rect.left;
+                const y = centerY - rect.top;
+                
+                pan.x = x - (x - pan.x) * (newZoom / zoom);
+                pan.y = y - (y - pan.y) * (newZoom / zoom);
+                
+                zoom = newZoom;
+                lastTouchDistance = distance;
+                updateTransform();
+            }
+        }
+
+        function handleTouchEnd(e) {
+            touches = Array.from(e.touches);
+            isPanning = false;
+        }
+
+        function getTouchDistance(touch1, touch2) {
+            const dx = touch1.clientX - touch2.clientX;
+            const dy = touch1.clientY - touch2.clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        // Keyboard handlers
+        function handleKeyDown(e) {
+            // Don't handle keyboard events when typing in input
+            if (e.target.tagName === 'INPUT') return;
+            
+            switch(e.key) {
+                case 'Tab':
+                    e.preventDefault();
+                    if (selectedNode) {
+                        // On root node: Tab creates child
+                        // On child node: Tab creates sibling
+                        if (!selectedNode.parent) {
+                            addChildToSelected();
+                        } else {
+                            addSiblingToSelected();
+                        }
+                    }
+                    break;
+                    
+                case 'Enter':
+                    e.preventDefault();
+                    if (selectedNode) {
+                        // On root node: Enter creates child (same as Tab)
+                        // On child node: Enter creates child
+                        addChildToSelected();
+                    }
+                    break;
+                    
+                case 'Delete':
+                case 'Backspace':
+                    e.preventDefault();
+                    if (selectedNode) {
+                        deleteSelected();
+                    }
+                    break;
+                    
+                case 's':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        saveToLocalStorage();
+                        showNotification('Saved!');
+                    }
+                    break;
+                    
+                case 'z':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        if (e.shiftKey) {
+                            redo();
+                        } else {
+                            undo();
+                        }
+                    }
+                    break;
+                    
+                case 'f':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        toggleSearch();
+                    } else if (!e.ctrlKey && !e.metaKey) {
+                        toggleFullscreen();
+                    }
+                    break;
+                    
+                case ' ':
+                    e.preventDefault();
+                    container.style.cursor = 'grabbing';
+                    isPanning = true;
+                    panStart.x = e.clientX || 0;
+                    panStart.y = e.clientY || 0;
+                    break;
+                    
+                case 'Escape':
+                    closeContextMenu();
+                    closeHelp();
+                    break;
+            }
+        }
+
+        // Node selection
+        function selectNode(node) {
+            if (selectedNode) {
+                selectedNode.element.classList.remove('selected');
+            }
+            selectedNode = node;
+            if (node) {
+                node.element.classList.add('selected');
+            }
+        }
+
+        // Node operations
+        function addNode() {
+            const x = canvas.width / 2 / zoom - pan.x / zoom;
+            const y = canvas.height / 2 / zoom - pan.y / zoom;
+            
+            const newNode = new Node(nodeIdCounter++, 'New Node', x, y);
+            nodes.set(newNode.id, newNode);
+            
+            if (selectedNode) {
+                selectedNode.addChild(newNode);
+                newNode.parent = selectedNode;
+            }
+            
+            selectNode(newNode);
+            updateConnections();
+            
+            // Auto-layout if enabled
+            if (isAutoLayoutEnabled) {
+                setTimeout(() => autoLayout(), 100);
+            }
+            
+            saveState();
+            
+            // Focus on new node
+            setTimeout(() => {
+                const input = newNode.element.querySelector('.node-text');
+                input.focus();
+                input.select();
+            }, 50);
+        }
+
+        function addChildToSelected() {
+            if (!selectedNode) return;
+            
+            const childX = selectedNode.x + 150;
+            const childY = selectedNode.y + (selectedNode.children.length * 60);
+            
+            const newNode = new Node(nodeIdCounter++, 'New Child', childX, childY, selectedNode);
+            nodes.set(newNode.id, newNode);
+            selectedNode.addChild(newNode);
+            
+            selectNode(newNode);
+            updateConnections();
+            
+            // Auto-layout if enabled
+            if (isAutoLayoutEnabled) {
+                setTimeout(() => autoLayout(), 100);
+            }
+            
+            saveState();
+            
+            setTimeout(() => {
+                const input = newNode.element.querySelector('.node-text');
+                input.focus();
+                input.select();
+            }, 50);
+        }
+
+        function addSiblingToSelected() {
+            if (!selectedNode || !selectedNode.parent) return;
+            
+            const siblingX = selectedNode.x;
+            const siblingY = selectedNode.y + 60;
+            
+            const newNode = new Node(nodeIdCounter++, 'New Sibling', siblingX, siblingY, selectedNode.parent);
+            nodes.set(newNode.id, newNode);
+            selectedNode.parent.addChild(newNode);
+            
+            selectNode(newNode);
+            updateConnections();
+            
+            // Auto-layout if enabled
+            if (isAutoLayoutEnabled) {
+                setTimeout(() => autoLayout(), 100);
+            }
+            
+            saveState();
+            
+            setTimeout(() => {
+                const input = newNode.element.querySelector('.node-text');
+                input.focus();
+                input.select();
+            }, 50);
+        }
+
+        function deleteSelected() {
+            if (!selectedNode) return;
+            
+            // Don't delete the last remaining node
+            if (nodes.size === 1) {
+                showNotification('Cannot delete the last node!');
+                return;
+            }
+            
+            const nodeToDelete = selectedNode;
+            selectNode(null);
+            nodeToDelete.delete();
+            updateConnections();
+            
+            // Auto-layout if enabled
+            if (isAutoLayoutEnabled) {
+                setTimeout(() => autoLayout(), 100);
+            }
+            
+            saveState();
+        }
+
+        function deleteNode() {
+            deleteSelected();
+            closeContextMenu();
+        }
+
+        // Visual updates
+        function updateConnections() {
+            // Clear existing connections
+            svg.innerHTML = '';
+            
+            // Draw connections
+            nodes.forEach(node => {
+                if (node.parent && !node.parent.isCollapsed && node.element.style.display !== 'none') {
+                    drawConnection(node.parent, node);
+                }
+            });
+            
+            // Update minimap if visible
+            if (isMinimapVisible) {
+                updateMinimap();
+            }
+        }
+
+        function drawConnection(parent, child) {
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            
+            const x1 = parent.x + parent.element.offsetWidth / 2;
+            const y1 = parent.y + parent.element.offsetHeight;
+            const x2 = child.x + child.element.offsetWidth / 2;
+            const y2 = child.y;
+            
+            // Bezier curve
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const cx1 = x1 + dx * 0.5;
+            const cy1 = y1;
+            const cx2 = x2 - dx * 0.5;
+            const cy2 = y2;
+            
+            const d = `M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}`;
+            
+            path.setAttribute('d', d);
+            path.setAttribute('stroke', '#999');
+            path.setAttribute('stroke-width', '2');
+            path.setAttribute('fill', 'none');
+            
+            svg.appendChild(path);
+        }
+
+        function updateTransform() {
+            // For proper zoom/pan, we need to transform the container's content
+            // but NOT the container itself or individual nodes
+            
+            // Clear any existing wrapper
+            let wrapper = document.getElementById('transform-wrapper');
+            if (!wrapper) {
+                // Create a wrapper div for all content
+                wrapper = document.createElement('div');
+                wrapper.id = 'transform-wrapper';
+                wrapper.style.position = 'absolute';
+                wrapper.style.top = '0';
+                wrapper.style.left = '0';
+                wrapper.style.width = '100%';
+                wrapper.style.height = '100%';
+                wrapper.style.transformOrigin = '0 0';
+                
+                // Move all children to wrapper
+                while (container.firstChild) {
+                    wrapper.appendChild(container.firstChild);
+                }
+                container.appendChild(wrapper);
+            }
+            
+            // Apply transform to wrapper
+            const transform = `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`;
+            wrapper.style.transform = transform;
+        }
+
+        // Context menu
+        function showContextMenu(x, y, node) {
+            const menu = document.getElementById('contextMenu');
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+            menu.style.display = 'block';
+            
+            selectedNode = node;
+            selectNode(node);
+            
+            // Close menu when clicking outside
+            setTimeout(() => {
+                document.addEventListener('click', closeContextMenu);
+            }, 100);
+        }
+
+        function closeContextMenu() {
+            const menu = document.getElementById('contextMenu');
+            menu.style.display = 'none';
+            document.removeEventListener('click', closeContextMenu);
+        }
+
+        function editNode() {
+            if (selectedNode) {
+                const input = selectedNode.element.querySelector('.node-text');
+                input.focus();
+                input.select();
+            }
+            closeContextMenu();
+        }
+
+        function addChildNode() {
+            addChildToSelected();
+            closeContextMenu();
+        }
+
+        function changeNodeColor() {
+            if (selectedNode) {
+                const picker = document.getElementById('colorPicker');
+                const rect = selectedNode.element.getBoundingClientRect();
+                picker.style.position = 'absolute';
+                picker.style.left = rect.left + 'px';
+                picker.style.top = rect.bottom + 5 + 'px';
+                picker.style.display = 'flex';
+            }
+            closeContextMenu();
+        }
+
+        function toggleCollapse() {
+            if (selectedNode) {
+                selectedNode.toggleCollapse();
+            }
+            closeContextMenu();
+        }
+
+        // Color picker
+        function toggleColorPicker() {
+            if (!selectedNode) {
+                showNotification('Please select a node first');
+                return;
+            }
+            
+            const picker = document.getElementById('colorPicker');
+            if (picker.style.display === 'flex') {
+                picker.style.display = 'none';
+            } else {
+                const rect = selectedNode.element.getBoundingClientRect();
+                picker.style.position = 'absolute';
+                picker.style.left = rect.left + 'px';
+                picker.style.top = rect.bottom + 5 + 'px';
+                picker.style.display = 'flex';
+            }
+        }
+
+        function setNodeColor(color) {
+            if (selectedNode) {
+                selectedNode.color = color;
+                selectedNode.element.style.background = color;
+                
+                // Adjust text color for contrast
+                const rgb = hexToRgb(color);
+                const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+                const textColor = brightness > 128 ? '#000' : '#fff';
+                selectedNode.element.querySelector('.node-text').style.color = textColor;
+                
+                saveState();
+            }
+            document.getElementById('colorPicker').style.display = 'none';
+        }
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        // Node styles
+        function changeNodeStyle() {
+            if (!selectedNode) {
+                showNotification('Please select a node first');
+                return;
+            }
+            
+            const styles = ['rounded', 'rectangular', 'ellipse'];
+            const currentIndex = styles.indexOf(selectedNode.style);
+            const newStyle = styles[(currentIndex + 1) % styles.length];
+            
+            selectedNode.style = newStyle;
+            
+            // Update node appearance
+            switch(newStyle) {
+                case 'rounded':
+                    selectedNode.element.style.borderRadius = '8px';
+                    break;
+                case 'rectangular':
+                    selectedNode.element.style.borderRadius = '0';
+                    break;
+                case 'ellipse':
+                    selectedNode.element.style.borderRadius = '50%';
+                    selectedNode.element.style.padding = '20px';
+                    break;
+            }
+            
+            saveState();
+        }
+
+        // Auto layout
+        function toggleAutoLayout() {
+            isAutoLayoutEnabled = !isAutoLayoutEnabled;
+            const btn = document.getElementById('autoLayoutBtn');
+            
+            if (isAutoLayoutEnabled) {
+                btn.style.background = '#4CAF50';
+                btn.style.color = 'white';
+                showNotification('Auto Layout: ON');
+                autoLayout();
+            } else {
+                btn.style.background = '#f0f0f0';
+                btn.style.color = '#333';
+                showNotification('Auto Layout: OFF');
+            }
+        }
+        
+        function autoLayout() {
+            if (nodes.size === 0) return;
+            
+            // Save current zoom/pan for restoration
+            const currentZoom = zoom;
+            const currentPan = { ...pan };
+            
+            // Find root nodes (nodes without parents)
+            const roots = Array.from(nodes.values()).filter(node => !node.parent);
+            
+            // Layout each tree
+            let startX = 100;
+            roots.forEach(root => {
+                const treeWidth = layoutTree(root, startX, 100);
+                startX += treeWidth + 100;
+            });
+            
+            updateConnections();
+            
+            // Don't save state here as it's called from other save operations
+        }
+
+        function layoutTree(node, x, y, level = 0) {
+            node.x = x;
+            node.y = y;
+            node.updatePosition();
+            
+            if (node.children.length === 0 || node.isCollapsed) {
+                return 150; // Width of a single node
+            }
+            
+            let totalWidth = 0;
+            let childX = x;
+            
+            node.children.forEach((child, index) => {
+                const childWidth = layoutTree(child, childX, y + 100, level + 1);
+                childX += childWidth;
+                totalWidth += childWidth;
+            });
+            
+            // Center parent over children
+            if (node.children.length > 0) {
+                const firstChildX = node.children[0].x;
+                const lastChildX = node.children[node.children.length - 1].x;
+                node.x = (firstChildX + lastChildX) / 2;
+                node.updatePosition();
+            }
+            
+            return Math.max(150, totalWidth);
+        }
+
+        // Search functionality
+        function toggleSearch() {
+            const searchBox = document.getElementById('searchBox');
+            isSearchVisible = !isSearchVisible;
+            searchBox.style.display = isSearchVisible ? 'block' : 'none';
+            
+            if (isSearchVisible) {
+                document.getElementById('searchInput').focus();
+            } else {
+                // Clear search highlights
+                nodes.forEach(node => {
+                    node.element.style.opacity = '1';
+                });
+            }
+        }
+
+        function searchNodes(event) {
+            const query = event.target.value.toLowerCase();
+            
+            if (query === '') {
+                // Reset all nodes
+                nodes.forEach(node => {
+                    node.element.style.opacity = '1';
+                });
+                return;
+            }
+            
+            // Highlight matching nodes
+            nodes.forEach(node => {
+                if (node.text.toLowerCase().includes(query)) {
+                    node.element.style.opacity = '1';
+                    node.element.style.boxShadow = '0 0 20px #4CAF50';
+                } else {
+                    node.element.style.opacity = '0.3';
+                    node.element.style.boxShadow = '';
+                }
+            });
+        }
+
+        // Minimap
+        function toggleMinimap() {
+            const minimap = document.getElementById('minimap');
+            isMinimapVisible = !isMinimapVisible;
+            minimap.style.display = isMinimapVisible ? 'block' : 'none';
+            
+            if (isMinimapVisible) {
+                updateMinimap();
+            }
+        }
+
+        function updateMinimap() {
+            const minimapCanvas = document.getElementById('minimap-canvas');
+            const minimapCtx = minimapCanvas.getContext('2d');
+            
+            // Clear minimap
+            minimapCtx.clearRect(0, 0, minimapCanvas.width, minimapCanvas.height);
+            
+            // Calculate bounds
+            let minX = Infinity, minY = Infinity;
+            let maxX = -Infinity, maxY = -Infinity;
+            
+            nodes.forEach(node => {
+                minX = Math.min(minX, node.x);
+                minY = Math.min(minY, node.y);
+                maxX = Math.max(maxX, node.x + node.width);
+                maxY = Math.max(maxY, node.y + node.height);
+            });
+            
+            const width = maxX - minX + 100;
+            const height = maxY - minY + 100;
+            const scale = Math.min(minimapCanvas.width / width, minimapCanvas.height / height) * 0.8;
+            
+            // Draw nodes
+            minimapCtx.save();
+            minimapCtx.translate(10, 10);
+            minimapCtx.scale(scale, scale);
+            minimapCtx.translate(-minX + 50, -minY + 50);
+            
+            // Draw connections
+            nodes.forEach(node => {
+                if (node.parent) {
+                    minimapCtx.beginPath();
+                    minimapCtx.moveTo(node.parent.x + node.parent.width / 2, node.parent.y + node.parent.height);
+                    minimapCtx.lineTo(node.x + node.width / 2, node.y);
+                    minimapCtx.strokeStyle = '#ccc';
+                    minimapCtx.stroke();
+                }
+            });
+            
+            // Draw nodes
+            nodes.forEach(node => {
+                minimapCtx.fillStyle = node.color;
+                minimapCtx.fillRect(node.x, node.y, node.width, node.height);
+                minimapCtx.strokeStyle = node.borderColor;
+                minimapCtx.strokeRect(node.x, node.y, node.width, node.height);
+            });
+            
+            minimapCtx.restore();
+        }
+
+        // Import/Export
+        function exportMap(format) {
+            if (format === 'json') {
+                exportJSON();
+            } else if (format === 'png') {
+                exportPNG();
+            } else if (format === 'svg') {
+                exportSVG();
+            }
+        }
+
+        function exportJSON() {
+            const data = {
+                version: '1.0',
+                created: new Date().toISOString(),
+                nodes: Array.from(nodes.values())
+                    .filter(node => !node.parent) // Only export root nodes
+                    .map(node => node.toJSON())
+            };
+            
+            const json = JSON.stringify(data, null, 2);
+            downloadFile(json, 'mindmap.json', 'application/json');
+            showNotification('Exported as JSON!');
+        }
+
+        function exportPNG() {
+            // Create temporary canvas
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // Calculate bounds
+            let minX = Infinity, minY = Infinity;
+            let maxX = -Infinity, maxY = -Infinity;
+            
+            nodes.forEach(node => {
+                minX = Math.min(minX, node.x);
+                minY = Math.min(minY, node.y);
+                maxX = Math.max(maxX, node.x + node.element.offsetWidth);
+                maxY = Math.max(maxY, node.y + node.element.offsetHeight);
+            });
+            
+            const padding = 50;
+            tempCanvas.width = maxX - minX + padding * 2;
+            tempCanvas.height = maxY - minY + padding * 2;
+            
+            // White background
+            tempCtx.fillStyle = 'white';
+            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
+            // Translate to accommodate negative positions
+            tempCtx.save();
+            tempCtx.translate(-minX + padding, -minY + padding);
+            
+            // Draw connections
+            nodes.forEach(node => {
+                if (node.parent) {
+                    tempCtx.beginPath();
+                    tempCtx.moveTo(
+                        node.parent.x + node.parent.element.offsetWidth / 2,
+                        node.parent.y + node.parent.element.offsetHeight
+                    );
+                    tempCtx.lineTo(
+                        node.x + node.element.offsetWidth / 2,
+                        node.y
+                    );
+                    tempCtx.strokeStyle = '#999';
+                    tempCtx.lineWidth = 2;
+                    tempCtx.stroke();
+                }
+            });
+            
+            // Draw nodes
+            nodes.forEach(node => {
+                // Draw node background
+                tempCtx.fillStyle = node.color;
+                tempCtx.fillRect(node.x, node.y, node.element.offsetWidth, node.element.offsetHeight);
+                
+                // Draw node border
+                tempCtx.strokeStyle = node.borderColor;
+                tempCtx.lineWidth = 2;
+                tempCtx.strokeRect(node.x, node.y, node.element.offsetWidth, node.element.offsetHeight);
+                
+                // Draw node text
+                tempCtx.fillStyle = node.parent ? '#000' : '#fff';
+                tempCtx.font = `${node.fontWeight} ${node.fontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
+                tempCtx.textAlign = 'center';
+                tempCtx.textBaseline = 'middle';
+                tempCtx.fillText(
+                    node.text,
+                    node.x + node.element.offsetWidth / 2,
+                    node.y + node.element.offsetHeight / 2
+                );
+            });
+            
+            tempCtx.restore();
+            
+            // Convert to blob and download
+            tempCanvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'mindmap.png';
+                a.click();
+                URL.revokeObjectURL(url);
+                showNotification('Exported as PNG!');
+            });
+        }
+
+        function exportSVG() {
+            // Create SVG content
+            let svgContent = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1">`;
+            
+            // Add connections
+            nodes.forEach(node => {
+                if (node.parent) {
+                    const x1 = node.parent.x + node.parent.width / 2;
+                    const y1 = node.parent.y + node.parent.height;
+                    const x2 = node.x + node.width / 2;
+                    const y2 = node.y;
+                    
+                    svgContent += `
+  <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#999" stroke-width="2"/>`;
+                }
+            });
+            
+            // Add nodes
+            nodes.forEach(node => {
+                svgContent += `
+  <rect x="${node.x}" y="${node.y}" width="${node.width}" height="${node.height}" 
+        fill="${node.color}" stroke="${node.borderColor}" stroke-width="2" rx="8"/>
+  <text x="${node.x + node.width / 2}" y="${node.y + node.height / 2}" 
+        text-anchor="middle" dominant-baseline="middle" 
+        fill="${node.parent ? '#000' : '#fff'}" 
+        font-family="sans-serif" font-size="${node.fontSize}" font-weight="${node.fontWeight}">
+    ${node.text}
+  </text>`;
+            });
+            
+            svgContent += '\n</svg>';
+            
+            downloadFile(svgContent, 'mindmap.svg', 'image/svg+xml');
+            showNotification('Exported as SVG!');
+        }
+
+        function importMap() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    loadFromJSON(data);
+                    showNotification('Mind map imported successfully!');
+                } catch (error) {
+                    showNotification('Error importing file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            
+            // Reset file input
+            event.target.value = '';
+        }
+
+        function loadFromJSON(data) {
+            // Clear existing nodes
+            nodes.forEach(node => node.element.remove());
+            nodes.clear();
+            nodeIdCounter = 0;
+            
+            // Create nodes from JSON
+            if (data.nodes) {
+                data.nodes.forEach(nodeData => {
+                    const node = Node.fromJSON(nodeData);
+                    addNodeToMap(node);
+                });
+            }
+            
+            updateConnections();
+            saveState();
+        }
+
+        function addNodeToMap(node) {
+            nodes.set(node.id, node);
+            nodeIdCounter = Math.max(nodeIdCounter, node.id + 1);
+            
+            node.children.forEach(child => addNodeToMap(child));
+        }
+
+        // Storage
+        function saveToLocalStorage() {
+            const data = {
+                version: '1.0',
+                nodes: Array.from(nodes.values())
+                    .filter(node => !node.parent)
+                    .map(node => node.toJSON()),
+                zoom: zoom,
+                pan: pan,
+                autoLayout: isAutoLayoutEnabled
+            };
+            
+            localStorage.setItem('mindmap', JSON.stringify(data));
+            updateURL();
+        }
+
+        function loadFromLocalStorage() {
+            const stored = localStorage.getItem('mindmap');
+            if (!stored) return false;
+            
+            try {
+                const data = JSON.parse(stored);
+                loadFromJSON(data);
+                
+                if (data.zoom) zoom = data.zoom;
+                if (data.pan) pan = data.pan;
+                if (data.autoLayout !== undefined) {
+                    isAutoLayoutEnabled = data.autoLayout;
+                    // Update button state
+                    const btn = document.getElementById('autoLayoutBtn');
+                    if (btn) {
+                        if (isAutoLayoutEnabled) {
+                            btn.style.background = '#4CAF50';
+                            btn.style.color = 'white';
+                        } else {
+                            btn.style.background = '#f0f0f0';
+                            btn.style.color = '#333';
+                        }
+                    }
+                }
+                updateTransform();
+                
+                return true;
+            } catch (error) {
+                console.error('Error loading from storage:', error);
+                return false;
+            }
+        }
+
+        function startAutoSave() {
+            autoSaveTimer = setInterval(saveToLocalStorage, 30000); // Auto-save every 30 seconds
+        }
+
+        // URL sharing
+        function updateURL() {
+            const data = {
+                nodes: Array.from(nodes.values())
+                    .filter(node => !node.parent)
+                    .map(node => node.toJSON())
+            };
+            
+            const compressed = btoa(JSON.stringify(data));
+            window.location.hash = compressed;
+        }
+
+        function loadFromURL() {
+            if (!window.location.hash) return false;
+            
+            try {
+                const compressed = window.location.hash.substring(1);
+                const data = JSON.parse(atob(compressed));
+                loadFromJSON(data);
+                return true;
+            } catch (error) {
+                console.error('Error loading from URL:', error);
+                return false;
+            }
+        }
+
+        // Undo/Redo
+        function saveState() {
+            const state = {
+                nodes: Array.from(nodes.values())
+                    .filter(node => !node.parent)
+                    .map(node => node.toJSON())
+            };
+            
+            undoStack.push(JSON.stringify(state));
+            if (undoStack.length > 50) {
+                undoStack.shift();
+            }
+            
+            redoStack = [];
+            saveToLocalStorage();
+        }
+
+        function undo() {
+            if (undoStack.length < 2) return;
+            
+            const currentState = undoStack.pop();
+            redoStack.push(currentState);
+            
+            const previousState = undoStack[undoStack.length - 1];
+            loadFromJSON(JSON.parse(previousState));
+            
+            showNotification('Undo');
+        }
+
+        function redo() {
+            if (redoStack.length === 0) return;
+            
+            const nextState = redoStack.pop();
+            undoStack.push(nextState);
+            
+            loadFromJSON(JSON.parse(nextState));
+            
+            showNotification('Redo');
+        }
+
+        // Utilities
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showNotification(message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #4CAF50;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                z-index: 5000;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => notification.style.opacity = '1', 10);
+            
+            // Remove after delay
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Help modal
+        function showHelp() {
+            document.getElementById('helpModal').style.display = 'flex';
+        }
+
+        function closeHelp() {
+            document.getElementById('helpModal').style.display = 'none';
+        }
+
+        // Zoom controls
+        function zoomIn() {
+            zoom = Math.min(5, zoom * 1.2);
+            updateTransform();
+        }
+
+        function zoomOut() {
+            zoom = Math.max(0.1, zoom / 1.2);
+            updateTransform();
+        }
+
+        function resetZoom() {
+            zoom = 1;
+            pan = { x: 0, y: 0 };
+            updateTransform();
+        }
+
+        // Initialize on load
+        window.addEventListener('load', initCanvas);
+        
+        // Handle beforeunload
+        window.addEventListener('beforeunload', (e) => {
+            if (undoStack.length > 1) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+</html>

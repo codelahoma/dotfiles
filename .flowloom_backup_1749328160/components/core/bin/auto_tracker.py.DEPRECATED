@@ -1,0 +1,242 @@
+#!/usr/bin/env python3
+"""
+FlowLoom Auto-Tracker Daemon
+Continuous WORM governance tracking for development interactions.
+"""
+
+import os
+import sys
+import time
+import signal
+import subprocess
+import json
+from datetime import datetime
+from pathlib import Path
+import argparse
+
+
+class AutoTracker:
+    def __init__(self, shell_pid=None):
+        self.shell_pid = shell_pid or self.get_shell_pid()
+        self.lockfile = Path(f"/tmp/flowloom-autotrack-{self.shell_pid}.lock")
+        self.logfile = Path(f"/tmp/autotrack-{self.shell_pid}.log")
+        self.memory_file = Path("fl-memory.json")
+        self.capture_interval = 120  # 2 minutes
+        self.check_interval = 30    # 30 seconds
+        
+    def get_shell_pid(self):
+        """Get the current shell PID."""
+        try:
+            result = subprocess.run(
+                ["./bin/get_shell_pid.sh"], 
+                capture_output=True, 
+                text=True, 
+                check=True
+            )
+            return result.stdout.strip()
+        except subprocess.CalledProcessError:
+            return str(os.getppid())  # Fallback to parent PID
+    
+    def is_running(self):
+        """Check if auto-tracker is already running."""
+        if not self.lockfile.exists():
+            return False
+        
+        try:
+            with open(self.lockfile) as f:
+                pid = int(f.read().strip())
+            
+            # Check if process exists (Unix only)
+            os.kill(pid, 0)
+            return True
+        except (OSError, ValueError, ProcessLookupError):
+            # Process doesn't exist, clean up stale lockfile
+            self.lockfile.unlink(missing_ok=True)
+            return False
+    
+    def get_running_pid(self):
+        """Get PID of running tracker, if any."""
+        if self.lockfile.exists():
+            try:
+                with open(self.lockfile) as f:
+                    return int(f.read().strip())
+            except (ValueError, OSError):
+                pass
+        return None
+    
+    def stop(self):
+        """Stop the auto-tracker."""
+        if not self.is_running():
+            print("❌ Auto-tracking not running")
+            return False
+        
+        pid = self.get_running_pid()
+        if pid:
+            try:
+                os.kill(pid, signal.SIGTERM)
+                time.sleep(0.5)  # Give it time to clean up
+                self.lockfile.unlink(missing_ok=True)
+                print("🛑 Auto-tracking stopped")
+                return True
+            except ProcessLookupError:
+                self.lockfile.unlink(missing_ok=True)
+                print("🛑 Auto-tracking stopped (process already gone)")
+                return True
+            except OSError as e:
+                print(f"❌ Failed to stop tracker: {e}")
+                return False
+        
+        print("❌ Could not determine tracker PID")
+        return False
+    
+    def status(self):
+        """Check auto-tracker status."""
+        if self.is_running():
+            pid = self.get_running_pid()
+            print(f"✅ Auto-tracking active (PID: {pid})")
+            
+            # Show last capture time if log exists
+            if self.logfile.exists():
+                try:
+                    with open(self.logfile) as f:
+                        lines = f.readlines()
+                    if lines:
+                        last_line = lines[-1].strip()
+                        if "Auto-captured:" in last_line:
+                            print(f"🕒 Last capture: {last_line.split('Auto-captured: ')[1]}")
+                except OSError:
+                    pass
+            return True
+        else:
+            print("❌ Auto-tracking not running")
+            return False
+    
+    def capture_observation(self, interaction_type="continuous_monitoring"):
+        """Capture a single observation to memory."""
+        timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+        session_entity = f"Session-{self.shell_pid}-{int(time.time())}-current"
+        
+        observation = (
+            f"Shell_ID: {self.shell_pid} - AUTO: {timestamp} | "
+            f"Request: {interaction_type} | Tools: [auto_tracker] | "
+            f"Files: fl-memory.json | Decisions: periodic_capture | "
+            f"Next: continue_monitoring"
+        )
+        
+        try:
+            result = subprocess.run([
+                "python3", "bin/log_observation.py",
+                "--memory-file", str(self.memory_file),
+                "add-entity", session_entity, "Session", observation
+            ], capture_output=True, text=True, check=True)
+            
+            return True, timestamp
+        except subprocess.CalledProcessError as e:
+            return False, f"Error: {e.stderr}"
+    
+    def setup_signal_handlers(self):
+        """Set up signal handlers for clean shutdown."""
+        def signal_handler(signum, frame):
+            print(f"\n🛑 Received signal {signum}, shutting down...")
+            self.cleanup()
+            sys.exit(0)
+        
+        signal.signal(signal.SIGTERM, signal_handler)
+        signal.signal(signal.SIGINT, signal_handler)
+    
+    def cleanup(self):
+        """Clean up lockfile and resources."""
+        self.lockfile.unlink(missing_ok=True)
+    
+    def start_daemon(self):
+        """Start the auto-tracking daemon."""
+        if self.is_running():
+            print("🔄 Restarting existing auto-tracker")
+            self.stop()
+            time.sleep(1)
+        
+        # Fork to background (Unix only)
+        try:
+            pid = os.fork()
+            if pid > 0:
+                # Parent process
+                time.sleep(1)  # Give child time to start
+                
+                # Immediate capture in parent before exiting
+                success, result = self.capture_observation("auto_track_enabled")
+                if success:
+                    print("📝 Initial capture complete")
+                    print("💾 Memory: fl-memory.json updated")
+                    print("⚡ Background tracking active")
+                else:
+                    print(f"❌ Failed initial capture: {result}")
+                
+                return True
+            
+        except OSError:
+            print("❌ Failed to fork background process")
+            return False
+        
+        # Child process (daemon)
+        self.run_daemon()
+    
+    def run_daemon(self):
+        """Run the background daemon process."""
+        # Write PID to lockfile
+        with open(self.lockfile, 'w') as f:
+            f.write(str(os.getpid()))
+        
+        # Set up signal handlers
+        self.setup_signal_handlers()
+        
+        # Open log file
+        with open(self.logfile, 'w') as log:
+            log.write(f"🚀 Auto-tracking started (PID: {os.getpid()})\n")
+            log.write(f"📁 Monitoring: {self.memory_file}\n")
+            log.write(f"🔍 Shell: {self.shell_pid}\n")
+            log.flush()
+            
+            last_capture = time.time()
+            
+            try:
+                while True:
+                    current_time = time.time()
+                    
+                    # Capture every 2 minutes
+                    if current_time - last_capture >= self.capture_interval:
+                        success, result = self.capture_observation()
+                        if success:
+                            log.write(f"📝 Auto-captured: {result}\n")
+                            log.flush()
+                        
+                        last_capture = current_time
+                    
+                    time.sleep(self.check_interval)
+                    
+            except KeyboardInterrupt:
+                log.write("🛑 Daemon stopped by signal\n")
+            finally:
+                self.cleanup()
+
+
+def main():
+    parser = argparse.ArgumentParser(description="FlowLoom Auto-Tracker")
+    parser.add_argument("action", nargs="?", default="start", 
+                       choices=["start", "stop", "status"],
+                       help="Action to perform")
+    parser.add_argument("--shell-pid", help="Override shell PID")
+    
+    args = parser.parse_args()
+    
+    tracker = AutoTracker(shell_pid=args.shell_pid)
+    
+    if args.action == "stop":
+        tracker.stop()
+    elif args.action == "status":
+        tracker.status()
+    else:  # start
+        tracker.start_daemon()
+
+
+if __name__ == "__main__":
+    main()

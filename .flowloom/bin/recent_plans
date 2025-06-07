@@ -1,0 +1,100 @@
+#!/bin/bash
+
+# recent_plans - List recently modified plans with flexible filtering
+# Usage: recent_plans [options] [num_results]
+# Options:
+#   --vision-only    Show only vision plans (0xx)
+#   --all           Show all plans including vision
+#   --help          Show this help message
+# Examples: 
+#   recent_plans              (shows 10 most recent non-vision plans)
+#   recent_plans 15           (shows 15 most recent non-vision plans)
+#   recent_plans --vision-only (shows 10 most recent vision plans)
+#   recent_plans --all 20     (shows 20 most recent plans including vision)
+
+# Default values
+NUM_RESULTS=10
+SHOW_VISION_ONLY=false
+EXCLUDE_VISION=true
+FILTER_PATTERN="\(README\|INDEX\|DS_Store\|ticket_organization\|\.gitignore\)"
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --vision-only)
+      SHOW_VISION_ONLY=true
+      EXCLUDE_VISION=false
+      shift
+      ;;
+    --all)
+      EXCLUDE_VISION=false
+      shift
+      ;;
+    --help)
+      echo "recent_plans - List recently modified plans with flexible filtering"
+      echo ""
+      echo "Usage: recent_plans [options] [num_results]"
+      echo ""
+      echo "Options:"
+      echo "  --vision-only    Show only vision plans (0xx)"
+      echo "  --all           Show all plans including vision"
+      echo "  --help          Show this help message"
+      echo ""
+      echo "Examples:"
+      echo "  recent_plans              (shows 10 most recent non-vision plans)"
+      echo "  recent_plans 15           (shows 15 most recent non-vision plans)"
+      echo "  recent_plans --vision-only (shows 10 most recent vision plans)"
+      echo "  recent_plans --all 20     (shows 20 most recent plans including vision)"
+      exit 0
+      ;;
+    [0-9]*)
+      NUM_RESULTS=$1
+      shift
+      ;;
+    *)
+      echo "Unknown option: $1"
+      echo "Use --help for usage information"
+      exit 1
+      ;;
+  esac
+done
+
+# Set header based on filtering mode
+if [ "$SHOW_VISION_ONLY" = true ]; then
+  echo "=== $NUM_RESULTS Most Recently Modified Vision Plans (000-009) ==="
+elif [ "$EXCLUDE_VISION" = true ]; then
+  echo "=== $NUM_RESULTS Most Recently Modified Plans (excluding vision 000-009) ==="
+else
+  echo "=== $NUM_RESULTS Most Recently Modified Plans (all) ==="
+fi
+
+# Find markdown files, exclude structural documents, and get modification time
+find plans -type f -name "*.md" -not -path "*/\.*" | grep -v "$FILTER_PATTERN" | while read file; do
+  # Extract plan number from filename
+  plan_num=$(basename "$file" | grep -o '^[0-9]\+')
+  
+  # Skip files without plan numbers
+  if [ -z "$plan_num" ]; then
+    continue
+  fi
+  
+  # Apply vision filtering
+  if [ "$SHOW_VISION_ONLY" = true ]; then
+    # Only show vision plans (000-009)
+    if [ "$plan_num" -lt 0 ] || [ "$plan_num" -gt 9 ]; then
+      continue
+    fi
+  elif [ "$EXCLUDE_VISION" = true ]; then
+    # Exclude vision plans (000-009)
+    if [ "$plan_num" -ge 0 ] && [ "$plan_num" -le 9 ]; then
+      continue
+    fi
+  fi
+  
+  # Get modification time as timestamp
+  mod_time=$(stat -f "%m" "$file")
+  # Format the timestamp as human-readable date
+  formatted_date=$(date -r "$mod_time" "+%Y-%m-%d %H:%M:%S")
+  # Output the file and timestamp
+  echo "$mod_time $file $formatted_date"
+done | sort -nr | head -n "$NUM_RESULTS" | awk '{print NR") " $2 " (modified " $3 " " $4 ")"}'

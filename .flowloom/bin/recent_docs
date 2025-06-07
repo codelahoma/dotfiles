@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# recent_docs - List recently modified documentation, filtering out structural documents
+# Usage: recent_docs [num_results]
+# Example: recent_docs 15 (shows 15 most recent docs, default is 10)
+
+NUM_RESULTS=${1:-10}
+FILTER_PATTERN="\(README\|INDEX\|DS_Store\|\.gitignore\)"
+
+echo "=== $NUM_RESULTS Most Recently Modified Documentation Files ==="
+
+# Find files, exclude structural documents, and get modification time
+find docs -type f -not -path "*/\.*" -not -path "*/pdf/*" | grep -v "$FILTER_PATTERN" | while read file; do
+  # Get modification time as timestamp
+  mod_time=$(stat -f "%m" "$file")
+  # Format the timestamp as human-readable date
+  formatted_date=$(date -r "$mod_time" "+%Y-%m-%d %H:%M:%S")
+  # Output the file and timestamp
+  echo "$mod_time $file $formatted_date"
+done | sort -nr | head -n "$NUM_RESULTS" | awk '{print NR") " $2 " (modified " $3 " " $4 ")"}'

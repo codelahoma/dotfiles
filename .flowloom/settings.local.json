@@ -1,0 +1,65 @@
+{
+  "allowedCommands": [
+    "flowloom",
+    "git",
+    "npm",
+    "python",
+    "pip",
+    "docker",
+    "kubectl",
+    "terraform"
+  ],
+  "allowedDirectories": [
+    "/Users/rodk/.homesick/repos/dotfiles/.flowloom"
+  ],
+  "permissionLevel": "development",
+  "shellIntegration": true,
+  "mcpServers": {
+    "filesystem": {
+      "name": "filesystem",
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-filesystem"
+      ],
+      "args": [],
+      "env": {},
+      "enabled": true
+    },
+    "memory": {
+      "name": "memory",
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ],
+      "args": [],
+      "env": {},
+      "enabled": true
+    },
+    "basic-memory": {
+      "name": "basic-memory",
+      "command": [
+        "uvx",
+        "basic-memory",
+        "mcp"
+      ],
+      "args": [],
+      "env": {
+        "BASIC_MEMORY_PROJECT_PATH": "/Users/rodk/.homesick/repos/dotfiles/.flowloom/.knowledge"
+      },
+      "enabled": true
+    },
+    "github": {
+      "name": "github",
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "args": [],
+      "env": {},
+      "enabled": true
+    }
+  }
+}
