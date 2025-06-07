@@ -192,6 +192,9 @@ fi
 
 # p10k configuration
 [[ ! -f ~/.homesick/repos/dotfiles/home/.p10k.zsh ]] || source ~/.homesick/repos/dotfiles/home/.p10k.zsh
-
 # FlowLoom
 export PATH="/Users/rodk/.homesick/repos/dotfiles/.flowloom/bin:$PATH"
+
+# Additional aliases and functions
+alias claude="/Users/rodk/.claude/local/claude"
+function gi() { curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@ ;}
