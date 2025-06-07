@@ -1173,11 +1173,11 @@ Set up a key binding to launch
 
 *** contexts
 #+begin_src emacs-lisp :noweb-ref user-config
-
-  (setq mu4e-contexts
-        (list
-         ;; Work account
-         (make-mu4e-context
+  (with-eval-after-load 'mu4e
+    (setq mu4e-contexts
+          (list
+           ;; Work account
+           (make-mu4e-context
           :name "Work"
           :match-func
           (lambda (msg)
@@ -1220,7 +1220,7 @@ Set up a key binding to launch
                                              (:maildir "/Fastmail/Archive" :key ?a)
                                              (:maildir "/Fastmail/Trash" :key ?t)
                                              (:maildir "/Fastmail/Junk Mail" :key ?j)))
-                  ))))
+                  )))))
 #+end_src
 
 #+RESULTS:

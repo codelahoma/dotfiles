@@ -196,3 +196,28 @@ export PATH="/Users/rodk/.homesick/repos/dotfiles/.flowloom/bin:$PATH"
 
 # Additional aliases and functions
 function gi() { curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@ ;}
+alias cl="SHELL=/bin/bash claude"
+
+# FlowLoom
+export PATH="/Users/rodk/demo/flowloom/packages/flowloom_installer/atlas-up-ai/bin:$PATH"
+
+# FlowLoom
+export PATH="/Users/rodk/demo/atlas-up-ai/.flowloom/bin:$PATH"
+
+# FlowLoom
+export PATH="/Users/rodk/github/flowloom/test-flowloom-install/.flowloom/bin:$PATH"
+
+# FlowLoom
+export PATH="/Users/rodk/demo/flowloom/packages/flowloom_installer/.flowloom/bin:$PATH"
+
+# FlowLoom
+export PATH="/Users/rodk/github/flowloom/test-final-installer/.flowloom/bin:$PATH"
+
+# FlowLoom
+export PATH="/Users/rodk/github/flowloom/test-easter-egg-default/.flowloom/bin:$PATH"
+
+# Claude-generated shell enhancements for notifications and development
+source ~/zshrc_additions.sh
+
+# FlowLoom
+export PATH="/Users/rodk/.homesick/repos/dotfiles/.flowloom/bin:$PATH"
