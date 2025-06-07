@@ -2,6 +2,7 @@ home/.pentadactyl/info/
 .DS_Store
 /home/.emacs.d/private/framegeometry
 .direnv/
+.envrc
 display.md
 node_modules/
 package-lock.json
