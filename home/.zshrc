@@ -62,7 +62,6 @@ alias make="$(which make) --"
 alias Ls="/bin/ls"
 alias rm='rm -i'
 alias ohmyzsh="emacsclient -n ~/.oh-my-zsh"
-alias claude="/Users/rodk/.claude/local/claude"
 
 # Global aliases
 alias -g C='| wc -l'
@@ -196,5 +195,4 @@ fi
 export PATH="/Users/rodk/.homesick/repos/dotfiles/.flowloom/bin:$PATH"
 
 # Additional aliases and functions
-alias claude="/Users/rodk/.claude/local/claude"
 function gi() { curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@ ;}

@@ -1,41 +1,31 @@
 {
   "mcpServers": {
     "filesystem": {
-      "command": [
-        "npx",
-        "-y",
-        "@modelcontextprotocol/server-filesystem"
-      ],
-      "args": [],
+      "type": "stdio",
+      "command": "/Users/rodk/.asdf/installs/nodejs/18.4.0/bin/npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/rodk/.homesick/repos/dotfiles"],
       "env": {}
     },
     "memory": {
-      "command": [
-        "npx",
-        "-y",
-        "@modelcontextprotocol/server-memory"
-      ],
-      "args": [],
-      "env": {}
+      "type": "stdio",
+      "command": "/Users/rodk/.asdf/installs/nodejs/18.4.0/bin/npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "env": {
+        "MEMORY_FILE_PATH": "/Users/rodk/.homesick/repos/dotfiles/fl-memory.json"
+      }
     },
     "basic-memory": {
-      "command": [
-        "uvx",
-        "basic-memory",
-        "mcp"
-      ],
-      "args": [],
+      "type": "stdio",
+      "command": "/Users/rodk/.local/bin/uvx",
+      "args": ["basic-memory", "mcp"],
       "env": {
         "BASIC_MEMORY_PROJECT_PATH": "/Users/rodk/.homesick/repos/dotfiles/.flowloom/.knowledge"
       }
     },
     "github": {
-      "command": [
-        "npx",
-        "-y",
-        "@modelcontextprotocol/server-github"
-      ],
-      "args": [],
+      "type": "stdio",
+      "command": "/Users/rodk/.asdf/installs/nodejs/18.4.0/bin/npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {}
     }
   }
