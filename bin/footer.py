@@ -29,9 +29,9 @@ def get_git_stats():
         
         stats = []
         if modified > 0:
-            stats.append(f"{modified}M")
+            stats.append(f"{modified} modified")
         if untracked > 0:
-            stats.append(f"{untracked}?")
+            stats.append(f"{untracked} untracked")
         
         return f" ({', '.join(stats)})"
         
@@ -165,14 +165,16 @@ def format_footer(dir_path, mode, branch, context, next_steps):
     context_content = f"**Context:** {context}"
     table_lines.append(f"{context_content}")
     
-    # Format next steps
-    steps_section = "### Next Steps"
+    # Format next steps (no header)
+    steps_list = []
     for step in next_steps.split('\\n'):
         if step.strip():
-            steps_section += f"\n{step.strip()}"
+            steps_list.append(step.strip())
     
-    # Return table first, then next steps, then usage
-    return '\n'.join(table_lines) + '\n\n' + steps_section + '\n\n💡 **Usage:** Type `go` to continue or select a numbered option above'
+    # Return table, divider, placeholder for response, divider, steps and usage
+    divider = "─" * 80
+    steps_text = '\n'.join(steps_list) if steps_list else ""
+    return '\n'.join(table_lines) + f'\n{divider}\n\n[RESPONSE_OUTPUT]\n\n{divider}\n' + steps_text + '\n💡 **Usage:** Type `go` to continue or select a numbered option above'
 
 
 def has_git_changes():

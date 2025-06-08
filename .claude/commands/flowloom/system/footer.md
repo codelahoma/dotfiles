@@ -31,21 +31,23 @@ Execute the Python footer script and display its output:
 
 @bash python3 ./bin/footer.py --session "${input_args:-Configuration Mode Session}" --next-steps "1. Review output\\n2. Continue with next task"
 
-**STEP 3: Output Sequencing**
+**STEP 3: Output Sequencing and Integration**
 CRITICAL OUTPUT HANDLING:
 - Hold ALL output intended for user viewing until all tool calls complete
 - Run the footer script and capture its output
-- Append the footer output to any held content before displaying
-- Display everything together as a single response
+- Replace [RESPONSE_OUTPUT] placeholder in footer with held content
+- Display the integrated response with proper dividers
 
-**STEP 4: Memory Status**
-Add a brief memory status line showing:
-- Last fl-memory update time
-- Recent observations count
-- Reminder about dual system tracking
+**STEP 4: Response Integration**
+The footer template includes placeholders for proper ordering:
+1. **Table** (memory status, directory, branch, context)
+2. **Divider line** (80 dashes)
+3. **[RESPONSE_OUTPUT]** (replace with actual response content)
+4. **Divider line** (80 dashes) 
+5. **Next Steps and Usage**
 
-**STEP 5: Display Complete Output**
-Show the complete response with footer appended at the end.
+**STEP 5: Display Integrated Output**
+Show the complete response with footer structure maintaining proper separation between system status, response content, and interactive elements.
 
 **CRITICAL**: Do not continue working or take any actions after displaying the footer. The footer is an interactive pause point that requires user input to proceed.
 
