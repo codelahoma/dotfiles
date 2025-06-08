@@ -24,7 +24,6 @@ This file contains all custom keybindings organized by functionality.
 
 #+begin_src emacs-lisp :noweb-ref private-key-bindings
   (spacemacs/declare-prefix "ox" "text")
-  (spacemacs/set-leader-keys "oxt" 'xah-title-case-region-or-line)
   (spacemacs/set-leader-keys "oxw" 'white-space-cleanup)
 #+end_src
 

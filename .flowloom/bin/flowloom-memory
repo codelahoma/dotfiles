@@ -1,0 +1,143 @@
+#!/usr/bin/env python3
+"""
+Unified FlowLoom Memory Interface
+Routes commands to log_observation.py or memory-monitor based on operation type
+"""
+
+import sys
+import subprocess
+import os
+from pathlib import Path
+
+# Command routing map
+LOG_OBSERVATION_COMMANDS = {
+    'add-entity', 'add-observation', 'add-relation', 
+    'get-entity', 'list-entities'
+}
+
+MEMORY_MONITOR_COMMANDS = {
+    'query', 'search', 'watch', 'wait-for', 
+    'serve', 'explain'
+}
+
+SHARED_COMMANDS = {'stats', 'help'}
+
+def get_memory_file():
+    """Get memory file path from environment or default"""
+    return os.environ.get('FLOWLOOM_MEMORY_FILE', 'fl-memory.json')
+
+def show_unified_help():
+    """Show unified help for all commands"""
+    help_text = """
+FlowLoom Memory - Unified Interface
+
+USAGE:
+    flowloom-memory [OPTIONS] COMMAND [ARGS...]
+
+WRITING COMMANDS (log_observation.py):
+    add-entity      Create new entity or update existing with observation
+    add-observation Add observation to existing entity  
+    add-relation    Create relationship between two entities
+    get-entity      Retrieve entity details by name
+    list-entities   List all entities or filter by type
+
+QUERY COMMANDS (memory-monitor):
+    query          Execute SQL query against memory data
+    search         Quick search for entities
+    watch          Watch memory file for changes
+    wait-for       Wait for query condition to be met
+    serve          Start WebSocket server for real-time updates
+    explain        Show query execution plan
+
+SHARED COMMANDS:
+    stats          Show memory statistics and summary
+    help           Show this help message
+
+OPTIONS:
+    --memory-file  Specify memory file path (default: fl-memory.json)
+    --help         Show this help message
+
+ENVIRONMENT:
+    FLOWLOOM_MEMORY_FILE  Default memory file path
+
+EXAMPLES:
+    # Writing operations
+    flowloom-memory add-entity "Auth System" "Feature" "Implemented OAuth2"
+    flowloom-memory add-observation "Session-123" "Fixed critical bug"
+    flowloom-memory add-relation "Auth Module" "Database" "depends_on"
+    
+    # Query operations  
+    flowloom-memory query "SELECT * FROM entities WHERE type = 'Feature'"
+    flowloom-memory search "authentication"
+    flowloom-memory stats
+    
+    # Real-time monitoring
+    flowloom-memory watch
+    flowloom-memory wait-for "SELECT COUNT(*) FROM entities WHERE type = 'Task'"
+
+For command-specific help:
+    flowloom-memory <command> --help
+"""
+    print(help_text)
+
+def route_command(args):
+    """Route command to appropriate tool"""
+    if not args or args[0] in ['--help', 'help']:
+        show_unified_help()
+        return 0
+    
+    command = args[0]
+    remaining_args = args[1:]
+    
+    # Handle memory file option
+    memory_file = get_memory_file()
+    if '--memory-file' in args:
+        idx = args.index('--memory-file')
+        if idx + 1 < len(args):
+            memory_file = args[idx + 1]
+            # Remove --memory-file and its value from args
+            args = args[:idx] + args[idx + 2:]
+            command = args[0] if args else None
+            remaining_args = args[1:] if len(args) > 1 else []
+    
+    if not command:
+        show_unified_help()
+        return 1
+    
+    # Route to appropriate tool
+    if command in LOG_OBSERVATION_COMMANDS:
+        return exec_log_observation(command, remaining_args, memory_file)
+    elif command in MEMORY_MONITOR_COMMANDS:
+        return exec_memory_monitor(command, remaining_args, memory_file)
+    elif command == 'stats':
+        # Use log_observation for stats
+        return exec_log_observation(command, remaining_args, memory_file)
+    else:
+        print(f"Unknown command: {command}", file=sys.stderr)
+        print("Use 'flowloom-memory help' for available commands", file=sys.stderr)
+        return 1
+
+def exec_log_observation(command, args, memory_file):
+    """Execute log_observation.py command"""
+    script_path = Path(__file__).parent / "log_observation.py"
+    cmd = [sys.executable, str(script_path), "--memory-file", memory_file, command] + args
+    return subprocess.run(cmd).returncode
+
+def exec_memory_monitor(command, args, memory_file):
+    """Execute memory-monitor command"""
+    cmd = ["memory-monitor", command, memory_file] + args
+    return subprocess.run(cmd).returncode
+
+def main():
+    """Main entry point"""
+    try:
+        return route_command(sys.argv[1:])
+    except KeyboardInterrupt:
+        print("\nInterrupted", file=sys.stderr)
+        return 130
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
+
+if __name__ == "__main__":
+    sys.exit(main())
