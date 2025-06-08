@@ -43,6 +43,179 @@ This file contains comprehensive Org mode configuration for Spacemacs.
   org-noter-pdftools
 #+end_src
 
+** GTD Workflow Configuration
+
+*** Base Directory Configuration
+#+begin_src emacs-lisp :noweb-ref user-config
+  ;; Centralized org directory configuration
+  (defvar rk/org-directory "~/personal/org-files-new/"
+    "Base directory for all org files. Change this to point to your actual org directory.")
+  
+  (defun rk/org-file (filename)
+    "Construct full path to org file in base directory."
+    (expand-file-name filename rk/org-directory))
+  
+  (defun rk/org-subdir-file (subdir filename)
+    "Construct full path to org file in subdirectory."
+    (expand-file-name filename (expand-file-name subdir rk/org-directory)))
+#+end_src
+
+*** TODO Keywords and Context Tags
+#+begin_src emacs-lisp :noweb-ref user-config
+  ;; GTD TODO keywords
+  (setq org-todo-keywords
+        '((sequence "NEXT(n)" "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+
+  ;; Context tags for work/personal separation
+  (setq org-tag-alist '(("@work" . ?w)
+                        ("@personal" . ?p)
+                        ("@home" . ?h)
+                        ("@office" . ?o)
+                        ("@phone" . ?c)
+                        ("@computer" . ?m)
+                        ("project" . ?j)
+                        ("someday" . ?s)))
+#+end_src
+
+*** Org Agenda Files
+#+begin_src emacs-lisp :noweb-ref user-config
+  ;; Default to unified mode (all files)
+  (setq org-agenda-files (list rk/org-directory))
+#+end_src
+
+*** Capture Templates
+#+begin_src emacs-lisp :noweb-ref user-config
+  (setq org-capture-templates
+        `(;; Universal inbox
+          ("i" "Inbox" entry (file ,(rk/org-file "inbox.org"))
+           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+          
+          ;; Work captures
+          ("w" "Work Templates")
+          ("wt" "Work Task" entry (file ,(rk/org-subdir-file "work" "gtd.org"))
+           "* TODO %? :@work:\n  %U\n  %a\n  %i" :empty-lines 1)
+          ("wp" "Work Project" entry (file ,(rk/org-subdir-file "work" "projects.org"))
+           "* TODO %? [/] :@work:project:\n  DEADLINE: %^{Deadline}t\n  %U\n  %a\n  %i")
+          ("wn" "Work Note" plain (function org-roam-node-insert)
+           "%?" :empty-lines 1 :unnarrowed t)
+          
+          ;; Personal captures  
+          ("p" "Personal Templates")
+          ("pt" "Personal Task" entry (file ,(rk/org-subdir-file "personal" "gtd.org"))
+           "* TODO %? :@personal:\n  %U\n  %a\n  %i" :empty-lines 1)
+          ("pp" "Personal Project" entry (file ,(rk/org-subdir-file "personal" "projects.org"))
+           "* TODO %? [/] :@personal:project:\n  DEADLINE: %^{Deadline}t\n  %U\n  %a\n  %i")
+          ("pn" "Personal Note" plain (function org-roam-node-insert)
+           "%?" :empty-lines 1 :unnarrowed t)))
+#+end_src
+
+*** Custom Agenda Views
+#+begin_src emacs-lisp :noweb-ref user-config
+  (setq org-agenda-custom-commands
+        '(;; Work-only views
+          ("w" "Work Dashboard"
+           ((agenda "" ((org-agenda-span 7)
+                        (org-agenda-tag-filter-preset '("+@work"))))
+            (todo "NEXT" ((org-agenda-overriding-header "Work Next Actions")
+                          (org-agenda-tag-filter-preset '("+@work"))))
+            (todo "WAITING" ((org-agenda-overriding-header "Work Waiting For")
+                             (org-agenda-tag-filter-preset '("+@work"))))
+            (tags-todo "@work+project+LEVEL=2" 
+                       ((org-agenda-overriding-header "Active Work Projects")))))
+          
+          ;; Personal-only views
+          ("p" "Personal Dashboard"
+           ((agenda "" ((org-agenda-span 7)
+                        (org-agenda-tag-filter-preset '("+@personal"))))
+            (todo "NEXT" ((org-agenda-overriding-header "Personal Next Actions")
+                          (org-agenda-tag-filter-preset '("+@personal"))))
+            (todo "WAITING" ((org-agenda-overriding-header "Personal Waiting For")
+                             (org-agenda-tag-filter-preset '("+@personal"))))
+            (tags-todo "@personal+project+LEVEL=2"
+                       ((org-agenda-overriding-header "Active Personal Projects")))))
+          
+          ;; Unified view (everything)
+          ("u" "Unified Dashboard"
+           ((agenda "" ((org-agenda-span 7)))
+            (todo "NEXT" ((org-agenda-overriding-header "All Next Actions")))
+            (todo "WAITING" ((org-agenda-overriding-header "All Waiting For")))
+            (tags-todo "project+LEVEL=2"
+                       ((org-agenda-overriding-header "All Active Projects")))))))
+#+end_src
+
+*** Context Switching Functions
+#+begin_src emacs-lisp :noweb-ref user-config
+  (defun org-work-mode ()
+    "Switch to work-focused org environment."
+    (interactive)
+    (setq org-agenda-files (list (rk/org-subdir-file "work" "") 
+                                 (rk/org-file "inbox.org")))
+    (message "Switched to Work Mode"))
+
+  (defun org-personal-mode ()
+    "Switch to personal-focused org environment."
+    (interactive)
+    (setq org-agenda-files (list (rk/org-subdir-file "personal" "") 
+                                 (rk/org-file "inbox.org")))
+    (message "Switched to Personal Mode"))
+
+  (defun org-unified-mode ()
+    "Switch to unified org environment (everything)."
+    (interactive)
+    (setq org-agenda-files (list rk/org-directory))
+    (message "Switched to Unified Mode"))
+#+end_src
+
+*** Keybindings for Unified GTD System
+#+begin_src emacs-lisp :noweb-ref user-config
+  ;; Extend existing "oo" org prefix
+  (spacemacs/declare-prefix "oo" "org")
+
+  ;; Context switching
+  (spacemacs/declare-prefix "oom" "mode")
+  (spacemacs/set-leader-keys
+    "oomw" 'org-work-mode
+    "oomp" 'org-personal-mode  
+    "oomu" 'org-unified-mode)
+
+  ;; Agenda dashboards  
+  (spacemacs/declare-prefix "ooa" "agenda")
+  (spacemacs/set-leader-keys
+    "ooaw" (lambda () (interactive) (org-agenda nil "w"))  ; Work dashboard
+    "ooap" (lambda () (interactive) (org-agenda nil "p"))  ; Personal dashboard  
+    "ooau" (lambda () (interactive) (org-agenda nil "u"))  ; Unified dashboard
+    "ooaa" 'org-agenda)                                    ; Standard agenda
+
+  ;; Capture templates
+  (spacemacs/declare-prefix "ooc" "capture")
+  (spacemacs/set-leader-keys
+    "ooci" (lambda () (interactive) (org-capture nil "i"))   ; Inbox
+    "oocw" (lambda () (interactive) (org-capture nil "wt"))  ; Work task
+    "oocp" (lambda () (interactive) (org-capture nil "pt"))  ; Personal task
+    "oocn" (lambda () (interactive) (org-capture nil "wn"))  ; Work note
+    "oocN" (lambda () (interactive) (org-capture nil "pn"))  ; Personal note
+    "oocc" 'org-capture)                                     ; Full capture menu
+
+  ;; Quick navigation
+  (spacemacs/declare-prefix "oog" "goto")
+  (spacemacs/set-leader-keys
+    "oogi" (lambda () (interactive) (find-file (rk/org-file "inbox.org")))
+    "oogw" (lambda () (interactive) (find-file (rk/org-subdir-file "work" "gtd.org")))
+    "oogp" (lambda () (interactive) (find-file (rk/org-subdir-file "personal" "gtd.org")))
+    "oogr" 'org-roam-node-find)
+
+  ;; Org-roam integration
+  (spacemacs/declare-prefix "oor" "roam")
+  (spacemacs/set-leader-keys
+    "oorf" 'org-roam-node-find
+    "oori" 'org-roam-node-insert
+    "oort" 'org-roam-dailies-goto-today
+    "oory" 'org-roam-dailies-goto-yesterday
+    "oord" 'org-roam-dailies-goto-date
+    "oorc" 'org-roam-dailies-capture-today
+    "oorb" 'org-roam-buffer-toggle)
+#+end_src
+
 ** Appearance Configuration
 
 *** Font Faces
@@ -241,8 +414,6 @@ This file contains comprehensive Org mode configuration for Spacemacs.
           (C . t)
           (css . t)
           (sass . t)
-          (plantuml . t)
-          (hy . t)
           (shell . t)))
 
   (setq org-confirm-babel-evaluate nil)
@@ -259,13 +430,6 @@ This file contains comprehensive Org mode configuration for Spacemacs.
               (assq-delete-all :comments org-babel-default-header-args)))
 #+end_src
 
-** PlantUML Configuration
-
-#+begin_src emacs-lisp :noweb-ref user-config
-  ;; PlantUML
-  (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2021.0/libexec/plantuml.jar")
-  (setq org-plantuml-exec-mode 'jar)
-#+end_src
 
 ** YAML Support for Org-Babel
 

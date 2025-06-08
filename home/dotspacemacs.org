@@ -63,7 +63,7 @@ Trying out a Hammerspoon Spoon for system-wide emacs editing
 : t
 ** Auto font size based on screen size
 #+begin_src emacs-lisp :noweb-ref user-config
-  (defun rk/set-font-size-based-on-screen ()
+  (defun codelahoma/set-font-size-based-on-screen ()
     (let ((screen-width (display-pixel-width))
           (screen-height (display-pixel-height)))
       (cond
@@ -75,7 +75,7 @@ Trying out a Hammerspoon Spoon for system-wide emacs editing
         (set-face-attribute 'default nil :height 120))   ;; Small screen
        )))
 
-  (add-hook 'window-setup-hook 'rk/set-font-size-based-on-screen)
+  (add-hook 'window-setup-hook 'codelahoma/set-font-size-based-on-screen)
 #+end_src
 
 
@@ -115,6 +115,25 @@ Trying out a Hammerspoon Spoon for system-wide emacs editing
 #+end_src
 
 
+** Navigation & Movement
+*** Evil Easymotion
+#+begin_src emacs-lisp :noweb-ref user-config
+  (use-package evil-easymotion
+    :init (evilem-default-keybindings "\\"))
+#+end_src
+
+*** Navigation Centering
+Automatically center screen after various navigation commands.
+#+begin_src emacs-lisp :noweb-ref user-config
+  (advice-add 'evil-avy-goto-line :after #'evil-scroll-line-to-center)
+  (advice-add 'org-open-at-point :after #'evil-scroll-line-to-center)
+  (advice-add 'evil-ex-search-next :after #'evil-scroll-line-to-center)
+  (advice-add 'evil-avy-goto-char-timer :after #'evil-scroll-line-to-center)
+  (advice-add 'better-jumper-jump-backward :after #'evil-scroll-line-to-center)
+  (advice-add 'better-jumper-jump-forward :after #'evil-scroll-line-to-center)
+  (add-hook 'bookmark-after-jump-hook 'evil-scroll-line-to-center)
+#+end_src
+
 ** Custom Keybindings
 This section defines various custom keybindings that were previously in the to-organize block.
 
@@ -127,7 +146,6 @@ This section defines various custom keybindings that were previously in the to-o
   (spacemacs/set-leader-keys "ocp" 'forge-copy-url-at-point-as-kill)
 
   (spacemacs/declare-prefix "ox" "text")
-  (spacemacs/set-leader-keys "oxt" 'xah-title-case-region-or-line)
   (spacemacs/set-leader-keys "oxw" 'white-space-cleanup)
 
   (spacemacs/declare-prefix "oh" "Hammerspoon")
@@ -260,7 +278,6 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
   ef-winter
   farmhouse-light
   farmhouse-dark
-  majapahit-light
   dakrone
   hc-zenburn
   leuven
@@ -338,19 +355,9 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
 
 
 *** Hy
-#+begin_src emacs-lisp :noweb-ref config-layers
-  hy
-#+end_src
-
-#+begin_src emacs-lisp :noweb-ref additional-packages
-  ob-hy
-#+end_src
 ** Other
 #+begin_src emacs-lisp :noweb-ref config-layers
   emacs-lisp
-  prolog
-  sql
-  ess ; R
   prettier
 #+end_src
 
@@ -643,7 +650,6 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
 *** Org-Reveal
 #+begin_src emacs-lisp :noweb-ref user-config
 
-  ;; Org-reveal
   (setq org-re-reveal-title-slide "<h1 class='title'>%t</h1><h2 class='author'>%a</h2><p class='email'>%e</p>")
   (setq org-re-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
   (setq org-re-reveal-revealjs-version "5")
@@ -679,14 +685,12 @@ Let's not rearrange the windows when we open the special edit window, instead us
     ;; (add-hook 'org-mode-hook 'visual-line-mode)
 
     ;; org directories
-    (setq org-directory "~/personal/org-files/")
-    (setq org-roam-directory (concat org-directory "roam-notes/"))
+    (setq org-directory "~/personal/org-files-new/")
+    (setq org-roam-directory (concat org-directory "roam/"))
     (setq org-link-frame-setup '((file . find-file-noselect)))
 
     (org-roam-db-autosync-mode)
 
-    ;; (setq elfeed-db-directory (concat org-directory "elfeed-db/")
-    ;;       rmh-elfeed-org-files (list (concat org-directory "elfeed.org")))
 
     ;; default to all top level org files for agenda
     (unless org-agenda-files
@@ -720,7 +724,7 @@ Let's not rearrange the windows when we open the special edit window, instead us
     (setq diary-file (rk/org-file "diary.org"))
     (setq org-agenda-include-diary t)
 
-    (setq org-journal-dir "~/personal/org-files/journal/"
+    (setq org-journal-dir "~/personal/org-files-new/journal/"
           org-journal-date-prefix "#+TITLE: "
           org-journal-date-format "%A, %B %d %Y"
           org-journal-time-prefix "* "
@@ -825,19 +829,26 @@ Let's not rearrange the windows when we open the special edit window, instead us
             (sequence "QUESTION" "|" "ANSWERED(@)")
             (sequence "MEETING(m)" "|" "ATTENDED(a@)" "IGNORED(t)" "CANCELLED(l@)")))
 
+    ;; Context tags for work/personal separation and GTD workflow
+    (setq org-tag-alist '(("@work" . ?w)
+                          ("@personal" . ?p)
+                          ("@home" . ?h)
+                          ("@office" . ?o)
+                          ("@phone" . ?c)
+                          ("@computer" . ?m)
+                          ("project" . ?j)
+                          ("someday" . ?s)))
+
     (setq org-catch-invisible-edits 'smart)
 
     (org-babel-do-load-languages
      'org-babel-load-languages
      '((emacs-lisp . t)
        (mermaid . t)
-       (plantuml . t)
        (http . t)
        (lua . t)
        (python . t)
-       (shell . t)
-       (hy . t)
-       (R . t)))
+       (shell . t)))
     (setq org-confirm-babel-evaluate nil
           org-src-fontify-natively t
           org-src-tab-acts-natively t)
@@ -912,12 +923,6 @@ Let's not rearrange the windows when we open the special edit window, instead us
   markdown
 #+end_src
 
-**** PlantUML
-#+begin_src emacs-lisp :noweb-ref config-layers
-  (plantuml :variables
-            plantuml-jar-path "/opt/homebrew/opt/plantuml/libexec/plantuml.jar"
-            org-plantuml-jar-path "/opt/homebrew/opt/plantuml/libexec/plantuml.jar")
-#+end_src
 
 **** Yaml
 #+begin_src emacs-lisp :noweb-ref config-layers
@@ -1015,7 +1020,6 @@ Let's not rearrange the windows when we open the special edit window, instead us
 #+begin_src emacs-lisp :noweb-ref config-layers
   ansible
   cmake
-  graphviz
   restclient
 #+end_src
 
@@ -1080,7 +1084,7 @@ Set up a key binding to launch
 #+end_src
 #+begin_src emacs-lisp :noweb-ref config-layers
 
-  github-copilot
+  ;; github-copilot
 
 #+end_src
 
@@ -1089,13 +1093,13 @@ Set up a key binding to launch
     ;; disable inline previews
     (delq 'company-preview-if-just-one-frontend company-frontends))
 
-  (with-eval-after-load 'copilot
-    (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-    (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
-    (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
-    (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word))
+  ;; (with-eval-after-load 'copilot
+  ;;   (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+  ;;   (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+  ;;   (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
+  ;;   (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word))
 
-  (add-hook 'prog-mode-hook 'copilot-mode)
+  ;; (add-hook 'prog-mode-hook 'copilot-mode)
 #+end_src
 
 
@@ -1148,148 +1152,14 @@ Set up a key binding to launch
 #+end_src
 
 
-** mu4e (Email)
 
-*** layer config
-#+begin_src emacs-lisp :noweb-ref config-layers
-  (mu4e :variables
-        user-email-address "codelahoma@gmail.com"
-        mu4e-use-maildirs-extension nil
-        mu4e-update-interval (* 5 60)
-        mu4e-enable-notifications t
-        mu4e-enable-mode-line t
-        mu4e-org-compose-support t
-        mu4e-headers-leave-behavior 'apply
-        org-mu4e-convert-to-html t
-        mu4e-enable-async-operations t
-        mu4e-maildir "~/Maildir"
-        mu4e-get-mail-command "mbsync -a"
-        mu4e-view-show-addresses t
-        mu4e-view-show-images t
-        mu4e-date-format "%y/%m/%d"
-        mu4e-headers-date-format "%Y/%m/%d"
-        mu4e-change-filenames-when-moving t)
-#+end_src
 
-*** contexts
-#+begin_src emacs-lisp :noweb-ref user-config
 
-  (setq mu4e-contexts
-        (list
-         ;; Work account
-         (make-mu4e-context
-          :name "Work"
-          :match-func
-          (lambda (msg)
-            (when msg
-              (string-prefix-p "/Gmail" (mu4e-message-field msg :maildir))))
-          :vars '((user-mail-address . "rod@atlasup.com")
-                  (user-full-name    . "Rod Knowlton")
-                  (mu4e-drafts-folder  . "/Gmail/[Gmail]/Drafts")
-                  (mu4e-sent-folder  . "/Gmail/[Gmail]/Sent Mail")
-                  (mu4e-refile-folder  . "/Gmail/[Gmail]/All Mail")
-                  (mu4e-trash-folder  . "/Gmail/[Gmail]/Trash")
-                  (message-sendmail-extra-arguments . ("-a" "atlasup"))
-                  (mu4e-compose-signature . "\nRod Knowlton\nBackend Developer - AtlasUp\nGithub: codelahoma")
-                  (mu4e-maildir-shortcuts . ((:maildir "/Gmail/Inbox" :key ?i)
-                                             (:maildir "/Gmail/[Gmail]/Sent Mail" :key ?s)
-                                             (:maildir "/Gmail/[Gmail]/Drafts" :key ?d)
-                                             (:maildir "/Gmail/[Gmail]/All Mail" :key ?a)
-                                             (:maildir "/Gmail/[Gmail]/Trash" :key ?t)
-                                             (:maildir "/Gmail/[Gmail]/Spam" :key ?j)))
-                  ))
 
-         ;; Personal account
-         (make-mu4e-context
-          :name "Personal"
-          :match-func
-          (lambda (msg)
-            (when msg
-              (string-prefix-p "/Fastmail" (mu4e-message-field msg :maildir))))
-          :vars '((user-mail-address . "rod@rodknowlton.com")
-                  (user-full-name    . "Rod Knowlton")
-                  (mu4e-drafts-folder  . "/Fastmail/Drafts")
-                  (mu4e-sent-folder  . "/Fastmail/Sent")
-                  (mu4e-refile-folder  . "/Fastmail/Archive")
-                  (mu4e-trash-folder  . "/Fastmail/Trash")
-                  (message-sendmail-extra-arguments . ("-a" "fastmail"))
-                  (mu4e-compose-signature . "Rod Knowlton\n\nI make computers do things.")
-                  (mu4e-maildir-shortcuts . ((:maildir "/Fastmail/INBOX" :key ?i)
-                                             (:maildir "/Fastmail/Sent Items" :key ?s)
-                                             (:maildir "/Fastmail/Drafts" :key ?d)
-                                             (:maildir "/Fastmail/Archive" :key ?a)
-                                             (:maildir "/Fastmail/Trash" :key ?t)
-                                             (:maildir "/Fastmail/Junk Mail" :key ?j)))
-                  ))))
-#+end_src
 
-#+RESULTS:
-| #s(mu4e-context Work nil nil (lambda (msg) (when msg (string-prefix-p /Gmail (mu4e-message-field msg :maildir)))) ((user-mail-address . rod@atlasup.com) (user-full-name . Rod Knowlton) (mu4e-drafts-folder . /Gmail/[Gmail]/Drafts) (mu4e-sent-folder . /Gmail/[Gmail]/Sent Mail) (mu4e-refile-folder . /Gmail/[Gmail]/All Mail) (mu4e-trash-folder . /Gmail/[Gmail]/Trash) (message-sendmail-extra-arguments -a atlasup) (mu4e-compose-signature . |
 
-*** customizations
-Make sure our custom lisp directory is in =load-path= (effective noop if already there)
-#+begin_src emacs-lisp :noweb-ref user-config :results silent
-  (add-to-list 'load-path "~/.spacemacs.d/lisp/")
-#+end_src
 
-**** Misc Settings
-#+begin_src emacs-lisp :noweb-ref user-config
-  (require 'mu4e)
-  (require 'smtpmail)
 
-  (setq mu4e-headers-leave-behavior 'apply
-        message-send-mail-function 'message-send-mail-with-sendmail
-        sendmail-program "/opt/homebrew/bin/msmtp")
-#+end_src
-
-#+RESULTS:
-: /opt/homebrew/bin/msmtp
-
-**** Bookmarks
-#+begin_src emacs-lisp :noweb-ref user-config :results none
-  (setq mu4e-bookmarks '((:name "Recent Unread Inbox"
-                               :query "maildir:/Fastmail/INBOX AND flag:unread AND date:3d..now"
-                               :key ?r)
-                        (:name "Unread messages"
-                               :query "flag:unread AND NOT flag:trashed"
-                               :key 117)
-                        (:name "Today's messages"
-                               :query "date:today..now"
-                               :key 116)))
-#+end_src
-
-**** Maildir Shortcuts
-#+begin_src emacs-lisp :noweb-ref user-config :results none
-  (setq mu4e-maildir-shortcuts
-        '((:maildir "/Fastmail/INBOX" :key ?f)
-          (:maildir "/Gmail/Inbox" :key ?g)))
-#+end_src
-
-**** Actions
-#+begin_src emacs-lisp :noweb-ref user-config 
-  (require 'browse-url)
-
-  (defun rk/mu4e-view-in-external-browser (msg)
-    (let ((browse-url-browser-function 'browse-url-default-macosx-browser))
-    mu4e-action-view-in-browser msg))
-
-  (setq mu4e-view-actions '(("capture message" . mu4e-action-capture-message)
-                            ("view in browser" . mu4e-action-view-in-browser)
-                            ("bview in qutebrowser" . rk/mu4e-view-in-external-browser)
-                            ("show this thread" . mu4e-action-show-thread)))
-#+end_src
-
-#+RESULTS:
-: ((capture message . mu4e-action-capture-message) (view in browser . mu4e-action-view-in-browser) (bview in qutebrowser . rk/mu4e-view-in-external-browser) (show this thread . mu4e-action-show-thread))
-
-**** 
-
-# **** Dashboard
-# An org based dashboard based on [[https://github.com/rougier/mu4e-dashboard.git][rougier/mu4e-dashboard: A dashboard for mu4e (mu for emacs)]]
-
-# #+begin_src emacs-lisp :noweb-ref user-config :results silent
-#   (require 'mu4e-dashboard)
-# #+end_src
 
 ** Compleseus
 
@@ -1540,13 +1410,6 @@ Make sure our custom lisp directory is in =load-path= (effective noop if already
   (require 'org-roam)
   (require 'org-roam-dailies)
 
-  ;; (defun elfeed-save-to-org-roam-dailies ()
-  ;;   "Save the current elfeed entry to org-roam dailies."
-  ;;   (interactive)
-  ;;   (let* ((entry (elfeed-search-selected :single))
-  ;;          (title (elfeed-entry-title entry))
-  ;;          (link (elfeed-entry-link entry))
-  ;;          (content (elfeed-deref (elfeed-entry-content entry)))
   ;;          (date (format-time-string "%Y-%m-%d"))
   ;;          (org-roam-dailies-dir (expand-file-name "dailies" org-roam-directory))
   ;;          (daily-file (expand-file-name (concat date ".org") org-roam-dailies-dir)))
@@ -1557,10 +1420,8 @@ Make sure our custom lisp directory is in =load-path= (effective noop if already
   ;;       (insert (concat "* " title "\n"))
   ;;       (insert (concat "[[" link "][" link "]]\n\n"))
   ;;       (insert (concat content "\n"))
-  ;;       (save-buffer))))
 
   ;; ;; Bind the function to a key for easy access
-  ;; (define-key elfeed-search-mode-map (kbd "o") 'elfeed-save-to-org-roam-dailies)
   (defun renumber-region (start end)
     "Renumber the lines in the region from START to END."
     (interactive "r")
@@ -1597,7 +1458,6 @@ Make sure our custom lisp directory is in =load-path= (effective noop if already
           (kill-ring-save beg end)))))
 
   (global-unset-key (kbd "s-k"))
-  ;; nil
   (global-set-key (kbd "C-c C-x C-c") 'org-copy-current-source-block)
 #+end_src
 
@@ -1668,7 +1528,6 @@ Configures the base distribution and the layers I want installed and configure.
        <<config-layers>>
        ;; private layers
        rk-layout
-       ;;jekyll
        )
 
 
@@ -1697,13 +1556,6 @@ Configures the base distribution and the layers I want installed and configure.
 
      ;; A list of packages that will not be installed and loaded.
      dotspacemacs-excluded-packages '(
-                                      ;; company
-                                      ;; all-the-icons
-                                      ;; spaceline
-                                      ;; spaceline-all-the-icons
-                                      ;; forge
-                                      ;; closql
-                                      ;; ghub
                                       )
 
      ;; Defines the behaviour of Spacemacs when installing packages.
@@ -1729,10 +1581,8 @@ Configures the base distribution and the layers I want installed and configure.
      ;; If non-nil then enable support for the portable dumper. You'll need to
      ;; compile Emacs 27 from source following the instructions in file
      ;; EXPERIMENTAL.org at to root of the git repository.
-     ;;
      ;; WARNING: pdumper does not work with Native Compilation, so it's disabled
      ;; regardless of the following setting when native compilation is in effect.
-     ;;
      ;; (default nil)
      dotspacemacs-enable-emacs-pdumper nil
 
@@ -2047,11 +1897,6 @@ Configures the base distribution and the layers I want installed and configure.
      ;; '(:relative nil
      ;;   :visual nil
      ;;   :disabled-for-modes dired-mode
-     ;;                       doc-view-mode
-     ;;                       markdown-mode
-     ;;                       org-mode
-     ;;                       pdf-view-mode
-     ;;                       text-mode
      ;;   :size-limit-kb 1000)
      ;; When used in a plist, `visual' takes precedence over `relative'.
      ;; (default nil)
@@ -2205,11 +2050,9 @@ Configures the base distribution and the layers I want installed and configure.
     ;; add the private directory
     (add-to-list 'load-path "/Users/rodk/.emacs.d/private/")
 
-    ;;asdf
     (require 'asdf)
     (asdf-enable)
 
-    ;;chatgpt
     ;; (require 'chatgpt)
 
     (load-file "/Users/rodk/.emacs.d/private/local/narrow-indirect.el")
@@ -2253,6 +2096,55 @@ Configures the base distribution and the layers I want installed and configure.
       (load-file custom-file)))
 #+end_src
 
+* Custom Functions
+** Development Utilities
+#+begin_src emacs-lisp :noweb-ref user-config
+  (defun codelahoma/insert-random-uid ()
+    (interactive)
+    (shell-command "printf %s \"$(uuidgen)\"" t))
+#+end_src
+
+** Text Processing
+#+begin_src emacs-lisp :noweb-ref user-config
+  (defun copy-lines-matching-re (re)
+    "find all lines matching the regexp RE in the current buffer
+  putting the matching lines in a buffer named *matching*"
+    (interactive "sRegexp to match: ")
+    (let ((result-buffer (get-buffer-create "*matching*")))
+      (with-current-buffer result-buffer
+        (erase-buffer))
+      (save-match-data
+        (save-excursion
+          (goto-char (point-min))
+          (while (re-search-forward re nil t)
+            (princ (buffer-substring-no-properties (line-beginning-position)
+                                                   (line-beginning-position 2))
+                   result-buffer))))
+      (pop-to-buffer result-buffer)))
+
+  (defun apply-function-to-region (fn)
+    "Apply a function to a region."
+    (interactive "Function to apply to region: ")
+    (save-excursion
+      (let* ((beg (region-beginning))
+             (end (region-end))
+             (resulting-text
+              (funcall fn
+                       (buffer-substring-no-properties beg end))))
+        (kill-region beg end)
+        (insert resulting-text))))
+
+  (defun sort-csv (txt)
+    "Sort a comma separated string."
+    (mapconcat 'identity
+               (sort (split-string txt ",") 'string< ) ","))
+
+  (defun sort-csv-region ()
+    "Sort a region of comma separated text."
+    (interactive)
+    (apply-function-to-region 'sort-csv))
+
+
 * user config yet to reorganize
 #+begin_src emacs-lisp :noweb no-export :noweb-ref to-organize
   (setq helm-ag-use-grep-ignore-list nil)
@@ -2263,26 +2155,8 @@ Configures the base distribution and the layers I want installed and configure.
 
 
 
-  ;; mu4e
-  ;; (fset 'my-move-to-trash "mTrash")
-  ;; (define-key mu4e-headers-mode-map (kbd "d") 'my-move-to-trash)
-  ;; (define-key mu4e-view-mode-map (kbd "d") 'my-move-to-trash)
 
-  (with-eval-after-load 'mu4e-alert
-    (mu4e-alert-set-default-style 'notifier))
 
-  ;; evil-easymotion
-  (use-package evil-easymotion
-    :init (evilem-default-keybindings "\\"))
-
-  ;; Nav Advice and hooks
-  (advice-add 'evil-avy-goto-line :after #'evil-scroll-line-to-center)
-  (advice-add 'org-open-at-point :after #'evil-scroll-line-to-center)
-  (advice-add 'evil-ex-search-next :after #'evil-scroll-line-to-center)
-  (advice-add 'evil-avy-goto-char-timer :after #'evil-scroll-line-to-center)
-  (advice-add 'better-jumper-jump-backward :after #'evil-scroll-line-to-center)
-  (advice-add 'better-jumper-jump-forward :after #'evil-scroll-line-to-center)
-  (add-hook 'bookmark-after-jump-hook 'evil-scroll-line-to-center)
 
 
   (add-hook 'lsp-managed-mode-hook
@@ -2293,99 +2167,21 @@ Configures the base distribution and the layers I want installed and configure.
                   (flycheck-disable-checker 'python-mypy)
                   (flycheck-disable-checker 'python-pylint))
                 )))
-  ;; Python
-  ;; (add-hook 'python-mode-hook (lambda ()
-  ;;                                     (flycheck-mode 1)
-  ;;                                     (semantic-mode 1)
-  ;;                                     (setq flycheck-checker 'lsp)
-  ;;                                     (flycheck-remove-next-checker 'python-flake8 'python-mypy)
-  ;;                                     (flycheck-remove-next-checker 'python-flake8 'python-pylint)
-  ;;                                     (flycheck-add-next-checker 'lsp 'python-flake8)))
 
-  ;; Elfeed
 
-  ;; (with-eval-after-load 'elfeed
-  ;;   (defun elfeed-goodies/search-header-draw ()
-  ;; "Returns the string to be used as the Elfeed header."
-  ;; (if (zerop (elfeed-db-last-update))
-  ;;     (elfeed-search--intro-header)
-  ;;   (let* ((separator-left (intern (format "powerline-%s-%s"
-  ;;                                          elfeed-goodies/powerline-default-separator
-  ;;                                          (car powerline-default-separator-dir))))
-  ;;          (separator-right (intern (format "powerline-%s-%s"
-  ;;                                           elfeed-goodies/powerline-default-separator
-  ;;                                           (cdr powerline-default-separator-dir))))
-  ;;          (db-time (seconds-to-time (elfeed-db-last-update)))
-  ;;          (stats (-elfeed/feed-stats))
-  ;;          (search-filter (cond
-  ;;                          (elfeed-search-filter-active
-  ;;                           "")
-  ;;                          (elfeed-search-filter
-  ;;                           elfeed-search-filter)
-  ;;                          (""))))
-  ;;     (if (>= (window-width) (* (frame-width) elfeed-goodies/wide-threshold))
-  ;;         (search-header/draw-wide separator-left separator-right search-filter stats db-time)
-  ;;       (search-header/draw-tight separator-left separator-right search-filter stats db-time)))))
 
-  ;;   (defun elfeed-goodies/entry-line-draw (entry)
-  ;;     "Print ENTRY to the buffer."
 
-  ;;     (let* ((title (or (elfeed-meta entry :title) (elfeed-entry-title entry) ""))
-  ;;           (date (elfeed-search-format-date (elfeed-entry-date entry)))
-  ;;           (title-faces (elfeed-search--faces (elfeed-entry-tags entry)))
-  ;;           (feed (elfeed-entry-feed entry))
-  ;;           (feed-title
-  ;;             (when feed
-  ;;               (or (elfeed-meta feed :title) (elfeed-feed-title feed))))
-  ;;           (tags (mapcar #'symbol-name (elfeed-entry-tags entry)))
   ;;           (tags-str (concat "[" (mapconcat 'identity tags ",") "]"))
-  ;;           (title-width (- (window-width) elfeed-goodies/feed-source-column-width
-  ;;                           elfeed-goodies/tag-column-width 4))
-  ;;           (title-column (elfeed-format-column
-  ;;                           title (elfeed-clamp
-  ;;                                 elfeed-search-title-min-width
-  ;;                                 title-width
-  ;;                                 title-width)
-  ;;                           :left))
-  ;;           (tag-column (elfeed-format-column
-  ;;                         tags-str (elfeed-clamp (length tags-str)
-  ;;                                               elfeed-goodies/tag-column-width
-  ;;                                               elfeed-goodies/tag-column-width)
-  ;;                         :left))
-  ;;           (feed-column (elfeed-format-column
-  ;;                         feed-title (elfeed-clamp elfeed-goodies/feed-source-column-width
-  ;;                                                   elfeed-goodies/feed-source-column-width
-  ;;                                                   elfeed-goodies/feed-source-column-width)
-  ;;                         :left)))
 
-  ;;       (if (>= (window-width) (* (frame-width) elfeed-goodies/wide-threshold))
-  ;;           (progn
-  ;;             (insert (propertize date 'face 'elfeed-search-date-face) " ")
-  ;;             (insert (propertize feed-column 'face 'elfeed-search-feed-face) " ")
-  ;;             (insert (propertize tag-column 'face 'elfeed-search-tag-face) " ")
   ;;             (insert (propertize title 'face title-faces 'kbd-help title)))
   ;;         (insert (propertize title 'face title-faces 'kbd-help title))))))
 
   ;; Mode line
   (set-face-attribute 'mode-line nil :height 1.08)
 
-  ;; (defun rk-bump-mode-fonts()
-  ;;   "Increase the mode-line font sizes for my old eyes"
-  ;;   (let ((faces '(mode-line
-  ;;                  mode-line-buffer-id
-  ;;                  mode-line-emphasis
-  ;;                  mode-line-highlight
-  ;;                  mode-line-inactive)))
-  ;;     (mapc
-  ;;      (lambda (face) (set-face-attribute face nil :font "Inconsolata for Powerline-18"))
-  ;;      faces)))
 
-  ;; (add-hook 'spacemacs-post-theme-change-hook
-  ;;           'rk-bump-mode-fonts)
 
-  ;; EWW
 
-  ;; (setq browse-url-browser-function 'eww-browse-url)
   (defun url-found-p (url)
     "Return non-nil if URL is found, i.e. HTTP 200."
     (with-current-buffer (url-retrieve-synchronously url nil t 5)
@@ -2425,17 +2221,14 @@ Configures the base distribution and the layers I want installed and configure.
 
 
 
-  ;; React
   (add-hook 'rjsx-mode #'lsp-javascript-typescript-enable)
   (setq js2-strict-missing-semi-warning nil)
 
-  ;; Hammerspoon
   (defun rk/reset-hammerspoon ()
     (interactive)
     (shell-command "hs -c \"hs.reload()\""))
 
 
-  ;; rk-layout
   (load-framegeometry)
 
 
@@ -2444,11 +2237,9 @@ Configures the base distribution and the layers I want installed and configure.
 
   ;; end Hyde Mode
 
-  ;; fira-code-mode
 
   (with-eval-after-load 'fira-code-mode
     (global-fira-code-mode))
-  ;; direnv
 
   (with-eval-after-load 'direnv
     (direnv-mode))
@@ -2460,7 +2251,6 @@ Configures the base distribution and the layers I want installed and configure.
     (add-hook 'yaml-mode-hook #'(lambda () (ansible 1)))
     (add-to-list 'company-backends 'company-ansible))
 
-  ;; XML
 
   (add-hook 'nxml-mode-hook #'(lambda() (hs-minor-mode 1)))
 
@@ -2474,7 +2264,6 @@ Configures the base distribution and the layers I want installed and configure.
 
 
 
-  ;; helm-files
   (defun rk/helm-files-do-rg (&optional dir)
     "Search in files with `rg'."
     (interactive)
@@ -2487,7 +2276,6 @@ Configures the base distribution and the layers I want installed and configure.
                                    root-helm-ag-base-command)))
       (helm-do-ag dir)))
 
-  ;; Markdown
 
   (defun markdown-html (buffer)
     (princ (with-current-buffer buffer
@@ -2505,111 +2293,8 @@ Configures the base distribution and the layers I want installed and configure.
 
   ;; End Org Mode
 
-  ;; Misc functions
-  (defun codelahoma/insert-random-uid ()
-    (interactive)
-    (shell-command "printf %s \"$(uuidgen)\"" t))
 
 
-  (defun copy-lines-matching-re (re)
-    "find all lines matching the regexp RE in the current buffer
-  putting the matching lines in a buffer named *matching*"
-    (interactive "sRegexp to match: ")
-    (let ((result-buffer (get-buffer-create "*matching*")))
-      (with-current-buffer result-buffer
-        (erase-buffer))
-      (save-match-data
-        (save-excursion
-          (goto-char (point-min))
-          (while (re-search-forward re nil t)
-            (princ (buffer-substring-no-properties (line-beginning-position)
-                                                   (line-beginning-position 2))
-                   result-buffer))))
-      (pop-to-buffer result-buffer)))
-
-                                          ; sort csv
-
-  (defun apply-function-to-region (fn)
-    "Apply a function to a region."
-    (interactive "Function to apply to region: ")
-    (save-excursion
-      (let* ((beg (region-beginning))
-             (end (region-end))
-             (resulting-text
-              (funcall fn
-                       (buffer-substring-no-properties beg end))))
-        (kill-region beg end)
-        (insert resulting-text))))
-
-  (defun sort-csv (txt)
-    "Sort a comma separated string."
-    (mapconcat 'identity
-               (sort (split-string txt ",") 'string< ) ","))
-
-  (defun sort-csv-region ()
-    "Sort a region of comma separated text."
-    (interactive)
-    (apply-function-to-region 'sort-csv))
-
-
-  (defun xah-title-case-region-or-line (@begin @end)
-    "Title case text between nearest brackets, or current line, or text selection.
-    Capitalize first letter of each word, except words like {to, of, the, a, in, or, and, …}. If a word already contains cap letters such as HTTP, URL, they are left as is.
-
-    When called in a elisp program, *begin *end are region boundaries.
-    URL `http://ergoemacs.org/emacs/elisp_title_case_text.html'
-    Version 2017-01-11"
-    (interactive
-     (if (use-region-p)
-         (list (region-beginning) (region-end))
-       (let (
-             $p1
-             $p2
-             ($skipChars "^\"<>(){}[]“”‘’‹›«»「」『』【】〖〗《》〈〉〔〕"))
-         (progn
-           (skip-chars-backward $skipChars (line-beginning-position))
-           (setq $p1 (point))
-           (skip-chars-forward $skipChars (line-end-position))
-           (setq $p2 (point)))
-         (list $p1 $p2))))
-    (let* (
-           ($strPairs [
-                       [" A " " a "]
-                       [" And " " and "]
-                       [" At " " at "]
-                       [" As " " as "]
-                       [" By " " by "]
-                       [" Be " " be "]
-                       [" Into " " into "]
-                       [" In " " in "]
-                       [" Is " " is "]
-                       [" It " " it "]
-                       [" For " " for "]
-                       [" Of " " of "]
-                       [" Or " " or "]
-                       [" On " " on "]
-                       [" Via " " via "]
-                       [" The " " the "]
-                       [" That " " that "]
-                       [" To " " to "]
-                       [" Vs " " vs "]
-                       [" With " " with "]
-                       [" From " " from "]
-                       ["'S " "'s "]
-                       ["'T " "'t "]
-                       ]))
-      (save-excursion
-        (save-restriction
-          (narrow-to-region @begin @end)
-          (upcase-initials-region (point-min) (point-max))
-          (let ((case-fold-search nil))
-            (mapc
-             (lambda ($x)
-               (goto-char (point-min))
-               (while
-                   (search-forward (aref $x 0) nil t)
-                 (replace-match (aref $x 1) "FIXEDCASE" "LITERAL")))
-             $strPairs))))))
 #+end_src
 * .spacemacs Preamble
 A brief heading to the file, defining lexical binding and warning that the config is in this org file.
@@ -2620,7 +2305,6 @@ A brief heading to the file, defining lexical binding and warning that the confi
   ;; It must be stored in your home directory.
 
   ;; NOTE: DO NOT EDIT THIS FILE DIRECTLY!!!
-  ;;
   ;; This file is autogenerated from ~dotspacemacs.org~, and changes should be made there, then the file tangled.
 #+end_src
 
