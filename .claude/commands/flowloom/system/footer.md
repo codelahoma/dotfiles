@@ -2,7 +2,7 @@
 
 Let input_args = "$ARGUMENTS"
 
-Generate a properly formatted interactive footer with automatic auto-tracking verification and memory logging prompts.
+Generate a properly formatted interactive footer with memory logging prompts.
 
 ## Memory Logging Protocol
 
@@ -14,12 +14,6 @@ Generate a properly formatted interactive footer with automatic auto-tracking ve
 
 **Memory logging reminder text to include in my internal process:**
 "🧠 MEMORY CHECK: Have I logged all activities, decisions, and discoveries since the last interaction? Use both fl-memory.json and basic-memory systems to capture this session's work."
-
-## Auto-Track Verification
-
-Before displaying footer, ensure auto-tracking is enabled for WORM governance:
-
-slashload flowloom/system/auto-track enable
 
 ## Implementation
 

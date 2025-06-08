@@ -7,3 +7,6 @@ display.md
 node_modules/
 package-lock.json
 home/org-files/
+
+# FlowLoom temporary files
+.flowloom/tmp/

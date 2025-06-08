@@ -21,6 +21,9 @@ mcp__basic-memory__read_note startup-context-index
 # Current working context  
 mcp__basic-memory__read_note current-working-context
 
+# FlowLoom tools reference
+mcp__basic-memory__read_note tools/flowloom-tools-report
+
 # Recent sessions
 mcp__basic-memory__search_notes session --types session
 
@@ -57,5 +60,6 @@ Present structured summary:
 - Relative paths only - avoid absolute paths and env vars
 - Rich content via temp files - use .flowloom/tmp and --from-file
 - Systematic organization - proper front matter and tagging
+- **Permission avoidance**: Use --from-file over here-documents, prefer tool file options
 
 **FlowLoom AI ready for productive work!**
