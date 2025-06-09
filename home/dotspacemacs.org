@@ -1819,7 +1819,7 @@ This configuration loads the core GTD system and extends it with modular custom 
 ** Load CodeLahoma Org Extensions
 #+begin_src emacs-lisp :noweb-ref user-config
   ;; Load custom org extensions if available
-  (let ((codelahoma-org-file (rk/org-file "codelahoma-org.el")))
+  (let ((codelahoma-org-file (expand-file-name "~/.spacemacs.d/codelahoma-org.el")))
     (when (file-exists-p codelahoma-org-file)
       (load-file codelahoma-org-file)
       (message "Loaded CodeLahoma org extensions from %s" codelahoma-org-file)))
