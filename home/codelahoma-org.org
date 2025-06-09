@@ -14,12 +14,330 @@ The code is tangled to =codelahoma-org.el= and automatically loaded by the main 
 
 ** Directory and File Management
 #+begin_src emacs-lisp
+;; Legacy org directory for backward compatibility
 (defvar rk/org-directory "~/personal/org-files/"
   "Base directory for all org files")
 
 (defun rk/org-file (filename)
   "Return full path to org file in the org directory."
   (expand-file-name filename rk/org-directory))
+
+;; ======================================
+;; GTD Directory Structure Configuration
+;; ======================================
+
+(defvar rk/org-gtd-base-dir (expand-file-name "~/personal/org-files/")
+  "Base directory for GTD org files.")
+
+(defvar rk/org-gtd-work-dir (expand-file-name "work/" rk/org-gtd-base-dir)
+  "Directory for work-related GTD files.")
+
+(defvar rk/org-gtd-personal-dir (expand-file-name "personal/" rk/org-gtd-base-dir)
+  "Directory for personal GTD files.")
+
+(defun rk/org-file (filename &optional subdir)
+  "Generate full path for org file FILENAME in optional SUBDIR.
+SUBDIR can be 'work', 'personal', or nil for base directory."
+  (let ((base-dir (cond
+                   ((string= subdir "work") rk/org-gtd-work-dir)
+                   ((string= subdir "personal") rk/org-gtd-personal-dir)
+                   (t rk/org-gtd-base-dir))))
+    (expand-file-name filename base-dir)))
+
+(defun rk/create-gtd-structure ()
+  "Create the complete GTD directory and file structure."
+  (interactive)
+  (let ((dirs (list rk/org-gtd-base-dir 
+                    rk/org-gtd-work-dir 
+                    rk/org-gtd-personal-dir))
+        (files (list
+                ;; Base files
+                (rk/org-file "inbox.org")
+                (rk/org-file "archive.org")
+                ;; Work files
+                (rk/org-file "gtd.org" "work")
+                (rk/org-file "projects.org" "work")
+                (rk/org-file "someday.org" "work")
+                ;; Personal files  
+                (rk/org-file "gtd.org" "personal")
+                (rk/org-file "projects.org" "personal")
+                (rk/org-file "someday.org" "personal"))))
+    
+    ;; Create directories
+    (dolist (dir dirs)
+      (unless (file-exists-p dir)
+        (make-directory dir t)
+        (message "Created directory: %s" dir)))
+    
+    ;; Create files with basic headers
+    (dolist (file files)
+      (unless (file-exists-p file)
+        (with-temp-file file
+          (insert (format "#+TITLE: %s\n" 
+                         (file-name-sans-extension (file-name-nondirectory file))))
+          (insert "#+STARTUP: overview\n\n"))
+        (message "Created file: %s" file)))
+    
+    (message "GTD structure creation complete!")))
+
+(defun rk/validate-gtd-structure ()
+  "Validate that GTD directory structure exists and is complete."
+  (interactive)
+  (let ((missing-dirs '())
+        (missing-files '()))
+    
+    ;; Check directories
+    (dolist (dir (list rk/org-gtd-base-dir rk/org-gtd-work-dir rk/org-gtd-personal-dir))
+      (unless (file-exists-p dir)
+        (push dir missing-dirs)))
+    
+    ;; Check files
+    (dolist (file (list
+                   (rk/org-file "inbox.org")
+                   (rk/org-file "archive.org")
+                   (rk/org-file "gtd.org" "work")
+                   (rk/org-file "projects.org" "work")
+                   (rk/org-file "someday.org" "work")
+                   (rk/org-file "gtd.org" "personal")
+                   (rk/org-file "projects.org" "personal")
+                   (rk/org-file "someday.org" "personal")))
+      (unless (file-exists-p file)
+        (push file missing-files)))
+    
+    (if (and (null missing-dirs) (null missing-files))
+        (message "✅ GTD structure is complete and valid!")
+      (progn
+        (when missing-dirs
+          (message "❌ Missing directories: %s" (string-join missing-dirs ", ")))
+        (when missing-files
+          (message "❌ Missing files: %s" (string-join missing-files ", ")))))))
+#+end_src
+
+** GTD TODO Keywords and State Management
+#+begin_src emacs-lisp
+;; ======================================
+;; GTD TODO Keywords and State Management
+;; ======================================
+
+;; GTD-specific TODO keywords with fast selection
+(setq org-todo-keywords
+      '((sequence "NEXT(n)" "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")
+        (sequence "PROJECT(p)" "|" "COMPLETED(C)")
+        (sequence "SOMEDAY(s)" "|" "DECIDED(D)")))
+
+;; State change logging with timestamps
+(setq org-log-done 'time
+      org-log-into-drawer t
+      org-log-state-notes-insert-after-drawers nil)
+
+;; Log state changes with notes
+(setq org-todo-keyword-faces
+      '(("NEXT" . (:foreground "orange" :weight bold))
+        ("TODO" . (:foreground "red" :weight bold))
+        ("WAITING" . (:foreground "yellow" :weight bold))
+        ("PROJECT" . (:foreground "blue" :weight bold))
+        ("SOMEDAY" . (:foreground "purple" :weight bold))
+        ("DONE" . (:foreground "green" :weight bold))
+        ("CANCELLED" . (:foreground "gray" :weight bold))
+        ("COMPLETED" . (:foreground "green" :weight bold))
+        ("DECIDED" . (:foreground "gray" :weight bold))))
+
+;; ======================================
+;; GTD Context Tags Configuration  
+;; ======================================
+
+;; Comprehensive GTD context tags with fast selection
+(setq org-tag-alist
+      '((:startgrouptag)
+        ("CONTEXT" . ?C)
+        (:grouptags)
+        ("@work" . ?w)
+        ("@home" . ?h) 
+        ("@office" . ?o)
+        ("@computer" . ?c)
+        ("@phone" . ?p)
+        ("@errands" . ?e)
+        ("@agenda" . ?a)
+        (:endgrouptag)
+        
+        (:startgrouptag)
+        ("ENERGY" . ?E)
+        (:grouptags)
+        ("@high_energy" . ?H)
+        ("@low_energy" . ?L)
+        ("@creative" . ?r)
+        ("@administrative" . ?A)
+        (:endgrouptag)
+        
+        (:startgrouptag)
+        ("TIME" . ?T)
+        (:grouptags)
+        ("@5min" . ?5)
+        ("@15min" . ?1)
+        ("@30min" . ?3)
+        ("@1hr" . ?6)
+        ("@2hr" . ?2)
+        (:endgrouptag)
+        
+        (:startgrouptag)
+        ("TYPE" . ?Y)
+        (:grouptags)
+        ("@personal" . ?P)
+        ("@project" . ?j)
+        ("@learning" . ?l)
+        ("@health" . ?4)
+        ("@finance" . ?f)
+        (:endgrouptag)))
+
+;; Tag faces for visual distinction
+(setq org-tag-faces
+      '(("@work" . (:foreground "blue" :weight bold))
+        ("@home" . (:foreground "green" :weight bold))
+        ("@office" . (:foreground "navy" :weight bold))
+        ("@computer" . (:foreground "purple" :weight bold))
+        ("@phone" . (:foreground "orange" :weight bold))
+        ("@errands" . (:foreground "brown" :weight bold))
+        ("@agenda" . (:foreground "red" :weight bold))
+        ("@high_energy" . (:foreground "red" :weight bold))
+        ("@low_energy" . (:foreground "gray" :weight bold))
+        ("@creative" . (:foreground "magenta" :weight bold))
+        ("@administrative" . (:foreground "brown" :weight bold))
+        ("@5min" . (:foreground "lightgreen" :weight bold))
+        ("@15min" . (:foreground "green" :weight bold))
+        ("@30min" . (:foreground "darkgreen" :weight bold))
+        ("@1hr" . (:foreground "orange" :weight bold))
+        ("@2hr" . (:foreground "red" :weight bold))
+        ("@personal" . (:foreground "purple" :weight bold))
+        ("@project" . (:foreground "blue" :weight bold))
+        ("@learning" . (:foreground "cyan" :weight bold))
+        ("@health" . (:foreground "green" :weight bold))
+        ("@finance" . (:foreground "darkred" :weight bold))))
+
+;; Fast tag selection
+(setq org-fast-tag-selection-single-key t
+      org-use-fast-todo-selection t)
+#+end_src
+
+** GTD Archive Configuration
+#+begin_src emacs-lisp
+;; ======================================
+;; GTD Archive Configuration
+;; ======================================
+
+;; Configure archive location with hierarchy preservation
+(setq org-archive-location (concat (rk/org-file "archive.org") "::* Archived Tasks"))
+
+;; Preserve context and hierarchy in archives
+(setq org-archive-save-context-info '(time file ltags itags todo category olpath))
+
+;; Hook to add timestamp when archiving
+(defun rk/org-archive-add-timestamp ()
+  "Add timestamp property when archiving items."
+  (org-set-property "ARCHIVED" (format-time-string "[%Y-%m-%d %a %H:%M]")))
+
+(add-hook 'org-archive-hook 'rk/org-archive-add-timestamp)
+
+;; Bulk archive functions for GTD workflow
+(defun rk/archive-done-tasks ()
+  "Archive all DONE, CANCELLED, COMPLETED, and DECIDED items in current buffer."
+  (interactive)
+  (let ((archived-count 0))
+    (org-map-entries
+     (lambda ()
+       (when (member (org-get-todo-state) '("DONE" "CANCELLED" "COMPLETED" "DECIDED"))
+         (org-archive-subtree)
+         (setq archived-count (1+ archived-count))))
+     nil 'file)
+    (message "Archived %d completed items" archived-count)))
+
+(defun rk/archive-old-tasks (&optional days)
+  "Archive tasks older than DAYS (default 30) that are completed."
+  (interactive "P")
+  (let* ((cutoff-days (or days 30))
+         (cutoff-time (time-subtract (current-time) 
+                                   (days-to-time cutoff-days)))
+         (archived-count 0))
+    (org-map-entries
+     (lambda ()
+       (let* ((todo-state (org-get-todo-state))
+              (timestamp (org-entry-get (point) "CLOSED")))
+         (when (and (member todo-state '("DONE" "CANCELLED" "COMPLETED" "DECIDED"))
+                    timestamp
+                    (time-less-p (org-time-string-to-time timestamp) cutoff-time))
+           (org-archive-subtree)
+           (setq archived-count (1+ archived-count)))))
+     nil 'file)
+    (message "Archived %d old completed items (older than %d days)" 
+             archived-count cutoff-days)))
+
+(defun rk/validate-archive-structure ()
+  "Validate archive file structure and report any issues."
+  (interactive)
+  (let* ((archive-file (rk/org-file "archive.org"))
+         (issues '()))
+    
+    (if (file-exists-p archive-file)
+        (progn
+          (with-current-buffer (find-file-noselect archive-file)
+            ;; Check for proper structure
+            (goto-char (point-min))
+            (unless (re-search-forward "^\\* Archived Tasks" nil t)
+              (push "Missing 'Archived Tasks' top-level heading" issues))
+            
+            ;; Check for orphaned entries
+            (goto-char (point-min))
+            (while (re-search-forward "^\\*\\* " nil t)
+              (let ((props (org-entry-properties)))
+                (unless (assoc "ARCHIVED" props)
+                  (push (format "Entry at line %d missing ARCHIVED property" 
+                               (line-number-at-pos)) issues)))))
+          
+          (if issues
+              (message "⚠️  Archive validation found %d issues:\n%s" 
+                      (length issues) (string-join issues "\n"))
+            (message "✅ Archive structure is valid")))
+      (message "❌ Archive file does not exist: %s" archive-file))))
+
+(defun rk/clean-empty-archive-sections ()
+  "Remove empty sections from archive file."
+  (interactive)
+  (let* ((archive-file (rk/org-file "archive.org"))
+         (cleaned-count 0))
+    
+    (when (file-exists-p archive-file)
+      (with-current-buffer (find-file-noselect archive-file)
+        (org-map-entries
+         (lambda ()
+           (when (and (org-entry-is-todo-p)
+                      (not (org-goto-first-child)))
+             ;; This is a heading with no children
+             (org-cut-subtree)
+             (setq cleaned-count (1+ cleaned-count))))
+         nil 'file)
+        (when (> cleaned-count 0)
+          (save-buffer)))
+      
+      (message "Cleaned %d empty sections from archive" cleaned-count))))
+
+;; Test function for archive system
+(defun rk/test-archive-system ()
+  "Test the archive system with sample data."
+  (interactive)
+  (let ((test-buffer "*GTD Archive Test*"))
+    (with-current-buffer (get-buffer-create test-buffer)
+      (org-mode)
+      (erase-buffer)
+      (insert "#+TITLE: Archive System Test\n\n")
+      (insert "* TODO Test task 1 @work\n")
+      (insert "* DONE Test completed task @home\n")
+      (insert "  CLOSED: [2025-06-01 Sun 10:00]\n")
+      (insert "* CANCELLED Old cancelled task @office\n")
+      (insert "  CLOSED: [2025-05-01 Thu 14:30]\n")
+      (insert "* NEXT Active task @computer\n")
+      (save-buffer))
+    
+    (switch-to-buffer test-buffer)
+    (message "✅ Test buffer created. Try: (rk/archive-done-tasks) or (rk/validate-archive-structure)")))
 #+end_src
 
 ** GTD Capture Functions
