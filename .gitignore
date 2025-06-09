@@ -10,3 +10,6 @@ home/org-files/
 
 # FlowLoom temporary files
 .flowloom/tmp/
+
+# Org-mode export files
+home/dotspacemacs-modular.org.org
