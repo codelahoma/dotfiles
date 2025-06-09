@@ -56,6 +56,7 @@ This function should only modify configuration layer settings."
      emoji
      evil-better-jumper
      helm
+     org
      (osx :variables
           osx-command-as nil)
      spacemacs-modeline
@@ -98,27 +99,6 @@ This function should only modify configuration layer settings."
      react
      (mermaid :variables
               ob-mermaid-cli-path "/Users/rodk/personal/org-files/node_modules/.bin/mmdc")
-     (org :variables
-          org-appear-autolinks nil
-          org-enable-appear-support t
-          org-enable-bootstrap-support t
-          org-enable-github-support t
-          org-enable-hugo-support nil
-          org-enable-jira-support t
-          jiralib-url "https://kitewire.atlassian.net:443"
-          org-enable-modern-support t
-          org-enable-notifications t
-          org-enable-org-contacts-support nil
-          org-enable-org-journal-support t
-          org-enable-reveal-js-support t
-          org-enable-roam-support t
-          org-enable-roam-ui t
-          org-enable-sticky-header t
-          org-enable-transclusion-support t
-          org-enable-trello-support t
-          org-projectile-file "TODOs.org"
-          org-start-notification-daemon-on-startup t
-          org-todo-dependencies-strategy 'semiauto)
      html
      markdown
      (yaml :variables
@@ -214,9 +194,6 @@ This function should only modify configuration layer settings."
                                       org-noter
                                       org-noter-pdftools
                                       hyperbole
-                                      ob-async
-                                      ox-slack
-                                      org-superstar
                                       ;; (chatgpt :location (recipe
                                       ;;                     :fetcher github
                                       ;;                     :repo "joshcho/ChatGPT.el"))
@@ -654,7 +631,6 @@ It should only modify the values of Spacemacs settings."
                               :disabled-for-modes dired-mode
                                                   doc-view-mode
                                                   markdown-mode
-                                                  org-mode
                                                   pdf-view-mode
                                                   text-mode
                                                   xml-mode
@@ -843,7 +819,6 @@ before packages are loaded."
   (use-package evil-easymotion
     :init (evilem-default-keybindings "\\"))
   (advice-add 'evil-avy-goto-line :after #'evil-scroll-line-to-center)
-  (advice-add 'org-open-at-point :after #'evil-scroll-line-to-center)
   (advice-add 'evil-ex-search-next :after #'evil-scroll-line-to-center)
   (advice-add 'evil-avy-goto-char-timer :after #'evil-scroll-line-to-center)
   (advice-add 'better-jumper-jump-backward :after #'evil-scroll-line-to-center)
@@ -899,99 +874,10 @@ before packages are loaded."
      '(org-todo ((t ( :font "Fira Sans" :height 0.8 ))))
      '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
      ))
-  (defvar org-heading-colors-schemes
-    '(("Arctic"    . ("LightCyan" "AliceBlue" "LavenderBlue" "GhostWhite" "LightSteelBlue"))
-      ("Autumn"    . ("OrangeRed" "DarkGoldenrod" "Sienna" "Peru" "Wheat4"))
-      ("Candy"     . ("HotPink" "DeepPink" "VioletRed" "MediumVioletRed" "RosyBrown"))
-      ("Cyber"     . ("DeepPink" "Cyan" "SpringGreen" "BlueViolet" "DimGray"))
-      ("Desert"    . ("Tan4" "SandyBrown" "PeachPuff3" "Wheat4" "Bisque4"))
-      ("Earth"     . ("Sienna" "RosyBrown" "DarkKhaki" "Tan" "Wheat4"))
-      ("Forest"    . ("ForestGreen" "OliveDrab" "DarkOliveGreen" "YellowGreen" "DarkSeaGreen"))
-      ("Galaxy"    . ("MediumSlateBlue" "MediumPurple" "Purple" "DarkViolet" "SlateGray"))
-      ("Garden"    . ("MediumSeaGreen" "DarkSeaGreen" "PaleGreen" "LightGreen" "Gray"))
-      ("Meadow"    . ("MediumAquamarine" "PaleGreen" "LightGreen" "DarkSeaGreen" "LightSlateGray"))
-      ("Mountain"  . ("RoyalBlue4" "SteelBlue4" "DodgerBlue4" "SlateBlue4" "LightSlateGray"))
-      ("Nordic"    . ("SteelBlue" "LightSteelBlue" "SlateGray" "LightSlateGray" "Gray"))
-      ("Ocean"     . ("DeepSkyBlue1" "MediumSpringGreen" "Turquoise" "SlateBlue" "CadetBlue"))
-      ("Pastel"    . ("SkyBlue" "LightGoldenrod" "PaleGreen" "Salmon" "LightGray"))
-      ("Retro"     . ("Magenta3" "Cyan3" "Yellow3" "Green3" "Gray3"))
-      ("Royal"     . ("RoyalBlue" "MediumBlue" "Navy" "MidnightBlue" "SlateGray"))
-      ("Seaside"   . ("CadetBlue" "LightBlue" "PowderBlue" "PaleTurquoise" "LightSlateGray"))
-      ("Sunset"    . ("MediumVioletRed" "DeepPink" "HotPink" "LightPink" "RosyBrown"))
-      ("Twilight"  . ("MediumPurple" "SlateBlue" "DarkSlateBlue" "Navy" "DimGray"))
-      ("Vibrant"   . ("DodgerBlue1" "Gold1" "Chartreuse1" "OrangeRed1" "Gray50"))
-      ("Volcanic"  . ("OrangeRed" "Firebrick" "DarkRed" "IndianRed" "RosyBrown4"))
-      ("Wine"      . ("Maroon" "VioletRed" "MediumVioletRed" "PaleVioletRed" "RosyBrown")))
-    "Alist of org heading color schemes. Each scheme contains 5 colors:
-  4 for different heading levels and 1 for done states.")
-  
-  (defun preview-org-colors ()
-    "Preview all color schemes in a temporary buffer."
-    (interactive)
-    (let ((preview-buffer (get-buffer-create "*Org Color Schemes Preview*")))
-      (with-current-buffer preview-buffer
-        (erase-buffer)
-        (fundamental-mode)
-        (dolist (scheme org-heading-colors-schemes)
-          (let* ((scheme-name (car scheme))
-                 (colors (cdr scheme)))
-  
-            ;; Insert the theme name
-            (let ((start-pos (point)))
-              (insert (format "* %s Theme\n" scheme-name))
-              (add-text-properties start-pos (point)
-                                 `(face (:weight bold :height 1.5))))
-  
-            ;; Insert each level with its color
-            (dotimes (i 4)
-              (let ((start-pos (point)))
-                (insert (format "%s Level %d Heading (%s)\n"
-                              (make-string (1+ i) ?*)
-                              (1+ i)
-                              (nth i colors)))
-                (add-text-properties
-                 start-pos (point)
-                 `(face (:foreground ,(nth i colors) :height ,(- 1.4 (* i 0.1)))))))
-  
-            ;; Add done state preview
-            (let ((start-pos (point)))
-              (insert (format "* DONE Example Done Heading (%s)\n" (nth 4 colors)))
-              (add-text-properties
-               start-pos (point)
-               `(face (:foreground ,(nth 4 colors) :height 1.3))))
-  
-            (insert "\n"))))
-  
-      (display-buffer preview-buffer)))
-  
-  (defun switch-org-colors (scheme-name)
-    "Switch org heading colors to a predefined scheme.
-  SCHEME-NAME should be one of the defined color schemes."
-    (interactive
-     (list (completing-read "Choose color scheme: "
-                           (mapcar #'car org-heading-colors-schemes))))
-    (let* ((colors (cdr (assoc scheme-name org-heading-colors-schemes)))
-           (variable-tuple
-            (cond ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
-                  ((x-list-fonts "Avenir Next") '(:font "Avenir Next"))
-                  ((x-list-fonts "Verdana") '(:font "Verdana"))
-                  ((x-list-fonts "ETBembo") '(:font "ETBembo"))
-                  ((x-list-fonts "Lucida Grande") '(:font "Lucida Grande"))
-                  ((x-family-fonts "Sans Serif") '(:family "Sans Serif"))
-                  (nil (warn "Cannot find a Sans Serif Font. Install Source Sans Pro."))))
-           (headline `(:inherit default :weight normal)))
-  
-      (custom-theme-set-faces
-       'user
-       `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.8 :foreground ,(nth 0 colors)))))
-       `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5 :foreground ,(nth 1 colors)))))
-       `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.4 :foreground ,(nth 2 colors)))))
-       `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.3 :foreground ,(nth 3 colors)))))
-       `(org-done ((t (,@headline :foreground ,(nth 4 colors))))))
-  
-      (message "Switched to %s color scheme" scheme-name)))
+  ;; Set default org color scheme - now handled by codelahoma-org extensions
   (with-eval-after-load 'org
-    (switch-org-colors "Cyber"))
+    (when (fboundp 'switch-org-colors)
+      (switch-org-colors "Cyber")))
   (with-eval-after-load 'org-superstar
     (setq org-superstar-item-bullet-alist
           '((?* . ?•)
@@ -1017,264 +903,10 @@ before packages are loaded."
             ("ANSWERED" . ?👍) 
             ("DONE" . ?✅)))
     (org-superstar-restart))
-  (defvar rk/org-bullet-schemes
-    '(("Geometric" . ("◉" "○" "◈" "◇"))
-      ("Natural"   . ("❋" "✿" "❀" "✤"))
-      ("Stars"     . ("★" "☆" "✭" "✧"))
-      ("Circles"   . ("●" "◐" "◑" "○"))
-      ("Math"      . ("➊" "➋" "➌" "➍"))
-      ("Arrows"    . ("➤" "➢" "➣" "➼"))
-      ("Modern"    . ("◆" "▶" "▸" "▹"))
-      ("Celestial" . ("✶" "✸" "✹" "✺"))
-      ("Boxes"      . ("█" "▅" "▃" "▁"))
-      ("Diamonds"   . ("❖" "❈" "✧" "✦"))
-      ("Flowers"    . ("✾" "✽" "✼" "✻"))
-      ("Hearts"     . ("❤" "♥" "♡" "❥"))
-      ("Snowflakes" . ("❄" "❆" "❅" "❊"))
-      ("Chess"      . ("♔" "♕" "♖" "♗"))
-      ("Squares"    . ("⬣" "⬡" "⬢" "⬩"))
-      ("Weather"    . ("☀" "☁" "☂" "☃"))
-      ("Music"      . ("♬" "♫" "♪" "♩"))
-      ("Cards"      . ("♠" "♣" "♥" "♦"))
-      ("Buddhist"   . ("☸" "☯" "☮" "✴"))
-      ("Runes"      . ("ᛃ" "ᛒ" "ᛦ" "ᚻ"))
-      ("Tech"       . ("⌘" "⌥" "⇧" "⌤"))
-      ("Blocks"     . ("░" "▒" "▓" "█"))
-      ("Planets"    . ("☉" "☽" "☿" "♀"))
-      ("Zodiac"     . ("♈" "♉" "♊" "♋"))
-      ("Ancient"    . ("⚛" "☤" "⚕" "⚚"))
-      ("Symbolic"   . ("⚡" "☘" "☔" "☠"))
-      ("Checklist"  . ("☑" "☐" "⚀" "⚁")) )
-    "Alist of org heading bullet schemes.")
-  
-  (defun rk/switch-org-bullets (scheme-name)
-    "Switch org heading bullets to a predefined scheme."
-    (interactive
-     (list (completing-read "Choose bullet scheme: "
-                            (mapcar #'car rk/org-bullet-schemes))))
-    (let ((bullets (cdr (assoc scheme-name rk/org-bullet-schemes))))
-      (setq org-superstar-headline-bullets-list bullets)
-      (org-superstar-restart)
-      (message "Switched to %s bullet scheme" scheme-name)))
-  
-  (defun rk/preview-org-bullets ()
-    "Preview all bullet schemes in a temporary buffer."
-    (interactive)
-    (with-output-to-temp-buffer "*Org Bullet Schemes Preview*"
-      (with-current-buffer "*Org Bullet Schemes Preview*"
-        (org-mode)
-        (dolist (scheme org-bullet-schemes)
-          (insert (format "* %s\n" (car scheme)))
-          (let ((bullets (cdr scheme)))
-            (dolist (bullet bullets)
-              (insert (format "  %s %s\n" bullet bullet))))
-          (insert "\n")))))
+  ;; Set default bullet scheme - now handled by codelahoma-org extensions
   (with-eval-after-load 'org-superstar
-    (rk/switch-org-bullets "Runes")
-    )
-  
-  (setq org-re-reveal-title-slide "<h1 class='title'>%t</h1><h2 class='author'>%a</h2><p class='email'>%e</p>")
-  (setq org-re-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
-  (setq org-re-reveal-revealjs-version "5")
-  
-  
-  (setq org-src-window-setup 'split-window-below)
-  (with-eval-after-load 'org
-    (setq org-M-RET-may-split-line nil)
-  
-    (font-lock-add-keywords 'org-mode
-                            '(("^ *\\([-]\\) "
-                               (0 (prog1 ()
-                                    (compose-region
-                                     (match-beginning 1)
-                                     (match-end 1)
-                                     "•"))))))
-    (setq alert-default-style 'notifications)
-    (add-hook 'org-mode-hook 'variable-pitch-mode)
-    ;; (add-hook 'org-mode-hook 'visual-line-mode)
-  
-    ;; org directories
-    (setq org-directory "~/personal/org-files/")
-    (setq org-roam-directory (concat org-directory "roam-notes/"))
-    (setq org-link-frame-setup '((file . find-file-noselect)))
-  
-    (org-roam-db-autosync-mode)
-  
-  
-    ;; default to all top level org files for agenda
-    (unless org-agenda-files
-      (setq org-agenda-files (directory-files org-directory nil "org$")))
-  
-    ;; file prefix aliases
-    (defalias `rk/org-file (apply-partially 'concat org-directory))
-  
-    (setq org-persp-startup-org-file (concat org-directory "gtd.org"))
-    (setq org-id-track-globally t)
-  
-  
-    (setq org-roam-completion-everywhere t)
-  
-    (add-to-list 'org-modules 'org-protocol)
-    (add-to-list 'org-modules 'org-tempo)
-    (add-to-list 'org-modules 'org-checklist)
-  
-    (setq org-tags-exclude-from-inheritance '("project"))
-    (setq org-list-allow-alphabetical t)
-  
-    (setq org-capture-templates `(
-                                  ("t" "Todos")
-                                  ("tl" "Todo with Link" entry (file ,(rk/org-file "inbox.org")) "* TODO %?\n  %i\n  %a")
-                                  ("tt" "Todo" entry (file ,(rk/org-file "inbox.org")) "* TODO %?\n  %i\n")
-                                  ("tT" "Tickler" entry (file+headline ,(rk/org-file "tickler.org") "Tickler") "* %i%? \n %U"))
-          )
-  
-    (global-set-key "\C-cb" 'org-switchb)
-  
-    (setq diary-file (rk/org-file "diary.org"))
-    (setq org-agenda-include-diary t)
-  
-    (setq org-journal-dir "~/personal/org-files/journal/"
-          org-journal-date-prefix "#+TITLE: "
-          org-journal-date-format "%A, %B %d %Y"
-          org-journal-time-prefix "* "
-          )
-  
-  
-  
-    (setq rk/work-org-files (-flatten (list
-  
-                                       (rk/org-file "inbox.org")
-                                       (rk/org-file "gtd.org")
-                                       (rk/org-file "tickler.org")
-                                       (rk/org-file "someday.org")
-                                       (rk/org-file "reference.org")
-                                       )))
-  
-    (setq rk/home-org-files (list
-                             (rk/org-file "inbox.org")
-                             (rk/org-file "home.org")
-                             (rk/org-file "gtd.org")
-                             (rk/org-file "tickler.org")
-                             (rk/org-file "someday.org")
-                             ))
-  
-    (setq org-agenda-custom-commands
-          '(("h" "Home"
-             ((agenda "" ((org-agenda-span 3)))
-              (tags-todo "@phone" ((org-agenda-overriding-header "Calls")))
-              (tags "-@kitewire+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
-              (tags-todo "-@kitewire" (
-                                       (org-agenda-overriding-header "Todo")
-                                       (org-agenda-files rk/home-org-files)
-                                       (org-agenda-skip-function 'my-org-agenda-skip-all-siblings-but-first)))
-              ()))
-            ("k" . "Kitewire Views")
-            ("kk" "Kitewire"
-             (
-              (agenda "" (
-                          (org-agenda-entry-types '(:deadline :scheduled* :timestamp :sexp))
-                          (org-agenda-files rk/work-org-files)
-                          ))
-              (tags-todo "+atlasup-reading-home-@home-30days-60days-90days/-MEETING" ((org-agenda-overriding-header "Atlas UP") (org-agenda-files rk/work-org-files) ))
-              (tags-todo "ticket" ((org-agenda-overriding-header "Tickets")
-                                   (org-agenda-skip-function
-                                    '(org-agenda-skip-entry-if 'todo 'done))))
-              (tags-todo "errand" ((org-agenda-overriding-header "Errands")
-                                   (org-agenda-skip-function
-                                    '(org-agenda-skip-entry-if 'todo 'done))))
-              (tags "-@home-home+TODO=\"WAITING\"" ((org-agenda-overriding-header "Waiting")))
-              ;; (tags "30days" ((org-agenda-overriding-header "30 Day Plan")))
-              ;; (tags "60days" ((org-agenda-overriding-header "60 Day Plan")))
-              ;; (tags "90days" ((org-agenda-overriding-header "90 Day Plan")))
-  
-  
-  
-              ;; (tags "-@home-home+TODO=\"IN-PROGRESS\"" ((org-agenda-overriding-header "Todo") (org-agenda-files rk/work-org-files)))
-              ()))
-            ("kW" "Weekly review"
-             agenda ""
-             ((org-agenda-span 'week)
-              (org-agenda-start-on-weekday 0)
-              (org-agenda-start-with-log-mode '(closed clock))
-              (org-agenda-skip-function
-               '(org-agenda-skip-entry-if 'nottodo 'done))
-              )
-             )))
-    (add-to-list 'org-agenda-custom-commands
-                 '("W" "Weekly review"
-                   agenda ""
-                   ((org-agenda-span 'week)
-                    (org-agenda-start-on-weekday 0)
-                    (org-agenda-start-with-log-mode '(closed clock))
-                    (org-agenda-skip-function
-                     '(org-agenda-skip-entry-if 'nottodo 'done))
-                    )
-                   ))
-    (setq org-startup-indented t)
-    (add-to-list 'org-file-apps '(directory . emacs))
-  
-    ;; Refiling refinements
-    ;; source: https://blog.aaronbieber.com/2017/03/19/organizing-notes-with-refile.html
-  
-    (setq org-refile-targets '((org-agenda-files :maxlevel . 6)))
-    (setq org-refile-use-outline-path 'file)
-    (setq org-outline-path-complete-in-steps nil)
-    (setq org-refile-allow-creating-parent-nodes 'confirm)
-    (setq org-clock-persist 'history)
-    (org-clock-persistence-insinuate)
-  
-    (setq org-todo-keywords
-          '((sequence
-             "TODO(t)"
-             "WAITING(w)"
-             "NEXT(n)"
-             "IN-PROGRESS(i)"
-             "NEEDS-REFINEMENT(r)"
-             "|"
-             "NOT-APPLICABLE"
-             "DONE(d)"
-             "CANCELLED(c@)"
-             )
-            (sequence "QUESTION" "|" "ANSWERED(@)")
-            (sequence "MEETING(m)" "|" "ATTENDED(a@)" "IGNORED(t)" "CANCELLED(l@)")))
-  
-    (setq org-catch-invisible-edits 'smart)
-  
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((emacs-lisp . t)
-       (mermaid . t)
-       (http . t)
-       (lua . t)
-       (python . t)
-       (shell . t)))
-    (setq org-confirm-babel-evaluate nil
-          org-src-fontify-natively t
-          org-src-tab-acts-natively t)
-  
-    (setq org-roam-dailies-capture-templates
-          '(("d" "default" entry
-             "* %<%H:%M>  %?"
-             :target (file+head "%<%Y-%m-%d>.org"
-                                "#+title: %<%Y-%m-%d>\n"))))
-    (setq org-roam-capture-templates
-          '(("d" "default" plain "%?"
-             :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                                "#+title: ${title}\n")
-             :unnarrowed t)
-            ("i" "Interaction Log" plain
-             "%?"
-             :target (file+head "interactions/%<%Y%m%d%H%M%S>-${slug}.org"
-                                "#+title: Interaction with ChatGPT\n#+roam_tags: interaction chatgpt\n\n")
-             :unnarrowed t
-             :immediate-finish t
-             :jump-to-captured t) ("g" "GPTel Interaction" plain "%?" :target
-             (file+head "interactions/%<%Y%m%d%H%M%S>-${slug}.org"
-                        "#+title: ${title}\n#+roam_tags: interaction gptel\n#+date: %U\n\n* Context\n** Purpose\n\n* Key Questions\n\n* Insights\n\n* Follow-up Actions\n\n* Raw Interaction\n:PROPERTIES:\n:CAPTURED_ON: %U\n:MODEL: %^{Model}\n:END:\n\n")
-             :unnarrowed t) ))
-  
-    (org-roam-db-autosync-mode)
-    )
+    (when (fboundp 'rk/switch-org-bullets)
+      (rk/switch-org-bullets "Runes")))
   (defun rk/validate-xml-with-xmllint ()
     "Validate the current XML file using xmllint and create a compilation-style error buffer."
     (interactive)
@@ -1395,210 +1027,39 @@ before packages are loaded."
   ;; ;; Additional Consult settings
   ;; (setq consult-narrow-key "<")       ;; Narrowing prefix key
   ;; (setq consult-project-root-function #'projectile-project-root) ;; Use Projectile for root detection
-  ;; rk/open-daily-writing function
-  (defun rk/open-daily-writing ()
-    "Open the daily writing file, create a new entry if needed, and position the cursor at the end of the entry."
-    (interactive)
-    (let* ((daily-writing-file (rk/org-file "750words.org"))
-           (date-string (format-time-string "%Y-%m-%d"))
-           (entry-heading (concat "* " date-string)))
-      ;; Open the daily writing file
-      (find-file daily-writing-file)
-      ;; Go to the beginning of the buffer
-      (goto-char (point-min))
-      ;; Search for the first org-heading after any metadata lines
-      (re-search-forward "^\\* " nil t)
-      (beginning-of-line)
-      ;; Check if today's entry exists
-      (unless (search-forward entry-heading nil t)
-        ;; If the entry does not exist, create a new entry at the current position
-        (insert entry-heading "\n\n")
-        (forward-line -1))
-      ;; Position the cursor at the end of today's entry
-      (org-end-of-subtree)
-      ;; Turn on automatic word count updates for the buffer
-      (setq rk/auto-update-word-count-enabled t)
-      ;; Switch to distraction-free mode
-      (writeroom-mode)))
+   (defun my-info-mode-hook ()
+     (local-set-key (kbd "n") 'Info-next)
+     (local-set-key (kbd "p") 'Info-prev)
+     (local-set-key (kbd "u") 'Info-up)
+     (local-set-key (kbd "m") 'Info-menu)
+     (local-set-key (kbd "s") 'Info-search)
+     (local-set-key (kbd "f") 'Info-follow-nearest-node))
   
-  
-  ;; Function to update the word count in an org entry heading
-  (defun rk/update-word-count-in-heading ()
-    "Store or update the word count of the current org entry in its heading."
-    (interactive)
-    (if (not (eq major-mode 'org-mode))
-        (message "Not in org-mode")
-      (save-excursion
-        (let* ((beg (progn (org-back-to-heading t) (forward-line) (point)))
-               (end (progn (org-end-of-subtree t t) (point)))
-               (wc 0))
-          ;; Calculate the word count
-          (goto-char beg)
-          (while (< (point) end)
-            (forward-word)
-            (setq wc (1+ wc)))
-          ;; Update the word count in the heading
-          (goto-char beg)
-          (goto-char (progn (org-back-to-heading t) (beginning-of-line) (point)))
-          (let ((case-fold-search t)
-                (word-count-regexp "\\[\\([0-9]+\\) words\\]"))
-            (if (re-search-forward word-count-regexp (line-end-position) t)
-                ;; If the word count is already in the heading, update it
-                (replace-match (format "[%d words]" (- wc 1)) nil t)
-              ;; Otherwise, append the word count to the heading
-              (end-of-line)
-              (insert (format " [%d words]" (- wc 1)))))
-          (message "Word count updated: %d" (- wc 1))))))
+   (add-hook 'Info-mode-hook 'my-info-mode-hook)
   
   
   
+   ;; ;; Bind the function to a key for easy access
+   (defun renumber-region (start end)
+     "Renumber the lines in the region from START to END."
+     (interactive "r")
+     (let ((line-number 1))
+       (goto-char start)
+       (while (and (< (point) end) (not (eobp)))
+         (if (re-search-forward "^\\([0-9]+\\)\\(\\..*\\)$" (line-end-position) t)
+             (replace-match (format "%d\\2" line-number))
+           (forward-line 1))
+         (setq line-number (1+ line-number))
+         (forward-line 1))))
   
+   (global-set-key (kbd "C-c r") 'renumber-region)
+   (setq helm-ag-use-grep-ignore-list nil)
+   (defun insert-current-date-time ()
+     "Insert the current date and time."
+     (interactive)
+     (insert (format-time-string "%Y-%m-%d %H:%M:%S")))
   
-  
-  ;; Buffer-local variable to control automatic word count updates
-  (defvar-local rk/auto-update-word-count-enabled nil
-    "Enable or disable automatic word count updates for the current buffer.")
-  
-  ;; Function to automatically update the word count in an org entry heading
-  (defun rk/auto-update-word-count ()
-    "Automatically update the word count of the current org entry in its heading."
-    (when (and (eq major-mode 'org-mode) rk/auto-update-word-count-enabled)
-      (rk/update-word-count-in-heading)))
-  
-  ;; Idle timer to update the word count of the current org entry in its heading
-  (defvar rk/auto-update-word-count-timer
-    (run-with-idle-timer 1.5 t 'rk/auto-update-word-count)
-    "Idle timer to update the word count of the current org entry in its heading.")
-  
-  ;; Function to toggle automatic word count updates
-  (defun rk/toggle-auto-update-word-count ()
-    "Toggle automatic word count updates for the current buffer."
-    (interactive)
-    (setq rk/auto-update-word-count-enabled (not rk/auto-update-word-count-enabled))
-    (message "Automatic word count updates %s" (if rk/auto-update-word-count-enabled "enabled" "disabled")))
-  
-  ;; Function to enable automatic word count updates for the current file
-  (defun rk/enable-auto-update-word-count-for-file ()
-    "Enable automatic word count updates for the current file."
-    (interactive)
-    (add-file-local-variable 'rk/auto-update-word-count-enabled t)
-    (message "Enabled automatic word count updates for the current file."))
-  
-  ;; Function to enable automatic word count updates for the current org entry(defun rk/enable-auto-update-word-count-for-entry ()
-  (defun rk/enable-auto-update-word-count-for-entry ()
-    "Enable automatic word count updates for the current org entry."
-    (interactive)
-    (if (not (eq major-mode 'org-mode))
-        (message "Not in org-mode")
-      (save-excursion
-        (org-back-to-heading t)
-        (let ((property-drawer (org-entry-properties nil 'standard)))
-          (if (assoc "VARIABLES" property-drawer)
-              (org-entry-put nil "VARIABLES" (concat (cdr (assoc "VARIABLES" property-drawer)) " rk/auto-update-word-count-enabled=t"))
-            (org-entry-put nil "VARIABLES" "rk/auto-update-word-count-enabled=t"))))
-      (message "Enabled automatic word count updates for the current entry.")))
-  
-  ;; Function to disable automatic word count updates for the current file
-  (defun rk/disable-auto-update-word-count-for-file ()
-    "Disable automatic word count updates for the current file."
-    (interactive)
-    (delete-file-local-variable 'rk/auto-update-word-count-enabled)
-    (message "Disabled automatic word count updates for the current file."))
-  
-  ;; Function to disable automatic word count updates for the current org entry
-  (defun rk/disable-auto-update-word-count-for-entry ()
-    "Disable automatic word count updates for the current org entry."
-    (interactive)
-    (if (not (eq major-mode 'org-mode))
-        (message "Not in org-mode")
-      (save-excursion
-        (org-back-to-heading t)
-        (let ((property-drawer (org-entry-properties nil 'standard)))
-          (if (assoc "VARIABLES" property-drawer)
-              (let ((updated-variables (replace-regexp-in-string " ?rk/auto-update-word-count-enabled=t" "" (cdr (assoc "VARIABLES" property-drawer)))))
-                (org-entry-put nil "VARIABLES" updated-variables))
-            (message "rk/auto-update-word-count-enabled not set for the current entry."))))
-      (message "Disabled automatic word count updates for the current entry.")))
-  
-  ;; Function advice to automatically update the word count in an org entry heading when saving the buffer
-  (defun rk/update-word-count-before-save (&rest _args)
-    "Update the word count of the current org entry before saving the buffer."
-    (when (and (eq major-mode 'org-mode) rk/auto-update-word-count-enabled)
-      (rk/update-word-count-in-heading)))
-  
-  (advice-add 'save-buffer :before #'rk/update-word-count-before-save)
-  (defun rk/insert-clipboard-markdown-as-org ()
-    "Convert the clipboard contents from Markdown to Org and insert it at point."
-    (interactive)
-    (let* ((temp-file (make-temp-file "clipboard-md" nil ".md"))
-           (org-output (with-temp-buffer
-                         (insert (gui-get-selection 'CLIPBOARD))
-                         (write-region nil nil temp-file nil 'quiet)
-                         (shell-command-to-string (format "pandoc -f markdown -t org %s" temp-file)))))
-      (insert org-output)
-      (delete-file temp-file)))
-  (defun my-info-mode-hook ()
-    (local-set-key (kbd "n") 'Info-next)
-    (local-set-key (kbd "p") 'Info-prev)
-    (local-set-key (kbd "u") 'Info-up)
-    (local-set-key (kbd "m") 'Info-menu)
-    (local-set-key (kbd "s") 'Info-search)
-    (local-set-key (kbd "f") 'Info-follow-nearest-node))
-  
-  (add-hook 'Info-mode-hook 'my-info-mode-hook)
-  
-  
-  (require 'org-roam)
-  (require 'org-roam-dailies)
-  
-  ;;          (date (format-time-string "%Y-%m-%d"))
-  ;;          (org-roam-dailies-dir (expand-file-name "dailies" org-roam-directory))
-  ;;          (daily-file (expand-file-name (concat date ".org") org-roam-dailies-dir)))
-  ;;     (unless (file-exists-p daily-file)
-  ;;       (with-temp-buffer (write-file daily-file)))
-  ;;     (with-current-buffer (find-file-noselect daily-file)
-  ;;       (goto-char (point-max))
-  ;;       (insert (concat "* " title "\n"))
-  ;;       (insert (concat "[[" link "][" link "]]\n\n"))
-  ;;       (insert (concat content "\n"))
-  
-  ;; ;; Bind the function to a key for easy access
-  (defun renumber-region (start end)
-    "Renumber the lines in the region from START to END."
-    (interactive "r")
-    (let ((line-number 1))
-      (goto-char start)
-      (while (and (< (point) end) (not (eobp)))
-        (if (re-search-forward "^\\([0-9]+\\)\\(\\..*\\)$" (line-end-position) t)
-            (replace-match (format "%d\\2" line-number))
-          (forward-line 1))
-        (setq line-number (1+ line-number))
-        (forward-line 1))))
-  
-  (global-set-key (kbd "C-c r") 'renumber-region)
-  (setq helm-ag-use-grep-ignore-list nil)
-  (defun insert-current-date-time ()
-    "Insert the current date and time."
-    (interactive)
-    (insert (format-time-string "%Y-%m-%d %H:%M:%S")))
-  
-  (spacemacs/set-leader-keys "otd" 'insert-current-date-time)
-  
-  (defun org-copy-current-source-block ()
-    "Copy the current source block's content to the clipboard, without including the BEGIN and END markers."
-    (interactive)
-    (when (org-in-src-block-p)
-      (save-excursion
-        (let (beg end)
-          (goto-char (org-babel-where-is-src-block-head))
-          (forward-line)
-          (setq beg (point))
-          (goto-char (org-babel-where-is-src-block-result 'post))
-          (backward-line 2)
-          (setq end (point))
-          (kill-ring-save beg end)))))
-  
-  (global-unset-key (kbd "s-k"))
+   (spacemacs/set-leader-keys "otd" 'insert-current-date-time)
   (global-set-key (kbd "C-c C-x C-c") 'org-copy-current-source-block)
   (defun rk/insert-spacemacs-config-block ()
   "Insert org-babel source block for Spacemacs config."
@@ -1625,7 +1086,164 @@ before packages are loaded."
   (global-set-key (kbd "C-c i") #'rk/insert-spacemacs-config-block)
   (defun codelahoma/insert-random-uid ()
     (interactive)
-    (shell-command "printf %s \"$(uuidgen)\"" t))          ; Collects all general :noweb-ref user-config blocks
+    (shell-command "printf %s \"$(uuidgen)\"" t))
+  ;; Base directory for all org files  
+  (defvar rk/org-directory "~/personal/org-files/"
+    "Base directory for all org files")
+  
+  (defun rk/org-file (filename)
+    "Return full path to org file in the org directory."
+    (expand-file-name filename rk/org-directory))
+  
+  ;; Core org directories and files
+  (setq org-directory rk/org-directory
+        org-agenda-files (list (rk/org-file "inbox.org")
+                              (rk/org-file "projects.org")
+                              (rk/org-file "work.org")
+                              (rk/org-file "personal.org")
+                              (rk/org-file "someday.org"))
+        org-default-notes-file (rk/org-file "inbox.org"))
+  
+  ;; GTD Capture Templates
+  (setq org-capture-templates
+    `(("i" "Inbox" entry (file ,(rk/org-file "inbox.org"))
+       "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+  
+      ("w" "Work Templates")
+      ("wt" "Work Task" entry (file+headline ,(rk/org-file "work.org") "Tasks")
+       "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+      ("wm" "Work Meeting" entry (file+headline ,(rk/org-file "work.org") "Meetings")
+       "* MEETING %? :meeting:\n  %U\n  %a\n  %i" :empty-lines 1)
+      ("wn" "Work Note" entry (file+headline ,(rk/org-file "work.org") "Notes")
+       "* %?\n  %U\n  %a\n  %i" :empty-lines 1)
+  
+      ("p" "Personal Templates")
+      ("pt" "Personal Task" entry (file+headline ,(rk/org-file "personal.org") "Tasks")
+       "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+      ("pn" "Personal Note" entry (file+headline ,(rk/org-file "personal.org") "Notes")
+       "* %?\n  %U\n  %a\n  %i" :empty-lines 1)
+      ("pp" "Project" entry (file ,(rk/org-file "projects.org"))
+       "* PROJECT %?\n  %U\n  %a\n  %i" :empty-lines 1)
+  
+      ("s" "Someday/Maybe" entry (file ,(rk/org-file "someday.org"))
+       "* SOMEDAY %?\n  %U\n  %a\n  %i" :empty-lines 1)
+  
+      ("j" "Journal" entry (file+datetree ,(rk/org-file "journal.org"))
+       "* %?\n  %U\n  %a\n  %i" :empty-lines 1)))
+  
+  ;; Custom Agenda Commands
+  (setq org-agenda-custom-commands
+    '(("w" "Work Dashboard"
+       ((agenda "" ((org-agenda-span 'day)
+                   (org-agenda-files (list (rk/org-file "work.org")))))
+        (todo "TODO|IN-PROGRESS|WAITING"
+              ((org-agenda-overriding-header "Work Tasks")
+               (org-agenda-files (list (rk/org-file "work.org")))
+               (org-agenda-sorting-strategy '(priority-down effort-up))))
+        (todo "MEETING"
+              ((org-agenda-overriding-header "Upcoming Meetings")
+               (org-agenda-files (list (rk/org-file "work.org")))))))
+  
+      ("p" "Personal Dashboard"
+       ((agenda "" ((org-agenda-span 'day)
+                   (org-agenda-files (list (rk/org-file "personal.org")))))
+        (todo "TODO|IN-PROGRESS|WAITING"
+              ((org-agenda-overriding-header "Personal Tasks")
+               (org-agenda-files (list (rk/org-file "personal.org")))
+               (org-agenda-sorting-strategy '(priority-down effort-up))))
+        (todo "PROJECT"
+              ((org-agenda-overriding-header "Active Projects")
+               (org-agenda-files (list (rk/org-file "projects.org")))))))
+  
+      ("u" "Unified Dashboard"
+       ((agenda "" ((org-agenda-span 'week)))
+        (todo "TODO|IN-PROGRESS|WAITING"
+              ((org-agenda-overriding-header "All Active Tasks")
+               (org-agenda-sorting-strategy '(priority-down effort-up))))
+        (todo "PROJECT"
+              ((org-agenda-overriding-header "Active Projects")
+               (org-agenda-files (list (rk/org-file "projects.org")))))
+        (todo "SOMEDAY"
+              ((org-agenda-overriding-header "Someday/Maybe")
+               (org-agenda-files (list (rk/org-file "someday.org")))))))
+  
+      ("r" "Review"
+       ((todo "PROJECT"
+              ((org-agenda-overriding-header "Projects to Review")
+               (org-agenda-files (list (rk/org-file "projects.org")))))
+        (todo "WAITING"
+              ((org-agenda-overriding-header "Waiting For")
+               (org-agenda-sorting-strategy '(priority-down))))
+        (todo "SOMEDAY"
+              ((org-agenda-overriding-header "Someday/Maybe Items")
+               (org-agenda-files (list (rk/org-file "someday.org")))))))
+  
+      ("i" "Inbox Processing"
+       ((todo "TODO"
+              ((org-agenda-overriding-header "Inbox Items to Process")
+               (org-agenda-files (list (rk/org-file "inbox.org")))
+               (org-agenda-sorting-strategy '(time-up))))))
+  
+      ("n" "Next Actions" todo "TODO"
+       ((org-agenda-overriding-header "Next Actions")
+        (org-agenda-sorting-strategy '(priority-down effort-up))))))
+  
+  ;; Enhanced TODO Keywords
+  (setq org-todo-keywords
+    '((sequence "TODO(t)" "IN-PROGRESS(i)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")
+      (sequence "PROJECT(p)" "|" "COMPLETED(C)")
+      (sequence "SOMEDAY(s)" "|" "DECIDED(D)")
+      (sequence "MEETING(m)" "|" "ATTENDED(a)")
+      (sequence "QUESTION(q)" "|" "ANSWERED(A)")))
+  
+  (setq org-todo-keyword-faces
+    '(("TODO" . (:foreground "#ff6b6b" :weight bold))
+      ("IN-PROGRESS" . (:foreground "#4ecdc4" :weight bold))
+      ("WAITING" . (:foreground "#ffe66d" :weight bold))
+      ("PROJECT" . (:foreground "#a8e6cf" :weight bold))
+      ("SOMEDAY" . (:foreground "#dcedc1" :weight bold))
+      ("MEETING" . (:foreground "#b4a7d6" :weight bold))
+      ("QUESTION" . (:foreground "#ffaaa5" :weight bold))
+      ("DONE" . (:foreground "#95e1d3" :weight bold))
+      ("CANCELLED" . (:foreground "#999999" :weight bold))
+      ("COMPLETED" . (:foreground "#95e1d3" :weight bold))
+      ("DECIDED" . (:foreground "#95e1d3" :weight bold))
+      ("ATTENDED" . (:foreground "#95e1d3" :weight bold))
+      ("ANSWERED" . (:foreground "#95e1d3" :weight bold))))
+  
+  ;; Better org-mode behavior
+  (setq org-log-done 'time
+        org-log-into-drawer t
+        org-startup-indented t
+        org-hide-leading-stars t
+        org-odd-levels-only nil
+        org-insert-heading-respect-content t
+        org-refile-use-outline-path 'file
+        org-outline-path-complete-in-steps nil
+        org-refile-allow-creating-parent-nodes 'confirm)
+  
+  ;; Refile targets
+  (setq org-refile-targets
+    `((,(rk/org-file "work.org") :maxlevel . 2)
+      (,(rk/org-file "personal.org") :maxlevel . 2)
+      (,(rk/org-file "projects.org") :maxlevel . 2)
+      (,(rk/org-file "someday.org") :maxlevel . 1)))
+  
+  ;; Archive location
+  (setq org-archive-location (concat (rk/org-file "archive.org") "::* From %s"))
+  
+  ;; Agenda settings
+  (setq org-agenda-window-setup 'current-window
+        org-agenda-restore-windows-after-quit t
+        org-agenda-skip-scheduled-if-done t
+        org-agenda-skip-deadline-if-done t
+        org-agenda-include-deadlines t
+        org-agenda-start-with-log-mode t)
+  ;; Load custom org extensions if available
+  (let ((codelahoma-org-file (rk/org-file "codelahoma-org.el")))
+    (when (file-exists-p codelahoma-org-file)
+      (load-file codelahoma-org-file)
+      (message "Loaded CodeLahoma org extensions from %s" codelahoma-org-file)))          ; Collects all general :noweb-ref user-config blocks
   (spacemacs/declare-prefix "ob" "buffer")
   (spacemacs/set-leader-keys "obn" 'spacemacs/new-empty-buffer)
   
@@ -1656,44 +1274,29 @@ before packages are loaded."
     "off" 'fold-this
     "ofm" 'fold-this-all
     "ofr" 'fold-this-unfold-all)
-  (spacemacs/declare-prefix "oo" "org")
-  (spacemacs/set-leader-keys"ooa" 'org-agenda)
-  (spacemacs/set-leader-keys "oos" 'org-save-all-org-buffers)
-  (spacemacs/set-leader-keys "ooc" 'org-capture)
-  (spacemacs/set-leader-keys "oo/" 'helm-org-rifle)
-  
-  (spacemacs/declare-prefix "ooT" "theming")
-  (spacemacs/set-leader-keys "ooTc" 'switch-org-colors)
-  (spacemacs/set-leader-keys "ooTb" 'rk/switch-org-bullets)
-  
-  
-  (spacemacs/declare-prefix "or" "org-roam")
-  (spacemacs/declare-prefix "ord" "dailies")
-  (spacemacs/declare-prefix "ort" "tags")
-  
-  (spacemacs/set-leader-keys
-    "orjd" 'rk/open-daily-writing
-    "orjj" 'org-roam-dailies-capture-today
-    "orjf" 'org-roam-dailies-goto-today
-    "orrj" 'org-roam-dailies-capture-today
-    "ora" 'org-roam-alias-add
-    "orf" 'org-roam-node-find
-    "orc" 'org-roam-capture
-    "org" 'org-roam-graph
-    "ori" 'org-roam-node-insert
-    "oru" 'org-roam-ui-mode
-    "ordc" 'org-roam-dailies-capture-today
-    "ordd" 'org-roam-dailies-goto-date
-    "ordt" 'org-roam-dailies-goto-today
-    "ordy" 'org-roam-dailies-goto-yesterday
-    "ordT" 'org-roam-dailies-goto-tomorrow
-    "orta" 'org-roam-tag-add
-    "ortr" 'org-roam-tag-remove
-    "orb" 'org-roam-buffer-toggle
-    )
   (spacemacs/declare-prefix "oa" "applications")
   (spacemacs/set-leader-keys
-    "oap" 'pinboard); <<<--- ADD THIS LINE HERE
+    "oap" 'pinboard)
+  ;; GTD Capture shortcuts
+  (spacemacs/declare-prefix "oo" "org")
+  (spacemacs/set-leader-keys "ooc" 'org-capture)
+  (spacemacs/set-leader-keys "ooi" 'rk/org-inbox-capture)
+  (spacemacs/set-leader-keys "oow" 'rk/org-work-capture)
+  (spacemacs/set-leader-keys "oop" 'rk/org-personal-capture)
+  
+  ;; GTD Agenda views
+  (spacemacs/declare-prefix "ooa" "agenda")
+  (spacemacs/set-leader-keys "ooaa" 'org-agenda)
+  (spacemacs/set-leader-keys "ooad" 'rk/org-daily-agenda)
+  (spacemacs/set-leader-keys "ooaw" 'rk/org-weekly-review)
+  (spacemacs/set-leader-keys "ooar" 'rk/org-review-inbox)
+  
+  ;; GTD File navigation
+  (spacemacs/declare-prefix "oog" "goto")
+  (spacemacs/set-leader-keys "oogi" 'rk/org-goto-inbox)
+  (spacemacs/set-leader-keys "oogw" 'rk/org-goto-work)
+  (spacemacs/set-leader-keys "oogp" 'rk/org-goto-personal)
+  (spacemacs/set-leader-keys "oogP" 'rk/org-goto-projects); <<<--- ADD THIS LINE HERE
             ; Collects the remaining to-organize block
 
   (when (file-exists-p custom-file)
