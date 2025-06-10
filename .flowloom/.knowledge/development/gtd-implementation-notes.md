@@ -1,8 +1,13 @@
 ---
 title: GTD Implementation Notes
 type: development
-tags: [gtd, org-mode, implementation, notes]
+tags:
+- gtd
+- org-mode
+- implementation
+- notes
 created: 2025-01-09
+permalink: development/gtd-implementation-notes
 ---
 
 # GTD Implementation Notes

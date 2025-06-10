@@ -1,8 +1,13 @@
 ---
 title: FlowLoom Tool Discovery - footer.py
 type: discovery
-tags: [flowloom, tools, cli, shebang]
+tags:
+- flowloom
+- tools
+- cli
+- shebang
 created: 2025-01-09
+permalink: tools/flow-loom-tool-discovery-footer-py
 ---
 
 # FlowLoom Tool Discovery - footer.py

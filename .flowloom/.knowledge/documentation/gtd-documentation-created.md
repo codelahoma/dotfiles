@@ -1,8 +1,13 @@
 ---
 title: GTD Documentation Created
 type: documentation
-tags: [gtd, documentation, tutorial, guide]
+tags:
+- gtd
+- documentation
+- tutorial
+- guide
 created: 2025-01-09
+permalink: documentation/gtd-documentation-created
 ---
 
 # GTD Documentation Created
