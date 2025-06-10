@@ -1180,7 +1180,7 @@ Current Mode: %s
     ;; Help
     (spacemacs/declare-prefix "ooh" "help")
     (spacemacs/set-leader-keys
-      "oo?" 'rk/org-gtd-cheatsheet)
+      "ooh?" 'rk/org-gtd-cheatsheet)
 
     ;; Mode switching
     (spacemacs/declare-prefix "oom" "mode")
