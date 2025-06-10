@@ -1,0 +1,532 @@
+#+TITLE: Getting Things Done with Org-Mode - Tutorial
+#+AUTHOR: Rod Knowlton
+#+DATE: 2025-01-09
+#+OPTIONS: toc:3 num:t
+
+* Welcome to Your GTD System!
+
+This tutorial will guide you through learning your new Getting Things Done (GTD) system in Spacemacs. We'll start with the basics and gradually build up to advanced features.
+
+** What You'll Learn
+- How to capture tasks and ideas quickly
+- How to organize tasks by context (work/personal)
+- How to use agenda views to see what needs doing
+- How to process and organize your inbox
+- How to review and maintain your system
+
+** Prerequisites
+- Spacemacs is installed and running
+- You've completed the Phase 1 setup (directory structure created)
+- Basic familiarity with Spacemacs keybindings (SPC = Space key)
+
+* Day 1: Capturing Your First Tasks
+
+** Understanding the Capture System
+
+The capture system is your quick entry point for any task, idea, or note. Think of it as your "trusted inbox" where everything goes first.
+
+** Basic Capture Shortcuts
+
+All capture commands start with =SPC o o c=:
+
+| Key Sequence | What it Captures | Where it Goes |
+|--------------+------------------+---------------|
+| SPC o o c i  | Quick inbox item | inbox.org     |
+| SPC o o c t  | Context task     | work/personal |
+| SPC o o c n  | Quick note       | inbox.org     |
+| SPC o o c p  | New project      | projects.org  |
+
+** Exercise 1: Capture Your First Task
+
+1. Press =SPC o o c i= (inbox capture)
+2. Type: "Learn GTD system in Spacemacs"
+3. Press =C-c C-c= to save
+
+Congratulations! You've captured your first task.
+
+** Exercise 2: Capture with Context
+
+Let's capture a work task:
+
+1. Press =SPC o o c t= (context task)
+2. If in unified mode, select "work" 
+3. Type: "Email team about project update"
+4. Notice it's automatically tagged with =@work=
+5. Press =C-c C-c= to save
+
+** Exercise 3: Quick Notes
+
+Sometimes you just need to jot something down:
+
+1. Press =SPC o o c n= (quick note)
+2. Type: "Remember to check new coffee shop downtown"
+3. This saves immediately - no =C-c C-c= needed!
+
+** Understanding Capture Templates
+
+When you capture, you'll notice some automatic formatting:
+- =TODO= keyword is added
+- =CAPTURED:= timestamp shows when you added it
+- Context tags (like =@work=) are applied
+- Some templates ask for additional info (like scheduling)
+
+* Day 2: Viewing Your Tasks with Agenda
+
+** Opening Your Agenda Views
+
+The agenda is your command center. Access it with =SPC o o a=:
+
+| Key Sequence | View           | What it Shows                |
+|--------------+----------------+------------------------------|
+| SPC o o a w  | Work Dashboard | Only work tasks & schedule   |
+| SPC o o a p  | Personal       | Only personal tasks          |
+| SPC o o a u  | Unified        | Everything combined          |
+| SPC o o a f  | Focus Mode     | Your top 3 priorities        |
+
+** Exercise 1: Explore Work Dashboard
+
+1. Press =SPC o o a w=
+2. You'll see:
+   - Today's date and scheduled items
+   - Next Actions section
+   - Waiting For items
+   - Active Projects
+
+** Exercise 2: Navigate the Agenda
+
+While in agenda view:
+- =j/k= - Move up/down
+- =RET= - Jump to the task
+- =t= - Change TODO state
+- =:= - Set tags
+- =s= - Schedule task
+- =q= - Quit agenda
+
+** Exercise 3: Your First Task Completion
+
+1. In agenda, navigate to a task
+2. Press =t= to cycle through states
+3. Select =DONE=
+4. Notice the completion timestamp!
+
+** Understanding Agenda Structure
+
+Each agenda view has sections:
+- *Schedule*: Time-specific items
+- *Next Actions*: Things you could do now
+- *Waiting For*: Delegated or blocked items
+- *Projects*: Multi-step outcomes
+
+* Day 3: Processing Your Inbox
+
+** The Inbox Processing Workflow
+
+Your inbox is temporary storage. Everything should be processed into appropriate locations.
+
+** Exercise 1: Process Inbox Items
+
+1. Press =SPC o o g i= to go to inbox
+2. For each item, ask:
+   - Is it actionable? → Make it a task
+   - Is it reference? → File it
+   - Can I do it in 2 min? → Do it now
+   - Is it trash? → Delete it
+
+** Exercise 2: Use Quick Refile
+
+1. Go to an inbox item
+2. Press =SPC o o r r= (refile hydra)
+3. Choose destination:
+   - =w= - Work GTD
+   - =p= - Personal GTD
+   - =s= - Someday (work)
+   - =S= - Someday (personal)
+
+** Exercise 3: Bulk Processing
+
+When you have many items:
+
+1. Press =SPC o o c x p= (process inbox command)
+2. Use quick keys:
+   - =n= - Make NEXT action
+   - =t= - Make TODO
+   - =p= - Convert to project
+   - =d= - Delete
+   - =j/k= - Navigate
+
+** The 2-Minute Rule
+
+If something takes less than 2 minutes:
+1. Do it immediately
+2. Mark it =DONE=
+3. Archive with =SPC o o A a=
+
+* Day 4: Working with Contexts
+
+** Understanding Context Modes
+
+Your GTD system can focus on work, personal, or both:
+
+| Mode     | What You See        | When to Use              |
+|----------+---------------------+--------------------------|
+| Work     | Only work items     | During work hours        |
+| Personal | Only personal items | Personal time            |
+| Unified  | Everything          | Planning, weekly reviews |
+
+** Exercise 1: Switch Contexts
+
+1. Press =SPC o o m m= (mode hydra)
+2. Try each mode:
+   - =w= - Work mode
+   - =p= - Personal mode  
+   - =u= - Unified mode
+3. Notice how agenda views change!
+
+** Exercise 2: Context-Aware Capture
+
+1. Switch to work mode: =SPC o o m w=
+2. Capture a task: =SPC o o c t=
+3. Notice it automatically goes to work GTD
+4. Switch to personal mode and try again
+
+** Exercise 3: Use Context Tags
+
+Add energy and time contexts:
+
+1. On any task, press =:= (in agenda) or =C-c C-c= (in org file)
+2. Add tags like:
+   - =@high_energy= - Needs focus
+   - =@low_energy= - Routine work
+   - =@5min= - Quick tasks
+   - =@deep= - Deep work
+
+** Quick Context Reference
+
+| Tag          | Meaning                | Best Time           |
+|--------------+------------------------+---------------------|
+| @work        | Work location          | Office hours        |
+| @home        | Home location          | Evening/weekend     |
+| @computer    | Needs computer         | At desk             |
+| @phone       | Phone calls            | Anywhere            |
+| @errands     | Out and about          | Lunch/commute       |
+| @high_energy | Needs mental energy    | Morning             |
+| @low_energy  | Routine tasks          | Afternoon slump     |
+| @5min        | Very quick             | Between meetings    |
+| @15min       | Quick tasks            | Short breaks        |
+| @deep        | Deep focus needed      | Blocked time        |
+
+* Day 5: Projects and Next Actions
+
+** Understanding Projects
+
+A project is any outcome requiring more than one action step.
+
+** Exercise 1: Create Your First Project
+
+1. Press =SPC o o c p= (project capture)
+2. Enter project name: "Organize home office"
+3. Choose context (personal)
+4. Add a description
+5. Notice the =[/]= - this tracks completion!
+
+** Exercise 2: Add Next Actions to Project
+
+1. Go to your project: =SPC o o g p=
+2. Under the project heading, add tasks:
+   #+BEGIN_EXAMPLE
+   * TODO Organize home office [/]
+     
+   ** NEXT Clear desktop surface
+   ** TODO Buy desk organizers
+   ** TODO Set up filing system
+   #+END_EXAMPLE
+
+** Exercise 3: Project Progress Tracking
+
+1. As you complete tasks, the =[0/3]= updates
+2. Use =C-c C-c= on the =[/]= to update manually
+3. Projects without NEXT actions show as "stalled"
+
+** Project Best Practices
+
+- Always have at least one NEXT action
+- Break large projects into sub-projects
+- Review projects weekly
+- Use =PROJECT= keyword for clear identification
+
+* Day 6: Advanced Capture Templates
+
+** Meeting Capture
+
+Capture meeting notes with context:
+
+1. Press =SPC o o c m= (meeting)
+2. Fill in:
+   - Meeting title
+   - Attendees
+   - Schedule time
+3. Add agenda items in the template
+
+** Energy-Based Capture
+
+Quick capture based on your energy:
+
+- =SPC o o c e l= - Low energy task
+- =SPC o o c e h= - High energy task
+
+These automatically get tagged for the right time!
+
+** Habit Tracking
+
+Create recurring habits:
+
+1. Press =SPC o o c h=
+2. Enter habit: "Morning meditation"
+3. Set schedule: ".+1d" (daily)
+4. Track with =DONE= each day
+
+* Day 7: Your First Weekly Review
+
+** The Weekly Review Process
+
+The weekly review keeps your system trusted and current.
+
+** Exercise: Run Your First Review
+
+1. Press =SPC o o R w= (weekly review)
+2. Follow each section:
+   - ☐ Clear Inbox (get to zero!)
+   - ☐ Review Action Lists
+   - ☐ Review Projects
+   - ☐ Review Waiting Items
+   - ☐ Review Someday/Maybe
+   - ☐ Review Calendar
+   - ☐ Mind Sweep
+   - ☐ Process Notes
+   - ☐ Review Goals
+
+3. Check off each item with =C-c C-c=
+
+** What to Look For
+
+During review:
+- Projects without next actions → Add them
+- Old waiting items → Follow up
+- Someday items ready for action → Activate
+- Completed projects → Archive
+
+** Setting Weekly Priorities
+
+At the end, identify your top 3 for the week:
+1. Most important project milestone
+2. Key deadline or commitment  
+3. One personal priority
+
+* Week 2: Building Habits
+
+** Daily Workflow
+
+*** Morning (5 minutes)
+1. =SPC o o a f= - Check focus view (top 3)
+2. =SPC o o m w= - Switch to work mode
+3. Review today's calendar
+
+*** Processing (as needed)
+1. =SPC o o c i= - Capture to inbox
+2. Process inbox when you have 5-10 minutes
+3. Keep inbox near zero
+
+*** Evening (5 minutes)
+1. =SPC o o R d= - Daily review
+2. Process any remaining inbox items
+3. Set tomorrow's top 3
+
+** Capture Habits
+
+- *Capture immediately* - Don't rely on memory
+- *Use quick capture* - =SPC o o c n= for notes
+- *Process regularly* - Don't let inbox grow
+- *One item = one action* - Split multi-step items
+
+** Energy Management
+
+Schedule by energy:
+- *Morning*: @high_energy tasks
+- *After lunch*: @low_energy, @routine
+- *Late afternoon*: @5min, @phone
+- *Focused blocks*: @deep work
+
+* Week 3: Mastering Organization
+
+** Advanced Refile Techniques
+
+*** Quick Refile by Context
+
+After capturing, quickly organize:
+1. Tag with context (@work/@personal)
+2. Use =SPC o o r r= for refile hydra
+3. Let auto-refile handle the rest
+
+*** Bulk Refile
+
+Process many items:
+1. In agenda, mark items with =m=
+2. Press =B r= for bulk refile
+3. Choose destination
+
+** Archive Strategies
+
+*** Manual Archive
+- =SPC o o A a= - Archive single task
+- =SPC o o A d= - Archive all DONE tasks
+- =SPC o o A o= - Archive old (30+ days)
+
+*** What to Archive
+- Completed tasks older than a week
+- Cancelled projects
+- Reference information
+- Old meeting notes
+
+** Tag Strategies
+
+*** Action Tags
+- Use sparingly - context over content
+- Energy and time tags most useful
+- Location tags for errands/calls
+
+*** Project Tags
+- One tag per major project
+- Use for filtering in agenda
+- Inherit to subtasks
+
+* Week 4: Advanced Features
+
+** Time Tracking
+
+*** Basic Clocking
+1. =SPC o o k i= - Clock in
+2. =SPC o o k o= - Clock out
+3. =SPC o o k r= - See report
+
+*** Pomodoro Technique
+1. On a task, press =SPC o o k p=
+2. Work for 25 minutes
+3. Take 5 minute break
+4. Repeat!
+
+** Custom Agenda Views
+
+*** Energy-Based Views
+- =SPC o o a e l= - Low energy tasks
+- =SPC o o a e h= - High energy tasks
+
+*** Time-Based Views
+- =SPC o o a t q= - Quick tasks (5-15 min)
+- =SPC o o a t d= - Deep work tasks
+
+*** Context Views
+- =SPC o o a c h= - @home tasks
+- =SPC o o a c c= - @computer tasks
+- =SPC o o a c p= - @phone tasks
+
+** Roam Integration
+
+*** Link Knowledge to Action
+1. In a roam note, press =SPC o o x r t=
+2. Creates task linked to knowledge
+3. Jump between with =C-c r=
+
+*** Process Actionable Notes
+1. Tag roam notes as =:actionable:=
+2. Run =SPC o o x r p= to process
+3. Converts marked items to tasks
+
+* Quick Reference Card
+
+** Essential Shortcuts
+
+*** Capture (SPC o o c)
+- =i= - Inbox
+- =t= - Task (context-aware)
+- =n= - Quick note
+- =p= - Project
+- =m= - Meeting
+
+*** Agenda (SPC o o a)
+- =w= - Work dashboard
+- =p= - Personal dashboard
+- =u= - Unified view
+- =f= - Focus (top 3)
+
+*** Go To (SPC o o g)
+- =i= - Inbox
+- =g= - GTD (context)
+- =p= - Projects
+
+*** Mode (SPC o o m)
+- =w= - Work mode
+- =p= - Personal mode
+- =u= - Unified mode
+
+*** Review (SPC o o R)
+- =w= - Weekly review
+- =d= - Daily review
+
+** In Agenda View
+
+| Key | Action        | Key | Action         |
+|-----+---------------+-----+----------------|
+| j/k | Navigate      | t   | Change state   |
+| RET | Go to task    | :   | Set tags       |
+| s   | Schedule      | d   | Set deadline   |
+| I   | Clock in      | O   | Clock out      |
+| m   | Mark          | u   | Unmark         |
+| B   | Bulk action   | r   | Refresh        |
+| /   | Filter        | \   | Clear filters  |
+| v   | View options  | q   | Quit           |
+
+* Troubleshooting
+
+** Common Issues
+
+*** "Can't find org files"
+- Run =(rk/create-gtd-structure)= in Spacemacs
+- Check =rk/org-directory= is set correctly
+
+*** "Capture templates not working"
+- Ensure you're in the right context mode
+- Check if files exist with =SPC o o g i=
+
+*** "Agenda is empty"
+- Check context mode matches your tasks
+- Refresh with =g= or =r= in agenda
+- Verify files in org-agenda-files
+
+*** "Refile not finding targets"
+- Build cache with =C-0 C-c C-w=
+- Check refile targets configuration
+
+** Getting Help
+
+1. This tutorial: =SPC o o g t=
+2. User guide: =SPC o o g u=  
+3. Check configuration: =SPC f e d=
+4. Reload config: =SPC f e R=
+
+* Next Steps
+
+Congratulations! You now know the essentials of your GTD system.
+
+** Continue Learning
+- Read the comprehensive user guide
+- Customize capture templates
+- Create custom agenda views
+- Integrate with other tools
+
+** Remember
+- GTD is about *trust* - capture everything
+- GTD is about *clarity* - process regularly  
+- GTD is about *focus* - review weekly
+- GTD is about *action* - do the work!
+
+Happy organizing! 🎯

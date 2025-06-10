@@ -1,19 +1,6 @@
-#+TITLE: CodeLahoma Org Mode Extensions
-#+AUTHOR: Rod Knowlton
-#+EMAIL: codelahoma@gmail.com
-#+DATE: [2025-01-08 Wed]
-#+STARTUP: overview
-#+PROPERTY: header-args:emacs-lisp :tangle ~/.spacemacs.d/codelahoma-org.el :comments both
+;; Directory and File Management
 
-* Introduction
-
-This file contains custom org-mode extensions and utilities for the CodeLahoma GTD system.
-The code is tangled to =codelahoma-org.el= and automatically loaded by the main Spacemacs configuration.
-
-* GTD System Core Functions
-
-** Directory and File Management
-#+begin_src emacs-lisp
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Directory and File Management][Directory and File Management:1]]
 ;; Legacy org directory for backward compatibility
 (defvar rk/org-directory "~/personal/org-files/"
   "Base directory for all org files")
@@ -111,10 +98,11 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
           (message "❌ Missing directories: %s" (string-join missing-dirs ", ")))
         (when missing-files
           (message "❌ Missing files: %s" (string-join missing-files ", ")))))))
-#+end_src
+;; Directory and File Management:1 ends here
 
-** GTD TODO Keywords and State Management
-#+begin_src emacs-lisp
+;; GTD TODO Keywords and State Management
+
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*GTD TODO Keywords and State Management][GTD TODO Keywords and State Management:1]]
 ;; ======================================
 ;; GTD TODO Keywords and State Management
 ;; ======================================
@@ -216,10 +204,11 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
 ;; Fast tag selection
 (setq org-fast-tag-selection-single-key t
       org-use-fast-todo-selection t)
-#+end_src
+;; GTD TODO Keywords and State Management:1 ends here
 
-** GTD Archive Configuration
-#+begin_src emacs-lisp
+;; GTD Archive Configuration
+
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*GTD Archive Configuration][GTD Archive Configuration:1]]
 ;; ======================================
 ;; GTD Archive Configuration
 ;; ======================================
@@ -338,10 +327,11 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
     
     (switch-to-buffer test-buffer)
     (message "✅ Test buffer created. Try: (rk/archive-done-tasks) or (rk/validate-archive-structure)")))
-#+end_src
+;; GTD Archive Configuration:1 ends here
 
-** GTD Capture Templates Configuration
-#+begin_src emacs-lisp
+;; GTD Capture Templates Configuration
+
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*GTD Capture Templates Configuration][GTD Capture Templates Configuration:1]]
 ;; ======================================
 ;; GTD Capture Templates Configuration
 ;; ======================================
@@ -466,10 +456,11 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
   "Quickly capture personal task."
   (interactive)
   (org-capture nil "pt"))
-#+end_src
+;; GTD Capture Templates Configuration:1 ends here
 
-** GTD Custom Agenda Commands
-#+begin_src emacs-lisp
+;; GTD Custom Agenda Commands
+
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*GTD Custom Agenda Commands][GTD Custom Agenda Commands:1]]
 ;; ======================================
 ;; GTD Custom Agenda Commands
 ;; ======================================
@@ -642,10 +633,11 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
      ((string= choice "Personal") (rk/agenda-personal-dashboard))
      ((string= choice "Unified") (rk/agenda-unified-dashboard))
      ((string= choice "Inbox Processing") (rk/agenda-inbox-processing)))))
-#+end_src
+;; GTD Custom Agenda Commands:1 ends here
 
-** GTD Refile Configuration
-#+begin_src emacs-lisp
+;; GTD Refile Configuration
+
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*GTD Refile Configuration][GTD Refile Configuration:1]]
 ;; ======================================
 ;; GTD Refile Configuration
 ;; ======================================
@@ -810,10 +802,11 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
 (advice-add 'org-refile :after
             (lambda (&optional arg default-buffer rfloc redisplay-agenda)
               (when rfloc (rk/add-to-refile-history rfloc))))
-#+end_src
+;; GTD Refile Configuration:1 ends here
 
-** GTD Context Switching System
-#+begin_src emacs-lisp
+;; GTD Context Switching System
+
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*GTD Context Switching System][GTD Context Switching System:1]]
 ;; ======================================
 ;; GTD Context Switching System
 ;; ======================================
@@ -1101,270 +1094,271 @@ Current Mode: %s
         (message "⚠️ Missing GTD files: %s" 
                  (mapconcat #'file-name-nondirectory missing-files ", "))
       (message "✅ All GTD context files are present and accessible"))))
-#+end_src
+;; GTD Context Switching System:1 ends here
 
-** GTD Unified Keybinding System
-#+begin_src emacs-lisp
-  ;; ======================================
-  ;; GTD Unified Keybinding System
-  ;; ======================================
+;; GTD Unified Keybinding System
 
-  ;; Enhanced keybinding setup function
-  (defun rk/setup-gtd-keybindings ()
-    "Set up comprehensive GTD keybindings under SPC o o prefix."
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*GTD Unified Keybinding System][GTD Unified Keybinding System:1]]
+;; ======================================
+;; GTD Unified Keybinding System
+;; ======================================
 
-    ;; Main GTD prefix
-    (spacemacs/declare-prefix "oo" "GTD")
-
-    ;; Core GTD operations
-    (spacemacs/declare-prefix "ooc" "capture")
-    (spacemacs/set-leader-keys
-      "ooci" 'rk/capture-inbox
-      "oocw" 'rk/capture-work-task
-      "oocp" 'rk/capture-personal-task
-      "ooct" 'rk/org-context-aware-capture
-      "oocn" 'rk/capture-note
-      "oocC" 'org-capture)  ; Standard capture with all templates
-
-    ;; Agenda operations
-    (spacemacs/declare-prefix "ooa" "agenda")
-    (spacemacs/set-leader-keys
-      "ooad" 'rk/org-context-dashboard     ; Context-aware dashboard
-      "ooaw" 'rk/agenda-work-dashboard     ; Work dashboard
-      "ooap" 'rk/agenda-personal-dashboard ; Personal dashboard
-      "ooau" 'rk/agenda-unified-dashboard  ; Unified dashboard
-      "ooai" 'rk/agenda-inbox-processing   ; Inbox processing
-      "ooaf" (lambda () (interactive) (org-agenda nil "f"))  ; Focus mode
-      "ooae" (lambda () (interactive) (org-agenda nil "eh")) ; High energy
-      "ooas" (lambda () (interactive) (org-agenda nil "s"))  ; Stalled items
-      "ooaP" (lambda () (interactive) (org-agenda nil "P"))  ; Project overview
-      "ooaa" 'org-agenda)  ; Standard agenda
-
-    ;; File navigation
-    (spacemacs/declare-prefix "oog" "goto")
-    (spacemacs/set-leader-keys
-      "oogi" 'rk/org-goto-inbox
-      "oogw" (lambda () (interactive) (find-file (rk/org-file "gtd.org" "work")))
-      "oogp" (lambda () (interactive) (find-file (rk/org-file "gtd.org" "personal")))
-      "oogW" (lambda () (interactive) (find-file (rk/org-file "projects.org" "work")))
-      "oogP" (lambda () (interactive) (find-file (rk/org-file "projects.org" "personal")))
-      "oogs" (lambda () (interactive) (find-file (rk/org-file "someday.org" "work")))
-      "oogS" (lambda () (interactive) (find-file (rk/org-file "someday.org" "personal")))
-      "ooga" (lambda () (interactive) (find-file (rk/org-file "archive.org")))
-      "oogg" 'rk/org-goto-context-gtd      ; Context-aware GTD file
-      "oogj" 'rk/org-goto-context-projects ; Context-aware projects file
-      "oogf" 'rk/switch-dashboard          ; Quick dashboard switching
-      "oogt" (lambda () (interactive) (find-file (rk/org-file "gtd-tutorial.org")))    ; GTD Tutorial
-      "oogu" (lambda () (interactive) (find-file (rk/org-file "gtd-users-guide.org")))) ; GTD User Guide
-
-    ;; Help
-    (spacemacs/declare-prefix "ooh" "help")
-    (spacemacs/set-leader-keys
-      "ooh" 'rk/org-gtd-cheatsheet
-      "oo?" 'rk/org-gtd-cheatsheet)
-
-    ;; Mode switching
-    (spacemacs/declare-prefix "oom" "mode")
-    (spacemacs/set-leader-keys
-      "oomw" 'rk/org-work-mode      ; Work-only mode
-      "oomp" 'rk/org-personal-mode  ; Personal-only mode
-      "oomu" 'rk/org-unified-mode   ; Unified mode
-      "ooms" 'rk/org-context-status ; Show current status
-      "oomh" 'rk/org-context-hydra/body  ; Context switching hydra
-      "oomv" 'rk/org-validate-context-files  ; Validate files
-      "oomS" 'rk/org-show-context-status))   ; Visual status display
-
-  ;; Context-aware keybinding helpers
-  (defun rk/gtd-context-keybinding-hint (base-hint)
-    "Add context information to keybinding hints."
-    (let ((context-desc (rk/org-current-context)))
-      (format "%s [%s mode]" base-hint context-desc)))
-
-  ;; Dynamic keybinding descriptions
-  (defun rk/setup-dynamic-descriptions ()
-    "Set up context-aware keybinding descriptions."
-    (spacemacs/set-leader-keys
-      "oocc" `(rk/org-context-aware-capture
-               ,(rk/gtd-context-keybinding-hint "context capture"))
-      "ooad" `(rk/org-context-dashboard
-               ,(rk/gtd-context-keybinding-hint "context dashboard"))
-      "oogg" `(rk/org-goto-context-gtd
-               ,(rk/gtd-context-keybinding-hint "context GTD file"))
-      "oogj" `(rk/org-goto-context-projects
-               ,(rk/gtd-context-keybinding-hint "context projects"))))
-
-  ;; Quick access functions for common workflows
-  (defun rk/gtd-quick-capture ()
-    "Quick capture with smart context awareness."
-    (interactive)
-    (cond
-     ((eq rk/org-context-mode 'work)
-      (org-capture nil "wt"))  ; Work task
-     ((eq rk/org-context-mode 'personal)
-      (org-capture nil "pt"))  ; Personal task
-     (t
-      (rk/org-context-aware-capture))))  ; Smart selection
-
-  (defun rk/gtd-quick-agenda ()
-    "Quick agenda with smart context awareness."
-    (interactive)
-    (rk/org-context-dashboard))
-
-  (defun rk/gtd-quick-goto ()
-    "Quick goto with smart context awareness."
-    (interactive)
-    (rk/org-goto-context-gtd))
-
-  ;; Super quick access bindings
+;; Enhanced keybinding setup function
+(defun rk/setup-gtd-keybindings ()
+  "Set up comprehensive GTD keybindings under SPC o o prefix."
+  
+  ;; Main GTD prefix
+  (spacemacs/declare-prefix "oo" "GTD")
+  
+  ;; Core GTD operations
+  (spacemacs/declare-prefix "ooc" "capture")
+  (spacemacs/set-leader-keys 
+    "ooci" 'rk/capture-inbox
+    "oocw" 'rk/capture-work-task  
+    "oocp" 'rk/capture-personal-task
+    "oocn" 'rk/capture-note
+    "oocC" 'org-capture)  ; Standard capture with all templates
+  
+  ;; Agenda operations
+  (spacemacs/declare-prefix "ooa" "agenda")
   (spacemacs/set-leader-keys
-    "ooo" 'rk/gtd-quick-capture   ; Super quick capture
-    "oo SPC" 'rk/gtd-quick-agenda ; Super quick agenda
-    "oo RET" 'rk/gtd-quick-goto)  ; Super quick goto
-
-  ;; ======================================
-  ;; GTD Extended Operations Keybindings
-  ;; ======================================
-
-  ;; Refile operations
-  (spacemacs/declare-prefix "oor" "refile")
+    "ooad" 'rk/org-context-dashboard     ; Context-aware dashboard
+    "ooaw" 'rk/agenda-work-dashboard     ; Work dashboard
+    "ooap" 'rk/agenda-personal-dashboard ; Personal dashboard
+    "ooau" 'rk/agenda-unified-dashboard  ; Unified dashboard
+    "ooai" 'rk/agenda-inbox-processing   ; Inbox processing
+    "ooaf" (lambda () (interactive) (org-agenda nil "f"))  ; Focus mode
+    "ooae" (lambda () (interactive) (org-agenda nil "eh")) ; High energy
+    "ooas" (lambda () (interactive) (org-agenda nil "s"))  ; Stalled items
+    "ooaP" (lambda () (interactive) (org-agenda nil "P"))  ; Project overview
+    "ooaa" 'org-agenda)  ; Standard agenda
+  
+  ;; File navigation  
+  (spacemacs/declare-prefix "oog" "goto")
   (spacemacs/set-leader-keys
-    "oord" 'org-refile
-    "oora" 'rk/smart-refile         ; Smart context-aware refile
-    "oorw" 'rk/refile-to-work-gtd
-    "oorp" 'rk/refile-to-personal-gtd
-    "oorW" 'rk/refile-to-work-projects
-    "oorP" 'rk/refile-to-personal-projects
-    "oors" 'rk/refile-to-someday
-    "oorr" 'rk/refile-to-recent     ; Recent refile targets
-    "oorb" 'rk/bulk-refile-done-items
-    "oorv" 'org-archive-subtree)   ; Quick archive
-
-  ;; Clock operations
-  (spacemacs/declare-prefix "ook" "clock")
-  (spacemacs/set-leader-keys
-    "ooki" 'org-clock-in
-    "ooko" 'org-clock-out
-    "ookj" 'org-clock-goto
-    "ookl" 'org-clock-in-last
-    "ookr" 'org-clock-report
-    "ookd" 'org-clock-display
-    "ookc" 'org-clock-cancel
-    "ooke" 'org-evaluate-time-range
-    "ookt" 'org-timer-start
-    "ookT" 'org-timer-stop)
-
-  ;; Review operations
-  (spacemacs/declare-prefix "ooR" "review")
-  (spacemacs/set-leader-keys
-    "ooRw" 'rk/org-weekly-review
-    "ooRd" 'rk/org-daily-agenda
-    "ooRp" 'rk/org-review-inbox
-    "ooRs" (lambda () (interactive) (org-agenda nil "s"))  ; Stalled items
-    "ooRa" 'rk/archive-done-tasks
-    "ooRv" 'rk/validate-gtd-structure
-    "ooRo" 'rk/archive-old-tasks)
-
-  ;; Archive operations
-  (spacemacs/declare-prefix "ooA" "archive")
-  (spacemacs/set-leader-keys
-    "ooAa" 'org-archive-subtree
-    "ooAd" 'rk/archive-done-tasks
-    "ooAo" 'rk/archive-old-tasks
-    "ooAv" 'rk/validate-archive-structure
-    "ooAc" 'rk/clean-empty-archive-sections
-    "ooAt" 'rk/test-archive-system
-    "ooAf" (lambda () (interactive) (find-file (rk/org-file "archive.org"))))
-
-  ;; Extensions integration (updated for full functionality)
-  (spacemacs/declare-prefix "oox" "extensions")
-  (spacemacs/set-leader-keys
-    "ooxt" 'rk/tangle-and-load-codelahoma-org
-    "ooxr" 'rk/load-codelahoma-org-config
-    "ooxp" 'rk/org-create-project-template
-    "ooxw" 'rk/org-weekly-report
-    "ooxc" 'switch-org-colors
-    "ooxC" 'preview-org-colors
-    "ooxb" 'rk/switch-org-bullets
-    "ooxB" 'rk/preview-org-bullets
-    "ooxm" 'rk/org-capture-meeting-notes
-    "ooxd" 'rk/org-capture-decision)
-
-  ;; Claude AI integration
-  (spacemacs/declare-prefix "ooxA" "claude")
-  (spacemacs/set-leader-keys
-    "ooxAm" 'rk/ask-claude-about-gtd-manual
-    "ooxAt" 'rk/ask-claude-about-gtd-tutorial
-    "ooxAs" 'rk/start-claude-gtd-conversation
-    "ooxAc" 'rk/continue-claude-gtd-conversation
-    "ooxAq" 'rk/ask-claude-quick-gtd)
-
-  ;; Help and discovery functions
-  (defun rk/org-gtd-cheatsheet ()
-    "Display org-gtd keybinding cheatsheet."
-    (interactive)
-    (let ((cheatsheet "
-  ORG-GTD KEYBINDINGS (SPC o o ...)
-
-  CAPTURE (c):            AGENDA (a):           GO TO FILE (g):
-    c   - capture           a   - agenda list     i   - inbox
-    c i - inbox            w   - work view       g   - gtd (context)
-    c t - task (context)   p   - personal view   p   - projects (context)
-    c p - project          u   - unified view    w   - work gtd
-    c n - quick note       f   - focus (top 3)   W   - work projects
-                           s   - stalled items   P   - personal projects
-
-  MODE (m):              REFILE (r):           CLOCK (k):
-    w   - work mode        r   - refile          i   - clock in
-    p   - personal mode    a   - smart refile    o   - clock out
-    u   - unified mode     w   - to work         j   - jump to clock
-    s   - status           p   - to personal     l   - clock in last
-    h   - mode hydra       s   - to someday      r   - clock report
-
-  REVIEW (R):            ARCHIVE (A):          EXTENSIONS (x):
-    w   - weekly review    a   - archive task    t   - tangle config
-    d   - daily agenda     d   - archive done    r   - reload config
-    p   - process inbox    o   - archive old     p   - project template
-    s   - stalled items    v   - validate        w   - weekly report
-                           f   - go to archive   c   - switch colors
-
-  QUICK ACCESS:
-    o   - quick capture    SPC - quick agenda    RET - quick goto
-
-  Current Mode: %s
-  "))
-      (with-output-to-temp-buffer "*Org-GTD Cheatsheet*"
-        (princ (format cheatsheet
-                       (upcase (symbol-name rk/org-context-mode)))))))
-
-  (defun rk/org-gtd-which-key-help ()
-    "Show which-key help for org-gtd keybindings."
-    (interactive)
-    (which-key-show-keymap 'spacemacs-default-map "SPC o o"))
-
-  ;; Help keybindings
+    "oogi" 'rk/org-goto-inbox
+    "oogw" (lambda () (interactive) (find-file (rk/org-file "gtd.org" "work")))
+    "oogp" (lambda () (interactive) (find-file (rk/org-file "gtd.org" "personal")))
+    "oogW" (lambda () (interactive) (find-file (rk/org-file "projects.org" "work")))
+    "oogP" (lambda () (interactive) (find-file (rk/org-file "projects.org" "personal")))
+    "oogs" (lambda () (interactive) (find-file (rk/org-file "someday.org" "work")))
+    "oogS" (lambda () (interactive) (find-file (rk/org-file "someday.org" "personal")))
+    "ooga" (lambda () (interactive) (find-file (rk/org-file "archive.org")))
+    "oogg" 'rk/org-goto-context-gtd      ; Context-aware GTD file
+    "oogj" 'rk/org-goto-context-projects ; Context-aware projects file
+    "oogf" 'rk/switch-dashboard          ; Quick dashboard switching
+    "oogt" (lambda () (interactive) (find-file (rk/org-file "gtd-tutorial.org")))    ; GTD Tutorial
+    "oogu" (lambda () (interactive) (find-file (rk/org-file "gtd-users-guide.org")))) ; GTD User Guide
+  
+  ;; Help
+  (spacemacs/declare-prefix "ooh" "help")
   (spacemacs/set-leader-keys
     "ooh" 'rk/org-gtd-cheatsheet
-    "oo?" 'rk/org-gtd-cheatsheet
-    "ooH" 'rk/org-gtd-which-key-help)
+    "oo?" 'rk/org-gtd-cheatsheet)
+  
+  ;; Mode switching
+  (spacemacs/declare-prefix "oom" "mode")
+  (spacemacs/set-leader-keys
+    "oomw" 'rk/org-work-mode      ; Work-only mode
+    "oomp" 'rk/org-personal-mode  ; Personal-only mode  
+    "oomu" 'rk/org-unified-mode   ; Unified mode
+    "ooms" 'rk/org-context-status ; Show current status
+    "oomh" 'rk/org-context-hydra/body  ; Context switching hydra
+    "oomv" 'rk/org-validate-context-files  ; Validate files
+    "oomS" 'rk/org-show-context-status))   ; Visual status display
 
-  ;; Which-key descriptions for extended bindings
-  (defun rk/setup-extended-which-key-descriptions ()
-    "Set up which-key descriptions for all GTD keybindings."
-    (which-key-add-key-based-replacements
-      "SPC o o" "org-gtd"
-      "SPC o o c" "capture"
-      "SPC o o a" "agenda"
-      "SPC o o g" "goto"
-      "SPC o o m" "mode"
-      "SPC o o r" "refile"
-      "SPC o o k" "clock"
-      "SPC o o R" "review"
-      "SPC o o A" "archive"
-      "SPC o o x" "extensions"))
-#+end_src
+;; Context-aware keybinding helpers
+(defun rk/gtd-context-keybinding-hint (base-hint)
+  "Add context information to keybinding hints."
+  (let ((context-desc (rk/org-current-context)))
+    (format "%s [%s mode]" base-hint context-desc)))
 
-** GTD Navigation Functions
-#+begin_src emacs-lisp
+;; Dynamic keybinding descriptions
+(defun rk/setup-dynamic-descriptions ()
+  "Set up context-aware keybinding descriptions."
+  (spacemacs/set-leader-keys 
+    "oocc" `(rk/org-context-aware-capture 
+             ,(rk/gtd-context-keybinding-hint "context capture"))
+    "ooad" `(rk/org-context-dashboard 
+             ,(rk/gtd-context-keybinding-hint "context dashboard"))
+    "oogg" `(rk/org-goto-context-gtd 
+             ,(rk/gtd-context-keybinding-hint "context GTD file"))
+    "oogj" `(rk/org-goto-context-projects 
+             ,(rk/gtd-context-keybinding-hint "context projects"))))
+
+;; Quick access functions for common workflows
+(defun rk/gtd-quick-capture ()
+  "Quick capture with smart context awareness."
+  (interactive)
+  (cond
+   ((eq rk/org-context-mode 'work)
+    (org-capture nil "wt"))  ; Work task
+   ((eq rk/org-context-mode 'personal)
+    (org-capture nil "pt"))  ; Personal task
+   (t
+    (rk/org-context-aware-capture))))  ; Smart selection
+
+(defun rk/gtd-quick-agenda ()
+  "Quick agenda with smart context awareness."
+  (interactive)
+  (rk/org-context-dashboard))
+
+(defun rk/gtd-quick-goto ()
+  "Quick goto with smart context awareness."
+  (interactive)
+  (rk/org-goto-context-gtd))
+
+;; Super quick access bindings
+(spacemacs/set-leader-keys
+  "ooo" 'rk/gtd-quick-capture   ; Super quick capture
+  "oo SPC" 'rk/gtd-quick-agenda ; Super quick agenda
+  "oo RET" 'rk/gtd-quick-goto)  ; Super quick goto
+
+;; ======================================
+;; GTD Extended Operations Keybindings
+;; ======================================
+
+;; Refile operations
+(spacemacs/declare-prefix "oor" "refile")
+(spacemacs/set-leader-keys
+  "oord" 'org-refile
+  "oora" 'rk/smart-refile         ; Smart context-aware refile
+  "oorw" 'rk/refile-to-work-gtd
+  "oorp" 'rk/refile-to-personal-gtd
+  "oorW" 'rk/refile-to-work-projects
+  "oorP" 'rk/refile-to-personal-projects
+  "oors" 'rk/refile-to-someday
+  "oorr" 'rk/refile-to-recent     ; Recent refile targets
+  "oorb" 'rk/bulk-refile-done-items
+  "oorv" 'org-archive-subtree)   ; Quick archive
+
+;; Clock operations
+(spacemacs/declare-prefix "ook" "clock")
+(spacemacs/set-leader-keys
+  "ooki" 'org-clock-in
+  "ooko" 'org-clock-out
+  "ookj" 'org-clock-goto
+  "ookl" 'org-clock-in-last
+  "ookr" 'org-clock-report
+  "ookd" 'org-clock-display
+  "ookc" 'org-clock-cancel
+  "ooke" 'org-evaluate-time-range
+  "ookt" 'org-timer-start
+  "ookT" 'org-timer-stop)
+
+;; Review operations
+(spacemacs/declare-prefix "ooR" "review")
+(spacemacs/set-leader-keys
+  "ooRw" 'rk/org-weekly-review
+  "ooRd" 'rk/org-daily-agenda
+  "ooRp" 'rk/org-review-inbox
+  "ooRs" (lambda () (interactive) (org-agenda nil "s"))  ; Stalled items
+  "ooRa" 'rk/archive-done-tasks
+  "ooRv" 'rk/validate-gtd-structure
+  "ooRo" 'rk/archive-old-tasks)
+
+;; Archive operations
+(spacemacs/declare-prefix "ooA" "archive")
+(spacemacs/set-leader-keys
+  "ooAa" 'org-archive-subtree
+  "ooAd" 'rk/archive-done-tasks
+  "ooAo" 'rk/archive-old-tasks
+  "ooAv" 'rk/validate-archive-structure
+  "ooAc" 'rk/clean-empty-archive-sections
+  "ooAt" 'rk/test-archive-system
+  "ooAf" (lambda () (interactive) (find-file (rk/org-file "archive.org"))))
+
+;; Extensions integration (updated for full functionality)
+(spacemacs/declare-prefix "oox" "extensions")
+(spacemacs/set-leader-keys
+  "ooxt" 'rk/tangle-and-load-codelahoma-org
+  "ooxr" 'rk/load-codelahoma-org-config
+  "ooxp" 'rk/org-create-project-template
+  "ooxw" 'rk/org-weekly-report
+  "ooxc" 'switch-org-colors
+  "ooxC" 'preview-org-colors
+  "ooxb" 'rk/switch-org-bullets
+  "ooxB" 'rk/preview-org-bullets
+  "ooxm" 'rk/org-capture-meeting-notes
+  "ooxd" 'rk/org-capture-decision)
+
+;; Claude AI integration
+(spacemacs/declare-prefix "ooxA" "claude")
+(spacemacs/set-leader-keys
+  "ooxAm" 'rk/ask-claude-about-gtd-manual
+  "ooxAt" 'rk/ask-claude-about-gtd-tutorial
+  "ooxAs" 'rk/start-claude-gtd-conversation
+  "ooxAc" 'rk/continue-claude-gtd-conversation
+  "ooxAq" 'rk/ask-claude-quick-gtd)
+
+;; Help and discovery functions
+(defun rk/org-gtd-cheatsheet ()
+  "Display org-gtd keybinding cheatsheet."
+  (interactive)
+  (let ((cheatsheet "
+ORG-GTD KEYBINDINGS (SPC o o ...)
+
+CAPTURE (c):            AGENDA (a):           GO TO FILE (g):
+  c   - capture           a   - agenda list     i   - inbox
+  c i - inbox            w   - work view       g   - gtd (context)
+  c t - task (context)   p   - personal view   p   - projects (context)
+  c p - project          u   - unified view    w   - work gtd
+  c n - quick note       f   - focus (top 3)   W   - work projects
+                         s   - stalled items   P   - personal projects
+
+MODE (m):              REFILE (r):           CLOCK (k):
+  w   - work mode        r   - refile          i   - clock in
+  p   - personal mode    a   - smart refile    o   - clock out
+  u   - unified mode     w   - to work         j   - jump to clock
+  s   - status           p   - to personal     l   - clock in last
+  h   - mode hydra       s   - to someday      r   - clock report
+
+REVIEW (R):            ARCHIVE (A):          EXTENSIONS (x):
+  w   - weekly review    a   - archive task    t   - tangle config
+  d   - daily agenda     d   - archive done    r   - reload config
+  p   - process inbox    o   - archive old     p   - project template
+  s   - stalled items    v   - validate        w   - weekly report
+                         f   - go to archive   c   - switch colors
+
+QUICK ACCESS:
+  o   - quick capture    SPC - quick agenda    RET - quick goto
+
+Current Mode: %s
+"))
+    (with-output-to-temp-buffer "*Org-GTD Cheatsheet*"
+      (princ (format cheatsheet 
+                     (upcase (symbol-name rk/org-context-mode)))))))
+
+(defun rk/org-gtd-which-key-help ()
+  "Show which-key help for org-gtd keybindings."
+  (interactive)
+  (which-key-show-keymap 'spacemacs-default-map "SPC o o"))
+
+;; Help keybindings
+(spacemacs/set-leader-keys
+  "ooh" 'rk/org-gtd-cheatsheet
+  "oo?" 'rk/org-gtd-cheatsheet
+  "ooH" 'rk/org-gtd-which-key-help)
+
+;; Which-key descriptions for extended bindings
+(defun rk/setup-extended-which-key-descriptions ()
+  "Set up which-key descriptions for all GTD keybindings."
+  (which-key-add-key-based-replacements
+    "SPC o o" "org-gtd"
+    "SPC o o c" "capture"
+    "SPC o o a" "agenda"
+    "SPC o o g" "goto"
+    "SPC o o m" "mode"
+    "SPC o o r" "refile"
+    "SPC o o k" "clock"
+    "SPC o o R" "review"
+    "SPC o o A" "archive"
+    "SPC o o x" "extensions"))
+;; GTD Unified Keybinding System:1 ends here
+
+;; GTD Navigation Functions
+
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*GTD Navigation Functions][GTD Navigation Functions:1]]
 (defun rk/org-goto-inbox ()
   "Go to inbox file."
   (interactive)
@@ -1384,10 +1378,11 @@ Current Mode: %s
   "Go to projects file."
   (interactive)
   (find-file (rk/org-file "projects.org")))
-#+end_src
+;; GTD Navigation Functions:1 ends here
 
-** GTD Review and Agenda Functions
-#+begin_src emacs-lisp
+;; GTD Review and Agenda Functions
+
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*GTD Review and Agenda Functions][GTD Review and Agenda Functions:1]]
 (defun rk/org-review-inbox ()
   "Review and process inbox items."
   (interactive)
@@ -1403,12 +1398,11 @@ Current Mode: %s
   "Show unified daily agenda."
   (interactive)
   (org-agenda nil "u"))
-#+end_src
+;; GTD Review and Agenda Functions:1 ends here
 
-* Appearance and Styling Functions
+;; Org Heading Color Schemes
 
-** Org Heading Color Schemes
-#+begin_src emacs-lisp
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Org Heading Color Schemes][Org Heading Color Schemes:1]]
 (defvar org-heading-colors-schemes
   '(("Arctic"    . ("LightCyan" "AliceBlue" "LavenderBlue" "GhostWhite" "LightSteelBlue"))
     ("Autumn"    . ("OrangeRed" "DarkGoldenrod" "Sienna" "Peru" "Wheat4"))
@@ -1500,10 +1494,11 @@ SCHEME-NAME should be one of the defined color schemes."
      `(org-done ((t (,@headline :foreground ,(nth 4 colors))))))
 
     (message "Switched to %s color scheme" scheme-name)))
-#+end_src
+;; Org Heading Color Schemes:1 ends here
 
-** Org Bullet Schemes
-#+begin_src emacs-lisp
+;; Org Bullet Schemes
+
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Org Bullet Schemes][Org Bullet Schemes:1]]
 (defvar rk/org-bullet-schemes
   '(("Geometric" . ("◉" "○" "◈" "◇"))
     ("Natural"   . ("❋" "✿" "❀" "✤"))
@@ -1556,12 +1551,11 @@ SCHEME-NAME should be one of the defined color schemes."
           (dolist (bullet bullets)
             (insert (format "  %s %s\n" bullet bullet))))
         (insert "\n")))))
-#+end_src
+;; Org Bullet Schemes:1 ends here
 
-* Integration Functions
+;; Elfeed Integration
 
-** Elfeed Integration
-#+begin_src emacs-lisp
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Elfeed Integration][Elfeed Integration:1]]
 (defun elfeed-save-to-org-roam-dailies ()
   "Save the current elfeed entry to org-roam dailies."
   (interactive)
@@ -1580,12 +1574,11 @@ SCHEME-NAME should be one of the defined color schemes."
       (insert (concat "[[" link "][" link "]]\n\n"))
       (insert (concat content "\n"))
       (save-buffer))))
-#+end_src
+;; Elfeed Integration:1 ends here
 
-* Development and Utility Functions
+;; Custom Spacemacs Config Helper
 
-** Custom Spacemacs Config Helper
-#+begin_src emacs-lisp
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Custom Spacemacs Config Helper][Custom Spacemacs Config Helper:1]]
 (defun rk/insert-spacemacs-config-block ()
   "Insert org-babel source block for Spacemacs config."
   (interactive)
@@ -1607,10 +1600,11 @@ SCHEME-NAME should be one of the defined color schemes."
           (unless (member target targets)
             (push target targets)))))
     targets))
-#+end_src
+;; Custom Spacemacs Config Helper:1 ends here
 
-** Project and Org Management Utilities
-#+begin_src emacs-lisp
+;; Project and Org Management Utilities
+
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Project and Org Management Utilities][Project and Org Management Utilities:1]]
 (defun rk/org-create-project-template ()
   "Create a new project with standard structure."
   (interactive)
@@ -1648,10 +1642,11 @@ SCHEME-NAME should be one of the defined color schemes."
       ;; For now, just show the buffer
       (org-mode))
     (display-buffer report-buffer)))
-#+end_src
+;; Project and Org Management Utilities:1 ends here
 
-** Advanced Capture Functions
-#+begin_src emacs-lisp
+;; Advanced Capture Functions
+
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Advanced Capture Functions][Advanced Capture Functions:1]]
 (defun rk/org-capture-meeting-notes ()
   "Capture meeting notes with attendees and agenda."
   (interactive)
@@ -1676,10 +1671,11 @@ SCHEME-NAME should be one of the defined color schemes."
              decision-topic
              context)
      "i")))
-#+end_src
+;; Advanced Capture Functions:1 ends here
 
-** Claude AI Integration Functions
-#+begin_src emacs-lisp
+;; Claude AI Integration Functions
+
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Claude AI Integration Functions][Claude AI Integration Functions:1]]
 (defun rk/ask-claude-about-gtd-manual ()
   "Ask Claude about the GTD users guide using the CLI with continuing conversation."
   (interactive)
@@ -1787,12 +1783,11 @@ SCHEME-NAME should be one of the defined color schemes."
               (goto-char (point-min)))
             (display-buffer output-buffer)))
       (message "GTD users guide not found at %s" users-guide))))
-#+end_src
+;; Claude AI Integration Functions:1 ends here
 
-* Configuration and Setup Functions
+;; System Configuration Loader
 
-** System Configuration Loader
-#+begin_src emacs-lisp
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*System Configuration Loader][System Configuration Loader:1]]
 (defun rk/load-codelahoma-org-config ()
   "Load the codelahoma-org configuration if the file exists."
   (let ((config-file (expand-file-name "~/.spacemacs.d/codelahoma-org.el")))
@@ -1813,12 +1808,11 @@ SCHEME-NAME should be one of the defined color schemes."
       (when (file-exists-p el-file)
         (load-file el-file)
         (message "Tangled and loaded CodeLahoma org extensions")))))
-#+end_src
+;; System Configuration Loader:1 ends here
 
-* Keybinding Setup
+;; Custom Keybindings for Extensions
 
-** Custom Keybindings for Extensions
-#+begin_src emacs-lisp
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Custom Keybindings for Extensions][Custom Keybindings for Extensions:1]]
 (defun rk/setup-codelahoma-org-keybindings ()
   "Set up keybindings for CodeLahoma org extensions."
   ;; Declare extensions prefix
@@ -1849,12 +1843,11 @@ SCHEME-NAME should be one of the defined color schemes."
   
   ;; System maintenance
   (spacemacs/set-leader-keys "ooxt" 'rk/tangle-and-load-codelahoma-org))
-#+end_src
+;; Custom Keybindings for Extensions:1 ends here
 
-* Auto-loading Hook
+;; Initialize Extensions
 
-** Initialize Extensions
-#+begin_src emacs-lisp
+;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Initialize Extensions][Initialize Extensions:1]]
 ;; Auto-setup when org-mode loads
 (with-eval-after-load 'org
   (rk/setup-codelahoma-org-keybindings)
@@ -1865,7 +1858,4 @@ SCHEME-NAME should be one of the defined color schemes."
 
 ;; Provide feature
 (provide 'codelahoma-org)
-#+end_src
-
----
-/CodeLahoma Org Mode Extensions - Modular org-mode enhancements/
+;; Initialize Extensions:1 ends here

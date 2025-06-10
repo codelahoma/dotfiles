@@ -349,7 +349,7 @@ if work_machines[machine] ~= nil then
   hotkey.bind(hyper, "g", appLauncher('Atlas Jupyter'))
   hotkey.bind(hyper, "h", appLauncher('Docker Desktop'))
   hotkey.bind(hyper, "i", appLauncher('iTerm'))
-  hotkey.bind(hyper, "j", appLauncher('/Applications/Emacs.app'))
+  hotkey.bind(hyper, "j", appLauncher('/Applications/Emacs'))
   hotkey.bind(magic, "j", appLauncher('Zed'))
   hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
   hotkey.bind(magic, "k", appLauncher('Marked'))

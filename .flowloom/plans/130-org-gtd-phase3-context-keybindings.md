@@ -303,7 +303,9 @@ _w_: Work Mode    _p_: Personal Mode    _u_: Unified Mode    _q_: quit
 (spacemacs/declare-prefix "oog" "go-to-file")
 (spacemacs/set-leader-keys
   "oogi" (lambda () (interactive) (find-file (rk/org-file "inbox.org")))
-  "ooga" (lambda () (interactive) (find-file (rk/org-file "archive.org"))))
+  "ooga" (lambda () (interactive) (find-file (rk/org-file "archive.org")))
+  "oogt" (lambda () (interactive) (find-file (rk/org-file "gtd-tutorial.org")))
+  "oogu" (lambda () (interactive) (find-file (rk/org-file "gtd-users-guide.org"))))
 
 ;; Context-aware file navigation
 (defun rk/goto-gtd ()
