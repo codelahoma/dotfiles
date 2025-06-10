@@ -1240,7 +1240,7 @@ before packages are loaded."
         org-agenda-include-deadlines t
         org-agenda-start-with-log-mode t)
   ;; Load custom org extensions if available
-  (let ((codelahoma-org-file (rk/org-file "codelahoma-org.el")))
+  (let ((codelahoma-org-file (expand-file-name "~/.spacemacs.d/codelahoma-org.el")))
     (when (file-exists-p codelahoma-org-file)
       (load-file codelahoma-org-file)
       (message "Loaded CodeLahoma org extensions from %s" codelahoma-org-file)))          ; Collects all general :noweb-ref user-config blocks
@@ -1277,26 +1277,9 @@ before packages are loaded."
   (spacemacs/declare-prefix "oa" "applications")
   (spacemacs/set-leader-keys
     "oap" 'pinboard)
-  ;; GTD Capture shortcuts
-  (spacemacs/declare-prefix "oo" "org")
-  (spacemacs/set-leader-keys "ooc" 'org-capture)
-  (spacemacs/set-leader-keys "ooi" 'rk/org-inbox-capture)
-  (spacemacs/set-leader-keys "oow" 'rk/org-work-capture)
-  (spacemacs/set-leader-keys "oop" 'rk/org-personal-capture)
-  
-  ;; GTD Agenda views
-  (spacemacs/declare-prefix "ooa" "agenda")
-  (spacemacs/set-leader-keys "ooaa" 'org-agenda)
-  (spacemacs/set-leader-keys "ooad" 'rk/org-daily-agenda)
-  (spacemacs/set-leader-keys "ooaw" 'rk/org-weekly-review)
-  (spacemacs/set-leader-keys "ooar" 'rk/org-review-inbox)
-  
-  ;; GTD File navigation
-  (spacemacs/declare-prefix "oog" "goto")
-  (spacemacs/set-leader-keys "oogi" 'rk/org-goto-inbox)
-  (spacemacs/set-leader-keys "oogw" 'rk/org-goto-work)
-  (spacemacs/set-leader-keys "oogp" 'rk/org-goto-personal)
-  (spacemacs/set-leader-keys "oogP" 'rk/org-goto-projects); <<<--- ADD THIS LINE HERE
+  ;; GTD keybindings are now managed in codelahoma-org.org
+  ;; The entire GTD system including capture, agenda, and navigation
+  ;; is configured there for better modularity and maintenance; <<<--- ADD THIS LINE HERE
             ; Collects the remaining to-organize block
 
   (when (file-exists-p custom-file)
