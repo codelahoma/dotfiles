@@ -347,86 +347,115 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
 ;; ======================================
 
 ;; Configure capture templates for GTD workflow
+;; Helper function for capture templates
+(defun rk/capture-file-inbox ()
+  "Return inbox file path for capture templates."
+  (rk/org-file "inbox.org"))
+
+(defun rk/capture-file-work-gtd ()
+  "Return work GTD file path for capture templates."
+  (rk/org-file "gtd.org" "work"))
+
+(defun rk/capture-file-work-projects ()
+  "Return work projects file path for capture templates."
+  (rk/org-file "projects.org" "work"))
+
+(defun rk/capture-file-personal-gtd ()
+  "Return personal GTD file path for capture templates."
+  (rk/org-file "gtd.org" "personal"))
+
+(defun rk/capture-file-personal-projects ()
+  "Return personal projects file path for capture templates."
+  (rk/org-file "projects.org" "personal"))
+
+(defun rk/capture-file-work-someday ()
+  "Return work someday file path for capture templates."
+  (rk/org-file "someday.org" "work"))
+
+(defun rk/capture-file-personal-someday ()
+  "Return personal someday file path for capture templates."
+  (rk/org-file "someday.org" "personal"))
+
 (setq org-capture-templates
       '(;; Basic GTD Templates
         ("i" "Inbox" entry
-         (file (lambda () (rk/org-file "inbox.org")))
+         (file (rk/capture-file-inbox))
          "* TODO %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
          :empty-lines 1)
         
         ("w" "Work Templates")
         ("wt" "Work Task" entry
-         (file+headline (lambda () (rk/org-file "gtd.org" "work")) "Tasks")
+         (file+headline (rk/capture-file-work-gtd) "Tasks")
          "* TODO %? @work\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|0:15|0:30|1:00|2:00|4:00}\n  :END:\n  %^{Scheduled}t"
          :empty-lines 1)
         
         ("wp" "Work Project" entry
-         (file+headline (lambda () (rk/org-file "projects.org" "work")) "Active Projects")
+         (file+headline (rk/capture-file-work-projects) "Active Projects")
          "* PROJECT %? @work @project\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n\n** Purpose/Outcome\n   %^{Purpose}\n\n** Next Actions\n*** TODO %^{First Action}\n"
          :empty-lines 1)
         
         ("p" "Personal Templates")
         ("pt" "Personal Task" entry
-         (file+headline (lambda () (rk/org-file "gtd.org" "personal")) "Tasks")
+         (file+headline (rk/capture-file-personal-gtd) "Tasks")
          "* TODO %? @personal\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|0:15|0:30|1:00|2:00}\n  :END:\n  %^{Scheduled}t"
          :empty-lines 1)
         
         ("pp" "Personal Project" entry
-         (file+headline (lambda () (rk/org-file "projects.org" "personal")) "Active Projects")
+         (file+headline (rk/capture-file-personal-projects) "Active Projects")
          "* PROJECT %? @personal @project\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n\n** Purpose/Outcome\n   %^{Purpose}\n\n** Next Actions\n*** TODO %^{First Action}\n"
          :empty-lines 1)
         
         ("n" "Quick Note" entry
-         (file (lambda () (rk/org-file "inbox.org")))
+         (file (rk/capture-file-inbox))
          "* %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
          :empty-lines 1
          :immediate-finish t)
         
         ("s" "Someday/Maybe" entry
-         (file+headline (lambda () (rk/org-file "someday.org" "work")) "Someday/Maybe")
+         (file+headline (rk/capture-file-work-someday) "Someday/Maybe")
          "* SOMEDAY %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
          :empty-lines 1)
         
         ;; Advanced capture templates
         ("m" "Meeting Templates")
         ("mm" "Meeting" entry
-         (file+headline (lambda () (rk/org-file "gtd.org" "work")) "Meetings")
+         (file+headline (rk/capture-file-work-gtd) "Meetings")
          "* NEXT Meeting: %? @work @agenda\n  SCHEDULED: %^{Meeting time}T\n  :PROPERTIES:\n  :CREATED: %U\n  :ATTENDEES: %^{Attendees}\n  :LOCATION: %^{Location|Office|Remote|Conference Room}\n  :END:\n\n** Agenda\n   %^{Agenda}\n\n** Notes\n\n** Action Items\n"
          :empty-lines 1)
         
         ("mi" "Interruption Log" entry
-         (file (lambda () (rk/org-file "inbox.org")))
+         (file (rk/capture-file-inbox))
          "* NEXT Handle: %? @high_energy\n  :PROPERTIES:\n  :CREATED: %U\n  :INTERRUPTED_FROM: %^{What were you working on?}\n  :INTERRUPTION_TYPE: %^{Type|Email|Phone|Person|System|Other}\n  :END:\n"
          :clock-in t :clock-resume t :empty-lines 1)
         
         ("e" "Energy-Context Templates")
         ("eh" "High Energy Task" entry
-         (file+headline (lambda () (rk/org-file "gtd.org" "work")) "High Energy Tasks")
+         (file+headline (rk/capture-file-work-gtd) "High Energy Tasks")
          "* TODO %? @work @high_energy @creative\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|1:00|2:00|4:00}\n  :ENERGY_REQUIRED: High\n  :END:\n  %^{Scheduled}t"
          :empty-lines 1)
         
         ("el" "Low Energy Task" entry
-         (file+headline (lambda () (rk/org-file "gtd.org" "work")) "Low Energy Tasks")
+         (file+headline (rk/capture-file-work-gtd) "Low Energy Tasks")
          "* TODO %? @work @low_energy @administrative\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|0:15|0:30|1:00}\n  :ENERGY_REQUIRED: Low\n  :END:\n  %^{Scheduled}t"
          :empty-lines 1)
         
         ("E" "Email Task" entry
-         (file (lambda () (rk/org-file "inbox.org")))
+         (file (rk/capture-file-inbox))
          "* TODO %^{Task description} @computer @email\n  :PROPERTIES:\n  :CREATED: %U\n  :EMAIL_FROM: %^{From}\n  :EMAIL_SUBJECT: %^{Subject}\n  :EMAIL_DATE: %^{Email date}T\n  :END:\n\n** Email Content\n   %?"
          :empty-lines 1)
         
         ("v" "Voice Note" entry
-         (file (lambda () (rk/org-file "inbox.org")))
+         (file (rk/capture-file-inbox))
          "* TODO Process voice note: %?\n  :PROPERTIES:\n  :CREATED: %U\n  :VOICE_FILE: %^{Voice file path}\n  :END:\n\n** Voice Note Summary\n   %^{Quick summary}\n\n** Action Required\n   %^{What needs to be done?}"
          :empty-lines 1)
         
         ("r" "Reading/Research" entry
-         (file+headline (lambda () (rk/org-file "someday.org" "personal")) "Reading List")
+         (file+headline (rk/capture-file-personal-someday) "Reading List")
          "* SOMEDAY Read: %? @learning\n  :PROPERTIES:\n  :CREATED: %U\n  :SOURCE: %^{Source|Book|Article|Paper|Video|Course}\n  :AUTHOR: %^{Author}\n  :URL: %^{URL (if applicable)}\n  :PRIORITY: %^{Priority|High|Medium|Low}\n  :END:\n\n** Why Important\n   %^{Why do you want to read this?}\n\n** Key Questions\n   %^{What questions should this answer?}"
          :empty-lines 1)
         
         ("h" "Habit Tracking" entry
-         (file+headline (lambda () (rk/org-file "gtd.org" "personal")) "Habits")
+         (file+headline (rk/capture-file-personal-gtd) "Habits")
          "* TODO %? @health @routine\n  :PROPERTIES:\n  :CREATED: %U\n  :HABIT_TYPE: %^{Type|Health|Learning|Work|Social}\n  :FREQUENCY: %^{Frequency|Daily|Weekly|Monthly}\n  :TRIGGER: %^{What triggers this habit?}\n  :REWARD: %^{What's the reward?}\n  :END:\n\n** Habit Details\n   %^{Specific details about the habit}\n\n** Tracking\n   - [ ] %^{First milestone or day}"
          :empty-lines 1)))
 
