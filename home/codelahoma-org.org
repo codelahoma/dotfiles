@@ -1037,6 +1037,24 @@ _q_: Quit
           (find-file (rk/org-file "projects.org" "work"))
         (find-file (rk/org-file "projects.org" "personal")))))))
 
+;; Alias for keybinding consistency
+(defalias 'rk/goto-projects 'rk/org-goto-context-projects)
+
+(defun rk/context-capture-project ()
+  "Capture a project based on current context mode."
+  (interactive)
+  (cond
+   ((eq rk/org-context-mode 'work)
+    (org-capture nil "pw"))
+   ((eq rk/org-context-mode 'personal) 
+    (org-capture nil "pp"))
+   ((eq rk/org-context-mode 'unified)
+    ;; In unified mode, ask which type
+    (let ((choice (completing-read "Project type: " '("Work" "Personal"))))
+      (if (string= choice "Work")
+          (org-capture nil "pw")
+        (org-capture nil "pp"))))))
+
 ;; Integration with existing agenda functions
 (defun rk/org-context-dashboard ()
   "Open appropriate dashboard for current context."
@@ -1124,7 +1142,9 @@ Current Mode: %s
       "oocp" 'rk/capture-personal-task
       "ooct" 'rk/org-context-aware-capture
       "oocn" 'rk/capture-note
-      "oocC" 'org-capture)  ; Standard capture with all templates
+      "oocP" 'rk/context-capture-project      ; Context-aware project capture
+      "oocC" 'org-capture                     ; Standard capture with all templates
+      "ooc RET" 'org-capture)                 ; Standard capture (RET for default)
 
     ;; Agenda operations
     (spacemacs/declare-prefix "ooa" "agenda")
@@ -1147,7 +1167,7 @@ Current Mode: %s
       "oogw" (lambda () (interactive) (find-file (rk/org-file "gtd.org" "work")))
       "oogp" (lambda () (interactive) (find-file (rk/org-file "gtd.org" "personal")))
       "oogW" (lambda () (interactive) (find-file (rk/org-file "projects.org" "work")))
-      "oogP" (lambda () (interactive) (find-file (rk/org-file "projects.org" "personal")))
+      "oogP" 'rk/goto-projects                    ; Context-aware projects navigation
       "oogs" (lambda () (interactive) (find-file (rk/org-file "someday.org" "work")))
       "oogS" (lambda () (interactive) (find-file (rk/org-file "someday.org" "personal")))
       "ooga" (lambda () (interactive) (find-file (rk/org-file "archive.org")))
@@ -1160,7 +1180,6 @@ Current Mode: %s
     ;; Help
     (spacemacs/declare-prefix "ooh" "help")
     (spacemacs/set-leader-keys
-      "ooh" 'rk/org-gtd-cheatsheet
       "oo?" 'rk/org-gtd-cheatsheet)
 
     ;; Mode switching
@@ -1228,6 +1247,7 @@ Current Mode: %s
   ;; Refile operations
   (spacemacs/declare-prefix "oor" "refile")
   (spacemacs/set-leader-keys
+    "oor RET" 'org-refile           ; Standard refile (RET for default)
     "oord" 'org-refile
     "oora" 'rk/smart-refile         ; Smart context-aware refile
     "oorw" 'rk/refile-to-work-gtd
@@ -1343,24 +1363,154 @@ Current Mode: %s
 
   ;; Help keybindings
   (spacemacs/set-leader-keys
-    "ooh" 'rk/org-gtd-cheatsheet
     "oo?" 'rk/org-gtd-cheatsheet
     "ooH" 'rk/org-gtd-which-key-help)
 
   ;; Which-key descriptions for extended bindings
   (defun rk/setup-extended-which-key-descriptions ()
     "Set up which-key descriptions for all GTD keybindings."
+    ;; Prefix descriptions
     (which-key-add-key-based-replacements
       "SPC o o" "org-gtd"
       "SPC o o c" "capture"
       "SPC o o a" "agenda"
       "SPC o o g" "goto"
+      "SPC o o h" "help"
       "SPC o o m" "mode"
       "SPC o o r" "refile"
       "SPC o o k" "clock"
       "SPC o o R" "review"
       "SPC o o A" "archive"
-      "SPC o o x" "extensions"))
+      "SPC o o x" "extensions"
+      "SPC o o x A" "claude")
+    
+    ;; Quick access keys
+    (which-key-add-key-based-replacements
+      "SPC o o RET" "quick goto"
+      "SPC o o SPC" "quick agenda"
+      "SPC o o ?" "cheatsheet"
+      "SPC o o o" "quick capture"
+      "SPC o o H" "which-key help")
+    
+    ;; Capture bindings
+    (which-key-add-key-based-replacements
+      "SPC o o c RET" "default capture"
+      "SPC o o c C" "all templates"
+      "SPC o o c c" "context capture"
+      "SPC o o c i" "inbox"
+      "SPC o o c n" "note"
+      "SPC o o c p" "personal task"
+      "SPC o o c P" "context project"
+      "SPC o o c t" "context task"
+      "SPC o o c w" "work task")
+    
+    ;; Agenda bindings
+    (which-key-add-key-based-replacements
+      "SPC o o a a" "all agendas"
+      "SPC o o a d" "context dashboard"
+      "SPC o o a e" "high energy"
+      "SPC o o a f" "focus mode"
+      "SPC o o a i" "inbox process"
+      "SPC o o a p" "personal dash"
+      "SPC o o a P" "all projects"
+      "SPC o o a s" "stalled items"
+      "SPC o o a u" "unified dash"
+      "SPC o o a w" "work dash")
+    
+    ;; Goto bindings
+    (which-key-add-key-based-replacements
+      "SPC o o g a" "→ archive"
+      "SPC o o g f" "switch dashboard"
+      "SPC o o g g" "→ context gtd"
+      "SPC o o g i" "→ inbox"
+      "SPC o o g j" "→ context proj"
+      "SPC o o g P" "→ context proj"
+      "SPC o o g p" "→ personal gtd"
+      "SPC o o g S" "→ personal someday"
+      "SPC o o g s" "→ work someday"
+      "SPC o o g t" "→ tutorial"
+      "SPC o o g u" "→ user guide"
+      "SPC o o g w" "→ work gtd"
+      "SPC o o g W" "→ work projects")
+    
+    ;; Mode bindings
+    (which-key-add-key-based-replacements
+      "SPC o o m h" "context hydra"
+      "SPC o o m p" "personal mode"
+      "SPC o o m s" "show status"
+      "SPC o o m S" "visual status"
+      "SPC o o m u" "unified mode"
+      "SPC o o m v" "validate files"
+      "SPC o o m w" "work mode")
+    
+    ;; Refile bindings
+    (which-key-add-key-based-replacements
+      "SPC o o r RET" "default refile"
+      "SPC o o r a" "smart refile"
+      "SPC o o r b" "bulk done"
+      "SPC o o r d" "default"
+      "SPC o o r p" "→ personal gtd"
+      "SPC o o r P" "→ personal proj"
+      "SPC o o r r" "→ recent"
+      "SPC o o r s" "→ someday"
+      "SPC o o r v" "archive subtree"
+      "SPC o o r w" "→ work gtd"
+      "SPC o o r W" "→ work projects")
+    
+    ;; Clock bindings
+    (which-key-add-key-based-replacements
+      "SPC o o k c" "cancel"
+      "SPC o o k d" "display"
+      "SPC o o k e" "evaluate range"
+      "SPC o o k i" "clock in"
+      "SPC o o k j" "goto clock"
+      "SPC o o k l" "clock last"
+      "SPC o o k o" "clock out"
+      "SPC o o k r" "report"
+      "SPC o o k t" "timer start"
+      "SPC o o k T" "timer stop")
+    
+    ;; Review bindings
+    (which-key-add-key-based-replacements
+      "SPC o o R a" "archive done"
+      "SPC o o R d" "daily review"
+      "SPC o o R o" "archive old"
+      "SPC o o R p" "process inbox"
+      "SPC o o R s" "stalled items"
+      "SPC o o R v" "validate struct"
+      "SPC o o R w" "weekly review")
+    
+    ;; Archive bindings
+    (which-key-add-key-based-replacements
+      "SPC o o A a" "archive subtree"
+      "SPC o o A c" "clean empty"
+      "SPC o o A d" "archive done"
+      "SPC o o A f" "→ archive file"
+      "SPC o o A o" "archive old"
+      "SPC o o A t" "test archive"
+      "SPC o o A v" "validate arch")
+    
+    ;; Extension bindings
+    (which-key-add-key-based-replacements
+      "SPC o o x a" "archive done"
+      "SPC o o x b" "switch bullets"
+      "SPC o o x B" "preview bullets"
+      "SPC o o x c" "switch colors"
+      "SPC o o x C" "preview colors"
+      "SPC o o x d" "capture decision"
+      "SPC o o x m" "capture meeting"
+      "SPC o o x p" "project template"
+      "SPC o o x r" "reload config"
+      "SPC o o x t" "tangle & load"
+      "SPC o o x w" "weekly report")
+    
+    ;; Claude extension bindings
+    (which-key-add-key-based-replacements
+      "SPC o o x A c" "continue chat"
+      "SPC o o x A m" "ask manual"
+      "SPC o o x A q" "quick ask"
+      "SPC o o x A s" "start chat"
+      "SPC o o x A t" "ask tutorial"))
 #+end_src
 
 ** GTD Navigation Functions
