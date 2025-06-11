@@ -45,11 +45,19 @@ This is a dotfiles repository managed with [Homesick](https://github.com/technic
 
 Key directories:
 - `/home`: Contains the actual dotfiles that will be symlinked to the user's home directory
-- `/home/spacemacs-config`: Modular Spacemacs configuration
-- `/home/.spacemacs.d`: Spacemacs directory with init.el and custom.el
-- `/home/karabiner-config`: Karabiner Elements configuration
+- `/home/.spacemacs.d`: Spacemacs configuration with init.el (auto-generated from dotspacemacs.org)
+- `/home/karabiner-config`: Karabiner Elements keyboard customization
+- `/home/Library/Application Support`: Application-specific configurations (iTerm2, MailMate)
+- `/home/personal/org-files`: GTD org-mode files and organization system
+- `/home/bin`: Custom shell scripts and utilities
 - `/.flowloom`: FlowLoom system files
 - `/.claude`: Claude Code configuration
+
+### Configuration Architecture
+- **Spacemacs**: Configuration is generated from literate programming files (*.org), not edited directly
+- **Karabiner**: Keyboard remapping for productivity (Caps Lock → Control/Escape, Control → Hyper key)
+- **GTD System**: Comprehensive Getting Things Done workflow in org-mode with custom capture templates
+- **Shell Scripts**: Located in `/home/bin` for various utilities
 
 ## Commands
 
@@ -63,7 +71,19 @@ cd ~/.homesick/repos/dotfiles
 git add .
 git commit -m "Update dotfiles"
 git push
+
+# Check current linking status
+homesick status dotfiles
 ```
+
+### Important Configuration Notes
+- **DO NOT edit `/home/.spacemacs.d/init.el` directly** - it's auto-generated from `dotspacemacs.org`
+- **DO NOT edit `/home/.spacemacs.d/codelahoma-org.el` directly** - it's tangled from `codelahoma-org.org`
+  - After editing `codelahoma-org.org`, you must tangle it with `C-c C-v t` to regenerate the .el file
+  - Spacemacs loads the tangled .el file, not the .org source
+- **Karabiner rules** are in `/home/karabiner-config/karabiner.json` for keyboard customization
+- **GTD org files** are expected to be in `~/personal/org-files/` (inbox.org, projects.org, work.org, etc.)
+- **Shell scripts** in `/home/bin` should be executable and may require PATH updates
 
 ### FlowLoom Commands
 ```bash

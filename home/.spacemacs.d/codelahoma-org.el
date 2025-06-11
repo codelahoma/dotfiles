@@ -23,62 +23,64 @@
 (defvar rk/org-gtd-personal-dir (expand-file-name "personal/" rk/org-gtd-base-dir)
   "Directory for personal GTD files.")
 
+(defvar rk/org-gtd-notes-dir (expand-file-name "notes/" rk/org-gtd-personal-dir)
+  "Directory for personal note files.")
+
+(defvar rk/org-gtd-meetings-dir (expand-file-name "meetings/" rk/org-gtd-work-dir)
+  "Directory for work meeting files.")
+
 (defun rk/org-file (filename &optional subdir)
   "Generate full path for org file FILENAME in optional SUBDIR.
-SUBDIR can be 'work', 'personal', or nil for base directory."
+SUBDIR can be 'work', 'personal', 'notes', 'meetings', or nil for base directory."
   (let ((base-dir (cond
                    ((string= subdir "work") rk/org-gtd-work-dir)
                    ((string= subdir "personal") rk/org-gtd-personal-dir)
+                   ((string= subdir "notes") rk/org-gtd-notes-dir)
+                   ((string= subdir "meetings") rk/org-gtd-meetings-dir)
                    (t rk/org-gtd-base-dir))))
     (expand-file-name filename base-dir)))
 
 (defun rk/create-gtd-structure ()
-  "Create the complete GTD directory and file structure."
+  "Create GTD dirs/files and insert default headlines for capture targets."
   (interactive)
-  (let ((dirs (list rk/org-gtd-base-dir 
-                    rk/org-gtd-work-dir 
-                    rk/org-gtd-personal-dir))
-        (files (list
-                ;; Base files
-                (rk/org-file "inbox.org")
-                (rk/org-file "archive.org")
-                ;; Work files
-                (rk/org-file "gtd.org" "work")
-                (rk/org-file "projects.org" "work")
-                (rk/org-file "someday.org" "work")
-                ;; Personal files  
-                (rk/org-file "gtd.org" "personal")
-                (rk/org-file "projects.org" "personal")
-                (rk/org-file "someday.org" "personal"))))
-    
-    ;; Create directories
+  (let* ((dirs (list rk/org-gtd-base-dir rk/org-gtd-work-dir rk/org-gtd-personal-dir 
+                     rk/org-gtd-notes-dir rk/org-gtd-meetings-dir))
+         (files (list (rk/org-file "inbox.org")
+                      (rk/org-file "archive.org")
+                      (rk/org-file "gtd.org" "work")
+                      (rk/org-file "projects.org" "work")
+                      (rk/org-file "someday.org" "work")
+                      (rk/org-file "gtd.org" "personal")
+                      (rk/org-file "projects.org" "personal")
+                      (rk/org-file "someday.org" "personal"))))
     (dolist (dir dirs)
       (unless (file-exists-p dir)
-        (make-directory dir t)
-        (message "Created directory: %s" dir)))
-    
-    ;; Create files with basic headers
+        (make-directory dir t)))
     (dolist (file files)
       (unless (file-exists-p file)
         (with-temp-file file
-          (insert (format "#+TITLE: %s\n" 
-                         (file-name-sans-extension (file-name-nondirectory file))))
-          (insert "#+STARTUP: overview\n\n"))
-        (message "Created file: %s" file)))
-    
-    (message "GTD structure creation complete!")))
+          (insert (format "#+TITLE: %s\n" (file-name-base file)))
+          (insert "#+STARTUP: overview\n\n")
+          ;; Insert headings for capture targets
+          (pcase (file-name-nondirectory file)
+            ("gtd.org"      (insert "* Tasks\n* High Energy Tasks\n* Low Energy Tasks\n* Meetings\n* Habits\n"))
+            ("projects.org" (insert "* Active Projects\n"))
+            ("someday.org"  (insert "* Someday/Maybe\n* Reading List\n"))
+            ("inbox.org"    (insert "* Meetings\n"))
+            (_ nil)))))
+  (message "GTD structure initialized with headings.")))
 
 (defun rk/validate-gtd-structure ()
   "Validate that GTD directory structure exists and is complete."
   (interactive)
   (let ((missing-dirs '())
         (missing-files '()))
-    
+
     ;; Check directories
     (dolist (dir (list rk/org-gtd-base-dir rk/org-gtd-work-dir rk/org-gtd-personal-dir))
       (unless (file-exists-p dir)
         (push dir missing-dirs)))
-    
+
     ;; Check files
     (dolist (file (list
                    (rk/org-file "inbox.org")
@@ -91,7 +93,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
                    (rk/org-file "someday.org" "personal")))
       (unless (file-exists-p file)
         (push file missing-files)))
-    
+
     (if (and (null missing-dirs) (null missing-files))
         (message "✅ GTD structure is complete and valid!")
       (progn
@@ -132,7 +134,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
         ("DECIDED" . (:foreground "gray" :weight bold))))
 
 ;; ======================================
-;; GTD Context Tags Configuration  
+;; GTD Context Tags Configuration
 ;; ======================================
 
 ;; Comprehensive GTD context tags with fast selection
@@ -141,14 +143,14 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
         ("CONTEXT" . ?C)
         (:grouptags)
         ("@work" . ?w)
-        ("@home" . ?h) 
+        ("@home" . ?h)
         ("@office" . ?o)
         ("@computer" . ?c)
         ("@phone" . ?p)
         ("@errands" . ?e)
         ("@agenda" . ?a)
         (:endgrouptag)
-        
+
         (:startgrouptag)
         ("ENERGY" . ?E)
         (:grouptags)
@@ -157,7 +159,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
         ("@creative" . ?r)
         ("@administrative" . ?A)
         (:endgrouptag)
-        
+
         (:startgrouptag)
         ("TIME" . ?T)
         (:grouptags)
@@ -167,7 +169,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
         ("@1hr" . ?6)
         ("@2hr" . ?2)
         (:endgrouptag)
-        
+
         (:startgrouptag)
         ("TYPE" . ?Y)
         (:grouptags)
@@ -244,7 +246,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
   "Archive tasks older than DAYS (default 30) that are completed."
   (interactive "P")
   (let* ((cutoff-days (or days 30))
-         (cutoff-time (time-subtract (current-time) 
+         (cutoff-time (time-subtract (current-time)
                                    (days-to-time cutoff-days)))
          (archived-count 0))
     (org-map-entries
@@ -257,7 +259,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
            (org-archive-subtree)
            (setq archived-count (1+ archived-count)))))
      nil 'file)
-    (message "Archived %d old completed items (older than %d days)" 
+    (message "Archived %d old completed items (older than %d days)"
              archived-count cutoff-days)))
 
 (defun rk/validate-archive-structure ()
@@ -265,7 +267,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
   (interactive)
   (let* ((archive-file (rk/org-file "archive.org"))
          (issues '()))
-    
+
     (if (file-exists-p archive-file)
         (progn
           (with-current-buffer (find-file-noselect archive-file)
@@ -273,17 +275,17 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
             (goto-char (point-min))
             (unless (re-search-forward "^\\* Archived Tasks" nil t)
               (push "Missing 'Archived Tasks' top-level heading" issues))
-            
+
             ;; Check for orphaned entries
             (goto-char (point-min))
             (while (re-search-forward "^\\*\\* " nil t)
               (let ((props (org-entry-properties)))
                 (unless (assoc "ARCHIVED" props)
-                  (push (format "Entry at line %d missing ARCHIVED property" 
+                  (push (format "Entry at line %d missing ARCHIVED property"
                                (line-number-at-pos)) issues)))))
-          
+
           (if issues
-              (message "⚠️  Archive validation found %d issues:\n%s" 
+              (message "⚠️  Archive validation found %d issues:\n%s"
                       (length issues) (string-join issues "\n"))
             (message "✅ Archive structure is valid")))
       (message "❌ Archive file does not exist: %s" archive-file))))
@@ -293,7 +295,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
   (interactive)
   (let* ((archive-file (rk/org-file "archive.org"))
          (cleaned-count 0))
-    
+
     (when (file-exists-p archive-file)
       (with-current-buffer (find-file-noselect archive-file)
         (org-map-entries
@@ -306,7 +308,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
          nil 'file)
         (when (> cleaned-count 0)
           (save-buffer)))
-      
+
       (message "Cleaned %d empty sections from archive" cleaned-count))))
 
 ;; Test function for archive system
@@ -325,7 +327,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
       (insert "  CLOSED: [2025-05-01 Thu 14:30]\n")
       (insert "* NEXT Active task @computer\n")
       (save-buffer))
-    
+
     (switch-to-buffer test-buffer)
     (message "✅ Test buffer created. Try: (rk/archive-done-tasks) or (rk/validate-archive-structure)")))
 ;; GTD Archive Configuration:1 ends here
@@ -341,8 +343,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
 ;; Helper function for capture templates
 (defun rk/capture-file-inbox ()
   "Return inbox file path for capture templates."
-  (or (rk/org-file "inbox.org")
-      (expand-file-name "~/personal/org-files/inbox.org")))
+  (rk/org-file "inbox.org"))
 
 (defun rk/capture-file-work-gtd ()
   "Return work GTD file path for capture templates."
@@ -369,87 +370,154 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
   (rk/org-file "someday.org" "personal"))
 
 (setq org-capture-templates
-      '(;; Basic GTD Templates
-        ("i" "Inbox" entry
-         (file rk/capture-file-inbox)
-         "* TODO %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
-         :empty-lines 1)
-        
-        ("w" "Work Templates")
-        ("wt" "Work Task" entry
-         (file+headline rk/capture-file-work-gtd "Tasks")
-         "* TODO %? @work\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|0:15|0:30|1:00|2:00|4:00}\n  :END:\n  %^{Scheduled}t"
-         :empty-lines 1)
-        
-        ("wp" "Work Project" entry
-         (file+headline rk/capture-file-work-projects "Active Projects")
-         "* PROJECT %? @work @project\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n\n** Purpose/Outcome\n   %^{Purpose}\n\n** Next Actions\n*** TODO %^{First Action}\n"
-         :empty-lines 1)
-        
-        ("p" "Personal Templates")
-        ("pt" "Personal Task" entry
-         (file+headline rk/capture-file-personal-gtd "Tasks")
-         "* TODO %? @personal\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|0:15|0:30|1:00|2:00}\n  :END:\n  %^{Scheduled}t"
-         :empty-lines 1)
-        
-        ("pp" "Personal Project" entry
-         (file+headline rk/capture-file-personal-projects "Active Projects")
-         "* PROJECT %? @personal @project\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n\n** Purpose/Outcome\n   %^{Purpose}\n\n** Next Actions\n*** TODO %^{First Action}\n"
-         :empty-lines 1)
-        
+      `(;; Quick Note with immediate finish
         ("n" "Quick Note" entry
-         (file rk/capture-file-inbox)
+         (file ,(rk/org-file "inbox.org"))
          "* %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
          :empty-lines 1
-         )
-        
-        ("s" "Someday/Maybe" entry
-         (file+headline rk/capture-file-work-someday "Someday/Maybe")
-         "* SOMEDAY %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
+         :immediate-finish t)
+
+        ;; Basic GTD Templates
+        ("i" "Inbox" entry
+         (file ,(lambda () (rk/org-file "inbox.org")))
+         "* TODO %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
          :empty-lines 1)
-        
-        ;; Advanced capture templates
-        ("m" "Meeting Templates")
-        ("mm" "Meeting" entry
-         (file+headline rk/capture-file-work-gtd "Meetings")
+
+        ("w" "Work Templates")
+        ("wt" "Work Task" entry
+         (file+headline ,(lambda () (rk/org-file "gtd.org" "work")) "Tasks")
+         "* TODO %? @work\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|0:15|0:30|1:00|2:00|4:00}\n  :END:\n  SCHEDULED: %^{Scheduled}t"
+         :empty-lines 1)
+
+        ("wm" "Work Meeting" entry
+         (file+headline ,(lambda () (rk/org-file "gtd.org" "work")) "Meetings")
          "* NEXT Meeting: %? @work @agenda\n  SCHEDULED: %^{Meeting time}T\n  :PROPERTIES:\n  :CREATED: %U\n  :ATTENDEES: %^{Attendees}\n  :LOCATION: %^{Location|Office|Remote|Conference Room}\n  :END:\n\n** Agenda\n   %^{Agenda}\n\n** Notes\n\n** Action Items\n"
          :empty-lines 1)
-        
+
+        ("wp" "Work Project" entry
+         (file+headline ,(lambda () (rk/org-file "projects.org" "work")) "Active Projects")
+         "* PROJECT %? @work @project\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n\n** Purpose/Outcome\n   %^{Purpose}\n\n** Next Actions\n*** TODO %^{First Action}\n"
+         :empty-lines 1)
+
+        ("p" "Personal Templates")
+        ("pt" "Personal Task" entry
+         (file+headline ,(lambda () (rk/org-file "gtd.org" "personal")) "Tasks")
+         "* TODO %? @personal\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|0:15|0:30|1:00|2:00}\n  :END:\n  SCHEDULED: %^{Scheduled}t"
+         :empty-lines 1)
+
+        ("pp" "Personal Project" entry
+         (file+headline ,(lambda () (rk/org-file "projects.org" "personal")) "Active Projects")
+         "* PROJECT %? @personal @project\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n\n** Purpose/Outcome\n   %^{Purpose}\n\n** Next Actions\n*** TODO %^{First Action}\n"
+         :empty-lines 1)
+
+        ;; Energy-based templates
+        ("e" "Energy-based Templates")
+        ("eh" "High Energy Task" entry
+         (file+headline ,(lambda () (rk/org-file "gtd.org" "work")) "High Energy Tasks")
+         "* TODO %? @work @high_energy @creative\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|1:00|2:00|4:00}\n  :ENERGY_REQUIRED: High\n  :END:\n  SCHEDULED: %^{Scheduled}t"
+         :empty-lines 1)
+
+        ("el" "Low Energy Task" entry
+         (file+headline ,(lambda () (rk/org-file "gtd.org" "work")) "Low Energy Tasks")
+         "* TODO %? @work @low_energy @administrative\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|0:15|0:30|1:00}\n  :ENERGY_REQUIRED: Low\n  :END:\n  SCHEDULED: %^{Scheduled}t"
+         :empty-lines 1)
+
+        ;; Someday templates
+        ("s" "Someday/Maybe Templates")
+        ("sw" "Work Someday" entry
+         (file+headline ,(lambda () (rk/org-file "someday.org" "work")) "Someday/Maybe")
+         "* SOMEDAY %? @work\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
+         :empty-lines 1)
+
+        ("sp" "Personal Someday" entry
+         (file+headline ,(lambda () (rk/org-file "someday.org" "personal")) "Someday/Maybe")
+         "* SOMEDAY %? @personal\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
+         :empty-lines 1)
+
+        ;; Meeting templates
+        ("m" "Meeting Templates")
+        ("mm" "General Meeting" entry
+         (file+headline ,(lambda () (rk/org-file "inbox.org")) "Meetings")
+         "* NEXT Meeting: %? @agenda\n  SCHEDULED: %^{Meeting time}T\n  :PROPERTIES:\n  :CREATED: %U\n  :ATTENDEES: %^{Attendees}\n  :LOCATION: %^{Location|Office|Remote|Conference Room}\n  :END:\n\n** Agenda\n   %^{Agenda}\n\n** Notes\n\n** Action Items\n"
+         :empty-lines 1)
+
         ("mi" "Interruption Log" entry
-         (file rk/capture-file-inbox)
+         (file ,(lambda () (rk/org-file "inbox.org")))
          "* NEXT Handle: %? @high_energy\n  :PROPERTIES:\n  :CREATED: %U\n  :INTERRUPTED_FROM: %^{What were you working on?}\n  :INTERRUPTION_TYPE: %^{Type|Email|Phone|Person|System|Other}\n  :END:\n"
          :clock-in t :clock-resume t :empty-lines 1)
-        
-        ("e" "Energy-Context Templates")
-        ("eh" "High Energy Task" entry
-         (file+headline rk/capture-file-work-gtd "High Energy Tasks")
-         "* TODO %? @work @high_energy @creative\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|1:00|2:00|4:00}\n  :ENERGY_REQUIRED: High\n  :END:\n  %^{Scheduled}t"
-         :empty-lines 1)
-        
-        ("el" "Low Energy Task" entry
-         (file+headline rk/capture-file-work-gtd "Low Energy Tasks")
-         "* TODO %? @work @low_energy @administrative\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|0:15|0:30|1:00}\n  :ENERGY_REQUIRED: Low\n  :END:\n  %^{Scheduled}t"
-         :empty-lines 1)
-        
+
         ("E" "Email Task" entry
-         (file rk/capture-file-inbox)
+         (file ,(lambda () (rk/org-file "inbox.org")))
          "* TODO %^{Task description} @computer @email\n  :PROPERTIES:\n  :CREATED: %U\n  :EMAIL_FROM: %^{From}\n  :EMAIL_SUBJECT: %^{Subject}\n  :EMAIL_DATE: %^{Email date}T\n  :END:\n\n** Email Content\n   %?"
          :empty-lines 1)
-        
+
         ("v" "Voice Note" entry
-         (file rk/capture-file-inbox)
+         (file ,(lambda () (rk/org-file "inbox.org")))
          "* TODO Process voice note: %?\n  :PROPERTIES:\n  :CREATED: %U\n  :VOICE_FILE: %^{Voice file path}\n  :END:\n\n** Voice Note Summary\n   %^{Quick summary}\n\n** Action Required\n   %^{What needs to be done?}"
          :empty-lines 1)
-        
+
         ("r" "Reading/Research" entry
-         (file+headline rk/capture-file-personal-someday "Reading List")
+         (file+headline ,(lambda () (rk/org-file "someday.org" "personal")) "Reading List")
          "* SOMEDAY Read: %? @learning\n  :PROPERTIES:\n  :CREATED: %U\n  :SOURCE: %^{Source|Book|Article|Paper|Video|Course}\n  :AUTHOR: %^{Author}\n  :URL: %^{URL (if applicable)}\n  :PRIORITY: %^{Priority|High|Medium|Low}\n  :END:\n\n** Why Important\n   %^{Why do you want to read this?}\n\n** Key Questions\n   %^{What questions should this answer?}"
          :empty-lines 1)
-        
+
         ("h" "Habit Tracking" entry
-         (file+headline rk/capture-file-personal-gtd "Habits")
+         (file+headline ,(lambda () (rk/org-file "gtd.org" "personal")) "Habits")
          "* TODO %? @health @routine\n  :PROPERTIES:\n  :CREATED: %U\n  :HABIT_TYPE: %^{Type|Health|Learning|Work|Social}\n  :FREQUENCY: %^{Frequency|Daily|Weekly|Monthly}\n  :TRIGGER: %^{What triggers this habit?}\n  :REWARD: %^{What's the reward?}\n  :END:\n\n** Habit Details\n   %^{Specific details about the habit}\n\n** Tracking\n   - [ ] %^{First milestone or day}"
          :empty-lines 1)))
+
+;; Dynamic filename generator functions for advanced capture templates
+(defun rk/generate-timestamped-note-file ()
+  "Generate a timestamped note file for standalone capture."
+  (let ((note-name (read-string "Note name: ")))
+    (expand-file-name 
+     (format "%s-%s.org" 
+             (format-time-string "%Y%m%d-%H%M") 
+             (replace-regexp-in-string "[^[:alnum:]-]" "-" note-name))
+     (rk/org-file "notes" "personal"))))
+
+(defun rk/generate-project-file ()
+  "Generate a dedicated project file."
+  (let ((project-name (read-string "Project name: ")))
+    (expand-file-name 
+     (format "project-%s.org" 
+             (replace-regexp-in-string "[^[:alnum:]-]" "-" 
+                                       (downcase project-name)))
+     (rk/org-file "projects" "work"))))
+
+(defun rk/generate-meeting-notes-file ()
+  "Generate a timestamped meeting notes file."
+  (let ((meeting-topic (read-string "Meeting topic: ")))
+    (expand-file-name 
+     (format "%s-meeting-%s.org" 
+             (format-time-string "%Y%m%d")
+             (replace-regexp-in-string "[^[:alnum:]-]" "-" meeting-topic))
+     (rk/org-file "meetings" "work"))))
+
+;; Example of enhanced capture templates using dynamic filenames
+;; (Commented out - uncomment to use)
+;; (setq org-capture-templates
+;;       `(;; ... existing templates above ...
+;;         
+;;         ;; Dynamic filename templates
+;;         ("d" "Dynamic Templates")
+;;         ("dn" "Standalone Note" entry 
+;;          (file ,(rk/generate-timestamped-note-file))
+;;          "#+TITLE: %^{Note Title}\n#+DATE: %U\n#+TAGS: %^{Tags}\n\n* %?\n"
+;;          :empty-lines 1)
+;;         
+;;         ("dp" "Dedicated Project File" entry
+;;          (file ,(rk/generate-project-file))
+;;          "#+TITLE: Project: %^{Project Name}\n#+DATE: %U\n#+TAGS: project\n\n* Project Overview\n** Purpose\n%^{Purpose}\n\n** Outcome\n%^{Desired Outcome}\n\n* Next Actions\n** TODO %?\n"
+;;          :empty-lines 1)
+;;         
+;;         ("dm" "Meeting Notes File" entry
+;;          (file ,(rk/generate-meeting-notes-file))
+;;          "#+TITLE: Meeting: %^{Meeting Topic}\n#+DATE: %U\n#+TAGS: meeting\n\n* Meeting Details\n- Date: %U\n- Attendees: %^{Attendees}\n- Location: %^{Location}\n\n* Agenda\n%^{Agenda}\n\n* Notes\n%?\n\n* Action Items\n"
+;;          :empty-lines 1)
+;;         
+;;         ;; ... other templates
+;;         ))
 
 ;; Capture template helper functions
 (defun rk/capture-inbox ()
@@ -510,8 +578,8 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
 ;; Custom agenda commands for GTD workflow
 (setq org-agenda-custom-commands
       '(("g" "GTD Dashboards")
-        
-        ("gw" "Work Dashboard" 
+
+        ("gw" "Work Dashboard"
          ((agenda "" ((org-agenda-span 'day)
                       (org-agenda-files (list (rk/org-file "gtd.org" "work")
                                                (rk/org-file "projects.org" "work")))
@@ -526,7 +594,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
                            (org-agenda-overriding-header "\n📋 Active Projects - Work\n"))))
          ((org-agenda-compact-blocks t)
           (org-agenda-remove-tags t)))
-        
+
         ("gp" "Personal Dashboard"
          ((agenda "" ((org-agenda-span 'day)
                       (org-agenda-files (list (rk/org-file "gtd.org" "personal")
@@ -541,7 +609,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
                            (org-agenda-overriding-header "\n📋 Active Projects - Personal\n"))))
          ((org-agenda-compact-blocks t)
           (org-agenda-remove-tags t)))
-        
+
         ("gu" "Unified Dashboard"
          ((agenda "" ((org-agenda-span 'day)
                       (org-agenda-overriding-header "🌟 Unified Dashboard - Complete Overview\n")))
@@ -550,30 +618,30 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
           (todo "PROJECT" ((org-agenda-overriding-header "\n📋 All Active Projects\n")))
           (tags "PRIORITY=\"A\"" ((org-agenda-overriding-header "\n🔥 High Priority Items\n"))))
          ((org-agenda-compact-blocks t)))
-        
+
         ("gi" "Inbox Processing"
          ((todo "TODO" ((org-agenda-files (list (rk/org-file "inbox.org")))
                         (org-agenda-overriding-header "📥 Inbox - Items to Process\n")))
           (tags "CATEGORY=\"inbox\"" ((org-agenda-overriding-header "\n📝 Notes to Review\n"))))
          ((org-agenda-compact-blocks t)))
-        
+
         ;; Specialized agenda views
         ("e" "Energy-Based Views")
-        
+
         ("eh" "High Energy Tasks"
          ((todo "NEXT|TODO" ((org-agenda-tag-filter-preset '("+@high_energy"))
                              (org-agenda-overriding-header "⚡ High Energy Tasks - Creative & Complex Work\n")))
           (todo "NEXT|TODO" ((org-agenda-tag-filter-preset '("+@creative"))
                              (org-agenda-overriding-header "\n🎨 Creative Tasks\n"))))
          ((org-agenda-compact-blocks t)))
-        
+
         ("el" "Low Energy Tasks"
          ((todo "NEXT|TODO" ((org-agenda-tag-filter-preset '("+@low_energy"))
                              (org-agenda-overriding-header "🔋 Low Energy Tasks - Administrative & Routine\n")))
           (todo "NEXT|TODO" ((org-agenda-tag-filter-preset '("+@administrative"))
                              (org-agenda-overriding-header "\n📋 Administrative Tasks\n"))))
          ((org-agenda-compact-blocks t)))
-        
+
         ("f" "Focus Mode - Top 3 Priorities"
          ((todo "NEXT" ((org-agenda-max-entries 3)
                         (org-agenda-sorting-strategy '(priority-down effort-up))
@@ -581,7 +649,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
           (tags "PRIORITY=\"A\"" ((org-agenda-max-entries 3)
                                   (org-agenda-overriding-header "\n🔥 High Priority Items\n"))))
          ((org-agenda-compact-blocks t)))
-        
+
         ("P" "Project Overview"
          ((todo "PROJECT" ((org-agenda-overriding-header "📋 Active Projects Overview\n")))
           (todo "NEXT" ((org-agenda-tag-filter-preset '("+@project"))
@@ -589,47 +657,47 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
           (todo "WAITING" ((org-agenda-tag-filter-preset '("+@project"))
                            (org-agenda-overriding-header "\n⏳ Project Waiting Items\n"))))
          ((org-agenda-compact-blocks t)))
-        
+
         ("s" "Stalled & Review Items"
          ((todo "WAITING" ((org-agenda-overriding-header "⏳ All Waiting Items - Review These\n")))
           (todo "SOMEDAY" ((org-agenda-overriding-header "\n🤔 Someday/Maybe - Review Regularly\n")))
           (tags "TODO<=\"<-7d>\"" ((org-agenda-overriding-header "\n🕰️ Old Tasks (>7 days) - Review or Archive\n"))))
          ((org-agenda-compact-blocks t)))
-        
+
         ("c" "Context Views")
-        
+
         ("cw" "Work Context"
          ((todo "NEXT|TODO" ((org-agenda-tag-filter-preset '("+@work"))
                              (org-agenda-overriding-header "💼 Work Context - All Work Tasks\n"))))
          ((org-agenda-compact-blocks t)))
-        
+
         ("ch" "Home Context"
          ((todo "NEXT|TODO" ((org-agenda-tag-filter-preset '("+@home"))
                              (org-agenda-overriding-header "🏠 Home Context - All Home Tasks\n"))))
          ((org-agenda-compact-blocks t)))
-        
+
         ("cc" "Computer Context"
          ((todo "NEXT|TODO" ((org-agenda-tag-filter-preset '("+@computer"))
                              (org-agenda-overriding-header "💻 Computer Context - Digital Tasks\n"))))
          ((org-agenda-compact-blocks t)))
-        
+
         ("cp" "Phone/Calls Context"
          ((todo "NEXT|TODO" ((org-agenda-tag-filter-preset '("+@phone"))
                              (org-agenda-overriding-header "📞 Phone Context - Calls & Communication\n"))))
          ((org-agenda-compact-blocks t)))
-        
+
         ("ce" "Errands Context"
          ((todo "NEXT|TODO" ((org-agenda-tag-filter-preset '("+@errands"))
                              (org-agenda-overriding-header "🚗 Errands Context - Out & About Tasks\n"))))
          ((org-agenda-compact-blocks t)))
-        
+
         ("t" "Time-Based Views")
-        
+
         ("tq" "Quick Tasks (≤30min)"
          ((todo "NEXT|TODO" ((org-agenda-tag-filter-preset '("+@5min" "+@15min" "+@30min"))
                              (org-agenda-overriding-header "⚡ Quick Tasks - Fill Small Time Slots\n"))))
          ((org-agenda-compact-blocks t)))
-        
+
         ("td" "Deep Work (≥1hr)"
          ((todo "NEXT|TODO" ((org-agenda-tag-filter-preset '("+@1hr" "+@2hr"))
                              (org-agenda-overriding-header "🔬 Deep Work - Extended Focus Sessions\n"))))
@@ -660,7 +728,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
 (defun rk/switch-dashboard ()
   "Quick switch between dashboards."
   (interactive)
-  (let ((choice (completing-read "Dashboard: " 
+  (let ((choice (completing-read "Dashboard: "
                                 '("Work" "Personal" "Unified" "Inbox Processing"))))
     (cond
      ((string= choice "Work") (rk/agenda-work-dashboard))
@@ -719,9 +787,9 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
   (interactive)
   (let* ((tags (org-get-tags))
          (is-work (member "@work" tags))
-         (target-file (if is-work 
-                         (rk/org-file "someday.org" "work")
-                       (rk/org-file "someday.org" "personal"))))
+         (target-file (if is-work
+                          (rk/org-file "someday.org" "work")
+                        (rk/org-file "someday.org" "personal"))))
     (org-refile nil nil (list "Someday/Maybe" target-file nil))))
 
 ;; Context-aware refile suggestions
@@ -733,7 +801,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
          (is-work (member "@work" tags))
          (is-project (member "@project" tags))
          (suggestions '()))
-    
+
     ;; Build context-aware suggestions
     (cond
      ;; Project items
@@ -741,20 +809,20 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
       (if is-work
           (push "Work Projects" suggestions)
         (push "Personal Projects" suggestions)))
-     
+
      ;; Someday items
      ((member todo-state '("SOMEDAY"))
       (push "Someday/Maybe" suggestions))
-     
+
      ;; Regular tasks
      (t
       (if is-work
           (push "Work Tasks" suggestions)
         (push "Personal Tasks" suggestions))))
-    
+
     ;; Always offer inbox as fallback
     (push "Inbox" suggestions)
-    
+
     ;; Let user choose
     (let ((choice (completing-read "Refile to: " suggestions)))
       (cond
@@ -770,28 +838,28 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
   "Validate that refile target is appropriate."
   (let* ((target-file (nth 1 target))
          (target-heading (nth 0 target)))
-    
+
     ;; Check if target file exists
     (unless (file-exists-p target-file)
       (error "Target file does not exist: %s" target-file))
-    
+
     ;; Warn about cross-context refiling
     (when (and (org-get-tags)
                (member "@work" (org-get-tags))
                (string-match-p "personal" target-file))
       (unless (y-or-n-p "Refiling work item to personal context. Continue? ")
         (error "Refile cancelled")))
-    
+
     (when (and (org-get-tags)
                (member "@personal" (org-get-tags))
                (string-match-p "work" target-file))
       (unless (y-or-n-p "Refiling personal item to work context. Continue? ")
         (error "Refile cancelled")))
-    
+
     target))
 
 ;; Hook validation into refile process
-(advice-add 'org-refile :before 
+(advice-add 'org-refile :before
             (lambda (&optional arg default-buffer rfloc redisplay-agenda)
               (when rfloc (rk/validate-refile-target rfloc))))
 
@@ -814,7 +882,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
 
 (defun rk/add-to-refile-history (target)
   "Add TARGET to refile history."
-  (setq rk/refile-history 
+  (setq rk/refile-history
         (delete-dups (cons target rk/refile-history)))
   (when (> (length rk/refile-history) 10)
     (setq rk/refile-history (butlast rk/refile-history))))
@@ -824,8 +892,8 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
   (interactive)
   (if rk/refile-history
       (let* ((choices (mapcar (lambda (target)
-                               (format "%s (%s)" (nth 0 target) (nth 1 target)))
-                             rk/refile-history))
+                                (format "%s (%s)" (nth 0 target) (nth 1 target)))
+                              rk/refile-history))
              (choice (completing-read "Recent refile targets: " choices))
              (index (position choice choices :test 'string=)))
         (when index
@@ -887,13 +955,13 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
                 (rk/org-file "gtd.org" "work")
                 (rk/org-file "projects.org" "work")
                 (rk/org-file "someday.org" "work")))
-         
+
          ((eq rk/org-context-mode 'personal)
           (list (rk/org-file "inbox.org")
                 (rk/org-file "gtd.org" "personal")
                 (rk/org-file "projects.org" "personal")
                 (rk/org-file "someday.org" "personal")))
-         
+
          (t ; unified mode
           (list (rk/org-file "inbox.org")
                 (rk/org-file "gtd.org" "work")
@@ -934,10 +1002,10 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
   (interactive)
   (let* ((mode-desc (rk/org-current-context))
          (file-count (length org-agenda-files))
-         (files-desc (mapconcat 
+         (files-desc (mapconcat
                      (lambda (f) (file-name-nondirectory f))
                      org-agenda-files ", ")))
-    (message "📋 GTD Context: %s mode (%d files: %s)" 
+    (message "📋 GTD Context: %s mode (%d files: %s)"
              mode-desc file-count files-desc)))
 
 ;; Initialize context mode on startup
@@ -963,22 +1031,22 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
                                   (string-match-p "@work" (or (nth 3 template) ""))))
              (is-personal-template (or (string-match-p "personal\\|Personal" (or desc ""))
                                       (string-match-p "@personal" (or (nth 3 template) "")))))
-        
+
         ;; Include template based on context mode
         (cond
          ((eq rk/org-context-mode 'work)
           (when (or (not (or is-work-template is-personal-template))  ; neutral templates
                     is-work-template)  ; work templates
             (push template filtered-templates)))
-         
+
          ((eq rk/org-context-mode 'personal)
           (when (or (not (or is-work-template is-personal-template))  ; neutral templates
                     is-personal-template)  ; personal templates
             (push template filtered-templates)))
-         
+
          (t ; unified mode - include all templates
           (push template filtered-templates)))))
-    
+
     (reverse filtered-templates)))
 
 (defun rk/org-context-aware-capture ()
@@ -1001,7 +1069,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
     (message message-text)
     ;; Also show as temporary overlay
     (let ((overlay (make-overlay (point) (point))))
-      (overlay-put overlay 'after-string 
+      (overlay-put overlay 'after-string
                    (propertize (concat " [" mode-desc " Mode]")
                               'face '(:foreground "orange" :weight bold)))
       (run-with-timer 2 nil (lambda () (delete-overlay overlay))))))
@@ -1024,7 +1092,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
 ^GTD Context Mode^
 ^────────────────^
 _w_: 📊 Work mode
-_p_: 🏠 Personal mode  
+_p_: 🏠 Personal mode
 _u_: 🌟 Unified mode
 _s_: Show status
 _q_: Quit
@@ -1073,7 +1141,7 @@ _q_: Quit
   (cond
    ((eq rk/org-context-mode 'work)
     (org-capture nil "pw"))
-   ((eq rk/org-context-mode 'personal) 
+   ((eq rk/org-context-mode 'personal)
     (org-capture nil "pp"))
    ((eq rk/org-context-mode 'unified)
     ;; In unified mode, ask which type
@@ -1116,13 +1184,13 @@ MODE (m):              REFILE (r):           CLOCK (k):
 
 REVIEW (R):            ARCHIVE (A):          HELP:
   w   - weekly review    a   - archive task    h or ? - this help
-  d   - daily review     d   - archive done    
-  p   - process inbox    o   - archive old     
+  d   - daily review     d   - archive done
+  p   - process inbox    o   - archive old
 
 Current Mode: %s
 "))
     (with-output-to-temp-buffer "*Org-GTD Cheatsheet*"
-      (princ (format cheatsheet 
+      (princ (format cheatsheet
                      (upcase (symbol-name (or rk/org-context-mode 'unified))))))))
 
 ;; Context validation and health check
@@ -1137,13 +1205,13 @@ Current Mode: %s
                          (rk/org-file "gtd.org" "personal")
                          (rk/org-file "projects.org" "personal")
                          (rk/org-file "someday.org" "personal"))))
-    
+
     (dolist (file all-files)
       (unless (file-exists-p file)
         (push file missing-files)))
-    
+
     (if missing-files
-        (message "⚠️ Missing GTD files: %s" 
+        (message "⚠️ Missing GTD files: %s"
                  (mapconcat #'file-name-nondirectory missing-files ", "))
       (message "✅ All GTD context files are present and accessible"))))
 ;; GTD Context Switching System:1 ends here
@@ -1215,7 +1283,8 @@ Current Mode: %s
     "oohu" (lambda () (interactive) (find-file (rk/org-file "gtd-users-guide.org"))) ; User guide
     "oohv" 'rk/org-validate-context-files                                 ; Validate files
     "oohs" 'rk/org-show-context-status                                    ; Show status
-    "oohS" 'rk/org-context-status)
+    "oohS" 'rk/org-context-status                                          ; Context status
+    "oohH" 'rk/gtd-health-check)
 
   ;; Mode switching
   (spacemacs/declare-prefix "oom" "mode")
@@ -1226,7 +1295,11 @@ Current Mode: %s
     "ooms" 'rk/org-context-status ; Show current status
     "oomh" 'rk/org-context-hydra/body  ; Context switching hydra
     "oomv" 'rk/org-validate-context-files  ; Validate files
-    "oomS" 'rk/org-show-context-status))   ; Visual status display
+    "oomS" 'rk/org-show-context-status)   ; Visual status display
+
+  ;; Save operations
+  (spacemacs/set-leader-keys
+    "oos" 'org-save-all-org-buffers))  ; Save all org buffers
 
 ;; Context-aware keybinding helpers
 (defun rk/gtd-context-keybinding-hint (base-hint)
@@ -1418,7 +1491,7 @@ Current Mode: %s
     "SPC o o A" "archive"
     "SPC o o x" "extensions"
     "SPC o o x A" "claude")
-  
+
   ;; Quick access keys
   (which-key-add-key-based-replacements
     "SPC o o RET" "quick goto"
@@ -1426,7 +1499,7 @@ Current Mode: %s
     "SPC o o ?" "cheatsheet"
     "SPC o o o" "quick capture"
     "SPC o o H" "which-key help")
-  
+
   ;; Help bindings
   (which-key-add-key-based-replacements
     "SPC o o h ?" "cheatsheet"
@@ -1436,8 +1509,9 @@ Current Mode: %s
     "SPC o o h u" "→ user guide"
     "SPC o o h v" "validate files"
     "SPC o o h s" "show status"
-    "SPC o o h S" "context status")
-  
+    "SPC o o h S" "context status"
+    "SPC o o h H" "health check")
+
   ;; Capture bindings
   (which-key-add-key-based-replacements
     "SPC o o c RET" "default capture"
@@ -1449,7 +1523,7 @@ Current Mode: %s
     "SPC o o c P" "context project"
     "SPC o o c t" "context task"
     "SPC o o c w" "work task")
-  
+
   ;; Agenda bindings
   (which-key-add-key-based-replacements
     "SPC o o a a" "all agendas"
@@ -1462,7 +1536,7 @@ Current Mode: %s
     "SPC o o a s" "stalled items"
     "SPC o o a u" "unified dash"
     "SPC o o a w" "work dash")
-  
+
   ;; Goto bindings
   (which-key-add-key-based-replacements
     "SPC o o g a" "→ archive"
@@ -1478,7 +1552,7 @@ Current Mode: %s
     "SPC o o g u" "→ user guide"
     "SPC o o g w" "→ work gtd"
     "SPC o o g W" "→ work projects")
-  
+
   ;; Mode bindings
   (which-key-add-key-based-replacements
     "SPC o o m h" "context hydra"
@@ -1488,7 +1562,7 @@ Current Mode: %s
     "SPC o o m u" "unified mode"
     "SPC o o m v" "validate files"
     "SPC o o m w" "work mode")
-  
+
   ;; Refile bindings
   (which-key-add-key-based-replacements
     "SPC o o r RET" "default refile"
@@ -1502,7 +1576,7 @@ Current Mode: %s
     "SPC o o r v" "archive subtree"
     "SPC o o r w" "→ work gtd"
     "SPC o o r W" "→ work projects")
-  
+
   ;; Clock bindings
   (which-key-add-key-based-replacements
     "SPC o o k c" "cancel"
@@ -1515,7 +1589,7 @@ Current Mode: %s
     "SPC o o k r" "report"
     "SPC o o k t" "timer start"
     "SPC o o k T" "timer stop")
-  
+
   ;; Review bindings
   (which-key-add-key-based-replacements
     "SPC o o R a" "archive done"
@@ -1525,7 +1599,7 @@ Current Mode: %s
     "SPC o o R s" "stalled items"
     "SPC o o R v" "validate struct"
     "SPC o o R w" "weekly review")
-  
+
   ;; Archive bindings
   (which-key-add-key-based-replacements
     "SPC o o A a" "archive subtree"
@@ -1535,7 +1609,7 @@ Current Mode: %s
     "SPC o o A o" "archive old"
     "SPC o o A t" "test archive"
     "SPC o o A v" "validate arch")
-  
+
   ;; Extension bindings
   (which-key-add-key-based-replacements
     "SPC o o x a" "archive done"
@@ -1549,7 +1623,7 @@ Current Mode: %s
     "SPC o o x r" "reload config"
     "SPC o o x t" "tangle & load"
     "SPC o o x w" "weekly report")
-  
+
   ;; Claude extension bindings
   (which-key-add-key-based-replacements
     "SPC o o x A c" "continue chat"
@@ -1873,7 +1947,7 @@ SCHEME-NAME should be one of the defined color schemes."
      (format "* QUESTION Should we %s?\n\n** Context\n   %s\n\n** Options\n*** Option 1: \n    Pros: \n    Cons: \n\n*** Option 2: \n    Pros: \n    Cons: \n\n** Decision\n   \n\n** Next Actions\n   [ ] "
              decision-topic
              context)
-     "i")))
+     "cd")))
 ;; Advanced Capture Functions:1 ends here
 
 ;; Claude AI Integration Functions
@@ -1884,7 +1958,7 @@ SCHEME-NAME should be one of the defined color schemes."
   (interactive)
   (let* ((users-guide (rk/org-file "gtd-users-guide.org"))
          (question (read-string "Ask Claude about GTD manual: "))
-         (claude-command (format "claude --continue %s %s" 
+         (claude-command (format "claude --continue %s %s"
                                 (shell-quote-argument (format "I have a question about my GTD users guide. Here is my question: %s. Please refer to the attached GTD users guide file." question))
                                 (shell-quote-argument users-guide))))
     (if (file-exists-p users-guide)
@@ -1907,7 +1981,7 @@ SCHEME-NAME should be one of the defined color schemes."
   (interactive)
   (let* ((tutorial (rk/org-file "gtd-tutorial.org"))
          (question (read-string "Ask Claude about GTD tutorial: "))
-         (claude-command (format "claude --continue %s %s" 
+         (claude-command (format "claude --continue %s %s"
                                 (shell-quote-argument (format "I have a question about my GTD tutorial. Here is my question: %s. Please refer to the attached GTD tutorial file." question))
                                 (shell-quote-argument tutorial))))
     (if (file-exists-p tutorial)
@@ -1931,7 +2005,7 @@ SCHEME-NAME should be one of the defined color schemes."
   (let* ((users-guide (rk/org-file "gtd-users-guide.org"))
          (tutorial (rk/org-file "gtd-tutorial.org"))
          (initial-prompt "I want to start a conversation about my GTD (Getting Things Done) system. I have two reference files: a tutorial for learning the system and a comprehensive users guide. Please review these files and let me know you're ready to answer questions about my GTD workflow, configuration, troubleshooting, or any other GTD-related topics.")
-         (claude-command (format "claude %s %s %s" 
+         (claude-command (format "claude %s %s %s"
                                 (shell-quote-argument initial-prompt)
                                 (shell-quote-argument users-guide)
                                 (shell-quote-argument tutorial))))
@@ -1971,7 +2045,7 @@ SCHEME-NAME should be one of the defined color schemes."
   (interactive)
   (let* ((question (read-string "Quick GTD question for Claude: "))
          (users-guide (rk/org-file "gtd-users-guide.org"))
-         (claude-command (format "claude -p %s %s" 
+         (claude-command (format "claude -p %s %s"
                                 (shell-quote-argument (format "Quick GTD question: %s. Please answer based on the attached comprehensive GTD users guide." question))
                                 (shell-quote-argument users-guide))))
     (if (file-exists-p users-guide)
@@ -2020,22 +2094,22 @@ SCHEME-NAME should be one of the defined color schemes."
   "Set up keybindings for CodeLahoma org extensions."
   ;; Declare extensions prefix
   (spacemacs/declare-prefix "oox" "extensions")
-  
+
   ;; Color and bullet schemes
   (spacemacs/set-leader-keys "ooxc" 'switch-org-colors)
   (spacemacs/set-leader-keys "ooxC" 'preview-org-colors)
   (spacemacs/set-leader-keys "ooxb" 'rk/switch-org-bullets)
   (spacemacs/set-leader-keys "ooxB" 'rk/preview-org-bullets)
-  
+
   ;; Project management
   (spacemacs/set-leader-keys "ooxp" 'rk/org-create-project-template)
   (spacemacs/set-leader-keys "ooxa" 'rk/org-archive-done-items)
   (spacemacs/set-leader-keys "ooxr" 'rk/org-weekly-report)
-  
+
   ;; Advanced capture
   (spacemacs/set-leader-keys "ooxm" 'rk/org-capture-meeting-notes)
   (spacemacs/set-leader-keys "ooxd" 'rk/org-capture-decision)
-  
+
   ;; Claude AI integration
   (spacemacs/declare-prefix "ooxA" "claude")
   (spacemacs/set-leader-keys "ooxAm" 'rk/ask-claude-about-gtd-manual)
@@ -2043,7 +2117,7 @@ SCHEME-NAME should be one of the defined color schemes."
   (spacemacs/set-leader-keys "ooxAs" 'rk/start-claude-gtd-conversation)
   (spacemacs/set-leader-keys "ooxAc" 'rk/continue-claude-gtd-conversation)
   (spacemacs/set-leader-keys "ooxAq" 'rk/ask-claude-quick-gtd)
-  
+
   ;; System maintenance
   (spacemacs/set-leader-keys "ooxt" 'rk/tangle-and-load-codelahoma-org))
 ;; Custom Keybindings for Extensions:1 ends here
@@ -2058,6 +2132,43 @@ SCHEME-NAME should be one of the defined color schemes."
   (rk/setup-dynamic-descriptions)
   (rk/setup-extended-which-key-descriptions)
   (message "CodeLahoma org extensions loaded"))
+
+;; GTD System Health Check
+(defun rk/gtd-health-check ()
+  "Verify GTD system is properly configured and all files exist."
+  (interactive)
+  (let ((issues '())
+        (files-to-check
+         (list (rk/org-file "inbox.org")
+               (rk/org-file "archive.org")
+               (rk/org-file "gtd.org" "work")
+               (rk/org-file "projects.org" "work")
+               (rk/org-file "someday.org" "work")
+               (rk/org-file "gtd.org" "personal")
+               (rk/org-file "projects.org" "personal")
+               (rk/org-file "someday.org" "personal")
+               (rk/org-file "gtd-tutorial.org")
+               (rk/org-file "gtd-users-guide.org"))))
+
+    ;; Check directories exist
+    (dolist (dir (list rk/org-gtd-base-dir rk/org-gtd-work-dir rk/org-gtd-personal-dir))
+      (unless (file-directory-p dir)
+        (push (format "Directory missing: %s" dir) issues)))
+
+    ;; Check files exist
+    (dolist (file files-to-check)
+      (unless (file-exists-p file)
+        (push (format "File missing: %s" file) issues)))
+
+    ;; Check capture templates
+    (unless org-capture-templates
+      (push "No capture templates defined" issues))
+
+    ;; Report results
+    (if issues
+        (message "GTD Health Check - Issues found:\n%s\n\nRun M-x rk/create-gtd-structure to fix."
+                 (mapconcat 'identity issues "\n"))
+      (message "✅ GTD Health Check passed! All systems go."))))
 
 ;; Provide feature
 (provide 'codelahoma-org)
