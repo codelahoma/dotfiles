@@ -1,13 +1,14 @@
 ;; Directory and File Management
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Directory and File Management][Directory and File Management:1]]
+;; [[file:../codelahoma-org.org::*Directory and File Management][Directory and File Management:1]]
 ;; Legacy org directory for backward compatibility
-(defvar rk/org-directory "~/personal/org-files/"
-  "Base directory for all org files")
+;; (defvar rk/org-directory "~/personal/org-files/"
+;;   "Base directory for all org files")
 
-(defun rk/org-file (filename)
-  "Return full path to org file in the org directory."
-  (expand-file-name filename rk/org-directory))
+;; NOTE: This function is redefined below with more functionality
+;; (defun rk/org-file (filename)
+;;   "Return full path to org file in the org directory."
+;;   (expand-file-name filename rk/org-directory))
 
 ;; ======================================
 ;; GTD Directory Structure Configuration
@@ -102,7 +103,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
 
 ;; GTD TODO Keywords and State Management
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*GTD TODO Keywords and State Management][GTD TODO Keywords and State Management:1]]
+;; [[file:../codelahoma-org.org::*GTD TODO Keywords and State Management][GTD TODO Keywords and State Management:1]]
 ;; ======================================
 ;; GTD TODO Keywords and State Management
 ;; ======================================
@@ -208,7 +209,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
 
 ;; GTD Archive Configuration
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*GTD Archive Configuration][GTD Archive Configuration:1]]
+;; [[file:../codelahoma-org.org::*GTD Archive Configuration][GTD Archive Configuration:1]]
 ;; ======================================
 ;; GTD Archive Configuration
 ;; ======================================
@@ -331,92 +332,122 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
 
 ;; GTD Capture Templates Configuration
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*GTD Capture Templates Configuration][GTD Capture Templates Configuration:1]]
+;; [[file:../codelahoma-org.org::*GTD Capture Templates Configuration][GTD Capture Templates Configuration:1]]
 ;; ======================================
 ;; GTD Capture Templates Configuration
 ;; ======================================
 
 ;; Configure capture templates for GTD workflow
+;; Helper function for capture templates
+(defun rk/capture-file-inbox ()
+  "Return inbox file path for capture templates."
+  (or (rk/org-file "inbox.org")
+      (expand-file-name "~/personal/org-files/inbox.org")))
+
+(defun rk/capture-file-work-gtd ()
+  "Return work GTD file path for capture templates."
+  (rk/org-file "gtd.org" "work"))
+
+(defun rk/capture-file-work-projects ()
+  "Return work projects file path for capture templates."
+  (rk/org-file "projects.org" "work"))
+
+(defun rk/capture-file-personal-gtd ()
+  "Return personal GTD file path for capture templates."
+  (rk/org-file "gtd.org" "personal"))
+
+(defun rk/capture-file-personal-projects ()
+  "Return personal projects file path for capture templates."
+  (rk/org-file "projects.org" "personal"))
+
+(defun rk/capture-file-work-someday ()
+  "Return work someday file path for capture templates."
+  (rk/org-file "someday.org" "work"))
+
+(defun rk/capture-file-personal-someday ()
+  "Return personal someday file path for capture templates."
+  (rk/org-file "someday.org" "personal"))
+
 (setq org-capture-templates
       '(;; Basic GTD Templates
         ("i" "Inbox" entry
-         (file (lambda () (rk/org-file "inbox.org")))
+         (file rk/capture-file-inbox)
          "* TODO %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
          :empty-lines 1)
         
         ("w" "Work Templates")
         ("wt" "Work Task" entry
-         (file+headline (lambda () (rk/org-file "gtd.org" "work")) "Tasks")
+         (file+headline rk/capture-file-work-gtd "Tasks")
          "* TODO %? @work\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|0:15|0:30|1:00|2:00|4:00}\n  :END:\n  %^{Scheduled}t"
          :empty-lines 1)
         
         ("wp" "Work Project" entry
-         (file+headline (lambda () (rk/org-file "projects.org" "work")) "Active Projects")
+         (file+headline rk/capture-file-work-projects "Active Projects")
          "* PROJECT %? @work @project\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n\n** Purpose/Outcome\n   %^{Purpose}\n\n** Next Actions\n*** TODO %^{First Action}\n"
          :empty-lines 1)
         
         ("p" "Personal Templates")
         ("pt" "Personal Task" entry
-         (file+headline (lambda () (rk/org-file "gtd.org" "personal")) "Tasks")
+         (file+headline rk/capture-file-personal-gtd "Tasks")
          "* TODO %? @personal\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|0:15|0:30|1:00|2:00}\n  :END:\n  %^{Scheduled}t"
          :empty-lines 1)
         
         ("pp" "Personal Project" entry
-         (file+headline (lambda () (rk/org-file "projects.org" "personal")) "Active Projects")
+         (file+headline rk/capture-file-personal-projects "Active Projects")
          "* PROJECT %? @personal @project\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n\n** Purpose/Outcome\n   %^{Purpose}\n\n** Next Actions\n*** TODO %^{First Action}\n"
          :empty-lines 1)
         
         ("n" "Quick Note" entry
-         (file (lambda () (rk/org-file "inbox.org")))
+         (file rk/capture-file-inbox)
          "* %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
          :empty-lines 1
-         :immediate-finish t)
+         )
         
         ("s" "Someday/Maybe" entry
-         (file+headline (lambda () (rk/org-file "someday.org" "work")) "Someday/Maybe")
+         (file+headline rk/capture-file-work-someday "Someday/Maybe")
          "* SOMEDAY %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
          :empty-lines 1)
         
         ;; Advanced capture templates
         ("m" "Meeting Templates")
         ("mm" "Meeting" entry
-         (file+headline (lambda () (rk/org-file "gtd.org" "work")) "Meetings")
+         (file+headline rk/capture-file-work-gtd "Meetings")
          "* NEXT Meeting: %? @work @agenda\n  SCHEDULED: %^{Meeting time}T\n  :PROPERTIES:\n  :CREATED: %U\n  :ATTENDEES: %^{Attendees}\n  :LOCATION: %^{Location|Office|Remote|Conference Room}\n  :END:\n\n** Agenda\n   %^{Agenda}\n\n** Notes\n\n** Action Items\n"
          :empty-lines 1)
         
         ("mi" "Interruption Log" entry
-         (file (lambda () (rk/org-file "inbox.org")))
+         (file rk/capture-file-inbox)
          "* NEXT Handle: %? @high_energy\n  :PROPERTIES:\n  :CREATED: %U\n  :INTERRUPTED_FROM: %^{What were you working on?}\n  :INTERRUPTION_TYPE: %^{Type|Email|Phone|Person|System|Other}\n  :END:\n"
          :clock-in t :clock-resume t :empty-lines 1)
         
         ("e" "Energy-Context Templates")
         ("eh" "High Energy Task" entry
-         (file+headline (lambda () (rk/org-file "gtd.org" "work")) "High Energy Tasks")
+         (file+headline rk/capture-file-work-gtd "High Energy Tasks")
          "* TODO %? @work @high_energy @creative\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|1:00|2:00|4:00}\n  :ENERGY_REQUIRED: High\n  :END:\n  %^{Scheduled}t"
          :empty-lines 1)
         
         ("el" "Low Energy Task" entry
-         (file+headline (lambda () (rk/org-file "gtd.org" "work")) "Low Energy Tasks")
+         (file+headline rk/capture-file-work-gtd "Low Energy Tasks")
          "* TODO %? @work @low_energy @administrative\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|0:15|0:30|1:00}\n  :ENERGY_REQUIRED: Low\n  :END:\n  %^{Scheduled}t"
          :empty-lines 1)
         
         ("E" "Email Task" entry
-         (file (lambda () (rk/org-file "inbox.org")))
+         (file rk/capture-file-inbox)
          "* TODO %^{Task description} @computer @email\n  :PROPERTIES:\n  :CREATED: %U\n  :EMAIL_FROM: %^{From}\n  :EMAIL_SUBJECT: %^{Subject}\n  :EMAIL_DATE: %^{Email date}T\n  :END:\n\n** Email Content\n   %?"
          :empty-lines 1)
         
         ("v" "Voice Note" entry
-         (file (lambda () (rk/org-file "inbox.org")))
+         (file rk/capture-file-inbox)
          "* TODO Process voice note: %?\n  :PROPERTIES:\n  :CREATED: %U\n  :VOICE_FILE: %^{Voice file path}\n  :END:\n\n** Voice Note Summary\n   %^{Quick summary}\n\n** Action Required\n   %^{What needs to be done?}"
          :empty-lines 1)
         
         ("r" "Reading/Research" entry
-         (file+headline (lambda () (rk/org-file "someday.org" "personal")) "Reading List")
+         (file+headline rk/capture-file-personal-someday "Reading List")
          "* SOMEDAY Read: %? @learning\n  :PROPERTIES:\n  :CREATED: %U\n  :SOURCE: %^{Source|Book|Article|Paper|Video|Course}\n  :AUTHOR: %^{Author}\n  :URL: %^{URL (if applicable)}\n  :PRIORITY: %^{Priority|High|Medium|Low}\n  :END:\n\n** Why Important\n   %^{Why do you want to read this?}\n\n** Key Questions\n   %^{What questions should this answer?}"
          :empty-lines 1)
         
         ("h" "Habit Tracking" entry
-         (file+headline (lambda () (rk/org-file "gtd.org" "personal")) "Habits")
+         (file+headline rk/capture-file-personal-gtd "Habits")
          "* TODO %? @health @routine\n  :PROPERTIES:\n  :CREATED: %U\n  :HABIT_TYPE: %^{Type|Health|Learning|Work|Social}\n  :FREQUENCY: %^{Frequency|Daily|Weekly|Monthly}\n  :TRIGGER: %^{What triggers this habit?}\n  :REWARD: %^{What's the reward?}\n  :END:\n\n** Habit Details\n   %^{Specific details about the habit}\n\n** Tracking\n   - [ ] %^{First milestone or day}"
          :empty-lines 1)))
 
@@ -424,7 +455,10 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
 (defun rk/capture-inbox ()
   "Quick capture to inbox."
   (interactive)
-  (org-capture nil "i"))
+  (let ((inbox-file (rk/capture-file-inbox)))
+    (if (file-exists-p inbox-file)
+        (org-capture nil "i")
+      (error "Inbox file does not exist: %s" inbox-file))))
 
 (defun rk/capture-work-task ()
   "Quick capture work task."
@@ -460,7 +494,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
 
 ;; GTD Custom Agenda Commands
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*GTD Custom Agenda Commands][GTD Custom Agenda Commands:1]]
+;; [[file:../codelahoma-org.org::*GTD Custom Agenda Commands][GTD Custom Agenda Commands:1]]
 ;; ======================================
 ;; GTD Custom Agenda Commands
 ;; ======================================
@@ -637,7 +671,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
 
 ;; GTD Refile Configuration
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*GTD Refile Configuration][GTD Refile Configuration:1]]
+;; [[file:../codelahoma-org.org::*GTD Refile Configuration][GTD Refile Configuration:1]]
 ;; ======================================
 ;; GTD Refile Configuration
 ;; ======================================
@@ -806,7 +840,7 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
 
 ;; GTD Context Switching System
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*GTD Context Switching System][GTD Context Switching System:1]]
+;; [[file:../codelahoma-org.org::*GTD Context Switching System][GTD Context Switching System:1]]
 ;; ======================================
 ;; GTD Context Switching System
 ;; ======================================
@@ -1030,6 +1064,24 @@ _q_: Quit
           (find-file (rk/org-file "projects.org" "work"))
         (find-file (rk/org-file "projects.org" "personal")))))))
 
+;; Alias for keybinding consistency
+(defalias 'rk/goto-projects 'rk/org-goto-context-projects)
+
+(defun rk/context-capture-project ()
+  "Capture a project based on current context mode."
+  (interactive)
+  (cond
+   ((eq rk/org-context-mode 'work)
+    (org-capture nil "pw"))
+   ((eq rk/org-context-mode 'personal) 
+    (org-capture nil "pp"))
+   ((eq rk/org-context-mode 'unified)
+    ;; In unified mode, ask which type
+    (let ((choice (completing-read "Project type: " '("Work" "Personal"))))
+      (if (string= choice "Work")
+          (org-capture nil "pw")
+        (org-capture nil "pp"))))))
+
 ;; Integration with existing agenda functions
 (defun rk/org-context-dashboard ()
   "Open appropriate dashboard for current context."
@@ -1098,7 +1150,7 @@ Current Mode: %s
 
 ;; GTD Unified Keybinding System
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*GTD Unified Keybinding System][GTD Unified Keybinding System:1]]
+;; [[file:../codelahoma-org.org::*GTD Unified Keybinding System][GTD Unified Keybinding System:1]]
 ;; ======================================
 ;; GTD Unified Keybinding System
 ;; ======================================
@@ -1106,19 +1158,22 @@ Current Mode: %s
 ;; Enhanced keybinding setup function
 (defun rk/setup-gtd-keybindings ()
   "Set up comprehensive GTD keybindings under SPC o o prefix."
-  
+
   ;; Main GTD prefix
   (spacemacs/declare-prefix "oo" "GTD")
-  
+
   ;; Core GTD operations
   (spacemacs/declare-prefix "ooc" "capture")
-  (spacemacs/set-leader-keys 
+  (spacemacs/set-leader-keys
     "ooci" 'rk/capture-inbox
-    "oocw" 'rk/capture-work-task  
+    "oocw" 'rk/capture-work-task
     "oocp" 'rk/capture-personal-task
+    "ooct" 'rk/org-context-aware-capture
     "oocn" 'rk/capture-note
-    "oocC" 'org-capture)  ; Standard capture with all templates
-  
+    "oocP" 'rk/context-capture-project      ; Context-aware project capture
+    "oocC" 'org-capture                     ; Standard capture with all templates
+    "ooc RET" 'org-capture)                 ; Standard capture (RET for default)
+
   ;; Agenda operations
   (spacemacs/declare-prefix "ooa" "agenda")
   (spacemacs/set-leader-keys
@@ -1132,15 +1187,15 @@ Current Mode: %s
     "ooas" (lambda () (interactive) (org-agenda nil "s"))  ; Stalled items
     "ooaP" (lambda () (interactive) (org-agenda nil "P"))  ; Project overview
     "ooaa" 'org-agenda)  ; Standard agenda
-  
-  ;; File navigation  
+
+  ;; File navigation
   (spacemacs/declare-prefix "oog" "goto")
   (spacemacs/set-leader-keys
     "oogi" 'rk/org-goto-inbox
     "oogw" (lambda () (interactive) (find-file (rk/org-file "gtd.org" "work")))
     "oogp" (lambda () (interactive) (find-file (rk/org-file "gtd.org" "personal")))
     "oogW" (lambda () (interactive) (find-file (rk/org-file "projects.org" "work")))
-    "oogP" (lambda () (interactive) (find-file (rk/org-file "projects.org" "personal")))
+    "oogP" 'rk/goto-projects                    ; Context-aware projects navigation
     "oogs" (lambda () (interactive) (find-file (rk/org-file "someday.org" "work")))
     "oogS" (lambda () (interactive) (find-file (rk/org-file "someday.org" "personal")))
     "ooga" (lambda () (interactive) (find-file (rk/org-file "archive.org")))
@@ -1149,18 +1204,24 @@ Current Mode: %s
     "oogf" 'rk/switch-dashboard          ; Quick dashboard switching
     "oogt" (lambda () (interactive) (find-file (rk/org-file "gtd-tutorial.org")))    ; GTD Tutorial
     "oogu" (lambda () (interactive) (find-file (rk/org-file "gtd-users-guide.org")))) ; GTD User Guide
-  
+
   ;; Help
   (spacemacs/declare-prefix "ooh" "help")
   (spacemacs/set-leader-keys
-    "ooh" 'rk/org-gtd-cheatsheet
-    "oo?" 'rk/org-gtd-cheatsheet)
-  
+    "ooh?" 'rk/org-gtd-cheatsheet
+    "oohc" 'rk/org-gtd-cheatsheet                                          ; Cheatsheet
+    "oohh" 'rk/org-gtd-which-key-help                                     ; Which-key help
+    "ooht" (lambda () (interactive) (find-file (rk/org-file "gtd-tutorial.org")))    ; Tutorial
+    "oohu" (lambda () (interactive) (find-file (rk/org-file "gtd-users-guide.org"))) ; User guide
+    "oohv" 'rk/org-validate-context-files                                 ; Validate files
+    "oohs" 'rk/org-show-context-status                                    ; Show status
+    "oohS" 'rk/org-context-status)
+
   ;; Mode switching
   (spacemacs/declare-prefix "oom" "mode")
   (spacemacs/set-leader-keys
     "oomw" 'rk/org-work-mode      ; Work-only mode
-    "oomp" 'rk/org-personal-mode  ; Personal-only mode  
+    "oomp" 'rk/org-personal-mode  ; Personal-only mode
     "oomu" 'rk/org-unified-mode   ; Unified mode
     "ooms" 'rk/org-context-status ; Show current status
     "oomh" 'rk/org-context-hydra/body  ; Context switching hydra
@@ -1176,14 +1237,14 @@ Current Mode: %s
 ;; Dynamic keybinding descriptions
 (defun rk/setup-dynamic-descriptions ()
   "Set up context-aware keybinding descriptions."
-  (spacemacs/set-leader-keys 
-    "oocc" `(rk/org-context-aware-capture 
+  (spacemacs/set-leader-keys
+    "oocc" `(rk/org-context-aware-capture
              ,(rk/gtd-context-keybinding-hint "context capture"))
-    "ooad" `(rk/org-context-dashboard 
+    "ooad" `(rk/org-context-dashboard
              ,(rk/gtd-context-keybinding-hint "context dashboard"))
-    "oogg" `(rk/org-goto-context-gtd 
+    "oogg" `(rk/org-goto-context-gtd
              ,(rk/gtd-context-keybinding-hint "context GTD file"))
-    "oogj" `(rk/org-goto-context-projects 
+    "oogj" `(rk/org-goto-context-projects
              ,(rk/gtd-context-keybinding-hint "context projects"))))
 
 ;; Quick access functions for common workflows
@@ -1221,6 +1282,7 @@ Current Mode: %s
 ;; Refile operations
 (spacemacs/declare-prefix "oor" "refile")
 (spacemacs/set-leader-keys
+  "oor RET" 'org-refile           ; Standard refile (RET for default)
   "oord" 'org-refile
   "oora" 'rk/smart-refile         ; Smart context-aware refile
   "oorw" 'rk/refile-to-work-gtd
@@ -1326,7 +1388,7 @@ QUICK ACCESS:
 Current Mode: %s
 "))
     (with-output-to-temp-buffer "*Org-GTD Cheatsheet*"
-      (princ (format cheatsheet 
+      (princ (format cheatsheet
                      (upcase (symbol-name rk/org-context-mode)))))))
 
 (defun rk/org-gtd-which-key-help ()
@@ -1336,29 +1398,170 @@ Current Mode: %s
 
 ;; Help keybindings
 (spacemacs/set-leader-keys
-  "ooh" 'rk/org-gtd-cheatsheet
   "oo?" 'rk/org-gtd-cheatsheet
   "ooH" 'rk/org-gtd-which-key-help)
 
 ;; Which-key descriptions for extended bindings
 (defun rk/setup-extended-which-key-descriptions ()
   "Set up which-key descriptions for all GTD keybindings."
+  ;; Prefix descriptions
   (which-key-add-key-based-replacements
     "SPC o o" "org-gtd"
     "SPC o o c" "capture"
     "SPC o o a" "agenda"
     "SPC o o g" "goto"
+    "SPC o o h" "help"
     "SPC o o m" "mode"
     "SPC o o r" "refile"
     "SPC o o k" "clock"
     "SPC o o R" "review"
     "SPC o o A" "archive"
-    "SPC o o x" "extensions"))
+    "SPC o o x" "extensions"
+    "SPC o o x A" "claude")
+  
+  ;; Quick access keys
+  (which-key-add-key-based-replacements
+    "SPC o o RET" "quick goto"
+    "SPC o o SPC" "quick agenda"
+    "SPC o o ?" "cheatsheet"
+    "SPC o o o" "quick capture"
+    "SPC o o H" "which-key help")
+  
+  ;; Help bindings
+  (which-key-add-key-based-replacements
+    "SPC o o h ?" "cheatsheet"
+    "SPC o o h c" "cheatsheet"
+    "SPC o o h h" "which-key help"
+    "SPC o o h t" "→ tutorial"
+    "SPC o o h u" "→ user guide"
+    "SPC o o h v" "validate files"
+    "SPC o o h s" "show status"
+    "SPC o o h S" "context status")
+  
+  ;; Capture bindings
+  (which-key-add-key-based-replacements
+    "SPC o o c RET" "default capture"
+    "SPC o o c C" "all templates"
+    "SPC o o c c" "context capture"
+    "SPC o o c i" "inbox"
+    "SPC o o c n" "note"
+    "SPC o o c p" "personal task"
+    "SPC o o c P" "context project"
+    "SPC o o c t" "context task"
+    "SPC o o c w" "work task")
+  
+  ;; Agenda bindings
+  (which-key-add-key-based-replacements
+    "SPC o o a a" "all agendas"
+    "SPC o o a d" "context dashboard"
+    "SPC o o a e" "high energy"
+    "SPC o o a f" "focus mode"
+    "SPC o o a i" "inbox process"
+    "SPC o o a p" "personal dash"
+    "SPC o o a P" "all projects"
+    "SPC o o a s" "stalled items"
+    "SPC o o a u" "unified dash"
+    "SPC o o a w" "work dash")
+  
+  ;; Goto bindings
+  (which-key-add-key-based-replacements
+    "SPC o o g a" "→ archive"
+    "SPC o o g f" "switch dashboard"
+    "SPC o o g g" "→ context gtd"
+    "SPC o o g i" "→ inbox"
+    "SPC o o g j" "→ context proj"
+    "SPC o o g P" "→ context proj"
+    "SPC o o g p" "→ personal gtd"
+    "SPC o o g S" "→ personal someday"
+    "SPC o o g s" "→ work someday"
+    "SPC o o g t" "→ tutorial"
+    "SPC o o g u" "→ user guide"
+    "SPC o o g w" "→ work gtd"
+    "SPC o o g W" "→ work projects")
+  
+  ;; Mode bindings
+  (which-key-add-key-based-replacements
+    "SPC o o m h" "context hydra"
+    "SPC o o m p" "personal mode"
+    "SPC o o m s" "show status"
+    "SPC o o m S" "visual status"
+    "SPC o o m u" "unified mode"
+    "SPC o o m v" "validate files"
+    "SPC o o m w" "work mode")
+  
+  ;; Refile bindings
+  (which-key-add-key-based-replacements
+    "SPC o o r RET" "default refile"
+    "SPC o o r a" "smart refile"
+    "SPC o o r b" "bulk done"
+    "SPC o o r d" "default"
+    "SPC o o r p" "→ personal gtd"
+    "SPC o o r P" "→ personal proj"
+    "SPC o o r r" "→ recent"
+    "SPC o o r s" "→ someday"
+    "SPC o o r v" "archive subtree"
+    "SPC o o r w" "→ work gtd"
+    "SPC o o r W" "→ work projects")
+  
+  ;; Clock bindings
+  (which-key-add-key-based-replacements
+    "SPC o o k c" "cancel"
+    "SPC o o k d" "display"
+    "SPC o o k e" "evaluate range"
+    "SPC o o k i" "clock in"
+    "SPC o o k j" "goto clock"
+    "SPC o o k l" "clock last"
+    "SPC o o k o" "clock out"
+    "SPC o o k r" "report"
+    "SPC o o k t" "timer start"
+    "SPC o o k T" "timer stop")
+  
+  ;; Review bindings
+  (which-key-add-key-based-replacements
+    "SPC o o R a" "archive done"
+    "SPC o o R d" "daily review"
+    "SPC o o R o" "archive old"
+    "SPC o o R p" "process inbox"
+    "SPC o o R s" "stalled items"
+    "SPC o o R v" "validate struct"
+    "SPC o o R w" "weekly review")
+  
+  ;; Archive bindings
+  (which-key-add-key-based-replacements
+    "SPC o o A a" "archive subtree"
+    "SPC o o A c" "clean empty"
+    "SPC o o A d" "archive done"
+    "SPC o o A f" "→ archive file"
+    "SPC o o A o" "archive old"
+    "SPC o o A t" "test archive"
+    "SPC o o A v" "validate arch")
+  
+  ;; Extension bindings
+  (which-key-add-key-based-replacements
+    "SPC o o x a" "archive done"
+    "SPC o o x b" "switch bullets"
+    "SPC o o x B" "preview bullets"
+    "SPC o o x c" "switch colors"
+    "SPC o o x C" "preview colors"
+    "SPC o o x d" "capture decision"
+    "SPC o o x m" "capture meeting"
+    "SPC o o x p" "project template"
+    "SPC o o x r" "reload config"
+    "SPC o o x t" "tangle & load"
+    "SPC o o x w" "weekly report")
+  
+  ;; Claude extension bindings
+  (which-key-add-key-based-replacements
+    "SPC o o x A c" "continue chat"
+    "SPC o o x A m" "ask manual"
+    "SPC o o x A q" "quick ask"
+    "SPC o o x A s" "start chat"
+    "SPC o o x A t" "ask tutorial"))
 ;; GTD Unified Keybinding System:1 ends here
 
 ;; GTD Navigation Functions
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*GTD Navigation Functions][GTD Navigation Functions:1]]
+;; [[file:../codelahoma-org.org::*GTD Navigation Functions][GTD Navigation Functions:1]]
 (defun rk/org-goto-inbox ()
   "Go to inbox file."
   (interactive)
@@ -1382,7 +1585,7 @@ Current Mode: %s
 
 ;; GTD Review and Agenda Functions
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*GTD Review and Agenda Functions][GTD Review and Agenda Functions:1]]
+;; [[file:../codelahoma-org.org::*GTD Review and Agenda Functions][GTD Review and Agenda Functions:1]]
 (defun rk/org-review-inbox ()
   "Review and process inbox items."
   (interactive)
@@ -1402,7 +1605,7 @@ Current Mode: %s
 
 ;; Org Heading Color Schemes
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Org Heading Color Schemes][Org Heading Color Schemes:1]]
+;; [[file:../codelahoma-org.org::*Org Heading Color Schemes][Org Heading Color Schemes:1]]
 (defvar org-heading-colors-schemes
   '(("Arctic"    . ("LightCyan" "AliceBlue" "LavenderBlue" "GhostWhite" "LightSteelBlue"))
     ("Autumn"    . ("OrangeRed" "DarkGoldenrod" "Sienna" "Peru" "Wheat4"))
@@ -1498,7 +1701,7 @@ SCHEME-NAME should be one of the defined color schemes."
 
 ;; Org Bullet Schemes
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Org Bullet Schemes][Org Bullet Schemes:1]]
+;; [[file:../codelahoma-org.org::*Org Bullet Schemes][Org Bullet Schemes:1]]
 (defvar rk/org-bullet-schemes
   '(("Geometric" . ("◉" "○" "◈" "◇"))
     ("Natural"   . ("❋" "✿" "❀" "✤"))
@@ -1555,7 +1758,7 @@ SCHEME-NAME should be one of the defined color schemes."
 
 ;; Elfeed Integration
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Elfeed Integration][Elfeed Integration:1]]
+;; [[file:../codelahoma-org.org::*Elfeed Integration][Elfeed Integration:1]]
 (defun elfeed-save-to-org-roam-dailies ()
   "Save the current elfeed entry to org-roam dailies."
   (interactive)
@@ -1578,7 +1781,7 @@ SCHEME-NAME should be one of the defined color schemes."
 
 ;; Custom Spacemacs Config Helper
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Custom Spacemacs Config Helper][Custom Spacemacs Config Helper:1]]
+;; [[file:../codelahoma-org.org::*Custom Spacemacs Config Helper][Custom Spacemacs Config Helper:1]]
 (defun rk/insert-spacemacs-config-block ()
   "Insert org-babel source block for Spacemacs config."
   (interactive)
@@ -1604,7 +1807,7 @@ SCHEME-NAME should be one of the defined color schemes."
 
 ;; Project and Org Management Utilities
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Project and Org Management Utilities][Project and Org Management Utilities:1]]
+;; [[file:../codelahoma-org.org::*Project and Org Management Utilities][Project and Org Management Utilities:1]]
 (defun rk/org-create-project-template ()
   "Create a new project with standard structure."
   (interactive)
@@ -1646,7 +1849,7 @@ SCHEME-NAME should be one of the defined color schemes."
 
 ;; Advanced Capture Functions
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Advanced Capture Functions][Advanced Capture Functions:1]]
+;; [[file:../codelahoma-org.org::*Advanced Capture Functions][Advanced Capture Functions:1]]
 (defun rk/org-capture-meeting-notes ()
   "Capture meeting notes with attendees and agenda."
   (interactive)
@@ -1675,15 +1878,15 @@ SCHEME-NAME should be one of the defined color schemes."
 
 ;; Claude AI Integration Functions
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Claude AI Integration Functions][Claude AI Integration Functions:1]]
+;; [[file:../codelahoma-org.org::*Claude AI Integration Functions][Claude AI Integration Functions:1]]
 (defun rk/ask-claude-about-gtd-manual ()
   "Ask Claude about the GTD users guide using the CLI with continuing conversation."
   (interactive)
   (let* ((users-guide (rk/org-file "gtd-users-guide.org"))
          (question (read-string "Ask Claude about GTD manual: "))
-         (claude-command (format "claude --continue 'I have a question about my GTD users guide. Here is my question: %s. Please refer to the attached GTD users guide file.' '%s'" 
-                                question 
-                                users-guide)))
+         (claude-command (format "claude --continue %s %s" 
+                                (shell-quote-argument (format "I have a question about my GTD users guide. Here is my question: %s. Please refer to the attached GTD users guide file." question))
+                                (shell-quote-argument users-guide))))
     (if (file-exists-p users-guide)
         (progn
           (message "Asking Claude about GTD manual...")
@@ -1704,9 +1907,9 @@ SCHEME-NAME should be one of the defined color schemes."
   (interactive)
   (let* ((tutorial (rk/org-file "gtd-tutorial.org"))
          (question (read-string "Ask Claude about GTD tutorial: "))
-         (claude-command (format "claude --continue 'I have a question about my GTD tutorial. Here is my question: %s. Please refer to the attached GTD tutorial file.' '%s'" 
-                                question 
-                                tutorial)))
+         (claude-command (format "claude --continue %s %s" 
+                                (shell-quote-argument (format "I have a question about my GTD tutorial. Here is my question: %s. Please refer to the attached GTD tutorial file." question))
+                                (shell-quote-argument tutorial))))
     (if (file-exists-p tutorial)
         (progn
           (message "Asking Claude about GTD tutorial...")
@@ -1728,10 +1931,10 @@ SCHEME-NAME should be one of the defined color schemes."
   (let* ((users-guide (rk/org-file "gtd-users-guide.org"))
          (tutorial (rk/org-file "gtd-tutorial.org"))
          (initial-prompt "I want to start a conversation about my GTD (Getting Things Done) system. I have two reference files: a tutorial for learning the system and a comprehensive users guide. Please review these files and let me know you're ready to answer questions about my GTD workflow, configuration, troubleshooting, or any other GTD-related topics.")
-         (claude-command (format "claude '%s' '%s' '%s'" 
-                                initial-prompt
-                                users-guide 
-                                tutorial)))
+         (claude-command (format "claude %s %s %s" 
+                                (shell-quote-argument initial-prompt)
+                                (shell-quote-argument users-guide)
+                                (shell-quote-argument tutorial))))
     (if (and (file-exists-p users-guide) (file-exists-p tutorial))
         (progn
           (message "Starting Claude GTD conversation...")
@@ -1750,7 +1953,7 @@ SCHEME-NAME should be one of the defined color schemes."
   "Continue the existing Claude GTD conversation."
   (interactive)
   (let* ((question (read-string "Continue GTD conversation with Claude: "))
-         (claude-command (format "claude --continue '%s'" question)))
+         (claude-command (format "claude --continue %s" (shell-quote-argument question))))
     (message "Continuing Claude GTD conversation...")
     (let ((output-buffer (get-buffer-create "*Claude GTD Conversation*")))
       (with-current-buffer output-buffer
@@ -1768,9 +1971,9 @@ SCHEME-NAME should be one of the defined color schemes."
   (interactive)
   (let* ((question (read-string "Quick GTD question for Claude: "))
          (users-guide (rk/org-file "gtd-users-guide.org"))
-         (claude-command (format "claude -p 'Quick GTD question: %s. Please answer based on the attached comprehensive GTD users guide.' '%s'" 
-                                question 
-                                users-guide)))
+         (claude-command (format "claude -p %s %s" 
+                                (shell-quote-argument (format "Quick GTD question: %s. Please answer based on the attached comprehensive GTD users guide." question))
+                                (shell-quote-argument users-guide))))
     (if (file-exists-p users-guide)
         (progn
           (message "Getting quick GTD answer from Claude...")
@@ -1787,7 +1990,7 @@ SCHEME-NAME should be one of the defined color schemes."
 
 ;; System Configuration Loader
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*System Configuration Loader][System Configuration Loader:1]]
+;; [[file:../codelahoma-org.org::*System Configuration Loader][System Configuration Loader:1]]
 (defun rk/load-codelahoma-org-config ()
   "Load the codelahoma-org configuration if the file exists."
   (let ((config-file (expand-file-name "~/.spacemacs.d/codelahoma-org.el")))
@@ -1812,7 +2015,7 @@ SCHEME-NAME should be one of the defined color schemes."
 
 ;; Custom Keybindings for Extensions
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Custom Keybindings for Extensions][Custom Keybindings for Extensions:1]]
+;; [[file:../codelahoma-org.org::*Custom Keybindings for Extensions][Custom Keybindings for Extensions:1]]
 (defun rk/setup-codelahoma-org-keybindings ()
   "Set up keybindings for CodeLahoma org extensions."
   ;; Declare extensions prefix
@@ -1847,7 +2050,7 @@ SCHEME-NAME should be one of the defined color schemes."
 
 ;; Initialize Extensions
 
-;; [[file:../.homesick/repos/dotfiles/home/codelahoma-org.org::*Initialize Extensions][Initialize Extensions:1]]
+;; [[file:../codelahoma-org.org::*Initialize Extensions][Initialize Extensions:1]]
 ;; Auto-setup when org-mode loads
 (with-eval-after-load 'org
   (rk/setup-codelahoma-org-keybindings)

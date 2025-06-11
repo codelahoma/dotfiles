@@ -3,7 +3,7 @@
 #+EMAIL: codelahoma@gmail.com
 #+DATE: [2025-01-08 Wed]
 #+STARTUP: overview
-#+PROPERTY: header-args:emacs-lisp :tangle ~/.spacemacs.d/codelahoma-org.el :comments both
+#+PROPERTY: header-args:emacs-lisp :tangle .spacemacs.d/codelahoma-org.el :comments both
 
 * Introduction
 
@@ -15,12 +15,13 @@ The code is tangled to =codelahoma-org.el= and automatically loaded by the main 
 ** Directory and File Management
 #+begin_src emacs-lisp
 ;; Legacy org directory for backward compatibility
-(defvar rk/org-directory "~/personal/org-files/"
-  "Base directory for all org files")
+;; (defvar rk/org-directory "~/personal/org-files/"
+;;   "Base directory for all org files")
 
-(defun rk/org-file (filename)
-  "Return full path to org file in the org directory."
-  (expand-file-name filename rk/org-directory))
+;; NOTE: This function is redefined below with more functionality
+;; (defun rk/org-file (filename)
+;;   "Return full path to org file in the org directory."
+;;   (expand-file-name filename rk/org-directory))
 
 ;; ======================================
 ;; GTD Directory Structure Configuration
@@ -350,7 +351,8 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
 ;; Helper function for capture templates
 (defun rk/capture-file-inbox ()
   "Return inbox file path for capture templates."
-  (rk/org-file "inbox.org"))
+  (or (rk/org-file "inbox.org")
+      (expand-file-name "~/personal/org-files/inbox.org")))
 
 (defun rk/capture-file-work-gtd ()
   "Return work GTD file path for capture templates."
@@ -379,83 +381,83 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
 (setq org-capture-templates
       '(;; Basic GTD Templates
         ("i" "Inbox" entry
-         (file (rk/capture-file-inbox))
+         (file rk/capture-file-inbox)
          "* TODO %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
          :empty-lines 1)
         
         ("w" "Work Templates")
         ("wt" "Work Task" entry
-         (file+headline (rk/capture-file-work-gtd) "Tasks")
+         (file+headline rk/capture-file-work-gtd "Tasks")
          "* TODO %? @work\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|0:15|0:30|1:00|2:00|4:00}\n  :END:\n  %^{Scheduled}t"
          :empty-lines 1)
         
         ("wp" "Work Project" entry
-         (file+headline (rk/capture-file-work-projects) "Active Projects")
+         (file+headline rk/capture-file-work-projects "Active Projects")
          "* PROJECT %? @work @project\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n\n** Purpose/Outcome\n   %^{Purpose}\n\n** Next Actions\n*** TODO %^{First Action}\n"
          :empty-lines 1)
         
         ("p" "Personal Templates")
         ("pt" "Personal Task" entry
-         (file+headline (rk/capture-file-personal-gtd) "Tasks")
+         (file+headline rk/capture-file-personal-gtd "Tasks")
          "* TODO %? @personal\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|0:15|0:30|1:00|2:00}\n  :END:\n  %^{Scheduled}t"
          :empty-lines 1)
         
         ("pp" "Personal Project" entry
-         (file+headline (rk/capture-file-personal-projects) "Active Projects")
+         (file+headline rk/capture-file-personal-projects "Active Projects")
          "* PROJECT %? @personal @project\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n\n** Purpose/Outcome\n   %^{Purpose}\n\n** Next Actions\n*** TODO %^{First Action}\n"
          :empty-lines 1)
         
         ("n" "Quick Note" entry
-         (file (rk/capture-file-inbox))
+         (file rk/capture-file-inbox)
          "* %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
          :empty-lines 1
-         :immediate-finish t)
+         )
         
         ("s" "Someday/Maybe" entry
-         (file+headline (rk/capture-file-work-someday) "Someday/Maybe")
+         (file+headline rk/capture-file-work-someday "Someday/Maybe")
          "* SOMEDAY %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
          :empty-lines 1)
         
         ;; Advanced capture templates
         ("m" "Meeting Templates")
         ("mm" "Meeting" entry
-         (file+headline (rk/capture-file-work-gtd) "Meetings")
+         (file+headline rk/capture-file-work-gtd "Meetings")
          "* NEXT Meeting: %? @work @agenda\n  SCHEDULED: %^{Meeting time}T\n  :PROPERTIES:\n  :CREATED: %U\n  :ATTENDEES: %^{Attendees}\n  :LOCATION: %^{Location|Office|Remote|Conference Room}\n  :END:\n\n** Agenda\n   %^{Agenda}\n\n** Notes\n\n** Action Items\n"
          :empty-lines 1)
         
         ("mi" "Interruption Log" entry
-         (file (rk/capture-file-inbox))
+         (file rk/capture-file-inbox)
          "* NEXT Handle: %? @high_energy\n  :PROPERTIES:\n  :CREATED: %U\n  :INTERRUPTED_FROM: %^{What were you working on?}\n  :INTERRUPTION_TYPE: %^{Type|Email|Phone|Person|System|Other}\n  :END:\n"
          :clock-in t :clock-resume t :empty-lines 1)
         
         ("e" "Energy-Context Templates")
         ("eh" "High Energy Task" entry
-         (file+headline (rk/capture-file-work-gtd) "High Energy Tasks")
+         (file+headline rk/capture-file-work-gtd "High Energy Tasks")
          "* TODO %? @work @high_energy @creative\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|1:00|2:00|4:00}\n  :ENERGY_REQUIRED: High\n  :END:\n  %^{Scheduled}t"
          :empty-lines 1)
         
         ("el" "Low Energy Task" entry
-         (file+headline (rk/capture-file-work-gtd) "Low Energy Tasks")
+         (file+headline rk/capture-file-work-gtd "Low Energy Tasks")
          "* TODO %? @work @low_energy @administrative\n  :PROPERTIES:\n  :CREATED: %U\n  :EFFORT: %^{Effort|0:15|0:30|1:00}\n  :ENERGY_REQUIRED: Low\n  :END:\n  %^{Scheduled}t"
          :empty-lines 1)
         
         ("E" "Email Task" entry
-         (file (rk/capture-file-inbox))
+         (file rk/capture-file-inbox)
          "* TODO %^{Task description} @computer @email\n  :PROPERTIES:\n  :CREATED: %U\n  :EMAIL_FROM: %^{From}\n  :EMAIL_SUBJECT: %^{Subject}\n  :EMAIL_DATE: %^{Email date}T\n  :END:\n\n** Email Content\n   %?"
          :empty-lines 1)
         
         ("v" "Voice Note" entry
-         (file (rk/capture-file-inbox))
+         (file rk/capture-file-inbox)
          "* TODO Process voice note: %?\n  :PROPERTIES:\n  :CREATED: %U\n  :VOICE_FILE: %^{Voice file path}\n  :END:\n\n** Voice Note Summary\n   %^{Quick summary}\n\n** Action Required\n   %^{What needs to be done?}"
          :empty-lines 1)
         
         ("r" "Reading/Research" entry
-         (file+headline (rk/capture-file-personal-someday) "Reading List")
+         (file+headline rk/capture-file-personal-someday "Reading List")
          "* SOMEDAY Read: %? @learning\n  :PROPERTIES:\n  :CREATED: %U\n  :SOURCE: %^{Source|Book|Article|Paper|Video|Course}\n  :AUTHOR: %^{Author}\n  :URL: %^{URL (if applicable)}\n  :PRIORITY: %^{Priority|High|Medium|Low}\n  :END:\n\n** Why Important\n   %^{Why do you want to read this?}\n\n** Key Questions\n   %^{What questions should this answer?}"
          :empty-lines 1)
         
         ("h" "Habit Tracking" entry
-         (file+headline (rk/capture-file-personal-gtd) "Habits")
+         (file+headline rk/capture-file-personal-gtd "Habits")
          "* TODO %? @health @routine\n  :PROPERTIES:\n  :CREATED: %U\n  :HABIT_TYPE: %^{Type|Health|Learning|Work|Social}\n  :FREQUENCY: %^{Frequency|Daily|Weekly|Monthly}\n  :TRIGGER: %^{What triggers this habit?}\n  :REWARD: %^{What's the reward?}\n  :END:\n\n** Habit Details\n   %^{Specific details about the habit}\n\n** Tracking\n   - [ ] %^{First milestone or day}"
          :empty-lines 1)))
 
@@ -463,7 +465,10 @@ SUBDIR can be 'work', 'personal', or nil for base directory."
 (defun rk/capture-inbox ()
   "Quick capture to inbox."
   (interactive)
-  (org-capture nil "i"))
+  (let ((inbox-file (rk/capture-file-inbox)))
+    (if (file-exists-p inbox-file)
+        (org-capture nil "i")
+      (error "Inbox file does not exist: %s" inbox-file))))
 
 (defun rk/capture-work-task ()
   "Quick capture work task."
@@ -1209,7 +1214,15 @@ Current Mode: %s
     ;; Help
     (spacemacs/declare-prefix "ooh" "help")
     (spacemacs/set-leader-keys
-      "ooh?" 'rk/org-gtd-cheatsheet)
+      "ooh?" 'rk/org-gtd-cheatsheet
+      "oohc" 'rk/org-gtd-cheatsheet                                          ; Cheatsheet
+      "oohh" 'rk/org-gtd-which-key-help                                     ; Which-key help
+      "ooht" (lambda () (interactive) (find-file (rk/org-file "gtd-tutorial.org")))    ; Tutorial
+      "oohu" (lambda () (interactive) (find-file (rk/org-file "gtd-users-guide.org"))) ; User guide
+      "oohv" 'rk/org-validate-context-files                                 ; Validate files
+      "oohs" 'rk/org-show-context-status                                    ; Show status
+      "oohS" 'rk/org-context-status                                          ; Context status
+      "oohH" 'rk/gtd-health-check)
 
     ;; Mode switching
     (spacemacs/declare-prefix "oom" "mode")
@@ -1420,6 +1433,18 @@ Current Mode: %s
       "SPC o o ?" "cheatsheet"
       "SPC o o o" "quick capture"
       "SPC o o H" "which-key help")
+    
+    ;; Help bindings
+    (which-key-add-key-based-replacements
+      "SPC o o h ?" "cheatsheet"
+      "SPC o o h c" "cheatsheet"
+      "SPC o o h h" "which-key help"
+      "SPC o o h t" "→ tutorial"
+      "SPC o o h u" "→ user guide"
+      "SPC o o h v" "validate files"
+      "SPC o o h s" "show status"
+      "SPC o o h S" "context status"
+      "SPC o o h H" "health check")
     
     ;; Capture bindings
     (which-key-add-key-based-replacements
@@ -1864,9 +1889,9 @@ SCHEME-NAME should be one of the defined color schemes."
   (interactive)
   (let* ((users-guide (rk/org-file "gtd-users-guide.org"))
          (question (read-string "Ask Claude about GTD manual: "))
-         (claude-command (format "claude --continue 'I have a question about my GTD users guide. Here is my question: %s. Please refer to the attached GTD users guide file.' '%s'" 
-                                question 
-                                users-guide)))
+         (claude-command (format "claude --continue %s %s" 
+                                (shell-quote-argument (format "I have a question about my GTD users guide. Here is my question: %s. Please refer to the attached GTD users guide file." question))
+                                (shell-quote-argument users-guide))))
     (if (file-exists-p users-guide)
         (progn
           (message "Asking Claude about GTD manual...")
@@ -1887,9 +1912,9 @@ SCHEME-NAME should be one of the defined color schemes."
   (interactive)
   (let* ((tutorial (rk/org-file "gtd-tutorial.org"))
          (question (read-string "Ask Claude about GTD tutorial: "))
-         (claude-command (format "claude --continue 'I have a question about my GTD tutorial. Here is my question: %s. Please refer to the attached GTD tutorial file.' '%s'" 
-                                question 
-                                tutorial)))
+         (claude-command (format "claude --continue %s %s" 
+                                (shell-quote-argument (format "I have a question about my GTD tutorial. Here is my question: %s. Please refer to the attached GTD tutorial file." question))
+                                (shell-quote-argument tutorial))))
     (if (file-exists-p tutorial)
         (progn
           (message "Asking Claude about GTD tutorial...")
@@ -1911,10 +1936,10 @@ SCHEME-NAME should be one of the defined color schemes."
   (let* ((users-guide (rk/org-file "gtd-users-guide.org"))
          (tutorial (rk/org-file "gtd-tutorial.org"))
          (initial-prompt "I want to start a conversation about my GTD (Getting Things Done) system. I have two reference files: a tutorial for learning the system and a comprehensive users guide. Please review these files and let me know you're ready to answer questions about my GTD workflow, configuration, troubleshooting, or any other GTD-related topics.")
-         (claude-command (format "claude '%s' '%s' '%s'" 
-                                initial-prompt
-                                users-guide 
-                                tutorial)))
+         (claude-command (format "claude %s %s %s" 
+                                (shell-quote-argument initial-prompt)
+                                (shell-quote-argument users-guide)
+                                (shell-quote-argument tutorial))))
     (if (and (file-exists-p users-guide) (file-exists-p tutorial))
         (progn
           (message "Starting Claude GTD conversation...")
@@ -1933,7 +1958,7 @@ SCHEME-NAME should be one of the defined color schemes."
   "Continue the existing Claude GTD conversation."
   (interactive)
   (let* ((question (read-string "Continue GTD conversation with Claude: "))
-         (claude-command (format "claude --continue '%s'" question)))
+         (claude-command (format "claude --continue %s" (shell-quote-argument question))))
     (message "Continuing Claude GTD conversation...")
     (let ((output-buffer (get-buffer-create "*Claude GTD Conversation*")))
       (with-current-buffer output-buffer
@@ -1951,9 +1976,9 @@ SCHEME-NAME should be one of the defined color schemes."
   (interactive)
   (let* ((question (read-string "Quick GTD question for Claude: "))
          (users-guide (rk/org-file "gtd-users-guide.org"))
-         (claude-command (format "claude -p 'Quick GTD question: %s. Please answer based on the attached comprehensive GTD users guide.' '%s'" 
-                                question 
-                                users-guide)))
+         (claude-command (format "claude -p %s %s" 
+                                (shell-quote-argument (format "Quick GTD question: %s. Please answer based on the attached comprehensive GTD users guide." question))
+                                (shell-quote-argument users-guide))))
     (if (file-exists-p users-guide)
         (progn
           (message "Getting quick GTD answer from Claude...")
@@ -2041,6 +2066,43 @@ SCHEME-NAME should be one of the defined color schemes."
   (rk/setup-dynamic-descriptions)
   (rk/setup-extended-which-key-descriptions)
   (message "CodeLahoma org extensions loaded"))
+
+;; GTD System Health Check
+(defun rk/gtd-health-check ()
+  "Verify GTD system is properly configured and all files exist."
+  (interactive)
+  (let ((issues '())
+        (files-to-check 
+         (list (rk/org-file "inbox.org")
+               (rk/org-file "archive.org")
+               (rk/org-file "gtd.org" "work")
+               (rk/org-file "projects.org" "work")
+               (rk/org-file "someday.org" "work")
+               (rk/org-file "gtd.org" "personal")
+               (rk/org-file "projects.org" "personal")
+               (rk/org-file "someday.org" "personal")
+               (rk/org-file "gtd-tutorial.org")
+               (rk/org-file "gtd-users-guide.org"))))
+    
+    ;; Check directories exist
+    (dolist (dir (list rk/org-gtd-base-dir rk/org-gtd-work-dir rk/org-gtd-personal-dir))
+      (unless (file-directory-p dir)
+        (push (format "Directory missing: %s" dir) issues)))
+    
+    ;; Check files exist
+    (dolist (file files-to-check)
+      (unless (file-exists-p file)
+        (push (format "File missing: %s" file) issues)))
+    
+    ;; Check capture templates
+    (unless org-capture-templates
+      (push "No capture templates defined" issues))
+    
+    ;; Report results
+    (if issues
+        (message "GTD Health Check - Issues found:\n%s\n\nRun M-x rk/create-gtd-structure to fix."
+                 (mapconcat 'identity issues "\n"))
+      (message "✅ GTD Health Check passed! All systems go."))))
 
 ;; Provide feature
 (provide 'codelahoma-org)
