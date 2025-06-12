@@ -197,3 +197,9 @@ export PATH="/Users/rodk/.homesick/repos/dotfiles/.flowloom/bin:$PATH"
 # Additional aliases and functions
 function gi() { curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@ ;}
 alias claude="/Users/rodk/.claude/local/claude"
+
+# FlowLoom
+export PATH="/Users/rodk/github/flowloom/packages/flowloom_installer/.flowloom/bin:$PATH"
+
+# FlowLoom
+export PATH="/Users/rodk/work/atlas-up-ai/.flowloom/bin:$PATH"
