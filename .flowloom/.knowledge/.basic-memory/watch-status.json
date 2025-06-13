@@ -1,27 +1,10 @@
 {
   "running": false,
-  "start_time": "2025-06-10T07:01:49.563253",
-  "pid": 21979,
+  "start_time": "2025-06-12T21:02:21.042159",
+  "pid": 2141,
   "error_count": 0,
   "last_error": null,
-  "last_scan": "2025-06-10T07:21:46.155174",
-  "synced_files": 2,
-  "recent_events": [
-    {
-      "timestamp": "2025-06-10T07:21:46.154503",
-      "path": "development/gtd-keybinding-conflicts-summary.md",
-      "action": "new",
-      "status": "success",
-      "checksum": "adc41f2047162e9538b712844b5e48e24ac314dbd51b3aac3ce1f551334ee985",
-      "error": null
-    },
-    {
-      "timestamp": "2025-06-10T07:20:07.829657",
-      "path": "development/gtd-keybinding-audit.md",
-      "action": "new",
-      "status": "success",
-      "checksum": "dca94d8d363f15e0237b272b9980bafad46603a07418b675ce3b5a8fc8483876",
-      "error": null
-    }
-  ]
+  "last_scan": null,
+  "synced_files": 0,
+  "recent_events": []
 }
