@@ -651,7 +651,7 @@
           (should t))  ; Placeholder
       (delete-directory temp-dir t))))
 
-- (defun codelahoma-gtd-run-all-tests ()
+(defun codelahoma-gtd-run-all-tests ()
   "Run all GTD tests."
   (interactive)
   (ert-run-tests-batch-and-exit "^codelahoma-gtd-test-"))
