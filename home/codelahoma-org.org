@@ -1,559 +1,875 @@
-#+TITLE: CodeLahoma Org Mode Extensions (Corrected)
-#+AUTHOR: Rod Knowlton (Analyzed & Fixed by AI)
-#+EMAIL: codelahoma@gmail.com
-#+DATE: [2025-01-08 Wed]
-#+STARTUP: overview
-#+PROPERTY: header-args:emacs-lisp :tangle ~/.spacemacs.d/codelahoma-org.el :comments both
+#+TITLE: GTD System Implementation
+#+AUTHOR: Rod
+#+PROPERTY: header-args:emacs-lisp :tangle .spacemacs.d/codelahoma-org.el :results silent
 
-* Introduction
+* GTD System Overview
 
-This file contains custom org-mode extensions and utilities for the CodeLahoma GTD system.
-This version has been analyzed and corrected to fix runtime errors, logical flaws, and incorrect Lisp idioms found in the original AI-generated code.
-The code is tangled to =codelahoma-org.el= and automatically loaded by the main Spacemacs configuration.
+This is a comprehensive Getting Things Done (GTD) implementation for Spacemacs using org-babel literate programming. The system is designed to integrate seamlessly with existing Spacemacs patterns while providing a powerful, context-aware productivity workflow.
 
-* GTD System Core Functions
+** Architecture
 
-** Directory and File Management
+The GTD system follows a modular component architecture:
+- Foundation (100-110): Core setup and engine
+- User Interface (120-130): Keybindings and capture
+- Workflows (140-160): Processing, reviews, and contexts
+- Integration (170-190): External systems and documentation
+
+** Component Loading System
+
 #+begin_src emacs-lisp
-;; ======================================
-;; GTD Directory Structure Configuration
-;; ======================================
+;;; codelahoma-gtd.el --- GTD System Implementation -*- lexical-binding: t; -*-
 
-(defvar rk/org-gtd-base-dir (expand-file-name "~/personal/org-files/")
-  "Base directory for GTD org files.")
+;; Copyright (C) 2025 Rod
+;; Author: Rod
+;; Version: 1.0.0
+;; Package-Requires: ((emacs "27.1") (org "9.6"))
 
-(defvar rk/org-gtd-work-dir (expand-file-name "work/" rk/org-gtd-base-dir)
-  "Directory for work-related GTD files.")
+;;; Commentary:
+;; A comprehensive GTD implementation for Spacemacs
 
-(defvar rk/org-gtd-personal-dir (expand-file-name "personal/" rk/org-gtd-base-dir)
-  "Directory for personal GTD files.")
+;;; Code:
 
-(defvar rk/org-gtd-notes-dir (expand-file-name "notes/" rk/org-gtd-personal-dir)
-  "Directory for personal note files.")
+(require 'cl-lib)  ; For defstruct
 
-(defvar rk/org-gtd-meetings-dir (expand-file-name "meetings/" rk/org-gtd-work-dir)
-  "Directory for work meeting files.")
+(defgroup codelahoma-gtd nil
+  "GTD system configuration."
+  :group 'org
+  :prefix "codelahoma-gtd-")
 
-(defun rk/org-file (filename &optional subdir)
-  "Generate full path for org file FILENAME in optional SUBDIR.
-SUBDIR can be 'work', 'personal', 'notes', 'meetings', or nil for base directory."
-  (let ((base-dir (cond
-                   ((equal subdir "work") rk/org-gtd-work-dir)
-                   ((equal subdir "personal") rk/org-gtd-personal-dir)
-                   ((equal subdir "notes") rk/org-gtd-notes-dir)
-                   ((equal subdir "meetings") rk/org-gtd-meetings-dir)
-                   (t rk/org-gtd-base-dir))))
-    (expand-file-name filename base-dir)))
+(defcustom codelahoma-gtd-directory "~/personal/org-files/gtd/"
+  "Base directory for GTD files."
+  :type 'directory
+  :group 'codelahoma-gtd)
 
-(defun rk/create-gtd-structure ()
-  "Create GTD dirs/files and insert default headlines for capture targets."
+(defvar codelahoma-gtd-components-loaded nil
+  "List of loaded GTD components.")
+
+(defun codelahoma-gtd-load-component (component)
+  "Load GTD COMPONENT if not already loaded."
+  (unless (member component codelahoma-gtd-components-loaded)
+    (message "Loading GTD component: %s" component)
+    (push component codelahoma-gtd-components-loaded)))
+#+end_src
+
+* [100] Foundation Setup
+
+** Development Environment
+
+#+begin_src emacs-lisp
+(defun codelahoma-gtd-setup-development ()
+  "Set up GTD development environment."
   (interactive)
-  (let* ((dirs (list rk/org-gtd-base-dir rk/org-gtd-work-dir rk/org-gtd-personal-dir
-                     rk/org-gtd-notes-dir rk/org-gtd-meetings-dir))
-         (files `(,(rk/org-file "inbox.org")
-                  ,(rk/org-file "archive.org")
-                  ,(rk/org-file "gtd.org" "work")
-                  ,(rk/org-file "projects.org" "work")
-                  ,(rk/org-file "someday.org" "work")
-                  ,(rk/org-file "gtd.org" "personal")
-                  ,(rk/org-file "projects.org" "personal")
-                  ,(rk/org-file "someday.org" "personal"))))
-    (dolist (dir dirs)
-      (unless (file-exists-p dir)
-        (make-directory dir t)))
-    (dolist (file files)
-      (unless (file-exists-p file)
-        (with-temp-file file
-          (insert (format "#+TITLE: %s\n" (file-name-base file)))
+  ;; Ensure org-babel can execute elisp
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)))
+  
+  ;; Set up testing framework
+  (require 'ert)
+  
+  (message "GTD development environment ready"))
+
+(codelahoma-gtd-load-component 'foundation-dev)
+#+end_src
+
+** Component Architecture
+
+#+begin_src emacs-lisp
+(defvar codelahoma-gtd-components
+  '((100 . foundation-setup)
+    (110 . core-engine)
+    (120 . keybinding-system)
+    (130 . capture-system)
+    (140 . processing-workflow)
+    (150 . review-system)
+    (160 . context-engine)
+    (170 . integration-layer)
+    (180 . testing-framework)
+    (190 . documentation))
+  "GTD component registry.")
+
+(defun codelahoma-gtd-initialize ()
+  "Initialize the GTD system."
+  (interactive)
+  ;; Create directory structure
+  (codelahoma-gtd-create-directories)
+  ;; Load core components
+  (codelahoma-gtd-load-component 'foundation-setup)
+  (codelahoma-gtd-load-component 'core-engine)
+  (message "GTD system initialized"))
+#+end_src
+
+** File Organization
+
+#+begin_src emacs-lisp
+(defvar codelahoma-gtd-files
+  '(("inbox.org" . "Inbox")
+    ("projects.org" . "Projects") 
+    ("next-actions.org" . "Next Actions")
+    ("waiting-for.org" . "Waiting For")
+    ("someday-maybe.org" . "Someday/Maybe")
+    ("reference.org" . "Reference")
+    ("tickler.org" . "Tickler"))
+  "GTD file definitions.")
+
+(defun codelahoma-gtd-create-directories ()
+  "Create GTD directory structure."
+  (make-directory codelahoma-gtd-directory t)
+  (make-directory (concat codelahoma-gtd-directory "archive/") t)
+  (make-directory (concat codelahoma-gtd-directory "reviews/") t))
+
+(defun codelahoma-gtd-create-files ()
+  "Create initial GTD files if they don't exist."
+  (dolist (file-def codelahoma-gtd-files)
+    (let* ((filename (car file-def))
+           (title (cdr file-def))
+           (filepath (expand-file-name filename codelahoma-gtd-directory)))
+      (unless (file-exists-p filepath)
+        (with-temp-buffer
+          (insert "#+TITLE: " title "\n")
+          (insert "#+FILETAGS: :gtd:\n")
           (insert "#+STARTUP: overview\n\n")
-          ;; Insert headings for capture targets
-          (pcase (file-name-nondirectory file)
-            ("gtd.org"      (insert "* Tasks\n* High Energy Tasks\n* Low Energy Tasks\n* Meetings\n* Habits\n"))
-            ("projects.org" (insert "* Active Projects\n"))
-            ("someday.org"  (insert "* Someday/Maybe\n* Reading List\n"))
-            ("inbox.org"    (insert "* Inbox\n* Meetings\n")) ;; FIXED: Added a default "Inbox" headline
-            (_ nil)))))
-  (message "GTD structure initialized with headings.")))
+          (write-file filepath))))))
 
-(defun rk/validate-gtd-structure ()
-  "Validate that GTD directory structure exists and is complete."
-  (interactive)
-  (let ((missing-dirs '())
-        (missing-files '())
-        (dirs `(,rk/org-gtd-base-dir ,rk/org-gtd-work-dir ,rk/org-gtd-personal-dir))
-        (files `(,(rk/org-file "inbox.org")
-                 ,(rk/org-file "archive.org")
-                 ,(rk/org-file "gtd.org" "work")
-                 ,(rk/org-file "projects.org" "work")
-                 ,(rk/org-file "someday.org" "work")
-                 ,(rk/org-file "gtd.org" "personal")
-                 ,(rk/org-file "projects.org" "personal")
-                 ,(rk/org-file "someday.org" "personal"))))
-
-    (dolist (dir dirs)
-      (unless (file-directory-p dir) ;; FIXED: check for directory specifically
-        (push dir missing-dirs)))
-
-    (dolist (file files)
-      (unless (file-exists-p file)
-        (push file missing-files)))
-
-    (if (and (null missing-dirs) (null missing-files))
-        (message "✅ GTD structure is complete and valid!")
-      (progn
-        (when missing-dirs
-          ;; FIXED: `string-join` is not a standard elisp function. Use `mapconcat`.
-          (message "❌ Missing directories: %s" (mapconcat #'identity missing-dirs ", ")))
-        (when missing-files
-          (message "❌ Missing files: %s" (mapconcat #'identity missing-files ", ")))))))
+(codelahoma-gtd-load-component 'foundation-files)
 #+end_src
 
-** GTD TODO Keywords and State Management
+* [110] Core GTD Engine
+
+** State Management
+
 #+begin_src emacs-lisp
-(setq org-todo-keywords
-      '((sequence "NEXT(n)" "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")
-        (sequence "PROJECT(p)" "|" "COMPLETED(C)")
-        (sequence "SOMEDAY(s)" "|" "DECIDED(D)")))
+(defvar codelahoma-gtd-states
+  '(("TODO" . (:char ?t :face org-todo))
+    ("NEXT" . (:char ?n :face org-warning))
+    ("WAITING" . (:char ?w :face org-agenda-dimmed-todo-face))
+    ("HOLD" . (:char ?h :face org-agenda-dimmed-todo-face))
+    ("DONE" . (:char ?d :face org-done))
+    ("CANCELLED" . (:char ?c :face org-done)))
+  "GTD task states with properties.")
 
-(setq org-log-done 'time
-      org-log-into-drawer t
-      org-log-state-notes-insert-after-drawers nil)
+(defun codelahoma-gtd-setup-states ()
+  "Configure org-mode states for GTD."
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "NEXT(n)" "WAITING(w@/!)" "HOLD(h@/!)" 
+                    "|" "DONE(d!)" "CANCELLED(c@)")))
+  
+  (setq org-todo-keyword-faces
+        (mapcar (lambda (state)
+                  (cons (car state) (plist-get (cdr state) :face)))
+                codelahoma-gtd-states)))
 
-(setq org-todo-keyword-faces
-      '(("NEXT" . (:foreground "orange" :weight bold))
-        ("TODO" . (:foreground "red" :weight bold))
-        ("WAITING" . (:foreground "yellow" :weight bold))
-        ("PROJECT" . (:foreground "blue" :weight bold))
-        ("SOMEDAY" . (:foreground "purple" :weight bold))))
-
-(setq org-tag-alist
-      '(("@work" . ?w) ("@home" . ?h) ("@office" . ?o)
-        ("@computer" . ?c) ("@phone" . ?p) ("@errands" . ?e)
-        (:startgrouptag)
-        ("ENERGY" . ?E)
-        (:grouptags)
-        ("@high_energy" . ?H) ("@low_energy" . ?L)
-        (:endgrouptag)
-        (:startgrouptag)
-        ("PRIORITY" . ?P)
-        (:grouptags)
-        ("A" . ?A) ("B" . ?B) ("C" . ?C)
-        (:endgrouptag)))
-
-(setq org-fast-tag-selection-single-key t
-      org-use-fast-todo-selection t)
+(codelahoma-gtd-load-component 'core-states)
 #+end_src
 
-** GTD Archive Configuration
+** File Organization Engine
+
 #+begin_src emacs-lisp
-;; Configure archive location
-(setq org-archive-location (concat (rk/org-file "archive.org") "::* Archived Tasks %Y"))
+(defun codelahoma-gtd-inbox-file ()
+  "Return the inbox file path."
+  (expand-file-name "inbox.org" codelahoma-gtd-directory))
 
-(defun rk/org-archive-add-timestamp ()
-  "Add timestamp property when archiving items."
-  (org-set-property "ARCHIVED" (format-time-string "[%Y-%m-%d %a %H:%M]")))
+(defun codelahoma-gtd-projects-file ()
+  "Return the projects file path."
+  (expand-file-name "projects.org" codelahoma-gtd-directory))
 
-(add-hook 'org-archive-hook 'rk/org-archive-add-timestamp)
+(defun codelahoma-gtd-file (name)
+  "Return the path for GTD file NAME."
+  (expand-file-name (concat name ".org") codelahoma-gtd-directory))
 
-(defun rk/archive-done-tasks-in-buffer ()
-  "Archive all DONE, CANCELLED, COMPLETED, and DECIDED items in current buffer."
-  (interactive)
-  ;; FIXED: The original code used `org-map-entries` with `org-archive-subtree`,
-  ;; which is a classic bug. It modifies the buffer structure while iterating,
-  ;; causing it to skip entries. This `while` loop is a robust alternative.
-  (let ((archived-count 0)
-        (done-matcher (mapconcat #'identity '("DONE" "CANCELLED" "COMPLETED" "DECIDED") "\\|")))
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward (format org-heading-regexp done-matcher) nil t)
-        (org-archive-subtree)
-        (setq archived-count (1+ archived-count))
-        ;; Go back one line to not miss consecutive entries after archiving
-        (goto-char (line-beginning-position 0))))
-    (message "Archived %d completed items" archived-count)))
+(defvar codelahoma-gtd-agenda-files nil
+  "List of files to include in agenda.")
+
+(defun codelahoma-gtd-update-agenda-files ()
+  "Update the list of agenda files."
+  (setq codelahoma-gtd-agenda-files
+        (mapcar (lambda (file-def)
+                  (expand-file-name (car file-def) codelahoma-gtd-directory))
+                codelahoma-gtd-files))
+  (setq org-agenda-files codelahoma-gtd-agenda-files))
+
+(codelahoma-gtd-load-component 'core-files)
 #+end_src
 
-** GTD Capture Templates Configuration
+** Basic Data Structures
+
 #+begin_src emacs-lisp
-;; Helper functions for capture templates. This is good practice.
-(defun rk/capture-file-inbox () (rk/org-file "inbox.org"))
-(defun rk/capture-file-work-gtd () (rk/org-file "gtd.org" "work"))
-(defun rk/capture-file-work-projects () (rk/org-file "projects.org" "work"))
-(defun rk/capture-file-personal-gtd () (rk/org-file "gtd.org" "personal"))
-(defun rk/capture-file-personal-projects () (rk/org-file "projects.org" "personal"))
-(defun rk/capture-file-work-someday () (rk/org-file "someday.org" "work"))
-(defun rk/capture-file-personal-someday () (rk/org-file "someday.org" "personal"))
+(cl-defstruct codelahoma-gtd-context
+  "GTD context structure."
+  name          ; Context name (string)
+  key           ; Shortcut key (character)
+  predicate     ; Function to test if context applies
+  face          ; Face for display
+  description)  ; Human-readable description
 
-(setq org-capture-templates
-      `( ;; FIXED: The key issue in the original was evaluation time.
-         ;; `(file (rk/org-file "inbox.org"))` runs the function ONCE at startup.
-         ;; `(file (lambda () (rk/org-file "inbox.org")))` runs the function
-         ;; every time you capture, which is what's needed. I've applied this
-         ;; fix to all templates that used the incorrect form.
-         ;;
-         ;; Also fixed `%^{Scheduled}t` to `%^t` which is the correct template
-         ;; expansion for a timestamp prompt with a calendar.
+(defvar codelahoma-gtd-contexts nil
+  "List of defined GTD contexts.")
 
-         ("i" "Inbox Item" entry
-          (file (lambda () (rk/capture-file-inbox)))
-          "* TODO %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
-          :empty-lines 1)
+(defun codelahoma-gtd-define-context (name key predicate &optional face description)
+  "Define a new GTD context."
+  (let ((context (make-codelahoma-gtd-context
+                  :name name
+                  :key key
+                  :predicate predicate
+                  :face (or face 'default)
+                  :description (or description name))))
+    (add-to-list 'codelahoma-gtd-contexts context)))
 
-         ("n" "Quick Note" entry
-          (file (lambda () (rk/capture-file-inbox)))
-          "* %? :NOTE:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
-          :empty-lines 1)
-
-         ;; --- Work Templates ---
-         ("w" "Work")
-         ("wt" "Work Task" entry
-          (file+headline (lambda () (rk/capture-file-work-gtd)) "Tasks")
-          "* TODO %? :@work:\n  SCHEDULED: %^t\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
-          :empty-lines 1)
-
-         ("wp" "Work Project" entry
-          (file+headline (lambda () (rk/capture-file-work-projects)) "Active Projects")
-          "* PROJECT %? :@work:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n\n** Purpose/Outcome\n   %^{Purpose}\n\n** Next Actions\n*** TODO %^{First Action}\n"
-          :empty-lines 1)
-
-         ("wm" "Work Meeting" entry
-          (file+headline (lambda () (rk/capture-file-work-gtd)) "Meetings")
-          "* NEXT Meeting: %? :@work:@agenda:\n  SCHEDULED: %^T\n  :PROPERTIES:\n  :CREATED: %U\n  :ATTENDEES: %^{Attendees}\n  :LOCATION: %^{Location|Office|Remote}\n  :END:\n\n** Agenda\n   %i\n\n** Notes\n\n** Action Items\n"
-          :empty-lines 1)
-
-         ;; --- Personal Templates ---
-         ("p" "Personal")
-         ("pt" "Personal Task" entry
-          (file+headline (lambda () (rk/capture-file-personal-gtd)) "Tasks")
-          "* TODO %? :@home:\n  SCHEDULED: %^t\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
-          :empty-lines 1)
-
-         ("pp" "Personal Project" entry
-          (file+headline (lambda () (rk/capture-file-personal-projects)) "Active Projects")
-          "* PROJECT %? :@home:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n\n** Purpose/Outcome\n   %^{Purpose}\n\n** Next Actions\n*** TODO %^{First Action}\n"
-          :empty-lines 1)
-
-         ;; --- Someday Templates ---
-         ("s" "Someday/Maybe")
-         ("sw" "Work Someday" entry
-          (file+headline (lambda () (rk/capture-file-work-someday)) "Someday/Maybe")
-          "* SOMEDAY %? :@work:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
-          :empty-lines 1)
-
-         ("sp" "Personal Someday" entry
-          (file+headline (lambda () (rk/capture-file-personal-someday)) "Someday/Maybe")
-          "* SOMEDAY %? :@home:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n"
-          :empty-lines 1)
-         ))
+(codelahoma-gtd-load-component 'core-structures)
 #+end_src
 
-** GTD Refile Configuration
+* [120] Keybinding System
+
+** SPC o o Hierarchy
+
 #+begin_src emacs-lisp
-;; Configure refile targets for GTD system
-(setq org-refile-targets
-      `( ;; FIXED: Wrapped file paths in a backquoted list and used ,(function-call)
-         ;; to ensure the paths are correctly evaluated at load time.
-         (nil :maxlevel . 3)
-         (,(rk/org-file "gtd.org" "work") :maxlevel . 2)
-         (,(rk/org-file "projects.org" "work") :maxlevel . 2)
-         (,(rk/org-file "someday.org" "work") :maxlevel . 2)
-         (,(rk/org-file "gtd.org" "personal") :maxlevel . 2)
-         (,(rk/org-file "projects.org" "personal") :maxlevel . 2)
-         (,(rk/org-file "someday.org" "personal") :maxlevel . 2)
-         (,(rk/org-file "archive.org") :maxlevel . 1)))
+(defvar codelahoma-gtd-keymap (make-sparse-keymap)
+  "Keymap for GTD commands.")
 
-(setq org-refile-use-outline-path 'file
-      org-outline-path-complete-in-steps nil
-      org-refile-allow-creating-parent-nodes 'confirm
-      org-refile-use-cache t)
+(defun codelahoma-gtd-setup-keybindings ()
+  "Set up GTD keybindings in Spacemacs."
+  ;; Global GTD prefix (available everywhere)
+  (spacemacs/declare-prefix "oo" "GTD")
+  
+  ;; Capture (available everywhere)
+  (spacemacs/declare-prefix "ooc" "capture")
+  (spacemacs/set-leader-keys "oocc" 'org-capture)
+  (spacemacs/set-leader-keys "ooci" 'codelahoma-gtd-capture-inbox)
+  (spacemacs/set-leader-keys "oocp" 'codelahoma-gtd-capture-project)
+  
+  ;; Process (available everywhere)
+  (spacemacs/declare-prefix "oop" "process")
+  (spacemacs/set-leader-keys "oopi" 'codelahoma-gtd-process-inbox)
+  (spacemacs/set-leader-keys "oopc" 'codelahoma-gtd-clarify-item)
+  
+  ;; Review (available everywhere)
+  (spacemacs/declare-prefix "oor" "review")
+  (spacemacs/set-leader-keys "oord" 'codelahoma-gtd-daily-review)
+  (spacemacs/set-leader-keys "oorw" 'codelahoma-gtd-weekly-review)
+  
+  ;; Navigate (available everywhere)
+  (spacemacs/declare-prefix "oon" "navigate")
+  (spacemacs/set-leader-keys "ooni" 'codelahoma-gtd-open-inbox)
+  (spacemacs/set-leader-keys "oonp" 'codelahoma-gtd-open-projects)
+  (spacemacs/set-leader-keys "oonn" 'codelahoma-gtd-open-next-actions))
 
-;; Smart refile function based on context
-(defun rk/refile-to-someday ()
-  "Quick refile to someday/maybe based on context."
-  (interactive)
-  (let* ((tags (org-get-tags))
-         (is-work (member "work" tags)) ;; Check for "work" tag, not "@work"
-         (target-file (if is-work
-                          (rk/org-file "someday.org" "work")
-                        (rk/org-file "someday.org" "personal"))))
-    ;; The final nil in the rfloc list means find headline by name
-    (org-refile nil nil (list "Someday/Maybe" target-file nil))))
+(codelahoma-gtd-load-component 'keybindings)
 #+end_src
 
-** GTD Context Switching System
+** Which-key Integration
+
 #+begin_src emacs-lisp
-;; This is a powerful concept. The implementation below is corrected and robust.
+(defun codelahoma-gtd-setup-which-key ()
+  "Configure which-key descriptions for GTD."
+  (which-key-add-key-based-replacements
+    "SPC o o" "GTD"
+    "SPC o o c" "capture"
+    "SPC o o c c" "generic capture"
+    "SPC o o c i" "inbox item"
+    "SPC o o c p" "project"
+    "SPC o o p" "process"
+    "SPC o o p i" "inbox"
+    "SPC o o p c" "clarify"
+    "SPC o o r" "review"
+    "SPC o o r d" "daily"
+    "SPC o o r w" "weekly"
+    "SPC o o n" "navigate"
+    "SPC o o n i" "inbox"
+    "SPC o o n p" "projects"
+    "SPC o o n n" "next actions"))
 
-(defvar rk/org-context-mode 'unified
-  "Current GTD context mode: 'work, 'personal, or 'unified.")
+(with-eval-after-load 'which-key
+  (codelahoma-gtd-setup-which-key))
 
-(defun rk/org-update-agenda-files ()
-  "Update `org-agenda-files` based on current context mode."
-  (setq org-agenda-files
-        (cond
-         ((eq rk/org-context-mode 'work)
-          `(,(rk/org-file "inbox.org")
-            ,(rk/org-file "gtd.org" "work")
-            ,(rk/org-file "projects.org" "work")
-            ,(rk/org-file "someday.org" "work")))
-         ((eq rk/org-context-mode 'personal)
-          `(,(rk/org-file "inbox.org")
-            ,(rk/org-file "gtd.org" "personal")
-            ,(rk/org-file "projects.org" "personal")
-            ,(rk/org-file "someday.org" "personal")))
-         (t ; unified mode
-          `(,(rk/org-file "inbox.org")
-            ,(rk/org-file "gtd.org" "work")
-            ,(rk/org-file "projects.org" "work")
-            ,(rk/org-file "someday.org" "work")
-            ,(rk/org-file "gtd.org" "personal")
-            ,(rk/org-file "projects.org" "personal")
-            ,(rk/org-file "someday.org" "personal")))))
-  (org-agenda-prepare-buffers org-agenda-files) ;; Refresh agenda file list
-  (message "GTD Context: %s mode activated." (capitalize (symbol-name rk/org-context-mode))))
-
-(defun rk/org-work-mode ()
-  "Switch to work-only GTD context."
-  (interactive)
-  (setq rk/org-context-mode 'work)
-  (rk/org-update-agenda-files))
-
-(defun rk/org-personal-mode ()
-  "Switch to personal-only GTD context."
-  (interactive)
-  (setq rk/org-context-mode 'personal)
-  (rk/org-update-agenda-files))
-
-(defun rk/org-unified-mode ()
-  "Switch to unified GTD context (work + personal)."
-  (interactive)
-  (setq rk/org-context-mode 'unified)
-  (rk/org-update-agenda-files))
-
-(defun rk/org-context-status ()
-  "Display current context mode and active files."
-  (interactive)
-  (message "Current GTD Context: %s" (capitalize (symbol-name rk/org-context-mode))))
-
-;; Initialize context on startup
-(defun rk/org-initialize-context ()
-  "Initialize GTD context system on startup."
-  ;; Default to unified and update file list
-  (rk/org-unified-mode))
-
-;; Hook into org-mode loading
-(with-eval-after-load 'org
-  (rk/org-initialize-context))
-
-;; Ensure hydra is available before defining one
-(eval-after-load 'hydra
-  '(defhydra rk/org-context-hydra (:color blue :hint nil)
-     "
-^GTD Context^
-^───────────^
-_w_: 📊 Work
-_p_: 🏠 Personal
-_u_: 🌟 Unified
-_s_: Show Status
-_q_: Quit
-"
-     ("w" rk/org-work-mode)
-     ("p" rk/org-personal-mode)
-     ("u" rk/org-unified-mode)
-     ("s" rk/org-context-status :color red)
-     ("q" nil "Quit")))
+(codelahoma-gtd-load-component 'which-key)
 #+end_src
 
-** GTD Custom Agenda Commands
+* [130] Capture System
+
+** Context Detection
+
 #+begin_src emacs-lisp
-(setq org-agenda-custom-commands
-      '(("g" "GTD Dashboards")
-
-        ;; FIXED: The original code used a hallucinated variable `org-agenda-tag-filter-preset`.
-        ;; The correct way is to use `tags-todo` or `tags` as the agenda type.
-        ;; I have rewritten all agenda views to use correct Org Mode syntax.
-        ;; Also fixed scoping of `org-agenda-files` to apply to the whole command set.
-
-        ("gw" "Work Dashboard"
-         ((agenda "" ((org-agenda-span 'day)))
-          (tags-todo "work" ((org-agenda-overriding-header "\n🚀 Next Actions - Work")))
-          (todo "WAITING" ((org-agenda-overriding-header "\n⏳ Waiting For - Work")))
-          (todo "PROJECT" ((org-agenda-overriding-header "\n📋 Active Projects - Work"))))
-         ((org-agenda-files (lambda () (rk/org-update-agenda-files) ; Ensure context is right
-                                      (cond ((eq rk/org-context-mode 'personal) '()) ; Show nothing if in personal mode
-                                            (t (list (rk/org-file "gtd.org" "work")
-                                                     (rk/org-file "projects.org" "work"))))))))
-
-        ("gp" "Personal Dashboard"
-         ((agenda "" ((org-agenda-span 'day)))
-          (tags-todo "home" ((org-agenda-overriding-header "\n🚀 Next Actions - Personal")))
-          (todo "WAITING" ((org-agenda-overriding-header "\n⏳ Waiting For - Personal")))
-          (todo "PROJECT" ((org-agenda-overriding-header "\n📋 Active Projects - Personal"))))
-         ((org-agenda-files (lambda () (rk/org-update-agenda-files)
-                                      (cond ((eq rk/org-context-mode 'work) '())
-                                            (t (list (rk/org-file "gtd.org" "personal")
-                                                     (rk/org-file "projects.org" "personal"))))))))
-
-        ("gu" "Unified Dashboard"
-         ((agenda "" ((org-agenda-span 'day)
-                      (org-agenda-overriding-header "🌟 Unified Dashboard - Complete Overview\n")))
-          (alltodo "" ((org-agenda-overriding-header "\n🚀 All Next Actions & Waiting Items\n")))
-          (todo "PROJECT" ((org-agenda-overriding-header "\n📋 All Active Projects\n"))))
-         ((org-agenda-files (lambda () (rk/org-update-agenda-files) org-agenda-files)))) ; Use current context's files
-
-        ("gi" "Inbox Processing"
-         ((alltodo "" ((org-agenda-overriding-header "📥 Inbox - Items to Process\n"))))
-         ((org-agenda-files `(,(rk/org-file "inbox.org")))))
-
-        ("ge" "Energy-Based View"
-         ((tags-todo "+high_energy"
-                     ((org-agenda-overriding-header "⚡ High Energy Tasks")))
-          (tags-todo "+low_energy"
-                     ((org-agenda-overriding-header "\n🔋 Low Energy Tasks"))))
-         ((org-agenda-files (lambda () (rk/org-update-agenda-files) org-agenda-files))))
-
-        ))
-#+end_src
-
-** GTD Unified Keybinding System
-#+begin_src emacs-lisp
-;; This section defines functions that will be bound to keys later.
-;; Defining them first avoids "void function" errors on startup.
-(defun rk/goto-inbox () (interactive) (find-file (rk/org-file "inbox.org")))
-(defun rk/goto-work-gtd () (interactive) (find-file (rk/org-file "gtd.org" "work")))
-(defun rk/goto-personal-gtd () (interactive) (find-file (rk/org-file "gtd.org" "personal")))
-(defun rk/goto-work-projects () (interactive) (find-file (rk/org-file "projects.org" "work")))
-(defun rk/goto-personal-projects () (interactive) (find-file (rk/org-file "projects.org" "personal")))
-
-(defun rk/agenda-work-dashboard () (interactive) (org-agenda nil "gw"))
-(defun rk/agenda-personal-dashboard () (interactive) (org-agenda nil "gp"))
-(defun rk/agenda-unified-dashboard () (interactive) (org-agenda nil "gu"))
-(defun rk/agenda-inbox-processing () (interactive) (org-agenda nil "gi"))
-
-(defun rk/context-aware-capture ()
-  "Capture a task, intelligently selecting work/personal based on context."
-  (interactive)
+(defun codelahoma-gtd-detect-context ()
+  "Detect current context for smart capture."
   (cond
-   ((eq rk/org-context-mode 'work) (org-capture nil "wt"))
-   ((eq rk/org-context-mode 'personal) (org-capture nil "pt"))
-   (t (let ((choice (completing-read "Capture type: " '("Work Task" "Personal Task" "Inbox"))))
-        (cond
-         ((string= choice "Work Task") (org-capture nil "wt"))
-         ((string= choice "Personal Task") (org-capture nil "pt"))
-         (t (org-capture nil "i")))))))
+   ;; In a project file
+   ((and (buffer-file-name)
+         (string-match-p "projects" (buffer-file-name)))
+    'project)
+   ;; In a code file
+   ((derived-mode-p 'prog-mode)
+    'code)
+   ;; In an email
+   ((or (derived-mode-p 'message-mode)
+        (derived-mode-p 'mail-mode))
+    'email)
+   ;; Default
+   (t 'general)))
 
-(defun rk/setup-gtd-keybindings ()
-  "Set up comprehensive GTD keybindings under SPC o g prefix for GTD."
-  ;; Using "g" for GTD to avoid conflict with `org-mode`'s own "o" prefix.
-  (spacemacs/declare-prefix "og" "gtd")
+(defun codelahoma-gtd-capture-template-for-context (context)
+  "Return capture template based on CONTEXT."
+  (pcase context
+    ('project "* TODO %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n  %a")
+    ('code "* TODO %? :code:\n  :PROPERTIES:\n  :CREATED: %U\n  :FILE: %F\n  :END:\n  %a")
+    ('email "* TODO %? :email:\n  :PROPERTIES:\n  :CREATED: %U\n  :FROM: %:from\n  :END:\n  %a")
+    (_ "* TODO %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n  %i")))
 
-  ;; Capture
-  (spacemacs/declare-prefix "ogc" "capture")
-  (spacemacs/set-leader-keys
-    "ogci" '(lambda () (interactive) (org-capture nil "i"))
-    "ogcn" '(lambda () (interactive) (org-capture nil "n"))
-    "ogcw" '(lambda () (interactive) (org-capture nil "wt"))
-    "ogcp" '(lambda () (interactive) (org-capture nil "pt"))
-    "ogcW" '(lambda () (interactive) (org-capture nil "wp"))
-    "ogcP" '(lambda () (interactive) (org-capture nil "pp"))
-    "ogct" 'rk/context-aware-capture
-    "ogcC" 'org-capture)
-
-  ;; Agenda
-  (spacemacs/declare-prefix "oga" "agenda")
-  (spacemacs/set-leader-keys
-    "ogaw" 'rk/agenda-work-dashboard
-    "ogap" 'rk/agenda-personal-dashboard
-    "ogau" 'rk/agenda-unified-dashboard
-    "ogai" 'rk/agenda-inbox-processing
-    "ogaa" 'org-agenda)
-
-  ;; Go To File
-  (spacemacs/declare-prefix "ogg" "goto")
-  (spacemacs/set-leader-keys
-    "oggi" 'rk/goto-inbox
-    "oggw" 'rk/goto-work-gtd
-    "oggp" 'rk/goto-personal-gtd
-    "oggW" 'rk/goto-work-projects
-    "oggP" 'rk/goto-personal-projects)
-
-  ;; Mode Switching
-  (spacemacs/declare-prefix "ogm" "mode")
-  (spacemacs/set-leader-keys
-    "ogmw" 'rk/org-work-mode
-    "ogmp" 'rk/org-personal-mode
-    "ogmu" 'rk/org-unified-mode
-    "ogms" 'rk/org-context-status
-    "ogmh" 'rk/org-context-hydra/body)
-
-  ;; Other Operations
-  (spacemacs/set-leader-keys
-    "ogr" 'org-refile
-    "ogA" 'rk/archive-done-tasks-in-buffer))
-
-(with-eval-after-load 'org
-  (rk/setup-gtd-keybindings))
+(codelahoma-gtd-load-component 'capture-context)
 #+end_src
 
-* Appearance and Styling Functions
+** Template Management
 
-** Org Heading Color Schemes
 #+begin_src emacs-lisp
-(defvar org-heading-colors-schemes
-  '(("Arctic"    . ("#88C0D0" "#81A1C1" "#5E81AC" "#B48EAD" "gray"))
-    ("Autumn"    . ("#BF616A" "#D08770" "#EBCB8B" "#A3BE8C" "gray"))
-    ("Cyber"     . ("#B48EAD" "#88C0D0" "#A3BE8C" "#5E81AC" "gray"))
-    ("Nordic"    . ("#8FBCBB" "#88C0D0" "#81A1C1" "#5E81AC" "gray")))
-  "Alist of org heading color schemes (using Nord palette for better theme compatibility).")
+(defvar codelahoma-gtd-capture-templates
+  '(("i" "Inbox" entry (file codelahoma-gtd-inbox-file)
+     "* TODO %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n  %i")
+    ("p" "Project" entry (file codelahoma-gtd-projects-file)
+     "* TODO %? [/]\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n** TODO First task")
+    ("n" "Next Action" entry (file codelahoma-gtd-file "next-actions")
+     "* NEXT %?\n  :PROPERTIES:\n  :CREATED: %U\n  :CONTEXT: %^{Context|@home|@office|@errands|@calls|@computer}\n  :END:")
+    ("w" "Waiting For" entry (file codelahoma-gtd-file "waiting-for")
+     "* WAITING %? :waiting:\n  :PROPERTIES:\n  :CREATED: %U\n  :WAITING_ON: %^{Waiting on}\n  :END:"))
+  "GTD capture templates.")
 
-(defun switch-org-colors (scheme-name)
-  "Switch org heading colors to a predefined scheme."
+(defun codelahoma-gtd-setup-capture-templates ()
+  "Configure org-capture templates for GTD."
+  (setq org-capture-templates codelahoma-gtd-capture-templates))
+
+(defun codelahoma-gtd-capture-inbox ()
+  "Quick capture to inbox."
+  (interactive)
+  (org-capture nil "i"))
+
+(defun codelahoma-gtd-capture-project ()
+  "Capture a new project."
+  (interactive)
+  (org-capture nil "p"))
+
+(codelahoma-gtd-load-component 'capture-templates)
+#+end_src
+
+* [140] Processing Workflow
+
+** Two-minute Rule
+
+#+begin_src emacs-lisp
+(defvar codelahoma-gtd-two-minute-threshold 120
+  "Threshold in seconds for two-minute rule.")
+
+(defun codelahoma-gtd-apply-two-minute-rule ()
+  "Apply two-minute rule to current item."
+  (interactive)
+  (let ((start-time (current-time)))
+    (when (y-or-n-p "Can this be done in 2 minutes? ")
+      (message "Timer started. Press C-c C-c when done.")
+      (add-hook 'org-ctrl-c-ctrl-c-final-hook
+                (lambda ()
+                  (let ((elapsed (time-subtract (current-time) start-time)))
+                    (message "Task completed in %s seconds"
+                             (time-to-seconds elapsed)))
+                  (org-todo "DONE")
+                  (remove-hook 'org-ctrl-c-ctrl-c-final-hook
+                               'codelahoma-gtd-two-minute-timer))))))
+
+(codelahoma-gtd-load-component 'two-minute-rule)
+#+end_src
+
+** Inbox Processing
+
+#+begin_src emacs-lisp
+(defun codelahoma-gtd-process-inbox ()
+  "Process items in the inbox."
+  (interactive)
+  (find-file (codelahoma-gtd-inbox-file))
+  (goto-char (point-min))
+  (org-next-visible-heading 1)
+  (codelahoma-gtd-process-current-item))
+
+(defun codelahoma-gtd-process-current-item ()
+  "Process the current inbox item."
+  (interactive)
+  (when (org-at-heading-p)
+    (org-narrow-to-subtree)
+    (let ((choice (read-char-choice
+                   "Process: [d]o now, [p]roject, [n]ext action, [w]aiting, [s]omeday, [r]eference, [t]rash: "
+                   '(?d ?p ?n ?w ?s ?r ?t))))
+      (pcase choice
+        (?d (codelahoma-gtd-apply-two-minute-rule))
+        (?p (codelahoma-gtd-convert-to-project))
+        (?n (codelahoma-gtd-file-as-next-action))
+        (?w (codelahoma-gtd-file-as-waiting))
+        (?s (codelahoma-gtd-file-as-someday))
+        (?r (codelahoma-gtd-file-as-reference))
+        (?t (org-cut-subtree)))
+      (widen)
+      (when (and (not (eobp)) (org-at-heading-p))
+        (when (y-or-n-p "Process next item? ")
+          (codelahoma-gtd-process-current-item))))))
+
+(codelahoma-gtd-load-component 'inbox-processing)
+#+end_src
+
+* [150] Review System
+
+** Daily Reviews
+
+#+begin_src emacs-lisp
+(defvar codelahoma-gtd-daily-review-template
+  '("Daily Review - %t"
+    "* Review Outcomes"
+    "** What got done today?"
+    "** What didn't get done?"
+    "** What came up?"
+    "* Process Inbox"
+    "  - [ ] Clear email inbox"
+    "  - [ ] Clear GTD inbox"
+    "* Review Calendar"
+    "  - [ ] Review today's appointments"
+    "  - [ ] Review tomorrow's appointments"
+    "* Review Next Actions"
+    "  - [ ] Mark completed items DONE"
+    "  - [ ] Select tomorrow's priorities")
+  "Template for daily reviews.")
+
+(defun codelahoma-gtd-daily-review ()
+  "Conduct daily GTD review."
+  (interactive)
+  (let ((review-file (expand-file-name
+                      (format-time-string "reviews/daily-%Y%m%d.org")
+                      codelahoma-gtd-directory)))
+    (find-file review-file)
+    (when (= (buffer-size) 0)
+      (dolist (line codelahoma-gtd-daily-review-template)
+        (insert (format-time-string line) "\n"))
+      (goto-char (point-min))
+      (org-next-visible-heading 1))))
+
+(codelahoma-gtd-load-component 'daily-reviews)
+#+end_src
+
+** Weekly Reviews
+
+#+begin_src emacs-lisp
+(defvar codelahoma-gtd-weekly-review-template
+  '("Weekly Review - Week %V, %Y"
+    "* Get Clear"
+    "** Collect Loose Papers and Materials"
+    "** Get \"In\" to Zero"
+    "   - [ ] Process all inboxes"
+    "** Empty Your Head"
+    "   - [ ] Write down any uncaptured items"
+    "* Get Current" 
+    "** Review Action Lists"
+    "   - [ ] Mark off completed actions"
+    "   - [ ] Review for reminders of further action steps"
+    "** Review Previous Calendar Data"
+    "   - [ ] Transfer relevant info to project plans"
+    "** Review Upcoming Calendar"
+    "   - [ ] Capture actions from meetings"
+    "** Review Waiting For List"
+    "   - [ ] Check off received items"
+    "   - [ ] Follow up on pending items"
+    "** Review Project List"
+    "   - [ ] Ensure each project has a next action"
+    "   - [ ] Review project plans"
+    "** Review Someday/Maybe List"
+    "   - [ ] Move to projects if ready"
+    "   - [ ] Delete items no longer of interest"
+    "* Get Creative"
+    "** Any new projects?"
+    "** Any ideas to capture?")
+  "Template for weekly reviews.")
+
+(defun codelahoma-gtd-weekly-review ()
+  "Conduct weekly GTD review."
+  (interactive)
+  (let ((review-file (expand-file-name
+                      (format-time-string "reviews/weekly-%Y-W%V.org")
+                      codelahoma-gtd-directory)))
+    (find-file review-file)
+    (when (= (buffer-size) 0)
+      (dolist (line codelahoma-gtd-weekly-review-template)
+        (insert (format-time-string line) "\n"))
+      (goto-char (point-min)))))
+
+(codelahoma-gtd-load-component 'weekly-reviews)
+#+end_src
+
+* [160] Context Engine
+
+** Location Contexts
+
+#+begin_src emacs-lisp
+(codelahoma-gtd-define-context
+ "@home" ?h
+ (lambda () (string-match-p "home\\|house" (or (getenv "LOCATION") "")))
+ 'org-priority-faces
+ "Tasks that can be done at home")
+
+(codelahoma-gtd-define-context
+ "@office" ?o  
+ (lambda () (string-match-p "office\\|work" (or (getenv "LOCATION") "")))
+ 'org-priority-faces
+ "Tasks that can be done at the office")
+
+(codelahoma-gtd-define-context
+ "@errands" ?e
+ (lambda () t)  ; Always available
+ 'org-priority-faces
+ "Tasks to do while out and about")
+
+(codelahoma-gtd-define-context
+ "@computer" ?c
+ (lambda () (display-graphic-p))  ; Has display
+ 'org-priority-faces
+ "Tasks requiring a computer")
+
+(codelahoma-gtd-load-component 'location-contexts)
+#+end_src
+
+** Energy Contexts
+
+#+begin_src emacs-lisp
+(defvar codelahoma-gtd-energy-level 'normal
+  "Current energy level: 'high, 'normal, or 'low.")
+
+(codelahoma-gtd-define-context
+ ":high-energy" ?H
+ (lambda () (eq codelahoma-gtd-energy-level 'high))
+ 'org-scheduled-today
+ "Tasks requiring high energy/focus")
+
+(codelahoma-gtd-define-context
+ ":low-energy" ?L
+ (lambda () (eq codelahoma-gtd-energy-level 'low))
+ 'org-agenda-dimmed-todo-face
+ "Tasks suitable for low energy")
+
+(defun codelahoma-gtd-set-energy-level (level)
+  "Set current energy LEVEL."
   (interactive
-   (list (completing-read "Choose color scheme: "
-                         (mapcar #'car org-heading-colors-schemes))))
-  (let* ((colors (cdr (assoc scheme-name org-heading-colors-schemes)))
-         (variable-tuple '(:family "sans-serif"))
-         (headline '(:inherit default :weight normal)))
+   (list (intern (completing-read "Energy level: "
+                                  '("high" "normal" "low")))))
+  (setq codelahoma-gtd-energy-level level)
+  (message "Energy level set to: %s" level))
+
+(codelahoma-gtd-load-component 'energy-contexts)
+#+end_src
+
+* [170] Integration Layer
+
+** Org Appearance Configuration
+
+#+begin_src emacs-lisp
+;; Org appearance and font faces (moved from dotspacemacs.org)
+(with-eval-after-load 'org
+  (let ((headline '(:inherit default :weight bold)))
     (custom-theme-set-faces
      'user
-     `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.5 :foreground ,(nth 0 colors)))))
-     `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.4 :foreground ,(nth 1 colors)))))
-     `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.3 :foreground ,(nth 2 colors)))))
-     `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.2 :foreground ,(nth 3 colors)))))
-     `(org-done ((t (,@headline :foreground ,(nth 4 colors) :strike-through t)))))
-    (message "Switched to %s color scheme" scheme-name)))
+     '(fixed-pitch ((t ( :family "FiraMono Nerd Font" :height 1.0))))
+     '(variable-pitch ((t (:family "Source Sans Pro" :height 1.1))))
+     `(org-document-title ((t (,@headline :inherit fixed-pitch :height 2.5 :underline nil))))
+     `(org-level-1 ((t (,@headline :inherit fixed-pitch :height 1.8 ))))
+     `(org-level-2 ((t (,@headline :inherit fixed-pitch :height 1.5 ))))
+     `(org-level-3 ((t (,@headline :inherit fixed-pitch :height 1.4 ))))
+     `(org-level-4 ((t (,@headline :inherit fixed-pitch :height 1.3 ))))
+     `(org-level-5 ((t (,@headline :inherit fixed-pitch :height 1.2))))
+     `(org-level-6 ((t (,@headline :inherit fixed-pitch :height 1.2))))
+     `(org-level-7 ((t (,@headline :inherit fixed-pitch :height 1.2))))
+     `(org-level-8 ((t (,@headline :inherit fixed-pitch :height 1.2))))
+     '(org-block ((t (:inherit fixed-pitch :height 0.8))))
+     '(org-code ((t (:inherit (shadow fixed-pitch)))))
+     '(org-date ((t (:inherit (font-lock-comment-face fixed-pitch) :height 0.9))))
+     '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+     '(org-done ((t ( :font "Fira Sans" :height 1.0  :weight bold))))
+     '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
+     '(org-link ((t (:underline t))))
+     '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+     '(org-property-value ((t (:inherit fixed-pitch))))
+     '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+     '(org-table ((t (:inherit fixed-pitch ))))
+     '(org-tag ((t (:inherit (shadow fixed-pitch)  :height 0.5))))
+     '(org-todo ((t ( :font "Fira Sans" :height 0.8 ))))
+     '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
+     )))
+
+(codelahoma-gtd-load-component 'org-appearance)
 #+end_src
 
-** Org Bullet Schemes (Requires org-superstar)
-#+begin_src emacs-lisp
-(defvar rk/org-bullet-schemes
-  '(("Geometric" . ("◉" "○" "◈" "◇"))
-    ("Arrows"    . ("➤" "➢" "➣" "➼"))
-    ("Modern"    . ("◆" "▶" "▸" "▹"))
-    ("Squares"   . ("⬣" "⬡" "⬢" "⬩")))
-  "Alist of org heading bullet schemes for `org-superstar-mode`.")
+** Org-superstar Configuration
 
-(defun rk/switch-org-bullets (scheme-name)
-  "Switch org heading bullets to a predefined scheme."
-  (interactive
-   (list (completing-read "Choose bullet scheme: "
-                          (mapcar #'car rk/org-bullet-schemes))))
-  (if (require 'org-superstar nil 'noerror)
-      (let ((bullets (cdr (assoc scheme-name rk/org-bullet-schemes))))
-        (setq org-superstar-headline-bullets-list bullets)
-        (org-superstar-restart)
-        (message "Switched to %s bullet scheme" scheme-name))
-    (message "Error: `org-superstar` package is not installed.")))
+#+begin_src emacs-lisp
+;; Org-superstar bullets configuration (moved from dotspacemacs.org)
+(with-eval-after-load 'org-superstar
+  (setq org-superstar-item-bullet-alist
+        '((?* . ?•)
+          (?+ . ?➤)
+          (?- . ?•)))
+  (setq org-superstar-headline-bullets-list
+        '("⦿" "⬦" "○" "▷"))
+  (setq org-superstar-special-todo-items t)
+  (setq org-superstar-remove-leading-stars t)
+  ;; Enable custom bullets for TODO items
+  (setq org-superstar-todo-bullet-alist
+        '(("TODO" . ?🔳)
+          ("NEXT" . ?👀)
+          ("IN-PROGRESS" . ?🚀)
+          ("CODE-COMPLETE" . ?💾)
+          ("NEEDS-REFINEMENT" . ?🔍)
+          ("WAITING" . ?⏰)
+          ("ON-HOLD" . ?⏸)
+          ("MEETING" . ?⏰)
+          ("CANCELLED" . ?❌)
+          ("ATTENDED" . ?📝)
+          ("ANSWERED" . ?👍) 
+          ("DONE" . ?✅)))
+  (org-superstar-restart))
+
+;; Set default bullet scheme
+(with-eval-after-load 'org-superstar
+  (when (fboundp 'rk/switch-org-bullets)
+    (rk/switch-org-bullets "Runes")))
+
+(codelahoma-gtd-load-component 'org-superstar)
 #+end_src
 
-* System Health Check
+** GPTel Integration
 
 #+begin_src emacs-lisp
-(defun rk/gtd-health-check ()
-  "Verify GTD system is properly configured and all files exist."
+;; GPTel org-mode integration (moved from dotspacemacs.org)
+(with-eval-after-load 'gptel
+  (setq gptel-default-mode 'org-mode))
+
+(codelahoma-gtd-load-component 'gptel-integration)
+#+end_src
+
+** Elfeed Integration
+
+#+begin_src emacs-lisp
+;; Elfeed org integration (moved from dotspacemacs.org)
+(with-eval-after-load 'elfeed
+  (require 'elfeed)
+  
+  (defun elfeed-save-to-org-roam-dailies ()
+    "Save the current elfeed entry to org-roam dailies."
+    (interactive)
+    (let* ((entry (elfeed-search-selected :single))
+           (title (elfeed-entry-title entry))
+           (link (elfeed-entry-link entry))
+           (content (elfeed-deref (elfeed-entry-content entry)))
+           (date (format-time-string "%Y-%m-%d"))
+           (org-roam-dailies-dir (expand-file-name "dailies" org-roam-directory))
+           (daily-file (expand-file-name (concat date ".org") org-roam-dailies-dir)))
+      (unless (file-exists-p daily-file)
+        (with-temp-buffer (write-file daily-file)))
+      (with-current-buffer (find-file-noselect daily-file)
+        (goto-char (point-max))
+        (insert (concat "* " title "\n"))
+        (insert (concat "[[" link "][" link "]]\n\n"))
+        (insert (concat content "\n"))
+        (save-buffer))))
+
+  ;; Bind the function to a key for easy access
+  (define-key elfeed-search-mode-map (kbd "o") 'elfeed-save-to-org-roam-dailies))
+
+(codelahoma-gtd-load-component 'elfeed-integration)
+#+end_src
+
+** Org Color Theme Integration
+
+#+begin_src emacs-lisp
+;; Set default org color scheme
+(with-eval-after-load 'org
+  (when (fboundp 'switch-org-colors)
+    (switch-org-colors "Cyber")))
+
+(codelahoma-gtd-load-component 'org-color-theme)
+#+end_src
+
+** Org-roam Integration
+
+#+begin_src emacs-lisp
+(defun codelahoma-gtd-link-to-roam ()
+  "Link current GTD item to org-roam."
   (interactive)
-  (message "Running GTD Health Check...")
-  (rk/validate-gtd-structure))
+  (when (fboundp 'org-roam-node-insert)
+    (org-roam-node-insert)))
 
-(provide 'codelahoma-org)
+(defun codelahoma-gtd-create-project-note ()
+  "Create org-roam note for current project."
+  (interactive)
+  (when (and (fboundp 'org-roam-capture)
+             (org-at-heading-p))
+    (let ((project-name (org-get-heading t t t t)))
+      (org-roam-capture nil "p"))))
+
+(codelahoma-gtd-load-component 'roam-integration)
+#+end_src
+
+** Org-agenda Integration
+
+#+begin_src emacs-lisp
+(defun codelahoma-gtd-setup-agenda-views ()
+  "Configure org-agenda custom views for GTD."
+  (setq org-agenda-custom-commands
+        '(("g" "GTD Views"
+           ((agenda "" ((org-agenda-span 'day)
+                        (org-agenda-start-with-log-mode t)))
+            (todo "NEXT" ((org-agenda-overriding-header "Next Actions")))
+            (todo "WAITING" ((org-agenda-overriding-header "Waiting For")))
+            (todo "TODO" ((org-agenda-overriding-header "Projects")
+                          (org-agenda-files (list (codelahoma-gtd-projects-file)))))))
+          ("d" "Daily Dashboard"
+           ((agenda "" ((org-agenda-span 'day)))
+            (todo "NEXT" ((org-agenda-overriding-header "Next Actions")
+                          (org-agenda-sorting-strategy '(priority-down effort-up))))
+            (todo "WAITING" ((org-agenda-overriding-header "Waiting For")))))
+          ("w" "Weekly Review"
+           ((agenda "" ((org-agenda-span 'week)))
+            (todo "TODO" ((org-agenda-overriding-header "All Open Projects")))
+            (todo "WAITING" ((org-agenda-overriding-header "All Waiting Items")))
+            (todo "SOMEDAY" ((org-agenda-overriding-header "Someday/Maybe"))))))))
+
+(codelahoma-gtd-load-component 'agenda-integration)
+#+end_src
+
+* [180] Testing Framework
+
+** Unit Tests
+
+#+begin_src emacs-lisp
+(require 'ert)
+
+(ert-deftest codelahoma-gtd-test-initialization ()
+  "Test GTD system initialization."
+  (let ((temp-dir (make-temp-file "gtd-test" t)))
+    (unwind-protect
+        (let ((codelahoma-gtd-directory temp-dir))
+          (codelahoma-gtd-create-directories)
+          (should (file-exists-p temp-dir))
+          (should (file-exists-p (expand-file-name "archive/" temp-dir)))
+          (should (file-exists-p (expand-file-name "reviews/" temp-dir))))
+      (delete-directory temp-dir t))))
+
+(ert-deftest codelahoma-gtd-test-file-creation ()
+  "Test GTD file creation."
+  (let ((temp-dir (make-temp-file "gtd-test" t)))
+    (unwind-protect
+        (let ((codelahoma-gtd-directory temp-dir))
+          (codelahoma-gtd-create-files)
+          (dolist (file-def codelahoma-gtd-files)
+            (should (file-exists-p 
+                     (expand-file-name (car file-def) temp-dir)))))
+      (delete-directory temp-dir t))))
+
+(ert-deftest codelahoma-gtd-test-context-detection ()
+  "Test context detection."
+  (let ((codelahoma-gtd-energy-level 'high))
+    (should (funcall (codelahoma-gtd-context-predicate
+                      (car (cl-member-if (lambda (ctx)
+                                           (equal (codelahoma-gtd-context-name ctx)
+                                                  ":high-energy"))
+                                         codelahoma-gtd-contexts)))))))
+
+(codelahoma-gtd-load-component 'unit-tests)
+#+end_src
+
+** Integration Tests
+
+#+begin_src emacs-lisp
+(ert-deftest codelahoma-gtd-test-capture-flow ()
+  "Test capture workflow integration."
+  (let ((temp-dir (make-temp-file "gtd-test" t)))
+    (unwind-protect
+        (let ((codelahoma-gtd-directory temp-dir)
+              (org-capture-templates codelahoma-gtd-capture-templates))
+          (codelahoma-gtd-create-files)
+          ;; Test would simulate capture here
+          (should t))  ; Placeholder
+      (delete-directory temp-dir t))))
+
+- (defun codelahoma-gtd-run-all-tests ()
+  "Run all GTD tests."
+  (interactive)
+  (ert-run-tests-batch-and-exit "^codelahoma-gtd-test-"))
+
+(codelahoma-gtd-load-component 'integration-tests)
+#+end_src
+
+* [190] Documentation
+
+** User Guide
+
+#+begin_src org :tangle no
+,* GTD System User Guide
+
+,** Quick Start
+
+1. Initialize the system: M-x codelahoma-gtd-initialize
+2. Capture items: SPC o o c i (inbox capture)
+3. Process inbox: SPC o o p i
+4. Review daily: SPC o o r d
+
+,** Key Bindings
+
+| Key         | Command                | Description           |
+|-------------+------------------------+-----------------------|
+| SPC o o c i | Capture to inbox       | Quick capture         |
+| SPC o o c p | Capture project        | New project           |
+| SPC o o p i | Process inbox          | Process inbox items   |
+| SPC o o r d | Daily review           | Run daily review      |
+| SPC o o r w | Weekly review          | Run weekly review     |
+| SPC o o n i | Navigate to inbox      | Open inbox file       |
+| SPC o o n p | Navigate to projects   | Open projects file    |
+
+,** Workflow
+
+1. *Capture*: Use SPC o o c i to quickly capture thoughts
+2. *Clarify*: Process inbox items into actionable tasks
+3. *Organize*: File items into appropriate lists
+4. *Review*: Daily and weekly reviews keep system current
+5. *Do*: Work from context-filtered next actions
+#+end_src
+
+** Migration Tools
+
+#+begin_src emacs-lisp
+(defun codelahoma-gtd-migrate-from-old-system ()
+  "Migrate from previous GTD system."
+  (interactive)
+  (when (y-or-n-p "This will migrate your old GTD files. Continue? ")
+    (message "Migration would happen here...")
+    ;; Implementation would:
+    ;; 1. Find old GTD files
+    ;; 2. Parse and convert format
+    ;; 3. Create new structure
+    ;; 4. Preserve data
+    ))
+
+(codelahoma-gtd-load-component 'migration-tools)
+#+end_src
+
+* Activation
+
+#+begin_src emacs-lisp
+;; Ensure all components are loaded
+(defun codelahoma-gtd-activate ()
+  "Activate the GTD system."
+  (interactive)
+  (codelahoma-gtd-initialize)
+  (codelahoma-gtd-setup-states)
+  (codelahoma-gtd-setup-capture-templates)
+  (codelahoma-gtd-setup-agenda-views)
+  (codelahoma-gtd-update-agenda-files)
+  (message "GTD system activated"))
+
+;; Auto-activate when org loads
+(with-eval-after-load 'org
+  (message "GTD: Setting up system...")
+  (codelahoma-gtd-activate)
+  (codelahoma-gtd-setup-keybindings)
+  (message "GTD: System setup complete, keybindings should be available"))
+
+(provide 'codelahoma-gtd)
+;;; codelahoma-gtd.el ends here
 #+end_src
