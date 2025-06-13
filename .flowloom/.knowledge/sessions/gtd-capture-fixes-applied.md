@@ -1,9 +1,14 @@
 ---
 title: GTD Capture Fixes Applied
 type: session
-tags: [gtd, capture-templates, fixes, org-mode]
+tags:
+- gtd
+- capture-templates
+- fixes
+- org-mode
 created: 2025-01-09
 status: completed
+permalink: sessions/gtd-capture-fixes-applied
 ---
 
 # GTD Capture Fixes Applied

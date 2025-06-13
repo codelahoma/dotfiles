@@ -1,10 +1,51 @@
 {
-  "running": false,
-  "start_time": "2025-06-12T21:02:21.042159",
-  "pid": 2141,
+  "running": true,
+  "start_time": "2025-06-12T21:37:09.541780",
+  "pid": 31527,
   "error_count": 0,
   "last_error": null,
-  "last_scan": null,
-  "synced_files": 0,
-  "recent_events": []
+  "last_scan": "2025-06-12T22:15:02.264755",
+  "synced_files": 5,
+  "recent_events": [
+    {
+      "timestamp": "2025-06-12T22:15:02.264162",
+      "path": "architecture/GTD System Architectural Synthesis.md",
+      "action": "modified",
+      "status": "success",
+      "checksum": "569d3478706c293f73a6988d87e9b89713323bd03eef8555953cafb5e5c22950",
+      "error": null
+    },
+    {
+      "timestamp": "2025-06-12T22:11:00.548180",
+      "path": "architecture/GTD System Architectural Synthesis.md",
+      "action": "modified",
+      "status": "success",
+      "checksum": "1114224accd4e2f34db889c472179f26722444bbd9435d16cedc99bb4eda3efd",
+      "error": null
+    },
+    {
+      "timestamp": "2025-06-12T22:06:06.607131",
+      "path": "research/GTD Package Analysis and Best Practices.md",
+      "action": "modified",
+      "status": "success",
+      "checksum": "65f098d8ec16b1b03fe6fc851b56f79ccd2b54d5730bb62db0e68cc5d1a5c326",
+      "error": null
+    },
+    {
+      "timestamp": "2025-06-12T21:51:58.770124",
+      "path": "research/Org-Babel Literate Programming Research.md",
+      "action": "modified",
+      "status": "success",
+      "checksum": "96a2ae20527b48039e209e1950c474b351cefca226e031230eebe2a5db2de0d3",
+      "error": null
+    },
+    {
+      "timestamp": "2025-06-12T21:49:16.692344",
+      "path": "research/Spacemacs Keybinding System Research.md",
+      "action": "new",
+      "status": "success",
+      "checksum": "140bc1eaf0c4ec8b06210d0c065dbc039d9f18b41b0a8d6da164520d73e71749",
+      "error": null
+    }
+  ]
 }
