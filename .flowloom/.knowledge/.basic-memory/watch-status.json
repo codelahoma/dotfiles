@@ -4,9 +4,41 @@
   "pid": 31527,
   "error_count": 0,
   "last_error": null,
-  "last_scan": "2025-06-12T22:15:02.264755",
-  "synced_files": 5,
+  "last_scan": "2025-06-12T22:23:21.198430",
+  "synced_files": 11,
   "recent_events": [
+    {
+      "timestamp": "2025-06-12T22:23:21.197775",
+      "path": "plans/gtd-implementation/GTD Implementation Plan - 120 Keybinding System.md",
+      "action": "modified",
+      "status": "success",
+      "checksum": "dd7df5ceffa00f5d64dee30e4c3db094731ab8c36f72072c71305953f14fd91e",
+      "error": null
+    },
+    {
+      "timestamp": "2025-06-12T22:22:30.719787",
+      "path": "plans/gtd-implementation/GTD Implementation Plan - 110 Core GTD Engine.md",
+      "action": "modified",
+      "status": "success",
+      "checksum": "e3159e20b269c08890fce83c62649ccfa19dd3d108caf103c04acaae094546dd",
+      "error": null
+    },
+    {
+      "timestamp": "2025-06-12T22:21:26.024368",
+      "path": "plans/gtd-implementation/GTD Implementation Plan - 100 Foundation Setup.md",
+      "action": "modified",
+      "status": "success",
+      "checksum": "6154c425845a98e1590ff3f11edf8c4a586463bbb4bfb41d8f58093ccd6039d6",
+      "error": null
+    },
+    {
+      "timestamp": "2025-06-12T22:19:25.393161",
+      "path": "plans/GTD System Implementation - High-Level Plan.md",
+      "action": "modified",
+      "status": "success",
+      "checksum": "cf3366ed0c2d910dc95bc23f8fd00640392d2f63a7b08d24658d8c204c12c74c",
+      "error": null
+    },
     {
       "timestamp": "2025-06-12T22:15:02.264162",
       "path": "architecture/GTD System Architectural Synthesis.md",
