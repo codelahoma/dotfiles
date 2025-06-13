@@ -849,35 +849,9 @@ before packages are loaded."
      'user
      '(fixed-pitch ((t ( :family "FiraMono Nerd Font" :height 1.0))))
      '(variable-pitch ((t (:family "Source Sans Pro" :height 1.1))))
-     `(org-document-title ((t (,@headline :inherit fixed-pitch :height 2.5 :underline nil))))
-     ;; Ocean colors
-     `(org-level-1 ((t (,@headline :inherit fixed-pitch :height 1.8 ))))
-     `(org-level-2 ((t (,@headline :inherit fixed-pitch :height 1.5 ))))
-     `(org-level-3 ((t (,@headline :inherit fixed-pitch :height 1.4 ))))
-     `(org-level-4 ((t (,@headline :inherit fixed-pitch :height 1.3 ))))
-     `(org-level-5 ((t (,@headline :inherit fixed-pitch :height 1.2))))
-     `(org-level-6 ((t (,@headline :inherit fixed-pitch :height 1.2))))
-     `(org-level-7 ((t (,@headline :inherit fixed-pitch :height 1.2))))
-     `(org-level-8 ((t (,@headline :inherit fixed-pitch :height 1.2))))
-     '(org-block ((t (:inherit fixed-pitch :height 0.8))))
-     '(org-code ((t (:inherit (shadow fixed-pitch)))))
-     '(org-date ((t (:inherit (font-lock-comment-face fixed-pitch) :height 0.9))))
-     '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
-     '(org-done ((t ( :font "Fira Sans" :height 1.0  :weight bold))))
-     '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
-     '(org-link ((t (:underline t))))
-     '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-     '(org-property-value ((t (:inherit fixed-pitch))))
-     '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-     '(org-table ((t (:inherit fixed-pitch ))))
-     '(org-tag ((t (:inherit (shadow fixed-pitch)  :height 0.5))))
-     '(org-todo ((t ( :font "Fira Sans" :height 0.8 ))))
-     '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
+     ;; Org appearance configuration moved to codelahoma-org.org
      ))
-  ;; Set default org color scheme - now handled by codelahoma-org extensions
-  (with-eval-after-load 'org
-    (when (fboundp 'switch-org-colors)
-      (switch-org-colors "Cyber")))
+  ;; Org color scheme configuration moved to codelahoma-org.org
   (with-eval-after-load 'org-superstar
     (setq org-superstar-item-bullet-alist
           '((?* . ?•)
@@ -1087,163 +1061,12 @@ before packages are loaded."
   (defun codelahoma/insert-random-uid ()
     (interactive)
     (shell-command "printf %s \"$(uuidgen)\"" t))
-  ;; Base directory for all org files  
-  (defvar rk/org-directory "~/personal/org-files/"
-    "Base directory for all org files")
-  
-  (defun rk/org-file (filename)
-    "Return full path to org file in the org directory."
-    (expand-file-name filename rk/org-directory))
-  
-  ;; Core org directories and files
-  (setq org-directory rk/org-directory
-        org-agenda-files (list (rk/org-file "inbox.org")
-                              (rk/org-file "projects.org")
-                              (rk/org-file "work.org")
-                              (rk/org-file "personal.org")
-                              (rk/org-file "someday.org"))
-        org-default-notes-file (rk/org-file "inbox.org"))
-  
-  ;; GTD Capture Templates
-  (setq org-capture-templates
-    `(("i" "Inbox" entry (file ,(rk/org-file "inbox.org"))
-       "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
-  
-      ("w" "Work Templates")
-      ("wt" "Work Task" entry (file+headline ,(rk/org-file "work.org") "Tasks")
-       "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
-      ("wm" "Work Meeting" entry (file+headline ,(rk/org-file "work.org") "Meetings")
-       "* MEETING %? :meeting:\n  %U\n  %a\n  %i" :empty-lines 1)
-      ("wn" "Work Note" entry (file+headline ,(rk/org-file "work.org") "Notes")
-       "* %?\n  %U\n  %a\n  %i" :empty-lines 1)
-  
-      ("p" "Personal Templates")
-      ("pt" "Personal Task" entry (file+headline ,(rk/org-file "personal.org") "Tasks")
-       "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
-      ("pn" "Personal Note" entry (file+headline ,(rk/org-file "personal.org") "Notes")
-       "* %?\n  %U\n  %a\n  %i" :empty-lines 1)
-      ("pp" "Project" entry (file ,(rk/org-file "projects.org"))
-       "* PROJECT %?\n  %U\n  %a\n  %i" :empty-lines 1)
-  
-      ("s" "Someday/Maybe" entry (file ,(rk/org-file "someday.org"))
-       "* SOMEDAY %?\n  %U\n  %a\n  %i" :empty-lines 1)
-  
-      ("j" "Journal" entry (file+datetree ,(rk/org-file "journal.org"))
-       "* %?\n  %U\n  %a\n  %i" :empty-lines 1)))
-  
-  ;; Custom Agenda Commands
-  (setq org-agenda-custom-commands
-    '(("w" "Work Dashboard"
-       ((agenda "" ((org-agenda-span 'day)
-                   (org-agenda-files (list (rk/org-file "work.org")))))
-        (todo "TODO|IN-PROGRESS|WAITING"
-              ((org-agenda-overriding-header "Work Tasks")
-               (org-agenda-files (list (rk/org-file "work.org")))
-               (org-agenda-sorting-strategy '(priority-down effort-up))))
-        (todo "MEETING"
-              ((org-agenda-overriding-header "Upcoming Meetings")
-               (org-agenda-files (list (rk/org-file "work.org")))))))
-  
-      ("p" "Personal Dashboard"
-       ((agenda "" ((org-agenda-span 'day)
-                   (org-agenda-files (list (rk/org-file "personal.org")))))
-        (todo "TODO|IN-PROGRESS|WAITING"
-              ((org-agenda-overriding-header "Personal Tasks")
-               (org-agenda-files (list (rk/org-file "personal.org")))
-               (org-agenda-sorting-strategy '(priority-down effort-up))))
-        (todo "PROJECT"
-              ((org-agenda-overriding-header "Active Projects")
-               (org-agenda-files (list (rk/org-file "projects.org")))))))
-  
-      ("u" "Unified Dashboard"
-       ((agenda "" ((org-agenda-span 'week)))
-        (todo "TODO|IN-PROGRESS|WAITING"
-              ((org-agenda-overriding-header "All Active Tasks")
-               (org-agenda-sorting-strategy '(priority-down effort-up))))
-        (todo "PROJECT"
-              ((org-agenda-overriding-header "Active Projects")
-               (org-agenda-files (list (rk/org-file "projects.org")))))
-        (todo "SOMEDAY"
-              ((org-agenda-overriding-header "Someday/Maybe")
-               (org-agenda-files (list (rk/org-file "someday.org")))))))
-  
-      ("r" "Review"
-       ((todo "PROJECT"
-              ((org-agenda-overriding-header "Projects to Review")
-               (org-agenda-files (list (rk/org-file "projects.org")))))
-        (todo "WAITING"
-              ((org-agenda-overriding-header "Waiting For")
-               (org-agenda-sorting-strategy '(priority-down))))
-        (todo "SOMEDAY"
-              ((org-agenda-overriding-header "Someday/Maybe Items")
-               (org-agenda-files (list (rk/org-file "someday.org")))))))
-  
-      ("i" "Inbox Processing"
-       ((todo "TODO"
-              ((org-agenda-overriding-header "Inbox Items to Process")
-               (org-agenda-files (list (rk/org-file "inbox.org")))
-               (org-agenda-sorting-strategy '(time-up))))))
-  
-      ("n" "Next Actions" todo "TODO"
-       ((org-agenda-overriding-header "Next Actions")
-        (org-agenda-sorting-strategy '(priority-down effort-up))))))
-  
-  ;; Enhanced TODO Keywords
-  (setq org-todo-keywords
-    '((sequence "TODO(t)" "IN-PROGRESS(i)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")
-      (sequence "PROJECT(p)" "|" "COMPLETED(C)")
-      (sequence "SOMEDAY(s)" "|" "DECIDED(D)")
-      (sequence "MEETING(m)" "|" "ATTENDED(a)")
-      (sequence "QUESTION(q)" "|" "ANSWERED(A)")))
-  
-  (setq org-todo-keyword-faces
-    '(("TODO" . (:foreground "#ff6b6b" :weight bold))
-      ("IN-PROGRESS" . (:foreground "#4ecdc4" :weight bold))
-      ("WAITING" . (:foreground "#ffe66d" :weight bold))
-      ("PROJECT" . (:foreground "#a8e6cf" :weight bold))
-      ("SOMEDAY" . (:foreground "#dcedc1" :weight bold))
-      ("MEETING" . (:foreground "#b4a7d6" :weight bold))
-      ("QUESTION" . (:foreground "#ffaaa5" :weight bold))
-      ("DONE" . (:foreground "#95e1d3" :weight bold))
-      ("CANCELLED" . (:foreground "#999999" :weight bold))
-      ("COMPLETED" . (:foreground "#95e1d3" :weight bold))
-      ("DECIDED" . (:foreground "#95e1d3" :weight bold))
-      ("ATTENDED" . (:foreground "#95e1d3" :weight bold))
-      ("ANSWERED" . (:foreground "#95e1d3" :weight bold))))
-  
-  ;; Better org-mode behavior
-  (setq org-log-done 'time
-        org-log-into-drawer t
-        org-startup-indented t
-        org-hide-leading-stars t
-        org-odd-levels-only nil
-        org-insert-heading-respect-content t
-        org-refile-use-outline-path 'file
-        org-outline-path-complete-in-steps nil
-        org-refile-allow-creating-parent-nodes 'confirm)
-  
-  ;; Refile targets
-  (setq org-refile-targets
-    `((,(rk/org-file "work.org") :maxlevel . 2)
-      (,(rk/org-file "personal.org") :maxlevel . 2)
-      (,(rk/org-file "projects.org") :maxlevel . 2)
-      (,(rk/org-file "someday.org") :maxlevel . 1)))
-  
-  ;; Archive location
-  (setq org-archive-location (concat (rk/org-file "archive.org") "::* From %s"))
-  
-  ;; Agenda settings
-  (setq org-agenda-window-setup 'current-window
-        org-agenda-restore-windows-after-quit t
-        org-agenda-skip-scheduled-if-done t
-        org-agenda-skip-deadline-if-done t
-        org-agenda-include-deadlines t
-        org-agenda-start-with-log-mode t)
-  ;; Load custom org extensions if available
-  (let ((codelahoma-org-file (expand-file-name "~/.spacemacs.d/codelahoma-org.el")))
-    (when (file-exists-p codelahoma-org-file)
-      (load-file codelahoma-org-file)
-      (message "Loaded CodeLahoma org extensions from %s" codelahoma-org-file)))          ; Collects all general :noweb-ref user-config blocks
+  ;; Load CodeLahoma Org Extensions (centralized org configuration)
+  (with-eval-after-load 'org
+    (let ((codelahoma-org-file (expand-file-name "~/.spacemacs.d/codelahoma-org.el")))
+      (when (file-exists-p codelahoma-org-file)
+        (load-file codelahoma-org-file)
+        (message "Loaded CodeLahoma org extensions from %s" codelahoma-org-file))))          ; Collects all general :noweb-ref user-config blocks
   (spacemacs/declare-prefix "ob" "buffer")
   (spacemacs/set-leader-keys "obn" 'spacemacs/new-empty-buffer)
   
@@ -1276,10 +1099,7 @@ before packages are loaded."
     "ofr" 'fold-this-unfold-all)
   (spacemacs/declare-prefix "oa" "applications")
   (spacemacs/set-leader-keys
-    "oap" 'pinboard)
-  ;; GTD keybindings are now managed in codelahoma-org.org
-  ;; The entire GTD system including capture, agenda, and navigation
-  ;; is configured there for better modularity and maintenance; <<<--- ADD THIS LINE HERE
+    "oap" 'pinboard); <<<--- ADD THIS LINE HERE
             ; Collects the remaining to-organize block
 
   (when (file-exists-p custom-file)
