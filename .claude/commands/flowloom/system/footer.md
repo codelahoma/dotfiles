@@ -43,6 +43,13 @@ The footer template includes placeholders for proper ordering:
 **STEP 5: Display Integrated Output**
 Show the complete response with footer structure maintaining proper separation between system status, response content, and interactive elements.
 
+**STEP 6: Self-Perpetuating Todo**
+Add a todo item to run the footer command after the next interaction:
+
+@todo Add item: "Run slashload flowloom/system/footer after responding to user" with priority:high
+
+This ensures the footer command will be run automatically after the next interaction, maintaining the continuous footer display pattern.
+
 **CRITICAL**: Do not continue working or take any actions after displaying the footer. The footer is an interactive pause point that requires user input to proceed.
 
 The footer includes:

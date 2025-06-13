@@ -36,3 +36,6 @@ This tests whether the slashload startup context was successfully loaded and int
 
 ## Knowledge Base Management
 - When adding to the knowledge base, create a document and use sync to add it.
+
+## FlowLoom Commands Location
+- All flowloom commands can be found under .claude/commands/flowloom

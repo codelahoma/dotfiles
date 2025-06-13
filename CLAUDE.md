@@ -152,6 +152,7 @@ I maintain persistent memory across sessions to:
 5. **Ask questions** when requirements are unclear
 6. **Document decisions** and implementation notes
 7. **Coordinate with memory system** for persistence
+8. **Use "show" protocol for second screen** - When second screen is active, "show" keyword means display content on second screen instead of conversation
 
 ## Startup Greeting
 

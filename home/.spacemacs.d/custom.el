@@ -20,9 +20,12 @@
                       "\\_>")
              1 'font-lock-variable-name-face)))))
  '(org-agenda-files
-   '("/Users/rodk/personal/org-files/inbox.org"
-     "/Users/rodk/personal/org-files/personal.org"
-     "/Users/rodk/personal/org-files/someday.org"))
+   '("/Users/rodk/personal/org-files/work/gtd.org"
+     "/Users/rodk/personal/org-files/work/projects.org"
+     "/Users/rodk/personal/org-files/work/someday.org"
+     "/Users/rodk/personal/org-files/personal/gtd.org"
+     "/Users/rodk/personal/org-files/personal/projects.org"
+     "/Users/rodk/personal/org-files/personal/someday.org"))
  '(package-selected-packages nil)
  '(safe-local-variable-values
    '((projectile-project-name . "org-files") (typescript-backend . tide)

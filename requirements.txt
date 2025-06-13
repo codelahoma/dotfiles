@@ -1,0 +1,16 @@
+# Python requirements for FlowLoom dotfiles system
+
+# YAML parsing for front matter processing
+PyYAML>=6.0
+
+# Process management for finding shell PIDs
+psutil>=5.0
+
+# Optional: Rich for enhanced terminal output
+rich>=10.0
+
+# Optional: Click for command line interfaces
+click>=8.0
+
+# Optional: Jinja2 for templating
+jinja2>=3.0
