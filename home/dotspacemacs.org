@@ -52,6 +52,16 @@ General variables that need to be set before packages load.
 #+end_src
 
 
+** Force correct org
+#+begin_src emacs-lisp :noweb-ref user-init
+  ;; ;; Fix org version mismatch by removing built-in org from load-path early
+  ;; (setq load-path (cl-remove-if (lambda (x) (string-match-p "lisp/org" x)) load-path))
+  ;; ;; Ensure ELPA org loads first
+  ;; (require 'package)
+  ;; (setq package-enable-at-startup nil)
+#+end_src
+
+
 * Scratch (functions and such I'm working on/playing with)
 ** editWithEmacs
 Trying out a Hammerspoon Spoon for system-wide emacs editing
@@ -227,6 +237,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
   emoji
   evil-better-jumper
   helm
+  org
   (osx :variables
        osx-command-as nil)
   spacemacs-modeline
