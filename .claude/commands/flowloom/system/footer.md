@@ -2,25 +2,53 @@
 
 Let input_args = "$ARGUMENTS"
 
-Generate a properly formatted interactive footer with automatic auto-tracking verification.
+Generate a properly formatted interactive footer with memory logging prompts.
 
-## Usage
+## Memory Logging Protocol
 
-This command uses the footer formatting script to generate consistent footer display with automatic data detection and proper formatting.
+**BEFORE displaying footer, I must:**
+1. **Log current session activities** to fl-memory.json via flowloom-memory
+2. **Capture any decisions made** since last footer
+3. **Document progress and discoveries** to basic-memory
+4. **Update context and relationships** between entities
 
-## Auto-Track Verification
-
-Before displaying footer, ensure auto-tracking is enabled for WORM governance:
-
-slashload flowloom/system/auto-track enable
+**Memory logging reminder text to include in my internal process:**
+"🧠 MEMORY CHECK: Have I logged all activities, decisions, and discoveries since the last interaction? Use both fl-memory.json and basic-memory systems to capture this session's work."
 
 ## Implementation
 
+**STEP 1: Memory Logging Check**
+Remind myself: "🧠 MEMORY CHECK: Have I logged all activities, decisions, and discoveries since the last interaction? Use both fl-memory.json and basic-memory systems to capture this session's work."
+
+**STEP 2: Generate Footer**
 Execute the Python footer script and display its output:
 
 @bash python3 ./bin/footer.py --session "${input_args:-Configuration Mode Session}" --next-steps "1. Review output\\n2. Continue with next task"
 
-After running the bash command above, display all the output exactly as returned by the script. The output will be a formatted footer that you should show to the user.
+**STEP 3: Output Sequencing and Integration**
+CRITICAL OUTPUT HANDLING:
+- Hold ALL output intended for user viewing until all tool calls complete
+- Run the footer script and capture its output
+- Replace [RESPONSE_OUTPUT] placeholder in footer with held content
+- Display the integrated response with proper dividers
+
+**STEP 4: Response Integration**
+The footer template includes placeholders for proper ordering:
+1. **Table** (memory status, directory, branch, context)
+2. **Divider line** (80 dashes)
+3. **[RESPONSE_OUTPUT]** (replace with actual response content)
+4. **Divider line** (80 dashes) 
+5. **Next Steps and Usage**
+
+**STEP 5: Display Integrated Output**
+Show the complete response with footer structure maintaining proper separation between system status, response content, and interactive elements.
+
+**STEP 6: Self-Perpetuating Todo**
+Add a todo item to run the footer command after the next interaction:
+
+@todo Add item: "Run slashload flowloom/system/footer after responding to user" with priority:high
+
+This ensures the footer command will be run automatically after the next interaction, maintaining the continuous footer display pattern.
 
 **CRITICAL**: Do not continue working or take any actions after displaying the footer. The footer is an interactive pause point that requires user input to proceed.
 

@@ -1,0 +1,8 @@
+#+TITLE: Archive System Test
+
+* TODO Test task 1 @work
+* DONE Test completed task @home
+  CLOSED: [2025-06-01 Sun 10:00]
+* CANCELLED Old cancelled task @office
+  CLOSED: [2025-05-01 Thu 14:30]
+* NEXT Active task @computer

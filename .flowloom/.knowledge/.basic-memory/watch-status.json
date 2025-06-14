@@ -1,0 +1,67 @@
+{
+  "running": true,
+  "start_time": "2025-06-13T12:03:15.346687",
+  "pid": 64983,
+  "error_count": 0,
+  "last_error": null,
+  "last_scan": "2025-06-13T12:27:26.203814",
+  "synced_files": 7,
+  "recent_events": [
+    {
+      "timestamp": "2025-06-13T12:27:26.203219",
+      "path": "sessions/Second Screen System Implementation Complete.md",
+      "action": "modified",
+      "status": "success",
+      "checksum": "f7e1c0d9c3f190bdc063cc304fa7d43a24a9b76ebf1d805252a9442125b458d4",
+      "error": null
+    },
+    {
+      "timestamp": "2025-06-13T12:20:01.332166",
+      "path": "research/FlowLoom Second Screen System Analysis.md",
+      "action": "modified",
+      "status": "success",
+      "checksum": "b0739453092973a87b8e2ca7a5a8d84712b81b3a4651fb358d260844c51c6590",
+      "error": null
+    },
+    {
+      "timestamp": "2025-06-13T12:12:47.926404",
+      "path": "sessions/KB Migration Phase 1 Complete.md",
+      "action": "modified",
+      "status": "success",
+      "checksum": "a7a19b6bd515c893cecfccbd3f1623d29562b5c5db4d37672c946ec0ce5b77fa",
+      "error": null
+    },
+    {
+      "timestamp": "2025-06-13T12:11:30.643515",
+      "path": "architecture/Plan Schema Documentation.md",
+      "action": "modified",
+      "status": "success",
+      "checksum": "af8f1144869b6cc970f5b6597c04eee52336e86be0ef801b42e5df09cd66ee9f",
+      "error": null
+    },
+    {
+      "timestamp": "2025-06-13T12:08:58.507451",
+      "path": "development/Footer Command Enhancement - Self-Perpetuation.md",
+      "action": "modified",
+      "status": "success",
+      "checksum": "f096f1d748042f1ef6b82a57a9b5e53d47cb6d66599590b649d7e32d55ffab01",
+      "error": null
+    },
+    {
+      "timestamp": "2025-06-13T12:05:26.798277",
+      "path": "sessions/Plan System Knowledge Base Migration - Session Log.md",
+      "action": "modified",
+      "status": "success",
+      "checksum": "0a460c8c906ea3557d2e5e1b005f5f42849e330cec3abcf4fb86431e107b8bb3",
+      "error": null
+    },
+    {
+      "timestamp": "2025-06-13T12:04:45.265166",
+      "path": "plans/Plan System Knowledge Base Migration Plan.md",
+      "action": "modified",
+      "status": "success",
+      "checksum": "b31b953515294e83dbaf4fd29ae72a3293bb3518ed970842f2f9ebc97a672ac6",
+      "error": null
+    }
+  ]
+}

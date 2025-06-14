@@ -70,17 +70,31 @@ class DirectMemoryManager:
         
         return entities, relations
     
-    def add_entity(self, name: str, entity_type: str, observation: str) -> bool:
+    def _create_observation_object(self, content: str, tags: Optional[List[str]] = None) -> Dict:
+        """Create a standardized observation object with timestamp and tags"""
+        return {
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "content": content,
+            "tags": tags or []
+        }
+    
+    def add_entity(self, name: str, entity_type: str, observation: str, tags: Optional[List[str]] = None) -> bool:
         """Add observation to existing entity or create new entity"""
         try:
             entities, relations = self._load_memory()
             
+            # Create observation object
+            obs_obj = self._create_observation_object(observation, tags)
+            
             # Find existing entity
             for entity in entities:
                 if entity.get('name') == name and entity.get('entityType') == entity_type:
-                    # Add observation if not already present
-                    if observation not in entity.get('observations', []):
-                        entity['observations'].append(observation)
+                    # Check if observation already exists (compare content only)
+                    existing_contents = [obs.get('content') if isinstance(obs, dict) else obs 
+                                       for obs in entity.get('observations', [])]
+                    
+                    if obs_obj['content'] not in existing_contents:
+                        entity['observations'].append(obs_obj)
                         self._atomic_write(entities, relations)
                         return True
                     return False  # Observation already exists
@@ -90,7 +104,7 @@ class DirectMemoryManager:
                 'type': 'entity',
                 'name': name,
                 'entityType': entity_type,
-                'observations': [observation]
+                'observations': [obs_obj]
             }
             entities.append(new_entity)
             self._atomic_write(entities, relations)
@@ -100,9 +114,9 @@ class DirectMemoryManager:
             print(f"Error adding entity: {e}")
             return False
     
-    def add_observation(self, name: str, entity_type: str, observation: str) -> bool:
+    def add_observation(self, name: str, entity_type: str, observation: str, tags: Optional[List[str]] = None) -> bool:
         """Add observation to existing entity (alias for add_entity)"""
-        return self.add_entity(name, entity_type, observation)
+        return self.add_entity(name, entity_type, observation, tags)
     
     def add_relation(self, from_entity: str, to_entity: str, relation_type: str) -> bool:
         """Add a relation between entities"""
@@ -214,11 +228,11 @@ Examples:
   # Add a new entity with observation
   %(prog)s add-entity "FlowLoom Memory System" "Feature" "Implemented JSONL format for clean git merges"
   
-  # Add observation to existing entity
-  %(prog)s add-observation "Session-12345" "Session" "Completed authentication implementation"
+  # Add observation with tags
+  %(prog)s add-observation "Session-12345" "Session" "Completed authentication implementation" --tags technical resolved
   
   # Add observation for complex text from file
-  %(prog)s add-observation "Architecture Decision" "Documentation" --from-file decision.md
+  %(prog)s add-observation "Architecture Decision" "Documentation" --from-file decision.md --tags architecture decision
   
   # Create a relationship
   %(prog)s add-relation "Authentication Module" "Database Layer" "depends_on"
@@ -230,6 +244,12 @@ Examples:
 
 Common entity types: Feature, Component, Session, Task, Documentation, System, User
 Common relation types: depends_on, implements, contains, relates_to, creates, uses
+Common tags: technical, resolved, in-progress, architecture, bug-fix, feature, documentation
+
+Observation Format: Each observation is now a JSON object with:
+  - timestamp: ISO format with timezone (2025-01-08T16:45:23Z)
+  - content: The actual observation text
+  - tags: Array of strings for categorization
         ''',
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
@@ -248,6 +268,8 @@ Common relation types: depends_on, implements, contains, relates_to, creates, us
                                   help='Observation text (quote if contains spaces)')
     add_entity_parser.add_argument('--from-file', 
                                   help='Read observation from file (for long/complex text)')
+    add_entity_parser.add_argument('--tags', nargs='*', 
+                                  help='Optional tags for the observation (e.g., --tags technical resolved)')
     
     # Add observation command
     add_obs_parser = subparsers.add_parser('add-observation', 
@@ -259,6 +281,8 @@ Common relation types: depends_on, implements, contains, relates_to, creates, us
                                help='Observation text (quote if contains spaces)')
     add_obs_parser.add_argument('--from-file', 
                                help='Read observation from file (for long/complex text)')
+    add_obs_parser.add_argument('--tags', nargs='*', 
+                               help='Optional tags for the observation (e.g., --tags technical resolved)')
     
     # Add relation command
     add_rel_parser = subparsers.add_parser('add-relation', 
@@ -301,10 +325,12 @@ Common relation types: depends_on, implements, contains, relates_to, creates, us
         if observation is None:
             return
             
-        result = manager.add_entity(args.name, args.type, observation)
+        result = manager.add_entity(args.name, args.type, observation, getattr(args, 'tags', None))
         if result:
             print(f"✓ Entity '{args.name}' ({args.type}) added/updated")
             print(f"  Observation: {observation[:100]}{'...' if len(observation) > 100 else ''}")
+            if getattr(args, 'tags', None):
+                print(f"  Tags: {', '.join(args.tags)}")
         else:
             print(f"• Entity '{args.name}' unchanged (observation already exists)")
         
@@ -314,10 +340,12 @@ Common relation types: depends_on, implements, contains, relates_to, creates, us
         if observation is None:
             return
             
-        result = manager.add_observation(args.name, args.type, observation)
+        result = manager.add_observation(args.name, args.type, observation, getattr(args, 'tags', None))
         if result:
             print(f"✓ Observation added to '{args.name}' ({args.type})")
             print(f"  Content: {observation[:100]}{'...' if len(observation) > 100 else ''}")
+            if getattr(args, 'tags', None):
+                print(f"  Tags: {', '.join(args.tags)}")
         else:
             print(f"• Observation unchanged for '{args.name}' (already exists)")
         

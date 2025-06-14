@@ -1,0 +1,69 @@
+#!/bin/bash
+# Second Screen Display Launcher
+# Creates a unique display file and opens it in Chrome
+
+# Get the shell PID for unique naming
+SHELL_PID=$(./.flowloom/bin/get_shell_pid.py)
+DISPLAY_FILE="claude_display_${SHELL_PID}.md"
+DISPLAY_PATH="$(pwd)/.flowloom/displays/${DISPLAY_FILE}"
+
+# Ensure displays directory exists
+mkdir -p .flowloom/displays
+
+# Get current state information
+CURRENT_DIR="$(pwd)"
+GIT_BRANCH="$(git branch --show-current 2>/dev/null || echo 'no-git')"
+GIT_STATUS="$(git status --porcelain 2>/dev/null | wc -l | tr -d ' ')"
+AUTO_TRACK_STATUS="❌ DISABLED"
+if [ -f ".flowloom/.auto-track-enabled" ]; then
+    AUTO_TRACK_STATUS="✅ ENABLED"
+fi
+
+# Create initial display file with header and current state
+cat > "${DISPLAY_PATH}" << EOF
+# FlowLoom Second Screen Display
+*Session PID: ${SHELL_PID} | $(date '+%Y-%m-%d %H:%M:%S')*
+
+---
+
+| Property | Value |
+|----------|-------|
+| Working Directory | \`${CURRENT_DIR}\` |
+| Git Branch | \`${GIT_BRANCH}\` |
+| Git Status | ${GIT_STATUS} uncommitted files |
+| Auto-Track | ${AUTO_TRACK_STATUS} |
+
+---
+
+This is your second screen for assessments, plans, and other conversation artifacts.
+
+Content will appear here as you work with FlowLoom.
+
+---
+
+*Display ready for content updates*
+EOF
+
+# Open in Chrome using file URL
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    open -a "Google Chrome" "file://${DISPLAY_PATH}"
+elif command -v google-chrome &> /dev/null; then
+    # Linux with google-chrome
+    google-chrome "file://${DISPLAY_PATH}" &
+elif command -v chromium-browser &> /dev/null; then
+    # Linux with chromium
+    chromium-browser "file://${DISPLAY_PATH}" &
+else
+    echo "⚠️ Chrome not found. Display file created at: ${DISPLAY_PATH}"
+fi
+
+echo "✅ Second screen created: ${DISPLAY_FILE}"
+echo "📍 Path: ${DISPLAY_PATH}"
+echo "🖥️ Chrome should now display your second screen"
+echo ""
+echo "To update the display, use:"
+echo "  slashload flowloom/ui/display-update <content>"
+echo ""
+echo "To show the display path:"
+echo "  slashload flowloom/ui/display-path"
