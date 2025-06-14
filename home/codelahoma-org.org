@@ -235,9 +235,7 @@ The GTD system follows a modular component architecture:
   (spacemacs/declare-prefix "ooc" "capture")
   (spacemacs/set-leader-keys "oocc" 'org-capture)
   (spacemacs/set-leader-keys "ooci" 'codelahoma-gtd-capture-inbox)
-  (spacemacs/set-leader-keys "oocp" 'codelahoma-gtd-capture-personal)
-  (spacemacs/set-leader-keys "oocw" 'codelahoma-gtd-capture-work)
-  (spacemacs/set-leader-keys "oocP" 'codelahoma-gtd-capture-project)
+  (spacemacs/set-leader-keys "oocp" 'codelahoma-gtd-capture-project)
   
   ;; Process (available everywhere)
   (spacemacs/declare-prefix "oop" "process")
@@ -253,14 +251,7 @@ The GTD system follows a modular component architecture:
   (spacemacs/declare-prefix "oon" "navigate")
   (spacemacs/set-leader-keys "ooni" 'codelahoma-gtd-open-inbox)
   (spacemacs/set-leader-keys "oonp" 'codelahoma-gtd-open-projects)
-  (spacemacs/set-leader-keys "oonn" 'codelahoma-gtd-open-next-actions)
-  
-  ;; Agenda views (available everywhere)
-  (spacemacs/declare-prefix "ooa" "agenda")
-  (spacemacs/set-leader-keys "ooag" 'codelahoma-gtd-agenda-gtd-view)
-  (spacemacs/set-leader-keys "ooad" 'codelahoma-gtd-agenda-daily)
-  (spacemacs/set-leader-keys "ooaw" 'codelahoma-gtd-agenda-weekly)
-  (spacemacs/set-leader-keys "ooaa" 'org-agenda))
+  (spacemacs/set-leader-keys "oonn" 'codelahoma-gtd-open-next-actions))
 
 (codelahoma-gtd-load-component 'keybindings)
 #+end_src
@@ -275,9 +266,7 @@ The GTD system follows a modular component architecture:
     "SPC o o c" "capture"
     "SPC o o c c" "generic capture"
     "SPC o o c i" "inbox item"
-    "SPC o o c p" "personal"
-    "SPC o o c w" "work"
-    "SPC o o c P" "project"
+    "SPC o o c p" "project"
     "SPC o o p" "process"
     "SPC o o p i" "inbox"
     "SPC o o p c" "clarify"
@@ -287,12 +276,7 @@ The GTD system follows a modular component architecture:
     "SPC o o n" "navigate"
     "SPC o o n i" "inbox"
     "SPC o o n p" "projects"
-    "SPC o o n n" "next actions"
-    "SPC o o a" "agenda"
-    "SPC o o a g" "GTD view"
-    "SPC o o a d" "daily dashboard"
-    "SPC o o a w" "weekly review"
-    "SPC o o a a" "org-agenda"))
+    "SPC o o n n" "next actions"))
 
 (with-eval-after-load 'which-key
   (codelahoma-gtd-setup-which-key))
@@ -339,22 +323,12 @@ The GTD system follows a modular component architecture:
 (defvar codelahoma-gtd-capture-templates
   '(("i" "Inbox" entry (file codelahoma-gtd-inbox-file)
      "* TODO %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n  %i")
-    ("p" "Personal")
-    ("pi" "Personal Inbox" entry (file codelahoma-gtd-inbox-file)
-     "* TODO %? :personal:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n  %i")
-    ("pp" "Personal Project" entry (file codelahoma-gtd-projects-file)
-     "* TODO %? [/] :personal:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n** TODO First task")
-    ("pn" "Personal Next Action" entry (file codelahoma-gtd-file "next-actions")
-     "* NEXT %? :personal:\n  :PROPERTIES:\n  :CREATED: %U\n  :CONTEXT: %^{Context|@home|@errands|@calls|@computer}\n  :END:")
-    ("w" "Work")
-    ("wi" "Work Inbox" entry (file codelahoma-gtd-inbox-file)
-     "* TODO %? :work:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n  %i")
-    ("wp" "Work Project" entry (file codelahoma-gtd-projects-file)
-     "* TODO %? [/] :work:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n** TODO First task")
-    ("wn" "Work Next Action" entry (file codelahoma-gtd-file "next-actions")
-     "* NEXT %? :work:\n  :PROPERTIES:\n  :CREATED: %U\n  :CONTEXT: %^{Context|@office|@calls|@computer}\n  :END:")
-    ("ww" "Work Waiting For" entry (file codelahoma-gtd-file "waiting-for")
-     "* WAITING %? :work:waiting:\n  :PROPERTIES:\n  :CREATED: %U\n  :WAITING_ON: %^{Waiting on}\n  :END:"))
+    ("p" "Project" entry (file codelahoma-gtd-projects-file)
+     "* TODO %? [/]\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n** TODO First task")
+    ("n" "Next Action" entry (file codelahoma-gtd-file "next-actions")
+     "* NEXT %?\n  :PROPERTIES:\n  :CREATED: %U\n  :CONTEXT: %^{Context|@home|@office|@errands|@calls|@computer}\n  :END:")
+    ("w" "Waiting For" entry (file codelahoma-gtd-file "waiting-for")
+     "* WAITING %? :waiting:\n  :PROPERTIES:\n  :CREATED: %U\n  :WAITING_ON: %^{Waiting on}\n  :END:"))
   "GTD capture templates.")
 
 (defun codelahoma-gtd-setup-capture-templates ()
@@ -369,17 +343,7 @@ The GTD system follows a modular component architecture:
 (defun codelahoma-gtd-capture-project ()
   "Capture a new project."
   (interactive)
-  (org-capture nil "pp"))
-
-(defun codelahoma-gtd-capture-personal ()
-  "Quick capture for personal item."
-  (interactive)
-  (org-capture nil "pi"))
-
-(defun codelahoma-gtd-capture-work ()
-  "Quick capture for work item."
-  (interactive)
-  (org-capture nil "wi"))
+  (org-capture nil "p"))
 
 (codelahoma-gtd-load-component 'capture-templates)
 #+end_src
@@ -427,8 +391,8 @@ The GTD system follows a modular component architecture:
   (when (org-at-heading-p)
     (org-narrow-to-subtree)
     (let ((choice (read-char-choice
-                   "Process: [d]o now, [p]roject, [n]ext action, [w]aiting, [s]omeday, [r]eference, [z]ettel note, [D]aily note, [t]rash: "
-                   '(?d ?p ?n ?w ?s ?r ?z ?D ?t))))
+                   "Process: [d]o now, [p]roject, [n]ext action, [w]aiting, [s]omeday, [r]eference, [t]rash: "
+                   '(?d ?p ?n ?w ?s ?r ?t))))
       (pcase choice
         (?d (codelahoma-gtd-apply-two-minute-rule))
         (?p (codelahoma-gtd-convert-to-project))
@@ -436,8 +400,6 @@ The GTD system follows a modular component architecture:
         (?w (codelahoma-gtd-file-as-waiting))
         (?s (codelahoma-gtd-file-as-someday))
         (?r (codelahoma-gtd-file-as-reference))
-        (?z (codelahoma-gtd-inbox-to-note))
-        (?D (codelahoma-gtd-inbox-to-daily-note))
         (?t (org-cut-subtree)))
       (widen)
       (when (and (not (eobp)) (org-at-heading-p))
@@ -771,25 +733,6 @@ The GTD system follows a modular component architecture:
 (codelahoma-gtd-load-component 'agenda-integration)
 #+end_src
 
-** Agenda View Functions
-
-#+begin_src emacs-lisp
-(defun codelahoma-gtd-agenda-gtd-view ()
-  "Open GTD agenda view."
-  (interactive)
-  (org-agenda nil "g"))
-
-(defun codelahoma-gtd-agenda-daily ()
-  "Open daily dashboard agenda view."
-  (interactive)
-  (org-agenda nil "d"))
-
-(defun codelahoma-gtd-agenda-weekly ()
-  "Open weekly review agenda view."
-  (interactive)
-  (org-agenda nil "w"))
-#+end_src
-
 * [180] Testing Framework
 
 ** Unit Tests
@@ -920,380 +863,12 @@ The GTD system follows a modular component architecture:
   (codelahoma-gtd-update-agenda-files)
   (message "GTD system activated"))
 
-* [200] Org-Roam Integration (Zettelkasten)
-
-** Basic Configuration
-
-#+begin_src emacs-lisp
-(defcustom codelahoma-roam-directory "~/personal/org-files/roam-notes/"
-  "Directory for org-roam notes (Zettelkasten)."
-  :type 'directory
-  :group 'codelahoma-gtd)
-
-(defun codelahoma-roam-setup ()
-  "Configure org-roam for GTD/Zettelkasten integration."
-  (when (featurep 'org-roam)
-    (setq org-roam-directory codelahoma-roam-directory)
-    (setq org-roam-database-connector 'sqlite3)
-    (setq org-roam-completion-everywhere t)
-    
-    ;; Daily notes configuration
-    (setq org-roam-dailies-directory "dailies/")
-    (setq org-roam-dailies-capture-templates
-          '(("d" "default" entry
-             "* %?"
-             :target (file+head "%<%Y-%m-%d>.org"
-                               "#+title: %<%Y-%m-%d>\n"))))
-    
-    ;; Enable org-roam mode
-    (org-roam-db-autosync-mode)
-    (message "Org-roam configured for Zettelkasten workflow")))
-
-(codelahoma-gtd-load-component 'roam-setup)
-#+end_src
-
-** Zettelkasten Capture Templates
-
-#+begin_src emacs-lisp
-(defvar codelahoma-roam-capture-templates
-  '(("l" "Literature Note" plain
-     "* Source: %^{Source}\n* Author: %^{Author}\n* Date: %U\n\n## Key Ideas\n\n%?\n\n## Personal Thoughts\n\n\n## Connections\n\n\n## Generated Actions\n- TODO Review and extract actionable items"
-     :target (file+head "${slug}.org" "#+title: ${title}\n#+filetags: :literature:\n")
-     :unnarrowed t)
-    
-    ("p" "Permanent Note" plain
-     "* Concept: %^{Core Concept}\n* Date: %U\n\n## Main Idea\n\n%?\n\n## Evidence/Examples\n\n\n## Connections\n\n\n## Applications\n\n\n## Questions\n\n"
-     :target (file+head "${slug}.org" "#+title: ${title}\n#+filetags: :permanent:\n")
-     :unnarrowed t)
-    
-    ("m" "Meeting Note" plain
-     "* Meeting: %^{Meeting Topic}\n* Date: %U\n* Attendees: %^{Attendees}\n\n## Agenda/Topics\n\n%?\n\n## Key Decisions\n\n\n## Action Items\n\n\n## Follow-up Notes\n\n"
-     :target (file+head "${slug}.org" "#+title: ${title}\n#+filetags: :meeting:\n")
-     :unnarrowed t)
-    
-    ("r" "Research Note" plain
-     "* Research Topic: %^{Topic}\n* Date: %U\n* Context: %^{Why researching this?}\n\n## Current Understanding\n\n%?\n\n## Key Questions\n\n\n## Findings\n\n\n## Next Steps\n- TODO Continue research on specific aspect\n\n## Related Projects\n\n"
-     :target (file+head "${slug}.org" "#+title: ${title}\n#+filetags: :research:\n")
-     :unnarrowed t)
-    
-    ("i" "Insight/Synthesis" plain
-     "* Insight: %^{Core Insight}\n* Date: %U\n* Triggered by: %^{What sparked this insight?}\n\n## The Insight\n\n%?\n\n## Why This Matters\n\n\n## Connected Ideas\n\n\n## Potential Applications\n\n\n## Generated Actions\n- TODO Explore application in current project\n\n"
-     :target (file+head "${slug}.org" "#+title: ${title}\n#+filetags: :insight:\n")
-     :unnarrowed t))
-  "Capture templates for Zettelkasten notes.")
-
-(defun codelahoma-roam-setup-capture-templates ()
-  "Configure org-roam capture templates."
-  (when (featurep 'org-roam)
-    (setq org-roam-capture-templates codelahoma-roam-capture-templates)))
-
-(codelahoma-gtd-load-component 'roam-templates)
-#+end_src
-
-** GTD/Zettelkasten Linking Functions
-
-#+begin_src emacs-lisp
-(defun codelahoma-gtd-link-to-note ()
-  "Link current GTD item to an existing or new Zettelkasten note."
-  (interactive)
-  (when (and (featurep 'org-roam) (org-at-heading-p))
-    (let ((item-title (org-get-heading t t t t)))
-      (org-roam-node-insert)
-      (save-excursion
-        (org-back-to-heading)
-        (org-end-of-meta-data t)
-        (insert (format "Related note: [[id:%s][%s]]\n\n" 
-                        (org-roam-node-id (org-roam-node-at-point))
-                        item-title))))))
-
-(defun codelahoma-roam-extract-actions ()
-  "Extract action items from current Zettelkasten note and create GTD tasks."
-  (interactive)
-  (when (and (featurep 'org-roam) (org-roam-file-p))
-    (save-excursion
-      (goto-char (point-min))
-      (let ((actions '())
-            (note-title (org-roam-get-keyword "TITLE"))
-            (note-id (org-roam-node-id (org-roam-node-at-point))))
-        
-        ;; Find action items in the note
-        (while (re-search-forward "^\\s-*- TODO \\(.+\\)$" nil t)
-          (push (match-string 1) actions))
-        
-        ;; Create GTD tasks for each action
-        (when actions
-          (find-file (codelahoma-gtd-inbox-file))
-          (goto-char (point-max))
-          (dolist (action actions)
-            (insert (format "* TODO %s :zettel:\n  :PROPERTIES:\n  :CREATED: %s\n  :SOURCE_NOTE: [[id:%s][%s]]\n  :END:\n\n"
-                            action
-                            (format-time-string "[%Y-%m-%d %a %H:%M]")
-                            note-id
-                            note-title)))
-          (save-buffer)
-          (message "Created %d GTD tasks from Zettelkasten note" (length actions)))))))
-
-(defun codelahoma-roam-create-project-note ()
-  "Create a Zettelkasten research note for the current GTD project."
-  (interactive)
-  (when (and (featurep 'org-roam) (org-at-heading-p))
-    (let* ((project-title (org-get-heading t t t t))
-           (project-id (org-id-get-create))
-           (note-title (format "Research: %s" project-title)))
-      (org-roam-capture nil "r" nil :node (org-roam-node-create :title note-title))
-      ;; Link back to the project
-      (save-excursion
-        (goto-char (point-max))
-        (insert (format "\n## Related GTD Project\n[[id:%s][%s]]\n" project-id project-title))))))
-
-(codelahoma-gtd-load-component 'gtd-roam-linking)
-#+end_src
-
-** Zettelkasten Keybindings
-
-#+begin_src emacs-lisp
-(defun codelahoma-roam-setup-keybindings ()
-  "Set up keybindings for Zettelkasten workflow."
-  (when (featurep 'org-roam)
-    ;; Zettelkasten namespace
-    (spacemacs/declare-prefix "ooz" "zettelkasten")
-    
-    ;; Core roam functions
-    (spacemacs/set-leader-keys "oozf" 'org-roam-node-find)
-    (spacemacs/set-leader-keys "oozi" 'org-roam-node-insert)
-    (spacemacs/set-leader-keys "oozc" 'org-roam-capture)
-    (spacemacs/set-leader-keys "oozd" 'org-roam-dailies-capture-today)
-    (spacemacs/set-leader-keys "oozj" 'org-roam-dailies-goto-today)
-    
-    ;; GTD integration functions
-    (spacemacs/set-leader-keys "oozl" 'codelahoma-gtd-link-to-note)
-    (spacemacs/set-leader-keys "ooze" 'codelahoma-roam-extract-actions)
-    (spacemacs/set-leader-keys "oozp" 'codelahoma-roam-create-project-note)
-    (spacemacs/set-leader-keys "oozn" 'codelahoma-gtd-inbox-to-note)
-    (spacemacs/set-leader-keys "oozD" 'codelahoma-gtd-inbox-to-daily-note)
-    
-    ;; Navigation
-    (spacemacs/set-leader-keys "oozb" 'org-roam-buffer-toggle)
-    (spacemacs/set-leader-keys "oozg" 'org-roam-graph)))
-
-(defun codelahoma-roam-setup-which-key ()
-  "Configure which-key descriptions for Zettelkasten."
-  (when (featurep 'org-roam)
-    (which-key-add-key-based-replacements
-      "SPC o o z" "zettelkasten"
-      "SPC o o z f" "find note"
-      "SPC o o z i" "insert link"
-      "SPC o o z c" "capture note"
-      "SPC o o z d" "daily capture"
-      "SPC o o z j" "daily note"
-      "SPC o o z l" "link to note"
-      "SPC o o z e" "extract actions"
-      "SPC o o z p" "project note"
-      "SPC o o z n" "inbox to note"
-      "SPC o o z D" "inbox to daily"
-      "SPC o o z b" "roam buffer"
-      "SPC o o z g" "graph view")))
-
-(with-eval-after-load 'which-key
-  (codelahoma-roam-setup-which-key))
-
-(codelahoma-gtd-load-component 'roam-keybindings)
-#+end_src
-
-** Enhanced Elfeed Integration
-
-#+begin_src emacs-lisp
-(defun codelahoma-elfeed-save-to-roam-dailies ()
-  "Save current elfeed entry to org-roam dailies with better formatting."
-  (interactive)
-  (when (and (featurep 'org-roam) (featurep 'elfeed))
-    (let* ((entry (elfeed-search-selected :single))
-           (title (elfeed-entry-title entry))
-           (link (elfeed-entry-link entry))
-           (content (elfeed-deref (elfeed-entry-content entry)))
-           (date (format-time-string "%Y-%m-%d"))
-           (dailies-dir (expand-file-name org-roam-dailies-directory org-roam-directory))
-           (daily-file (expand-file-name (concat date ".org") dailies-dir)))
-      
-      ;; Ensure dailies directory exists
-      (make-directory dailies-dir t)
-      
-      ;; Create or append to daily file
-      (unless (file-exists-p daily-file)
-        (with-temp-buffer 
-          (insert (format "#+title: %s\n\n" date))
-          (write-file daily-file)))
-      
-      (with-current-buffer (find-file-noselect daily-file)
-        (goto-char (point-max))
-        (insert (format "\n* %s\n:PROPERTIES:\n:URL: %s\n:CAPTURED: %s\n:END:\n\n%s\n\n** Thoughts\n\n\n** Actions\n- TODO Review and extract key insights\n\n"
-                        title
-                        link
-                        (format-time-string "[%Y-%m-%d %a %H:%M]")
-                        (if content (substring content 0 (min 500 (length content))) "")))
-        (save-buffer))
-      (message "Saved '%s' to daily note" title))))
-
-;; Set up elfeed integration
-(with-eval-after-load 'elfeed
-  (require 'elfeed)
-  (define-key elfeed-search-mode-map (kbd "r") 'codelahoma-elfeed-save-to-roam-dailies))
-
-(codelahoma-gtd-load-component 'elfeed-roam-integration)
-#+end_src
-
-** Workflow Helper Functions
-
-#+begin_src emacs-lisp
-(defun codelahoma-roam-weekly-review ()
-  "Conduct weekly review of Zettelkasten notes and generate GTD actions."
-  (interactive)
-  (when (featurep 'org-roam)
-    (let ((week-ago (time-subtract (current-time) (days-to-time 7))))
-      ;; Find recent notes
-      (org-roam-node-find)
-      ;; TODO: Implement automatic review of recent notes
-      (message "Weekly Zettelkasten review initiated"))))
-
-(defun codelahoma-roam-concept-map ()
-  "Create a concept map from the current note's connections."
-  (interactive)
-  (when (and (featurep 'org-roam) (org-roam-file-p))
-    (org-roam-graph)
-    (message "Concept map generated")))
-
-(defun codelahoma-roam-literature-note-from-gtd ()
-  "Create a literature note for the current GTD reference item."
-  (interactive)
-  (when (and (featurep 'org-roam) (org-at-heading-p))
-    (let* ((item-title (org-get-heading t t t t))
-           (note-title (format "Literature: %s" item-title)))
-      (org-roam-capture nil "l" nil :node (org-roam-node-create :title note-title)))))
-
-(defun codelahoma-gtd-inbox-to-note ()
-  "Convert current GTD inbox item to a Zettelkasten note during processing."
-  (interactive)
-  (when (and (featurep 'org-roam) (org-at-heading-p))
-    (let* ((item-title (org-get-heading t t t t))
-           (item-body (save-excursion
-                        (org-end-of-meta-data t)
-                        (let ((start (point))
-                              (end (save-excursion
-                                     (outline-next-heading)
-                                     (point))))
-                          (buffer-substring-no-properties start end))))
-           (template-choice (read-char-choice
-                             "Create note: [l]iterature, [p]ermanent, [r]esearch, [i]nsight, [m]eeting: "
-                             '(?l ?p ?r ?i ?m)))
-           (template-key (char-to-string template-choice))
-           (note-title item-title))
-      
-      ;; Create the roam note with content from inbox item
-      (org-roam-capture nil template-key nil :node (org-roam-node-create :title note-title))
-      
-      ;; Insert the original content into the note
-      (when (and item-body (not (string-empty-p (string-trim item-body))))
-        (save-excursion
-          (goto-char (point-max))
-          (insert "\n## Original Capture\n")
-          (insert item-body)))
-      
-      ;; Mark the original inbox item as processed
-      (save-excursion
-        (org-back-to-heading)
-        (org-todo "DONE")
-        (org-end-of-meta-data t)
-        (insert (format "Converted to note: [[id:%s][%s]]\n\n"
-                        (org-roam-node-id (org-roam-node-at-point))
-                        note-title)))
-      
-      (message "Converted '%s' to %s note" item-title 
-               (pcase template-choice
-                 (?l "literature")
-                 (?p "permanent") 
-                 (?r "research")
-                 (?i "insight")
-                 (?m "meeting"))))))
-
-(defun codelahoma-gtd-inbox-to-daily-note ()
-  "Move current GTD inbox item to today's daily note as a thought."
-  (interactive)
-  (when (and (featurep 'org-roam) (org-at-heading-p))
-    (let* ((item-title (org-get-heading t t t t))
-           (item-body (save-excursion
-                        (org-end-of-meta-data t)
-                        (let ((start (point))
-                              (end (save-excursion
-                                     (outline-next-heading)
-                                     (point))))
-                          (buffer-substring-no-properties start end))))
-           (daily-file (org-roam-dailies--daily-note-path)))
-      
-      ;; Ensure today's daily note exists
-      (unless (file-exists-p daily-file)
-        (org-roam-dailies-capture-today))
-      
-      ;; Add content to daily note
-      (with-current-buffer (find-file-noselect daily-file)
-        (goto-char (point-max))
-        (insert (format "\n## Inbox Processing Thought\n### %s\n%s\n"
-                        item-title
-                        (if (and item-body (not (string-empty-p (string-trim item-body))))
-                            item-body
-                          "Captured for further development")))
-        (save-buffer))
-      
-      ;; Mark original item as processed
-      (org-todo "DONE")
-      (org-end-of-meta-data t)
-      (insert (format "Moved to daily note: %s\n\n" 
-                      (format-time-string "%Y-%m-%d")))
-      
-      (message "Moved '%s' to daily note" item-title))))
-
-(codelahoma-gtd-load-component 'roam-workflow-helpers)
-#+end_src
-
-** Enhanced Agenda Views with Roam Integration
-
-#+begin_src emacs-lisp
-(defun codelahoma-gtd-roam-agenda-views ()
-  "Add Zettelkasten-aware agenda views."
-  (when (featurep 'org-roam)
-    (add-to-list 'org-agenda-custom-commands
-                 '("z" "Zettelkasten Integration"
-                   ((todo "TODO" ((org-agenda-overriding-header "Tasks from Zettelkasten Notes")
-                                  (org-agenda-tag-filter-preset '("+zettel"))))
-                    (tags-todo "+research" ((org-agenda-overriding-header "Research Projects")))
-                    (tags-todo "+literature" ((org-agenda-overriding-header "Literature to Process"))))))
-    
-    ;; Add roam context to existing views
-    (setq org-agenda-prefix-format
-          '((agenda . " %i %-12:c%?-12t% s")
-            (todo . " %i %-12:c %(org-roam-node-title)")
-            (tags . " %i %-12:c")
-            (search . " %i %-12:c")))))
-
-(with-eval-after-load 'org-agenda
-  (codelahoma-gtd-roam-agenda-views))
-
-(codelahoma-gtd-load-component 'roam-agenda-integration)
-#+end_src
-
 ;; Auto-activate when org loads
 (with-eval-after-load 'org
   (message "GTD: Setting up system...")
   (codelahoma-gtd-activate)
   (codelahoma-gtd-setup-keybindings)
   (message "GTD: System setup complete, keybindings should be available"))
-
-;; Auto-activate org-roam integration
-(with-eval-after-load 'org-roam
-  (message "GTD: Setting up Zettelkasten integration...")
-  (codelahoma-roam-setup)
-  (codelahoma-roam-setup-capture-templates)
-  (codelahoma-roam-setup-keybindings)
-  (message "GTD: Zettelkasten integration ready"))
 
 (provide 'codelahoma-gtd)
 ;;; codelahoma-gtd.el ends here
