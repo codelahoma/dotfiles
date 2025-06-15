@@ -1,23 +1,39 @@
 ---
 type: reference
 category: tools
-tags: [memory, cli, unified-interface, wrapper, primary-tool]
+tags:
+- memory
+- cli
+- unified-interface
+- wrapper
+- primary-tool
 status: active
-depends_on: [log_observation.py, memory-monitor, fl-memory.json]
-related_to: [log_observation_user_guide, memory_monitor_user_guide]
-introduced_in: "FlowLoom 2.0.0"
-last_verified: "2025-06-07"
+depends_on:
+- log_observation.py
+- memory-monitor
+- fl-memory.json
+related_to:
+- log_observation_user_guide
+- memory_monitor_user_guide
+introduced_in: FlowLoom 2.0.0
+last_verified: '2025-06-07'
 complexity: beginner
 stability: stable
 priority: critical
 frequency: daily
-audience: [developers, end-users, contributors]
-file_paths: [".flowloom/bin/flowloom-memory"]
-commands: [flowloom-memory]
+audience:
+- developers
+- end-users
+- contributors
+file_paths:
+- .flowloom/bin/flowloom-memory
+commands:
+- flowloom-memory
 completeness: 100
 needs_update: false
-review_date: "2025-07-07"
+review_date: '2025-07-07'
 maintainer: FlowLoom Core Team
+permalink: tools/flowloom-memory-unified-interface
 ---
 
 # FlowLoom Memory - Unified Interface
