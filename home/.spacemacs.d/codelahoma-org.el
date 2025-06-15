@@ -182,7 +182,19 @@
   (spacemacs/declare-prefix "ooc" "capture")
   (spacemacs/set-leader-keys "oocc" 'org-capture)
   (spacemacs/set-leader-keys "ooci" 'codelahoma-gtd-capture-inbox)
-  (spacemacs/set-leader-keys "oocp" 'codelahoma-gtd-capture-project)
+  
+  ;; Personal captures
+  (spacemacs/declare-prefix "oocp" "personal")
+  (spacemacs/set-leader-keys "oocpi" 'codelahoma-gtd-capture-personal-inbox)
+  (spacemacs/set-leader-keys "oocpp" 'codelahoma-gtd-capture-personal-project)
+  (spacemacs/set-leader-keys "oocpn" 'codelahoma-gtd-capture-personal-next)
+  
+  ;; Work captures
+  (spacemacs/declare-prefix "oocw" "work")
+  (spacemacs/set-leader-keys "oocwi" 'codelahoma-gtd-capture-work-inbox)
+  (spacemacs/set-leader-keys "oocwp" 'codelahoma-gtd-capture-work-project)
+  (spacemacs/set-leader-keys "oocwn" 'codelahoma-gtd-capture-work-next)
+  (spacemacs/set-leader-keys "oocww" 'codelahoma-gtd-capture-work-waiting)
   
   ;; Process (available everywhere)
   (spacemacs/declare-prefix "oop" "process")
@@ -198,7 +210,19 @@
   (spacemacs/declare-prefix "oon" "navigate")
   (spacemacs/set-leader-keys "ooni" 'codelahoma-gtd-open-inbox)
   (spacemacs/set-leader-keys "oonp" 'codelahoma-gtd-open-projects)
-  (spacemacs/set-leader-keys "oonn" 'codelahoma-gtd-open-next-actions))
+  (spacemacs/set-leader-keys "oonn" 'codelahoma-gtd-open-next-actions)
+  
+  ;; Agenda views (available everywhere)
+  (spacemacs/declare-prefix "ooa" "agenda")
+  (spacemacs/set-leader-keys "ooaa" 'org-agenda)
+  (spacemacs/set-leader-keys "ooag" 'codelahoma-gtd-agenda-gtd-view)
+  (spacemacs/set-leader-keys "ooad" 'codelahoma-gtd-agenda-daily)
+  (spacemacs/set-leader-keys "ooaw" 'codelahoma-gtd-agenda-weekly)
+  (spacemacs/set-leader-keys "ooap" 'codelahoma-gtd-agenda-personal)
+  (spacemacs/set-leader-keys "ooaW" 'codelahoma-gtd-agenda-work)
+  
+  ;; Save all org buffers
+  (spacemacs/set-leader-keys "oos" 'org-save-all-org-buffers))
 
 (codelahoma-gtd-load-component 'keybindings)
 
@@ -209,7 +233,15 @@
     "SPC o o c" "capture"
     "SPC o o c c" "generic capture"
     "SPC o o c i" "inbox item"
-    "SPC o o c p" "project"
+    "SPC o o c p" "personal"
+    "SPC o o c p i" "personal inbox"
+    "SPC o o c p p" "personal project"
+    "SPC o o c p n" "personal next"
+    "SPC o o c w" "work"
+    "SPC o o c w i" "work inbox"
+    "SPC o o c w p" "work project"
+    "SPC o o c w n" "work next"
+    "SPC o o c w w" "work waiting"
     "SPC o o p" "process"
     "SPC o o p i" "inbox"
     "SPC o o p c" "clarify"
@@ -219,7 +251,15 @@
     "SPC o o n" "navigate"
     "SPC o o n i" "inbox"
     "SPC o o n p" "projects"
-    "SPC o o n n" "next actions"))
+    "SPC o o n n" "next actions"
+    "SPC o o a" "agenda"
+    "SPC o o a a" "standard agenda"
+    "SPC o o a g" "GTD view"
+    "SPC o o a d" "daily dashboard"
+    "SPC o o a w" "weekly review"
+    "SPC o o a p" "personal view"
+    "SPC o o a W" "work view"
+    "SPC o o s" "save all org buffers"))
 
 (with-eval-after-load 'which-key
   (codelahoma-gtd-setup-which-key))
@@ -256,11 +296,28 @@
 (defvar codelahoma-gtd-capture-templates
   '(("i" "Inbox" entry (file codelahoma-gtd-inbox-file)
      "* TODO %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n  %i")
-    ("p" "Project" entry (file codelahoma-gtd-projects-file)
-     "* TODO %? [/]\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n** TODO First task")
-    ("n" "Next Action" entry (file codelahoma-gtd-file "next-actions")
+    
+    ("p" "Personal")
+    ("pi" "Personal Inbox" entry (file codelahoma-gtd-inbox-file)
+     "* TODO %? :personal:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n  %i")
+    ("pp" "Personal Project" entry (file codelahoma-gtd-projects-file)
+     "* TODO %? [/] :personal:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n** TODO First task")
+    ("pn" "Personal Next Action" entry (file codelahoma-gtd-file "next-actions")
+     "* NEXT %? :personal:\n  :PROPERTIES:\n  :CREATED: %U\n  :CONTEXT: %^{Context|@home|@errands|@calls|@computer}\n  :END:")
+    
+    ("w" "Work")
+    ("wi" "Work Inbox" entry (file codelahoma-gtd-inbox-file)
+     "* TODO %? :work:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n  %i")
+    ("wp" "Work Project" entry (file codelahoma-gtd-projects-file)
+     "* TODO %? [/] :work:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n** TODO First task")
+    ("wn" "Work Next Action" entry (file codelahoma-gtd-file "next-actions")
+     "* NEXT %? :work:\n  :PROPERTIES:\n  :CREATED: %U\n  :CONTEXT: %^{Context|@office|@calls|@computer|@meetings}\n  :END:")
+    ("ww" "Work Waiting For" entry (file codelahoma-gtd-file "waiting-for")
+     "* WAITING %? :work:waiting:\n  :PROPERTIES:\n  :CREATED: %U\n  :WAITING_ON: %^{Waiting on}\n  :END:")
+    
+    ("n" "Next Action (Generic)" entry (file codelahoma-gtd-file "next-actions")
      "* NEXT %?\n  :PROPERTIES:\n  :CREATED: %U\n  :CONTEXT: %^{Context|@home|@office|@errands|@calls|@computer}\n  :END:")
-    ("w" "Waiting For" entry (file codelahoma-gtd-file "waiting-for")
+    ("W" "Waiting For (Generic)" entry (file codelahoma-gtd-file "waiting-for")
      "* WAITING %? :waiting:\n  :PROPERTIES:\n  :CREATED: %U\n  :WAITING_ON: %^{Waiting on}\n  :END:"))
   "GTD capture templates.")
 
@@ -276,7 +333,44 @@
 (defun codelahoma-gtd-capture-project ()
   "Capture a new project."
   (interactive)
-  (org-capture nil "p"))
+  (org-capture nil "pp"))
+
+;; Personal capture functions
+(defun codelahoma-gtd-capture-personal-inbox ()
+  "Quick capture to personal inbox."
+  (interactive)
+  (org-capture nil "pi"))
+
+(defun codelahoma-gtd-capture-personal-project ()
+  "Capture a new personal project."
+  (interactive)
+  (org-capture nil "pp"))
+
+(defun codelahoma-gtd-capture-personal-next ()
+  "Capture a personal next action."
+  (interactive)
+  (org-capture nil "pn"))
+
+;; Work capture functions
+(defun codelahoma-gtd-capture-work-inbox ()
+  "Quick capture to work inbox."
+  (interactive)
+  (org-capture nil "wi"))
+
+(defun codelahoma-gtd-capture-work-project ()
+  "Capture a new work project."
+  (interactive)
+  (org-capture nil "wp"))
+
+(defun codelahoma-gtd-capture-work-next ()
+  "Capture a work next action."
+  (interactive)
+  (org-capture nil "wn"))
+
+(defun codelahoma-gtd-capture-work-waiting ()
+  "Capture a work waiting item."
+  (interactive)
+  (org-capture nil "ww"))
 
 (codelahoma-gtd-load-component 'capture-templates)
 
@@ -601,9 +695,54 @@
            ((agenda "" ((org-agenda-span 'week)))
             (todo "TODO" ((org-agenda-overriding-header "All Open Projects")))
             (todo "WAITING" ((org-agenda-overriding-header "All Waiting Items")))
-            (todo "SOMEDAY" ((org-agenda-overriding-header "Someday/Maybe"))))))))
+            (todo "SOMEDAY" ((org-agenda-overriding-header "Someday/Maybe")))))
+          ("p" "Personal View"
+           ((agenda "" ((org-agenda-span 'day)
+                        (org-agenda-tag-filter-preset '("+personal"))))
+            (todo "NEXT" ((org-agenda-overriding-header "Personal Next Actions")
+                          (org-agenda-tag-filter-preset '("+personal"))))
+            (todo "WAITING" ((org-agenda-overriding-header "Personal Waiting For")
+                            (org-agenda-tag-filter-preset '("+personal"))))
+            (todo "TODO" ((org-agenda-overriding-header "Personal Projects")
+                          (org-agenda-tag-filter-preset '("+personal"))
+                          (org-agenda-files (list (codelahoma-gtd-projects-file)))))))
+          ("W" "Work View"
+           ((agenda "" ((org-agenda-span 'day)
+                        (org-agenda-tag-filter-preset '("+work"))))
+            (todo "NEXT" ((org-agenda-overriding-header "Work Next Actions")
+                          (org-agenda-tag-filter-preset '("+work"))))
+            (todo "WAITING" ((org-agenda-overriding-header "Work Waiting For")
+                            (org-agenda-tag-filter-preset '("+work"))))
+            (todo "TODO" ((org-agenda-overriding-header "Work Projects")
+                          (org-agenda-tag-filter-preset '("+work"))
+                          (org-agenda-files (list (codelahoma-gtd-projects-file))))))))))
 
 (codelahoma-gtd-load-component 'agenda-integration)
+
+(defun codelahoma-gtd-agenda-gtd-view ()
+  "Open GTD agenda view."
+  (interactive)
+  (org-agenda nil "g"))
+
+(defun codelahoma-gtd-agenda-daily ()
+  "Open daily dashboard agenda view."
+  (interactive)
+  (org-agenda nil "d"))
+
+(defun codelahoma-gtd-agenda-weekly ()
+  "Open weekly review agenda view."
+  (interactive)
+  (org-agenda nil "w"))
+
+(defun codelahoma-gtd-agenda-personal ()
+  "Open personal agenda view."
+  (interactive)
+  (org-agenda nil "p"))
+
+(defun codelahoma-gtd-agenda-work ()
+  "Open work agenda view."
+  (interactive)
+  (org-agenda nil "W"))
 
 (require 'ert)
 
