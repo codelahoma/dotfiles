@@ -56,7 +56,12 @@ This function should only modify configuration layer settings."
      emoji
      evil-better-jumper
      helm
-     org
+     (org :variables
+          org-enable-roam-support t
+          org-enable-roam-ui t
+          org-enable-sticky-header t
+          org-enable-transclusion-support t
+          )
      (osx :variables
           osx-command-as nil)
      spacemacs-modeline

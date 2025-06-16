@@ -196,6 +196,13 @@
   (spacemacs/set-leader-keys "oocwn" 'codelahoma-gtd-capture-work-next)
   (spacemacs/set-leader-keys "oocww" 'codelahoma-gtd-capture-work-waiting)
   
+  ;; Media captures
+  (spacemacs/declare-prefix "oocm" "media")
+  (spacemacs/set-leader-keys "oocmm" 'codelahoma-gtd-capture-movie-with-omdb)
+  (spacemacs/set-leader-keys "oocmt" 'codelahoma-gtd-capture-tv-with-omdb)
+  (spacemacs/set-leader-keys "oocmM" 'codelahoma-gtd-capture-movie)  ; Manual fallback
+  (spacemacs/set-leader-keys "oocmT" 'codelahoma-gtd-capture-tv-show) ; Manual fallback
+  
   ;; Process (available everywhere)
   (spacemacs/declare-prefix "oop" "process")
   (spacemacs/set-leader-keys "oopi" 'codelahoma-gtd-process-inbox)
@@ -220,6 +227,7 @@
   (spacemacs/set-leader-keys "ooaw" 'codelahoma-gtd-agenda-weekly)
   (spacemacs/set-leader-keys "ooap" 'codelahoma-gtd-agenda-personal)
   (spacemacs/set-leader-keys "ooaW" 'codelahoma-gtd-agenda-work)
+  (spacemacs/set-leader-keys "ooam" 'codelahoma-gtd-agenda-media)
   
   ;; Save all org buffers
   (spacemacs/set-leader-keys "oos" 'org-save-all-org-buffers))
@@ -242,6 +250,11 @@
     "SPC o o c w p" "work project"
     "SPC o o c w n" "work next"
     "SPC o o c w w" "work waiting"
+    "SPC o o c m" "media"
+    "SPC o o c m m" "movie (with OMDB)"
+    "SPC o o c m t" "tv show (with OMDB)"
+    "SPC o o c m M" "movie (manual)"
+    "SPC o o c m T" "tv show (manual)"
     "SPC o o p" "process"
     "SPC o o p i" "inbox"
     "SPC o o p c" "clarify"
@@ -259,7 +272,22 @@
     "SPC o o a w" "weekly review"
     "SPC o o a p" "personal view"
     "SPC o o a W" "work view"
-    "SPC o o s" "save all org buffers"))
+    "SPC o o a m" "media dashboard"
+    "SPC o o s" "save all org buffers"
+    "SPC o o z" "zettelkasten"
+    "SPC o o z n" "find/create note"
+    "SPC o o z i" "insert link"
+    "SPC o o z c" "capture"
+    "SPC o o z d" "daily note"
+    "SPC o o z D" "daily note (date)"
+    "SPC o o z b" "backlinks"
+    "SPC o o z g" "graph"
+    "SPC o o z r" "find reference"
+    "SPC o o i" "integrate"
+    "SPC o o i l" "link to roam"
+    "SPC o o i e" "extract actions"
+    "SPC o o i r" "review project knowledge"
+    "SPC o o i t" "task from note"))
 
 (with-eval-after-load 'which-key
   (codelahoma-gtd-setup-which-key))
@@ -318,7 +346,26 @@
     ("n" "Next Action (Generic)" entry (file codelahoma-gtd-file "next-actions")
      "* NEXT %?\n  :PROPERTIES:\n  :CREATED: %U\n  :CONTEXT: %^{Context|@home|@office|@errands|@calls|@computer}\n  :END:")
     ("W" "Waiting For (Generic)" entry (file codelahoma-gtd-file "waiting-for")
-     "* WAITING %? :waiting:\n  :PROPERTIES:\n  :CREATED: %U\n  :WAITING_ON: %^{Waiting on}\n  :END:"))
+     "* WAITING %? :waiting:\n  :PROPERTIES:\n  :CREATED: %U\n  :WAITING_ON: %^{Waiting on}\n  :END:")
+    
+    ("m" "Media")
+    ("mm" "Movie to Watch" entry 
+     (file+headline "~/personal/org-files/gtd/media.org" "Movies")
+     "** TODO [#C] Watch %^{Movie Title} :personal:movie:\n   :PROPERTIES:\n   :DIRECTOR: %^{Director|}\n   :YEAR: %^{Year|}\n   :STREAMING: %^{Where to watch|}\n   :GENRE: %^{Genre|drama|comedy|action|scifi|horror|documentary|animation|thriller|}\n   :RECOMMENDED_BY: %^{Recommended by|}\n   :END:\n   %?")
+    ("mt" "TV Show to Watch" entry
+     (file+headline "~/personal/org-files/gtd/media.org" "TV Shows")
+     "** TODO [#C] Watch %^{Show Title} :personal:tv:\n   :PROPERTIES:\n   :SEASONS: %^{Number of seasons|}\n   :STREAMING: %^{Platform|}\n   :GENRE: %^{Genre|drama|comedy|scifi|documentary|reality|anime|}\n   :END:\n   %?")
+    ("mr" "Media Review" plain
+     (function codelahoma-gtd-media-review-target)
+     "#+title: %^{Title} Review\n#+filetags: :media:%^{Type|movie|tv}:\n#+date: %U\n\n* Quick Take\n%?\n\n* Themes\n\n* Memorable Moments\n\n* Connections\n\n* Rating: %^{Rating}/10")
+    
+    ;; OMDB-enhanced templates
+    ("mo" "Movie (OMDB)" entry 
+     (file+headline "~/personal/org-files/gtd/media.org" "Movies")
+     "** TODO [#C] Watch %(plist-get org-capture-plist :omdb-title) :personal:movie:\n   :PROPERTIES:\n   :DIRECTOR: %(plist-get org-capture-plist :omdb-director)\n   :YEAR: %(plist-get org-capture-plist :omdb-year)\n   :GENRE: %(plist-get org-capture-plist :omdb-genre)\n   :IMDB_RATING: %(plist-get org-capture-plist :omdb-rating)\n   :RUNTIME: %(plist-get org-capture-plist :omdb-runtime)\n   :ACTORS: %(plist-get org-capture-plist :omdb-actors)\n   :STREAMING: %^{Where to watch}\n   :RECOMMENDED_BY: %^{Recommended by}\n   :END:\n   %(plist-get org-capture-plist :omdb-plot)\n   %?")
+    ("to" "TV Show (OMDB)" entry
+     (file+headline "~/personal/org-files/gtd/media.org" "TV Shows")
+     "** TODO [#C] Watch %(plist-get org-capture-plist :omdb-title) :personal:tv:\n   :PROPERTIES:\n   :YEAR: %(plist-get org-capture-plist :omdb-year)\n   :SEASONS: %(plist-get org-capture-plist :omdb-seasons)\n   :GENRE: %(plist-get org-capture-plist :omdb-genre)\n   :IMDB_RATING: %(plist-get org-capture-plist :omdb-rating)\n   :ACTORS: %(plist-get org-capture-plist :omdb-actors)\n   :STREAMING: %^{Platform}\n   :END:\n   %(plist-get org-capture-plist :omdb-plot)\n   %?"))
   "GTD capture templates.")
 
 (defun codelahoma-gtd-setup-capture-templates ()
@@ -371,6 +418,131 @@
   "Capture a work waiting item."
   (interactive)
   (org-capture nil "ww"))
+
+;; Media capture functions
+(defun codelahoma-gtd-capture-movie ()
+  "Capture a movie to watch."
+  (interactive)
+  (org-capture nil "mm"))
+
+(defun codelahoma-gtd-capture-tv-show ()
+  "Capture a TV show to watch."
+  (interactive)
+  (org-capture nil "mt"))
+
+(defun codelahoma-gtd-media-review-target ()
+  "Determine target for media review based on current context."
+  (let* ((title (read-string "Review title: "))
+         (filename (concat (format-time-string "%Y%m%d-")
+                          (replace-regexp-in-string "[^a-zA-Z0-9]" "-" title)
+                          ".org")))
+    (expand-file-name filename "~/personal/org-files/roam/media/")))
+
+;; OMDB Integration
+(defvar codelahoma-gtd-omdb-api-key (getenv "OMDB_API_KEY")
+  "API key for OMDB service.")
+
+(defun codelahoma-gtd-omdb-search (title &optional year type)
+  "Search OMDB for TITLE with optional YEAR and TYPE."
+  (when codelahoma-gtd-omdb-api-key
+    (let* ((url (concat "http://www.omdbapi.com/?"
+                       "apikey=" codelahoma-gtd-omdb-api-key
+                       "&t=" (url-hexify-string title)
+                       (when year (format "&y=%s" year))
+                       (when type (format "&type=%s" type))))
+           (response (with-current-buffer (url-retrieve-synchronously url t t 5)
+                      (goto-char (point-min))
+                      (re-search-forward "\n\n")
+                      (json-read))))
+      (when (string= (cdr (assoc 'Response response)) "True")
+        response))))
+
+(defun codelahoma-gtd-capture-movie-with-omdb ()
+  "Capture a movie with OMDB data."
+  (interactive)
+  (let* ((title (read-string "Movie title: "))
+         (year (read-string "Year (optional): "))
+         (data (codelahoma-gtd-omdb-search title year "movie")))
+    (if data
+        (let ((org-capture-plist
+               (list :omdb-title (cdr (assoc 'Title data))
+                     :omdb-director (cdr (assoc 'Director data))
+                     :omdb-year (cdr (assoc 'Year data))
+                     :omdb-genre (cdr (assoc 'Genre data))
+                     :omdb-plot (cdr (assoc 'Plot data))
+                     :omdb-rating (cdr (assoc 'imdbRating data))
+                     :omdb-runtime (cdr (assoc 'Runtime data))
+                     :omdb-actors (cdr (assoc 'Actors data)))))
+          (org-capture nil "mo"))
+      (message "Movie not found in OMDB, using manual entry")
+      (org-capture nil "mm"))))
+
+(defun codelahoma-gtd-capture-tv-with-omdb ()
+  "Capture a TV show with OMDB data."
+  (interactive)
+  (let* ((title (read-string "TV show title: "))
+         (data (codelahoma-gtd-omdb-search title nil "series")))
+    (if data
+        (let ((org-capture-plist
+               (list :omdb-title (cdr (assoc 'Title data))
+                     :omdb-year (cdr (assoc 'Year data))
+                     :omdb-genre (cdr (assoc 'Genre data))
+                     :omdb-plot (cdr (assoc 'Plot data))
+                     :omdb-rating (cdr (assoc 'imdbRating data))
+                     :omdb-seasons (cdr (assoc 'totalSeasons data))
+                     :omdb-actors (cdr (assoc 'Actors data)))))
+          (org-capture nil "to"))
+      (message "TV show not found in OMDB, using manual entry")
+      (org-capture nil "mt"))))
+
+(defun codelahoma-gtd-update-media-from-omdb ()
+  "Update current media entry with OMDB data."
+  (interactive)
+  (when (org-at-heading-p)
+    (let* ((title (org-get-heading t t t t))
+           (is-movie (member "movie" (org-get-tags)))
+           (is-tv (member "tv" (org-get-tags)))
+           (type (cond (is-movie "movie")
+                      (is-tv "series")
+                      (t (completing-read "Type: " '("movie" "series")))))
+           (year (org-entry-get nil "YEAR"))
+           (data (codelahoma-gtd-omdb-search title year type)))
+      (if data
+          (progn
+            (org-set-property "DIRECTOR" (cdr (assoc 'Director data)))
+            (org-set-property "YEAR" (cdr (assoc 'Year data)))
+            (org-set-property "GENRE" (cdr (assoc 'Genre data)))
+            (org-set-property "IMDB_RATING" (cdr (assoc 'imdbRating data)))
+            (org-set-property "RUNTIME" (cdr (assoc 'Runtime data)))
+            (org-set-property "ACTORS" (cdr (assoc 'Actors data)))
+            (when (string= type "series")
+              (org-set-property "SEASONS" (cdr (assoc 'totalSeasons data))))
+            ;; Add plot if not already present
+            (save-excursion
+              (org-back-to-heading)
+              (org-end-of-meta-data)
+              (unless (looking-at-p "\\S-")
+                (insert "\n" (cdr (assoc 'Plot data)) "\n")))
+            (message "Updated with OMDB data"))
+        (message "Not found in OMDB")))))
+
+(defun codelahoma-gtd-media-open-imdb ()
+  "Open IMDB page for current media entry."
+  (interactive)
+  (when (org-at-heading-p)
+    (let* ((title (org-get-heading t t t t))
+           (year (org-entry-get nil "YEAR"))
+           (is-movie (member "movie" (org-get-tags)))
+           (is-tv (member "tv" (org-get-tags)))
+           (type (cond (is-movie "movie")
+                      (is-tv "series")
+                      (t "movie")))
+           (data (codelahoma-gtd-omdb-search title year type)))
+      (if (and data (cdr (assoc 'imdbID data)))
+          (browse-url (concat "https://www.imdb.com/title/" 
+                             (cdr (assoc 'imdbID data))))
+        (browse-url (concat "https://www.imdb.com/find?q=" 
+                           (url-hexify-string title)))))))
 
 (codelahoma-gtd-load-component 'capture-templates)
 
@@ -715,7 +887,14 @@
                             (org-agenda-tag-filter-preset '("+work"))))
             (todo "TODO" ((org-agenda-overriding-header "Work Projects")
                           (org-agenda-tag-filter-preset '("+work"))
-                          (org-agenda-files (list (codelahoma-gtd-projects-file))))))))))
+                          (org-agenda-files (list (codelahoma-gtd-projects-file)))))))
+          ("m" "Media Dashboard"
+           ((todo "TODO|NEXT" 
+                  ((org-agenda-overriding-header "📺 Media Queue")
+                   (org-agenda-files (list (codelahoma-gtd-file "media")))
+                   (org-agenda-sorting-strategy '(priority-down effort-up))))
+            (tags "media+CLOSED>=\"<-1m>\""
+                  ((org-agenda-overriding-header "🎬 Recently Watched"))))))))
 
 (codelahoma-gtd-load-component 'agenda-integration)
 
@@ -743,6 +922,11 @@
   "Open work agenda view."
   (interactive)
   (org-agenda nil "W"))
+
+(defun codelahoma-gtd-agenda-media ()
+  "Open media dashboard agenda view."
+  (interactive)
+  (org-agenda nil "m"))
 
 (require 'ert)
 
@@ -796,6 +980,151 @@
   (ert-run-tests-batch-and-exit "^codelahoma-gtd-test-"))
 
 (codelahoma-gtd-load-component 'integration-tests)
+
+(defcustom codelahoma-roam-directory "~/personal/org-files/roam/"
+  "Directory for Zettelkasten notes."
+  :type 'directory
+  :group 'codelahoma-gtd)
+
+(defvar codelahoma-roam-capture-templates
+  '(("n" "permanent note" plain
+     "%?"
+     :target (file+head "${slug}.org"
+                        "#+title: ${title}\n#+created: %U\n#+filetags: :permanent:\n")
+     :unnarrowed t)
+    
+    ("l" "literature note" plain
+     "* Source\n- Author: %^{Author}\n- Type: %^{Type|book|article|video|course}\n- Date: %U\n- Link: %^{Link}\n\n* Key Ideas\n%?\n\n* Personal Thoughts\n\n* Questions\n\n* Action Items\n- [ ] \n\n* Related Notes\n- "
+     :target (file+head "literature/${slug}.org"
+                        "#+title: ${title}\n#+created: %U\n#+filetags: :literature:\n")
+     :unnarrowed t)
+    
+    ("r" "reference note" plain
+     "* Overview\n%?\n\n* Key Points\n\n* Examples\n\n* Related Topics\n- "
+     :target (file+head "references/${slug}.org"
+                        "#+title: ${title}\n#+created: %U\n#+filetags: :reference:\n")
+     :unnarrowed t)
+    
+    ("d" "daily note" entry
+     "* %<%H:%M> %?"
+     :target (file+head "daily/%<%Y-%m-%d>.org"
+                        "#+title: %<%Y-%m-%d %A>\n#+created: %U\n#+filetags: :daily:\n\n* Morning Review\n- [ ] Review calendar\n- [ ] Review GTD inbox\n- [ ] Set daily priorities\n\n* Work Log\n\n* Personal Log\n\n* Evening Review\n- [ ] Process inbox\n- [ ] Update task states\n- [ ] Plan tomorrow\n")
+     :unnarrowed t)
+    
+    ("p" "project note" plain
+     "* Overview\nGTD Link: [[file:../gtd/projects.org::*%^{Project Name}]]\n\n* Goals\n%?\n\n* Key Decisions\n\n* Resources\n\n* Progress Log\n\n* Lessons Learned\n"
+     :target (file+head "projects/${slug}.org"
+                        "#+title: ${title} Knowledge Base\n#+created: %U\n#+filetags: :project:\n")
+     :unnarrowed t))
+  "Roam capture templates for Zettelkasten.")
+
+(codelahoma-gtd-load-component 'roam-templates)
+
+(defun codelahoma-gtd-setup-roam-keybindings ()
+  "Set up Zettelkasten keybindings."
+  ;; Zettelkasten namespace
+  (spacemacs/declare-prefix "ooz" "zettelkasten")
+  
+  ;; Note creation
+  (spacemacs/set-leader-keys "oozn" 'org-roam-node-find)
+  (spacemacs/set-leader-keys "oozi" 'org-roam-node-insert)
+  (spacemacs/set-leader-keys "oozc" 'org-roam-capture)
+  (spacemacs/set-leader-keys "oozd" 'org-roam-dailies-goto-today)
+  (spacemacs/set-leader-keys "oozD" 'org-roam-dailies-goto-date)
+  
+  ;; Note navigation
+  (spacemacs/set-leader-keys "oozb" 'org-roam-buffer-toggle)
+  (spacemacs/set-leader-keys "oozg" 'org-roam-graph)
+  (spacemacs/set-leader-keys "oozr" 'org-roam-ref-find)
+  
+  ;; Integration commands
+  (spacemacs/declare-prefix "ooi" "integrate")
+  (spacemacs/set-leader-keys "ooil" 'codelahoma-gtd-link-to-roam)
+  (spacemacs/set-leader-keys "ooie" 'codelahoma-gtd-extract-actions)
+  (spacemacs/set-leader-keys "ooir" 'codelahoma-gtd-review-project-knowledge)
+  (spacemacs/set-leader-keys "ooit" 'codelahoma-gtd-task-from-note))
+
+(with-eval-after-load 'org-roam
+  (codelahoma-gtd-setup-roam-keybindings))
+
+(codelahoma-gtd-load-component 'roam-keybindings)
+
+(defun codelahoma-gtd-link-to-roam ()
+  "Link current GTD item to a Zettelkasten note."
+  (interactive)
+  (when (org-at-heading-p)
+    (let ((node (org-roam-node-read)))
+      (org-set-property "ROAM_REF" (org-roam-node-id node))
+      (message "Linked to: %s" (org-roam-node-title node)))))
+
+(defun codelahoma-gtd-extract-actions ()
+  "Extract TODO items from current buffer to GTD inbox."
+  (interactive)
+  (let ((actions '()))
+    (org-element-map (org-element-parse-buffer) 'item
+      (lambda (item)
+        (let ((text (org-element-property :raw-value item)))
+          (when (string-match "\\[ \\]" text)
+            (push (string-trim (replace-regexp-in-string "\\[ \\]" "" text)) actions)))))
+    (when actions
+      (with-current-buffer (find-file-noselect (codelahoma-gtd-inbox-file))
+        (goto-char (point-max))
+        (dolist (action (reverse actions))
+          (insert (format "* TODO %s :extracted:\n  :PROPERTIES:\n  :CREATED: %s\n  :SOURCE: [[file:%s]]\n  :END:\n\n"
+                          action
+                          (format-time-string "[%Y-%m-%d %a %H:%M]")
+                          (buffer-file-name))))
+        (save-buffer))
+      (message "Extracted %d actions to GTD inbox" (length actions)))))
+
+(defun codelahoma-gtd-task-from-note ()
+  "Create a GTD task from current Zettelkasten note."
+  (interactive)
+  (let* ((title (org-roam-node-title (org-roam-node-at-point)))
+         (id (org-roam-node-id (org-roam-node-at-point))))
+    (org-capture nil "i")
+    (insert title)
+    (org-set-property "ROAM_REF" id)))
+
+(defun codelahoma-gtd-review-project-knowledge ()
+  "Review knowledge base for current project."
+  (interactive)
+  (when (org-at-heading-p)
+    (let* ((project-name (org-get-heading t t t t))
+           (knowledge-file (expand-file-name 
+                           (concat (replace-regexp-in-string "[^a-zA-Z0-9]" "-" project-name) ".org")
+                           (concat codelahoma-roam-directory "projects/"))))
+      (if (file-exists-p knowledge-file)
+          (find-file-other-window knowledge-file)
+        (when (y-or-n-p (format "Create knowledge base for %s? " project-name))
+          (find-file-other-window knowledge-file)
+          (insert (format "#+title: %s Knowledge Base\n#+created: %s\n#+filetags: :project:\n\n* Overview\nGTD Link: [[file:../../gtd/projects.org::*%s]]\n\n* Goals\n\n* Key Decisions\n\n* Resources\n\n* Progress Log\n\n* Lessons Learned\n"
+                          project-name
+                          (format-time-string "[%Y-%m-%d %a %H:%M]")
+                          project-name))
+          (save-buffer))))))
+
+(codelahoma-gtd-load-component 'integration-functions)
+
+(defun codelahoma-gtd-initialize-roam ()
+  "Initialize org-roam for Zettelkasten."
+  (when (featurep 'org-roam)
+    (setq org-roam-directory codelahoma-roam-directory
+          org-roam-capture-templates codelahoma-roam-capture-templates
+          org-roam-node-display-template "${title:*} ${tags:10}"
+          org-roam-completion-everywhere t)
+    
+    ;; Create directory structure
+    (dolist (dir '("daily" "literature" "permanent" "references" "projects" "media"))
+      (make-directory (expand-file-name dir codelahoma-roam-directory) t))
+    
+    (org-roam-db-autosync-mode 1)
+    (message "Org-roam initialized for Zettelkasten")))
+
+(with-eval-after-load 'org-roam
+  (codelahoma-gtd-initialize-roam))
+
+(codelahoma-gtd-load-component 'roam-initialization)
 
 (defun codelahoma-gtd-migrate-from-old-system ()
   "Migrate from previous GTD system."
