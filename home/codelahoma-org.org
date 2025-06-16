@@ -285,10 +285,6 @@ The GTD system follows a modular component architecture:
   ;; Save all org buffers
   (spacemacs/set-leader-keys "oos" 'org-save-all-org-buffers))
 
-;; Load roam keybindings if available
-(with-eval-after-load 'org-roam
-  (codelahoma-gtd-setup-roam-keybindings))
-
 (codelahoma-gtd-load-component 'keybindings)
 #+end_src
 
@@ -421,21 +417,21 @@ The GTD system follows a modular component architecture:
     
     ("m" "Media")
     ("mm" "Movie to Watch" entry 
-     (file+headline codelahoma-gtd-file "media" "Movies")
-     "** TODO [#C] Watch %^{Movie Title} :personal:movie:\n   :PROPERTIES:\n   :DIRECTOR: %^{Director}\n   :YEAR: %^{Year}\n   :STREAMING: %^{Where to watch}\n   :GENRE: %^{Genre|drama|comedy|action|scifi|horror|documentary|animation|thriller}\n   :RECOMMENDED_BY: %^{Recommended by}\n   :END:\n   %?")
+     (file+headline "~/personal/org-files/gtd/media.org" "Movies")
+     "** TODO [#C] Watch %^{Movie Title} :personal:movie:\n   :PROPERTIES:\n   :DIRECTOR: %^{Director|}\n   :YEAR: %^{Year|}\n   :STREAMING: %^{Where to watch|}\n   :GENRE: %^{Genre|drama|comedy|action|scifi|horror|documentary|animation|thriller|}\n   :RECOMMENDED_BY: %^{Recommended by|}\n   :END:\n   %?")
     ("mt" "TV Show to Watch" entry
-     (file+headline codelahoma-gtd-file "media" "TV Shows")
-     "** TODO [#C] Watch %^{Show Title} :personal:tv:\n   :PROPERTIES:\n   :SEASONS: %^{Number of seasons}\n   :STREAMING: %^{Platform}\n   :GENRE: %^{Genre|drama|comedy|scifi|documentary|reality|anime}\n   :END:\n   %?")
+     (file+headline "~/personal/org-files/gtd/media.org" "TV Shows")
+     "** TODO [#C] Watch %^{Show Title} :personal:tv:\n   :PROPERTIES:\n   :SEASONS: %^{Number of seasons|}\n   :STREAMING: %^{Platform|}\n   :GENRE: %^{Genre|drama|comedy|scifi|documentary|reality|anime|}\n   :END:\n   %?")
     ("mr" "Media Review" plain
      (function codelahoma-gtd-media-review-target)
      "#+title: %^{Title} Review\n#+filetags: :media:%^{Type|movie|tv}:\n#+date: %U\n\n* Quick Take\n%?\n\n* Themes\n\n* Memorable Moments\n\n* Connections\n\n* Rating: %^{Rating}/10")
     
     ;; OMDB-enhanced templates
     ("mo" "Movie (OMDB)" entry 
-     (file+headline codelahoma-gtd-file "media" "Movies")
+     (file+headline "~/personal/org-files/gtd/media.org" "Movies")
      "** TODO [#C] Watch %(plist-get org-capture-plist :omdb-title) :personal:movie:\n   :PROPERTIES:\n   :DIRECTOR: %(plist-get org-capture-plist :omdb-director)\n   :YEAR: %(plist-get org-capture-plist :omdb-year)\n   :GENRE: %(plist-get org-capture-plist :omdb-genre)\n   :IMDB_RATING: %(plist-get org-capture-plist :omdb-rating)\n   :RUNTIME: %(plist-get org-capture-plist :omdb-runtime)\n   :ACTORS: %(plist-get org-capture-plist :omdb-actors)\n   :STREAMING: %^{Where to watch}\n   :RECOMMENDED_BY: %^{Recommended by}\n   :END:\n   %(plist-get org-capture-plist :omdb-plot)\n   %?")
     ("to" "TV Show (OMDB)" entry
-     (file+headline codelahoma-gtd-file "media" "TV Shows")
+     (file+headline "~/personal/org-files/gtd/media.org" "TV Shows")
      "** TODO [#C] Watch %(plist-get org-capture-plist :omdb-title) :personal:tv:\n   :PROPERTIES:\n   :YEAR: %(plist-get org-capture-plist :omdb-year)\n   :SEASONS: %(plist-get org-capture-plist :omdb-seasons)\n   :GENRE: %(plist-get org-capture-plist :omdb-genre)\n   :IMDB_RATING: %(plist-get org-capture-plist :omdb-rating)\n   :ACTORS: %(plist-get org-capture-plist :omdb-actors)\n   :STREAMING: %^{Platform}\n   :END:\n   %(plist-get org-capture-plist :omdb-plot)\n   %?"))
   "GTD capture templates.")
 
