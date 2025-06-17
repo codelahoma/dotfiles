@@ -51,6 +51,11 @@ The GTD system follows a modular component architecture:
   :type 'directory
   :group 'codelahoma-gtd)
 
+(defcustom codelahoma-roam-directory "~/personal/org-files/knowledge/"
+  "Directory for Zettelkasten notes."
+  :type 'directory
+  :group 'codelahoma-gtd)
+
 (defvar codelahoma-gtd-components-loaded nil
   "List of loaded GTD components.")
 
@@ -1187,10 +1192,7 @@ The GTD system follows a modular component architecture:
 ** Org-Roam Configuration
 
 #+begin_src emacs-lisp
-(defcustom codelahoma-roam-directory "~/personal/org-files/knowledge/"
-  "Directory for Zettelkasten notes."
-  :type 'directory
-  :group 'codelahoma-gtd)
+;; codelahoma-roam-directory is defined in the foundation section
 
 (defvar codelahoma-roam-capture-templates
   '(("n" "permanent note" plain
