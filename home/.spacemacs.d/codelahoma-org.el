@@ -32,6 +32,11 @@
   :type 'directory
   :group 'codelahoma-gtd)
 
+(defcustom codelahoma-roam-directory "~/personal/org-files/knowledge/"
+  "Directory for Zettelkasten notes."
+  :type 'directory
+  :group 'codelahoma-gtd)
+
 (defvar codelahoma-gtd-components-loaded nil
   "List of loaded GTD components.")
 
@@ -1076,10 +1081,12 @@
 (defun codelahoma-gtd-link-to-roam ()
   "Link current GTD item to a Zettelkasten note."
   (interactive)
-  (when (org-at-heading-p)
-    (let ((node (org-roam-node-read)))
-      (org-set-property "ROAM_REF" (org-roam-node-id node))
-      (message "Linked to: %s" (org-roam-node-title node)))))
+  (if (featurep 'org-roam)
+      (when (org-at-heading-p)
+        (let ((node (org-roam-node-read)))
+          (org-set-property "ROAM_REF" (org-roam-node-id node))
+          (message "Linked to: %s" (org-roam-node-title node))))
+    (message "Org-roam not available. Please install it first.")))
 
 (defun codelahoma-gtd-extract-actions ()
   "Extract TODO items from current buffer to GTD inbox."
@@ -1104,11 +1111,17 @@
 (defun codelahoma-gtd-create-task-from-note ()
   "Create a GTD task from current Zettelkasten note."
   (interactive)
-  (let* ((title (org-roam-node-title (org-roam-node-at-point)))
-         (id (org-roam-node-id (org-roam-node-at-point))))
-    (org-capture nil "i")
-    (insert title)
-    (org-set-property "ROAM_REF" id)))
+  (if (featurep 'org-roam)
+      (let* ((node (org-roam-node-at-point))
+             (title (when node (org-roam-node-title node)))
+             (id (when node (org-roam-node-id node))))
+        (if node
+            (progn
+              (org-capture nil "i")
+              (insert title)
+              (org-set-property "ROAM_REF" id))
+          (message "No org-roam node at point")))
+    (message "Org-roam not available. Please install it first.")))
 
 (defun codelahoma-gtd-review-project-knowledge ()
   "Review knowledge base for current project."
@@ -1173,7 +1186,9 @@
   (codelahoma-gtd-setup-capture-templates)
   (codelahoma-gtd-setup-agenda-views)
   (codelahoma-gtd-update-agenda-files)
-  (codelahoma-gtd-setup-org-roam)
+  (if (require 'org-roam nil t)
+      (codelahoma-gtd-setup-org-roam)
+    (message "Note: org-roam not available. Install it for Zettelkasten features."))
   (message "GTD system activated"))
 
 ;; Auto-activate when org loads
