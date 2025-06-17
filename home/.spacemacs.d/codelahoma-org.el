@@ -22,6 +22,16 @@
   :type 'directory
   :group 'codelahoma-gtd)
 
+(defcustom codelahoma-gtd-knowledge-directory "~/personal/org-files/knowledge/"
+  "Base directory for Zettelkasten knowledge files."
+  :type 'directory
+  :group 'codelahoma-gtd)
+
+(defcustom codelahoma-gtd-daily-directory "~/personal/org-files/daily/"
+  "Base directory for daily notes."
+  :type 'directory
+  :group 'codelahoma-gtd)
+
 (defvar codelahoma-gtd-components-loaded nil
   "List of loaded GTD components.")
 
@@ -70,20 +80,25 @@
   (message "GTD system initialized"))
 
 (defvar codelahoma-gtd-files
-  '(("inbox.org" . "Inbox")
-    ("projects.org" . "Projects") 
-    ("next-actions.org" . "Next Actions")
-    ("waiting-for.org" . "Waiting For")
-    ("someday-maybe.org" . "Someday/Maybe")
-    ("reference.org" . "Reference")
-    ("tickler.org" . "Tickler"))
+  '(("inbox.org" . "GTD Inbox")
+    ("projects.org" . "GTD Projects") 
+    ("someday.org" . "Someday/Maybe")
+    ("calendar.org" . "Calendar"))
   "GTD file definitions.")
 
 (defun codelahoma-gtd-create-directories ()
   "Create GTD directory structure."
   (make-directory codelahoma-gtd-directory t)
   (make-directory (concat codelahoma-gtd-directory "archive/") t)
-  (make-directory (concat codelahoma-gtd-directory "reviews/") t))
+  (make-directory codelahoma-gtd-knowledge-directory t)
+  (make-directory (concat codelahoma-gtd-knowledge-directory "permanent/") t)
+  (make-directory (concat codelahoma-gtd-knowledge-directory "literature/") t)
+  (make-directory codelahoma-gtd-daily-directory t)
+  (make-directory (expand-file-name "areas" (file-name-directory (directory-file-name codelahoma-gtd-directory))) t)
+  (make-directory (expand-file-name "resources" (file-name-directory (directory-file-name codelahoma-gtd-directory))) t)
+  (make-directory (expand-file-name "system" (file-name-directory (directory-file-name codelahoma-gtd-directory))) t)
+  (make-directory (expand-file-name "system/templates" (file-name-directory (directory-file-name codelahoma-gtd-directory))) t)
+  (make-directory (expand-file-name "system/reviews" (file-name-directory (directory-file-name codelahoma-gtd-directory))) t))
 
 (defun codelahoma-gtd-create-files ()
   "Create initial GTD files if they don't exist."
@@ -112,8 +127,9 @@
 (defun codelahoma-gtd-setup-states ()
   "Configure org-mode states for GTD."
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "WAITING(w@/!)" "HOLD(h@/!)" 
-                    "|" "DONE(d!)" "CANCELLED(c@)")))
+        '((sequence "TODO(t)" "NEXT(n)" "WAITING(w@)" "SOMEDAY(s)" "HOLD(h@)" 
+                    "|" "DONE(d!)" "CANCELLED(c@)")
+          (sequence "EVENT(e)" "APPOINTMENT(a)" "|" "DONE(d!)" "CANCELLED(c@)")))
   
   (setq org-todo-keyword-faces
         (mapcar (lambda (state)
@@ -230,7 +246,25 @@
   (spacemacs/set-leader-keys "ooam" 'codelahoma-gtd-agenda-media)
   
   ;; Save all org buffers
-  (spacemacs/set-leader-keys "oos" 'org-save-all-org-buffers))
+  (spacemacs/set-leader-keys "oos" 'org-save-all-org-buffers)
+  
+  ;; Zettelkasten (Knowledge Management)
+  (spacemacs/declare-prefix "ooz" "zettelkasten")
+  (spacemacs/set-leader-keys "oozn" 'org-roam-node-find)
+  (spacemacs/set-leader-keys "oozi" 'org-roam-node-insert)
+  (spacemacs/set-leader-keys "oozc" 'org-roam-capture)
+  (spacemacs/set-leader-keys "oozd" 'org-roam-dailies-goto-today)
+  (spacemacs/set-leader-keys "oozD" 'org-roam-dailies-goto-date)
+  (spacemacs/set-leader-keys "oozb" 'org-roam-buffer-toggle)
+  (spacemacs/set-leader-keys "oozg" 'org-roam-graph)
+  (spacemacs/set-leader-keys "oozr" 'org-roam-ref-find)
+  
+  ;; Integration between GTD and Zettelkasten
+  (spacemacs/declare-prefix "ooi" "integrate")
+  (spacemacs/set-leader-keys "ooil" 'codelahoma-gtd-link-to-roam)
+  (spacemacs/set-leader-keys "ooie" 'codelahoma-gtd-extract-actions)
+  (spacemacs/set-leader-keys "ooir" 'codelahoma-gtd-review-project-knowledge)
+  (spacemacs/set-leader-keys "ooit" 'codelahoma-gtd-create-task-from-note))
 
 (codelahoma-gtd-load-component 'keybindings)
 
@@ -597,6 +631,35 @@
 
 (codelahoma-gtd-load-component 'inbox-processing)
 
+;; Navigation functions
+(defun codelahoma-gtd-open-inbox ()
+  "Open GTD inbox file."
+  (interactive)
+  (find-file (codelahoma-gtd-inbox-file)))
+
+(defun codelahoma-gtd-open-projects ()
+  "Open GTD projects file."
+  (interactive)
+  (find-file (codelahoma-gtd-projects-file)))
+
+(defun codelahoma-gtd-open-next-actions ()
+  "Open GTD next actions view."
+  (interactive)
+  (org-agenda nil "g")
+  (org-agenda-filter-apply '("+NEXT") 'tag))
+
+(defun codelahoma-gtd-open-someday ()
+  "Open GTD someday/maybe file."
+  (interactive)
+  (find-file (expand-file-name "someday.org" codelahoma-gtd-directory)))
+
+(defun codelahoma-gtd-open-calendar ()
+  "Open GTD calendar file."
+  (interactive)
+  (find-file (expand-file-name "calendar.org" codelahoma-gtd-directory)))
+
+(codelahoma-gtd-load-component 'navigation)
+
 (defvar codelahoma-gtd-daily-review-template
   '("Daily Review - %t"
     "* Review Outcomes"
@@ -851,7 +914,7 @@
 (defun codelahoma-gtd-setup-agenda-views ()
   "Configure org-agenda custom views for GTD."
   (setq org-agenda-custom-commands
-        '(("g" "GTD Views"
+        '(("g" "GTD View"
            ((agenda "" ((org-agenda-span 'day)
                         (org-agenda-start-with-log-mode t)))
             (todo "NEXT" ((org-agenda-overriding-header "Next Actions")))
@@ -981,45 +1044,6 @@
 
 (codelahoma-gtd-load-component 'integration-tests)
 
-(defcustom codelahoma-roam-directory "~/personal/org-files/roam/"
-  "Directory for Zettelkasten notes."
-  :type 'directory
-  :group 'codelahoma-gtd)
-
-(defvar codelahoma-roam-capture-templates
-  '(("n" "permanent note" plain
-     "%?"
-     :target (file+head "${slug}.org"
-                        "#+title: ${title}\n#+created: %U\n#+filetags: :permanent:\n")
-     :unnarrowed t)
-    
-    ("l" "literature note" plain
-     "* Source\n- Author: %^{Author}\n- Type: %^{Type|book|article|video|course}\n- Date: %U\n- Link: %^{Link}\n\n* Key Ideas\n%?\n\n* Personal Thoughts\n\n* Questions\n\n* Action Items\n- [ ] \n\n* Related Notes\n- "
-     :target (file+head "literature/${slug}.org"
-                        "#+title: ${title}\n#+created: %U\n#+filetags: :literature:\n")
-     :unnarrowed t)
-    
-    ("r" "reference note" plain
-     "* Overview\n%?\n\n* Key Points\n\n* Examples\n\n* Related Topics\n- "
-     :target (file+head "references/${slug}.org"
-                        "#+title: ${title}\n#+created: %U\n#+filetags: :reference:\n")
-     :unnarrowed t)
-    
-    ("d" "daily note" entry
-     "* %<%H:%M> %?"
-     :target (file+head "daily/%<%Y-%m-%d>.org"
-                        "#+title: %<%Y-%m-%d %A>\n#+created: %U\n#+filetags: :daily:\n\n* Morning Review\n- [ ] Review calendar\n- [ ] Review GTD inbox\n- [ ] Set daily priorities\n\n* Work Log\n\n* Personal Log\n\n* Evening Review\n- [ ] Process inbox\n- [ ] Update task states\n- [ ] Plan tomorrow\n")
-     :unnarrowed t)
-    
-    ("p" "project note" plain
-     "* Overview\nGTD Link: [[file:../gtd/projects.org::*%^{Project Name}]]\n\n* Goals\n%?\n\n* Key Decisions\n\n* Resources\n\n* Progress Log\n\n* Lessons Learned\n"
-     :target (file+head "projects/${slug}.org"
-                        "#+title: ${title} Knowledge Base\n#+created: %U\n#+filetags: :project:\n")
-     :unnarrowed t))
-  "Roam capture templates for Zettelkasten.")
-
-(codelahoma-gtd-load-component 'roam-templates)
-
 (defun codelahoma-gtd-setup-roam-keybindings ()
   "Set up Zettelkasten keybindings."
   ;; Zettelkasten namespace
@@ -1077,7 +1101,7 @@
         (save-buffer))
       (message "Extracted %d actions to GTD inbox" (length actions)))))
 
-(defun codelahoma-gtd-task-from-note ()
+(defun codelahoma-gtd-create-task-from-note ()
   "Create a GTD task from current Zettelkasten note."
   (interactive)
   (let* ((title (org-roam-node-title (org-roam-node-at-point)))
@@ -1149,6 +1173,7 @@
   (codelahoma-gtd-setup-capture-templates)
   (codelahoma-gtd-setup-agenda-views)
   (codelahoma-gtd-update-agenda-files)
+  (codelahoma-gtd-setup-org-roam)
   (message "GTD system activated"))
 
 ;; Auto-activate when org loads
