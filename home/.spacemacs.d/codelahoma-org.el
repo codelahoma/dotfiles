@@ -92,6 +92,13 @@
 
 (codelahoma-gtd-load-component 'foundation-dev)
 
+;; Compatibility fix for org-element caching
+(unless (fboundp 'org-element-with-disabled-cache)
+  (defmacro org-element-with-disabled-cache (&rest body)
+    "Execute BODY with org-element cache disabled (compatibility shim)."
+    `(let ((org-element-use-cache nil))
+       ,@body)))
+
 (defvar codelahoma-gtd-components
   '((100 . foundation-setup)
     (110 . core-engine)
@@ -825,6 +832,9 @@
 
 ;; Org appearance and font faces (moved from dotspacemacs.org)
 (with-eval-after-load 'org
+  ;; Fix for org-element caching issues
+  (setq org-element-use-cache nil)
+  
   (let ((headline '(:inherit default :weight bold)))
     (custom-theme-set-faces
      'user
