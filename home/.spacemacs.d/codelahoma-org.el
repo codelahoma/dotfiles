@@ -401,7 +401,7 @@
      "* TODO %? :personal:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n  %i")
     ("pp" "Personal Project" entry (file codelahoma-gtd-projects-file)
      "* TODO %? [/] :personal:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n** TODO First task")
-    ("pn" "Personal Next Action" entry (file codelahoma-gtd-file "next-actions")
+    ("pn" "Personal Next Action" entry (file (lambda () (codelahoma-gtd-file "next-actions")))
      "* NEXT %? :personal:\n  :PROPERTIES:\n  :CREATED: %U\n  :CONTEXT: %^{Context|@home|@errands|@calls|@computer}\n  :END:")
     
     ("w" "Work")
@@ -409,14 +409,14 @@
      "* TODO %? :work:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n  %i")
     ("wp" "Work Project" entry (file codelahoma-gtd-projects-file)
      "* TODO %? [/] :work:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n** TODO First task")
-    ("wn" "Work Next Action" entry (file codelahoma-gtd-file "next-actions")
+    ("wn" "Work Next Action" entry (file (lambda () (codelahoma-gtd-file "next-actions")))
      "* NEXT %? :work:\n  :PROPERTIES:\n  :CREATED: %U\n  :CONTEXT: %^{Context|@office|@calls|@computer|@meetings}\n  :END:")
-    ("ww" "Work Waiting For" entry (file codelahoma-gtd-file "waiting-for")
+    ("ww" "Work Waiting For" entry (file (lambda () (codelahoma-gtd-file "waiting-for")))
      "* WAITING %? :work:waiting:\n  :PROPERTIES:\n  :CREATED: %U\n  :WAITING_ON: %^{Waiting on}\n  :END:")
     
-    ("n" "Next Action (Generic)" entry (file codelahoma-gtd-file "next-actions")
+    ("n" "Next Action (Generic)" entry (file (lambda () (codelahoma-gtd-file "next-actions")))
      "* NEXT %?\n  :PROPERTIES:\n  :CREATED: %U\n  :CONTEXT: %^{Context|@home|@office|@errands|@calls|@computer}\n  :END:")
-    ("W" "Waiting For (Generic)" entry (file codelahoma-gtd-file "waiting-for")
+    ("W" "Waiting For (Generic)" entry (file (lambda () (codelahoma-gtd-file "waiting-for")))
      "* WAITING %? :waiting:\n  :PROPERTIES:\n  :CREATED: %U\n  :WAITING_ON: %^{Waiting on}\n  :END:")
     
     ("m" "Media")
@@ -1209,26 +1209,25 @@
 
 (codelahoma-gtd-load-component 'migration-tools)
 
-;; Ensure all components are loaded
-(defun codelahoma-gtd-activate ()
-  "Activate the GTD system."
+(defun codelahoma-gtd-activate-simple ()
+  "Activate the GTD system (without org-roam setup)."
   (interactive)
   (codelahoma-gtd-initialize)
   (codelahoma-gtd-setup-states)
   (codelahoma-gtd-setup-capture-templates)
   (codelahoma-gtd-setup-agenda-views)
   (codelahoma-gtd-update-agenda-files)
-  (if (require 'org-roam nil t)
-      (codelahoma-gtd-setup-org-roam)
-    (message "Note: org-roam not available. Install it for Zettelkasten features."))
   (message "GTD system activated"))
 
-;; Auto-activate when org loads
+;; Then add this to handle org-roam setup separately:
+(with-eval-after-load 'org-roam
+  (when (fboundp 'codelahoma-gtd-setup-org-roam)
+    (codelahoma-gtd-setup-org-roam)
+    (message "GTD: Org-roam integration activated")))
+
+;; Auto-activate when org loads (using the simpler version)
 (with-eval-after-load 'org
   (message "GTD: Setting up system...")
-  (codelahoma-gtd-activate)
+  (codelahoma-gtd-activate-simple)  ; Use the version without org-roam
   (codelahoma-gtd-setup-keybindings)
   (message "GTD: System setup complete, keybindings should be available"))
-
-(provide 'codelahoma-gtd)
-;;; codelahoma-gtd.el ends here
