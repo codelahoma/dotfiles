@@ -9,8 +9,17 @@
 ;; A comprehensive GTD implementation for Spacemacs
 
 ;;; Code:
-
 (require 'cl-lib)  ; For defstruct
+
+;; Early compatibility fixes
+(eval-and-compile
+  ;; Fix for org-element caching issues
+  (unless (fboundp 'org-element-with-disabled-cache)
+    (defmacro org-element-with-disabled-cache (&rest body)
+      "Execute BODY with org-element cache disabled (compatibility shim)."
+      `(let ((org-element-use-cache nil))
+         ,@body))))
+
 (defgroup codelahoma-gtd nil
   "GTD system configuration."
   :group 'org
@@ -91,13 +100,6 @@
   (message "GTD development environment ready"))
 
 (codelahoma-gtd-load-component 'foundation-dev)
-
-;; Compatibility fix for org-element caching
-(unless (fboundp 'org-element-with-disabled-cache)
-  (defmacro org-element-with-disabled-cache (&rest body)
-    "Execute BODY with org-element cache disabled (compatibility shim)."
-    `(let ((org-element-use-cache nil))
-       ,@body)))
 
 (defvar codelahoma-gtd-components
   '((100 . foundation-setup)
@@ -834,6 +836,10 @@
 (with-eval-after-load 'org
   ;; Fix for org-element caching issues
   (setq org-element-use-cache nil)
+  
+  ;; Additional workaround for org-element issues
+  (when (boundp 'org-element--cache)
+    (setq org-element--cache nil))
   
   (let ((headline '(:inherit default :weight bold)))
     (custom-theme-set-faces
