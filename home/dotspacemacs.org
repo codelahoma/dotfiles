@@ -1517,7 +1517,25 @@ Configures the base distribution and the layers I want installed and configure.
   ;; Mode line
   (set-face-attribute 'mode-line nil :height 1.08)
 
+  (setq lsp-ruff-server-command '("ruff" "server"))
 
+  (defun rk/clip-for-claude ()
+    "Copy a reference to the current file (and line range if a region is active)
+    to the kill-ring. The string will take the form:
+    \"It is located in /path/to/file\"; if a region is active, it will append the
+    line numbers (e.g., \"It is located in /path/to/file, lines 10-20\")."
+    (interactive)
+    (unless buffer-file-name
+      (error "Current buffer is not visiting a file"))
+    (let ((file buffer-file-name)
+          (location (if (use-region-p)
+                        (format "It is located in %s, lines %d-%d"
+                                buffer-file-name
+                                (line-number-at-pos (region-beginning))
+                                (line-number-at-pos (region-end)))
+                      (format "It is located in %s" buffer-file-name))))
+      (kill-new location)
+      (message "%s" location)))
 
 
   (defun url-found-p (url)
@@ -1626,9 +1644,6 @@ Configures the base distribution and the layers I want installed and configure.
     (setq imp-user-filter #'markdown-html)
     (cl-incf imp-last-state)
     (imp--notify-clients))
-
-
-
 #+end_src
 
 * Org Mode Configuration
