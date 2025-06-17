@@ -11,7 +11,6 @@
 ;;; Code:
 
 (require 'cl-lib)  ; For defstruct
-
 (defgroup codelahoma-gtd nil
   "GTD system configuration."
   :group 'org
@@ -969,25 +968,19 @@
             (todo "WAITING" ((org-agenda-overriding-header "All Waiting Items")))
             (todo "SOMEDAY" ((org-agenda-overriding-header "Someday/Maybe")))))
           ("p" "Personal View"
-           ((agenda "" ((org-agenda-span 'day)
-                        (org-agenda-tag-filter-preset '("+personal" "-work"))))
-            (todo "NEXT" ((org-agenda-overriding-header "Personal Next Actions")
-                          (org-agenda-tag-filter-preset '("+personal" "-work"))))
-            (todo "WAITING" ((org-agenda-overriding-header "Personal Waiting For")
-                            (org-agenda-tag-filter-preset '("+personal" "-work"))))
+           ((agenda "" ((org-agenda-span 'day)))
+            (todo "NEXT" ((org-agenda-overriding-header "Personal Next Actions")))
+            (todo "WAITING" ((org-agenda-overriding-header "Personal Waiting For")))
             (todo "TODO" ((org-agenda-overriding-header "Personal Projects")
-                          (org-agenda-tag-filter-preset '("+personal" "-work"))
-                          (org-agenda-files (list (codelahoma-gtd-projects-file)))))))
+                          (org-agenda-files (list (codelahoma-gtd-projects-file))))))
+           ((org-agenda-tag-filter-preset '("+personal" "-work"))))
           ("W" "Work View"
-           ((agenda "" ((org-agenda-span 'day)
-                        (org-agenda-tag-filter-preset '("+work" "-personal"))))
-            (todo "NEXT" ((org-agenda-overriding-header "Work Next Actions")
-                          (org-agenda-tag-filter-preset '("+work" "-personal"))))
-            (todo "WAITING" ((org-agenda-overriding-header "Work Waiting For")
-                            (org-agenda-tag-filter-preset '("+work" "-personal"))))
+           ((agenda "" ((org-agenda-span 'day)))
+            (todo "NEXT" ((org-agenda-overriding-header "Work Next Actions")))
+            (todo "WAITING" ((org-agenda-overriding-header "Work Waiting For")))
             (todo "TODO" ((org-agenda-overriding-header "Work Projects")
-                          (org-agenda-tag-filter-preset '("+work" "-personal"))
-                          (org-agenda-files (list (codelahoma-gtd-projects-file)))))))
+                          (org-agenda-files (list (codelahoma-gtd-projects-file))))))
+           ((org-agenda-tag-filter-preset '("+work" "-personal"))))
           ("m" "Media Dashboard"
            ((todo "TODO|NEXT" 
                   ((org-agenda-overriding-header "📺 Media Queue")
