@@ -37,6 +37,38 @@
   :type 'directory
   :group 'codelahoma-gtd)
 
+(defvar codelahoma-roam-capture-templates
+  '(("n" "permanent note" plain
+     "%?"
+     :target (file+head "${slug}.org"
+                        "#+title: ${title}\n#+created: %U\n#+filetags: :permanent:\n")
+     :unnarrowed t)
+    
+    ("l" "literature note" plain
+     "* Source\n- Author: %^{Author}\n- Type: %^{Type|book|article|video|course}\n- Date: %U\n- Link: %^{Link}\n\n* Key Ideas\n%?\n\n* Personal Thoughts\n\n* Questions\n\n* Action Items\n- [ ] \n\n* Related Notes\n- "
+     :target (file+head "literature/${slug}.org"
+                        "#+title: ${title}\n#+created: %U\n#+filetags: :literature:\n")
+     :unnarrowed t)
+    
+    ("r" "reference note" plain
+     "* Overview\n%?\n\n* Key Points\n\n* Examples\n\n* Related Topics\n- "
+     :target (file+head "references/${slug}.org"
+                        "#+title: ${title}\n#+created: %U\n#+filetags: :reference:\n")
+     :unnarrowed t)
+    
+    ("d" "daily note" entry
+     "* %<%H:%M> %?"
+     :target (file+head "daily/%<%Y-%m-%d>.org"
+                        "#+title: %<%Y-%m-%d %A>\n#+created: %U\n#+filetags: :daily:\n\n* Morning Review\n- [ ] Review calendar\n- [ ] Review GTD inbox\n- [ ] Set daily priorities\n\n* Work Log\n\n* Personal Log\n\n* Evening Review\n- [ ] Process inbox\n- [ ] Update task states\n- [ ] Plan tomorrow\n")
+     :unnarrowed t)
+    
+    ("p" "project note" plain
+     "* Overview\nGTD Link: [[file:../gtd/projects.org::*%^{Project Name}]]\n\n* Goals\n%?\n\n* Key Decisions\n\n* Resources\n\n* Progress Log\n\n* Lessons Learned\n"
+     :target (file+head "projects/${slug}.org"
+                        "#+title: ${title} Knowledge Base\n#+created: %U\n#+filetags: :project:\n")
+     :unnarrowed t))
+  "Roam capture templates for Zettelkasten.")
+
 (defvar codelahoma-gtd-components-loaded nil
   "List of loaded GTD components.")
 
