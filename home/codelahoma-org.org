@@ -41,6 +41,16 @@ The GTD system follows a modular component architecture:
   :type 'directory
   :group 'codelahoma-gtd)
 
+(defcustom codelahoma-gtd-knowledge-directory "~/personal/org-files/knowledge/"
+  "Base directory for Zettelkasten knowledge files."
+  :type 'directory
+  :group 'codelahoma-gtd)
+
+(defcustom codelahoma-gtd-daily-directory "~/personal/org-files/daily/"
+  "Base directory for daily notes."
+  :type 'directory
+  :group 'codelahoma-gtd)
+
 (defvar codelahoma-gtd-components-loaded nil
   "List of loaded GTD components.")
 
@@ -103,20 +113,25 @@ The GTD system follows a modular component architecture:
 
 #+begin_src emacs-lisp
 (defvar codelahoma-gtd-files
-  '(("inbox.org" . "Inbox")
-    ("projects.org" . "Projects") 
-    ("next-actions.org" . "Next Actions")
-    ("waiting-for.org" . "Waiting For")
-    ("someday-maybe.org" . "Someday/Maybe")
-    ("reference.org" . "Reference")
-    ("tickler.org" . "Tickler"))
+  '(("inbox.org" . "GTD Inbox")
+    ("projects.org" . "GTD Projects") 
+    ("someday.org" . "Someday/Maybe")
+    ("calendar.org" . "Calendar"))
   "GTD file definitions.")
 
 (defun codelahoma-gtd-create-directories ()
   "Create GTD directory structure."
   (make-directory codelahoma-gtd-directory t)
   (make-directory (concat codelahoma-gtd-directory "archive/") t)
-  (make-directory (concat codelahoma-gtd-directory "reviews/") t))
+  (make-directory codelahoma-gtd-knowledge-directory t)
+  (make-directory (concat codelahoma-gtd-knowledge-directory "permanent/") t)
+  (make-directory (concat codelahoma-gtd-knowledge-directory "literature/") t)
+  (make-directory codelahoma-gtd-daily-directory t)
+  (make-directory (expand-file-name "areas" (file-name-directory (directory-file-name codelahoma-gtd-directory))) t)
+  (make-directory (expand-file-name "resources" (file-name-directory (directory-file-name codelahoma-gtd-directory))) t)
+  (make-directory (expand-file-name "system" (file-name-directory (directory-file-name codelahoma-gtd-directory))) t)
+  (make-directory (expand-file-name "system/templates" (file-name-directory (directory-file-name codelahoma-gtd-directory))) t)
+  (make-directory (expand-file-name "system/reviews" (file-name-directory (directory-file-name codelahoma-gtd-directory))) t))
 
 (defun codelahoma-gtd-create-files ()
   "Create initial GTD files if they don't exist."
@@ -151,8 +166,9 @@ The GTD system follows a modular component architecture:
 (defun codelahoma-gtd-setup-states ()
   "Configure org-mode states for GTD."
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "WAITING(w@/!)" "HOLD(h@/!)" 
-                    "|" "DONE(d!)" "CANCELLED(c@)")))
+        '((sequence "TODO(t)" "NEXT(n)" "WAITING(w@)" "SOMEDAY(s)" "HOLD(h@)" 
+                    "|" "DONE(d!)" "CANCELLED(c@)")
+          (sequence "EVENT(e)" "APPOINTMENT(a)" "|" "DONE(d!)" "CANCELLED(c@)")))
   
   (setq org-todo-keyword-faces
         (mapcar (lambda (state)
@@ -978,7 +994,7 @@ The GTD system follows a modular component architecture:
 (defun codelahoma-gtd-setup-agenda-views ()
   "Configure org-agenda custom views for GTD."
   (setq org-agenda-custom-commands
-        '(("g" "GTD Views"
+        '(("g" "GTD View"
            ((agenda "" ((org-agenda-span 'day)
                         (org-agenda-start-with-log-mode t)))
             (todo "NEXT" ((org-agenda-overriding-header "Next Actions")))
@@ -1124,7 +1140,7 @@ The GTD system follows a modular component architecture:
 ** Org-Roam Configuration
 
 #+begin_src emacs-lisp
-(defcustom codelahoma-roam-directory "~/personal/org-files/roam/"
+(defcustom codelahoma-roam-directory "~/personal/org-files/knowledge/"
   "Directory for Zettelkasten notes."
   :type 'directory
   :group 'codelahoma-gtd)
@@ -1162,6 +1178,44 @@ The GTD system follows a modular component architecture:
   "Roam capture templates for Zettelkasten.")
 
 (codelahoma-gtd-load-component 'roam-templates)
+
+(defun codelahoma-gtd-setup-org-roam ()
+  "Configure org-roam for Zettelkasten."
+  (use-package org-roam
+    :ensure t
+    :init
+    (setq org-roam-v2-ack t)
+    :custom
+    (org-roam-directory codelahoma-roam-directory)
+    (org-roam-dailies-directory "daily/")
+    (org-roam-completion-everywhere t)
+    :config
+    (setq org-roam-capture-templates codelahoma-roam-capture-templates)
+    (setq org-roam-dailies-capture-templates
+          '(("d" "default" entry "* %?"
+             :target (file+head "%<%Y-%m-%d>.org"
+                               "#+title: %<%Y-%m-%d>
+#+filetags: :daily:
+
+* Morning Planning
+- [ ] Review calendar
+- [ ] Check NEXT actions  
+- [ ] Set 3 priorities
+
+* Captured Thoughts
+
+* Journal
+
+* Evening Review
+- [ ] Process inbox
+- [ ] Create tomorrow's note"))))
+    (org-roam-db-autosync-mode)
+    :bind (("C-c n f" . org-roam-node-find)
+           ("C-c n i" . org-roam-node-insert)
+           ("C-c n l" . org-roam-buffer-toggle)
+           ("C-c n d" . org-roam-dailies-capture-today))))
+
+(codelahoma-gtd-load-component 'org-roam-setup)
 #+end_src
 
 ** Roam Keybindings
@@ -1347,6 +1401,7 @@ The GTD system follows a modular component architecture:
   (codelahoma-gtd-setup-capture-templates)
   (codelahoma-gtd-setup-agenda-views)
   (codelahoma-gtd-update-agenda-files)
+  (codelahoma-gtd-setup-org-roam)
   (message "GTD system activated"))
 
 ;; Auto-activate when org loads
