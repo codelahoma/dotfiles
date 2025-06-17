@@ -1,22 +1,36 @@
 ---
 type: guide
 category: tools
-tags: [memory, cli, entities, observations, direct-access]
+tags:
+- memory
+- cli
+- entities
+- observations
+- direct-access
 status: active
-depends_on: [fl-memory.json]
-related_to: [memory_monitor_user_guide, flowloom_memory_unified_interface]
-introduced_in: "FlowLoom 2.0.0"
-last_verified: "2025-06-07"
+depends_on:
+- fl-memory.json
+related_to:
+- memory_monitor_user_guide
+- flowloom_memory_unified_interface
+introduced_in: FlowLoom 2.0.0
+last_verified: '2025-06-07'
 complexity: intermediate
 stability: stable
 priority: medium
 frequency: daily
-audience: [developers, power-users]
-file_paths: [".flowloom/bin/log_observation.py"]
-commands: [log_observation.py, python log_observation.py]
+audience:
+- developers
+- power-users
+file_paths:
+- .flowloom/bin/log_observation.py
+commands:
+- log_observation.py
+- python log_observation.py
 completeness: 95
 needs_update: false
 maintainer: FlowLoom Core Team
+permalink: tools/log-observation-user-guide
 ---
 
 # log_observation.py User Guide

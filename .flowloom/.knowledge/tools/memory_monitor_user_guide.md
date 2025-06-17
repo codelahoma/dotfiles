@@ -1,22 +1,40 @@
 ---
 type: guide
 category: tools
-tags: [memory, cli, sql, query, monitoring, analytics]
+tags:
+- memory
+- cli
+- sql
+- query
+- monitoring
+- analytics
 status: active
-depends_on: [fl-memory.json, memory-monitor]
-related_to: [log_observation_user_guide, flowloom_memory_unified_interface]
-introduced_in: "FlowLoom 2.0.0"
-last_verified: "2025-06-07"
+depends_on:
+- fl-memory.json
+- memory-monitor
+related_to:
+- log_observation_user_guide
+- flowloom_memory_unified_interface
+introduced_in: FlowLoom 2.0.0
+last_verified: '2025-06-07'
 complexity: advanced
 stability: stable
 priority: high
 frequency: daily
-audience: [developers, analysts, power-users]
-commands: [memory-monitor, uvx memory-monitor]
-apis: [websocket-server, sql-interface]
+audience:
+- developers
+- analysts
+- power-users
+commands:
+- memory-monitor
+- uvx memory-monitor
+apis:
+- websocket-server
+- sql-interface
 completeness: 90
 needs_update: false
 maintainer: FlowLoom Core Team
+permalink: tools/memory-monitor-user-guide
 ---
 
 # memory-monitor User Guide
