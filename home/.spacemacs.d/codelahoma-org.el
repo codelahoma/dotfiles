@@ -986,7 +986,7 @@
             (todo "WAITING" ((org-agenda-overriding-header "Work Waiting For")
                             (org-agenda-tag-filter-preset '("+work"))))
             (todo "TODO" ((org-agenda-overriding-header "Work Projects")
-                          (org-agenda-tag-filter-preset '("+work"))
+                          (org-agenda-tag-filter-preset '("+work" "-personal"))
                           (org-agenda-files (list (codelahoma-gtd-projects-file)))))))
           ("m" "Media Dashboard"
            ((todo "TODO|NEXT" 
