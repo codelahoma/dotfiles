@@ -299,7 +299,25 @@ The GTD system follows a modular component architecture:
   (spacemacs/set-leader-keys "ooam" 'codelahoma-gtd-agenda-media)
   
   ;; Save all org buffers
-  (spacemacs/set-leader-keys "oos" 'org-save-all-org-buffers))
+  (spacemacs/set-leader-keys "oos" 'org-save-all-org-buffers)
+  
+  ;; Zettelkasten (Knowledge Management)
+  (spacemacs/declare-prefix "ooz" "zettelkasten")
+  (spacemacs/set-leader-keys "oozn" 'org-roam-node-find)
+  (spacemacs/set-leader-keys "oozi" 'org-roam-node-insert)
+  (spacemacs/set-leader-keys "oozc" 'org-roam-capture)
+  (spacemacs/set-leader-keys "oozd" 'org-roam-dailies-goto-today)
+  (spacemacs/set-leader-keys "oozD" 'org-roam-dailies-goto-date)
+  (spacemacs/set-leader-keys "oozb" 'org-roam-buffer-toggle)
+  (spacemacs/set-leader-keys "oozg" 'org-roam-graph)
+  (spacemacs/set-leader-keys "oozr" 'org-roam-ref-find)
+  
+  ;; Integration between GTD and Zettelkasten
+  (spacemacs/declare-prefix "ooi" "integrate")
+  (spacemacs/set-leader-keys "ooil" 'codelahoma-gtd-link-to-roam)
+  (spacemacs/set-leader-keys "ooie" 'codelahoma-gtd-extract-actions)
+  (spacemacs/set-leader-keys "ooir" 'codelahoma-gtd-review-project-knowledge)
+  (spacemacs/set-leader-keys "ooit" 'codelahoma-gtd-create-task-from-note))
 
 (codelahoma-gtd-load-component 'keybindings)
 #+end_src
@@ -689,6 +707,35 @@ The GTD system follows a modular component architecture:
           (codelahoma-gtd-process-current-item))))))
 
 (codelahoma-gtd-load-component 'inbox-processing)
+
+;; Navigation functions
+(defun codelahoma-gtd-open-inbox ()
+  "Open GTD inbox file."
+  (interactive)
+  (find-file (codelahoma-gtd-inbox-file)))
+
+(defun codelahoma-gtd-open-projects ()
+  "Open GTD projects file."
+  (interactive)
+  (find-file (codelahoma-gtd-projects-file)))
+
+(defun codelahoma-gtd-open-next-actions ()
+  "Open GTD next actions view."
+  (interactive)
+  (org-agenda nil "g")
+  (org-agenda-filter-apply '("+NEXT") 'tag))
+
+(defun codelahoma-gtd-open-someday ()
+  "Open GTD someday/maybe file."
+  (interactive)
+  (find-file (expand-file-name "someday.org" codelahoma-gtd-directory)))
+
+(defun codelahoma-gtd-open-calendar ()
+  "Open GTD calendar file."
+  (interactive)
+  (find-file (expand-file-name "calendar.org" codelahoma-gtd-directory)))
+
+(codelahoma-gtd-load-component 'navigation)
 #+end_src
 
 * [150] Review System
@@ -1282,7 +1329,7 @@ The GTD system follows a modular component architecture:
         (save-buffer))
       (message "Extracted %d actions to GTD inbox" (length actions)))))
 
-(defun codelahoma-gtd-task-from-note ()
+(defun codelahoma-gtd-create-task-from-note ()
   "Create a GTD task from current Zettelkasten note."
   (interactive)
   (let* ((title (org-roam-node-title (org-roam-node-at-point)))
