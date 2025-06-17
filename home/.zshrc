@@ -198,8 +198,15 @@ export PATH="/Users/rodk/.homesick/repos/dotfiles/.flowloom/bin:$PATH"
 function gi() { curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@ ;}
 alias claude="/Users/rodk/.claude/local/claude"
 
+# Enhanced orgg alias to sync both org-files and .catalyst
+alias orgg='(cd ~/personal/org-files && git-sync && cd .catalyst && git-sync)'
+
 # FlowLoom
 export PATH="/Users/rodk/github/flowloom/packages/flowloom_installer/.flowloom/bin:$PATH"
 
 # FlowLoom
 export PATH="/Users/rodk/work/atlas-up-ai/.flowloom/bin:$PATH"
+
+fpath+=~/.zfunc; autoload -Uz compinit; compinit
+
+eval $(thefuck --alias)
