@@ -471,10 +471,6 @@ It should only modify the values of Spacemacs settings."
                                 :size 18.0
                                 :weight normal
                                 :width normal)
-                               ("MesloLGS NF"
-                                :size 18.0
-                                :weight normal
-                                :width normal)
                                ("SauceCodePro Nerd Font"
                                 :size 18.0
                                 :weight normal

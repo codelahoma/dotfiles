@@ -213,10 +213,6 @@ This section defines various custom keybindings that were previously in the to-o
    :size 18.0
    :weight normal
    :width normal)
-  ("MesloLGS NF"
-   :size 18.0
-   :weight normal
-   :width normal)
   ("SauceCodePro Nerd Font"
    :size 18.0
    :weight normal
