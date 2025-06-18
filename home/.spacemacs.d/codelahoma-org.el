@@ -807,31 +807,6 @@
 
 (codelahoma-gtd-load-component 'location-contexts)
 
-(defvar codelahoma-gtd-energy-level 'normal
-  "Current energy level: 'high, 'normal, or 'low.")
-
-(codelahoma-gtd-define-context
- ":high-energy" ?H
- (lambda () (eq codelahoma-gtd-energy-level 'high))
- 'org-scheduled-today
- "Tasks requiring high energy/focus")
-
-(codelahoma-gtd-define-context
- ":low-energy" ?L
- (lambda () (eq codelahoma-gtd-energy-level 'low))
- 'org-agenda-dimmed-todo-face
- "Tasks suitable for low energy")
-
-(defun codelahoma-gtd-set-energy-level (level)
-  "Set current energy LEVEL."
-  (interactive
-   (list (intern (completing-read "Energy level: "
-                                  '("high" "normal" "low")))))
-  (setq codelahoma-gtd-energy-level level)
-  (message "Energy level set to: %s" level))
-
-(codelahoma-gtd-load-component 'energy-contexts)
-
 ;; Org appearance and font faces (moved from dotspacemacs.org)
 (with-eval-after-load 'org
   ;; Fix for org-element caching issues
@@ -1072,24 +1047,6 @@
 
 (codelahoma-gtd-load-component 'unit-tests)
 
-(ert-deftest codelahoma-gtd-test-capture-flow ()
-  "Test capture workflow integration."
-  (let ((temp-dir (make-temp-file "gtd-test" t)))
-    (unwind-protect
-        (let ((codelahoma-gtd-directory temp-dir)
-              (org-capture-templates codelahoma-gtd-capture-templates))
-          (codelahoma-gtd-create-files)
-          ;; Test would simulate capture here
-          (should t))  ; Placeholder
-      (delete-directory temp-dir t))))
-
-(defun codelahoma-gtd-run-all-tests ()
-  "Run all GTD tests."
-  (interactive)
-  (ert-run-tests-batch-and-exit "^codelahoma-gtd-test-"))
-
-(codelahoma-gtd-load-component 'integration-tests)
-
 (defun codelahoma-gtd-setup-roam-keybindings ()
   "Set up Zettelkasten keybindings."
   ;; Zettelkasten namespace
@@ -1217,26 +1174,3 @@
     ))
 
 (codelahoma-gtd-load-component 'migration-tools)
-
-(defun codelahoma-gtd-activate-simple ()
-  "Activate the GTD system (without org-roam setup)."
-  (interactive)
-  (codelahoma-gtd-initialize)
-  (codelahoma-gtd-setup-states)
-  (codelahoma-gtd-setup-capture-templates)
-  (codelahoma-gtd-setup-agenda-views)
-  (codelahoma-gtd-update-agenda-files)
-  (message "GTD system activated"))
-
-;; Then add this to handle org-roam setup separately:
-(with-eval-after-load 'org-roam
-  (when (fboundp 'codelahoma-gtd-setup-org-roam)
-    (codelahoma-gtd-setup-org-roam)
-    (message "GTD: Org-roam integration activated")))
-
-;; Auto-activate when org loads (using the simpler version)
-(with-eval-after-load 'org
-  (message "GTD: Setting up system...")
-  (codelahoma-gtd-activate-simple)  ; Use the version without org-roam
-  (codelahoma-gtd-setup-keybindings)
-  (message "GTD: System setup complete, keybindings should be available"))
