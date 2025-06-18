@@ -1234,27 +1234,36 @@
       (codelahoma-gtd-setup-org-roam)
       (message "GTD: Org-roam integration activated")))
 
+  ;; Function to check if we have the right org version
+  (defun codelahoma-gtd-correct-org-loaded-p ()
+    "Check if the correct (non-builtin) org version is loaded."
+    (and (featurep 'org)
+         (fboundp 'org-version)
+         (let ((org-location (locate-library "org")))
+           (and org-location
+                (not (string-match-p "/share/emacs/.*/lisp/org" org-location))
+                (not (string-match-p "/Cellar/.*/share/emacs/.*/lisp/org" org-location))))))
+
   ;; Delay activation until Spacemacs org is loaded
   (with-eval-after-load 'org
     ;; Only activate if we have a recent org version (not the built-in one)
-    (when (and (fboundp 'org-version)
-               (not (string-match-p "/share/emacs/.*/lisp/org" (or load-file-name ""))))
-      (message "GTD: Org version: %s" (org-version))
+    (when (codelahoma-gtd-correct-org-loaded-p)
+      (message "GTD: Org version: %s from %s" (org-version) (locate-library "org"))
       (message "GTD: Setting up system...")
       (codelahoma-gtd-activate-simple)  ; Use the version without org-roam
       (codelahoma-gtd-setup-keybindings)
       (message "GTD: System setup complete, keybindings should be available")))
 
 ;; Alternative: Use run-with-idle-timer to ensure proper package loading
-(run-with-idle-timer 2 nil
+(run-with-idle-timer 3 nil
   (lambda ()
-    (when (and (featurep 'org)
-               (not (string-match-p "/share/emacs/.*/lisp/org" 
-                                   (or (file-name-directory (locate-library "org")) ""))))
+    (when (codelahoma-gtd-correct-org-loaded-p)
       (unless codelahoma-gtd-components-loaded
         (message "GTD: Late initialization...")
+        (message "GTD: Org version: %s from %s" (org-version) (locate-library "org"))
         (codelahoma-gtd-activate-simple)
-        (codelahoma-gtd-setup-keybindings)))))
+        (codelahoma-gtd-setup-keybindings)
+        (message "GTD: System activated via idle timer")))))
 
 (provide 'codelahoma-gtd)
 ;;; codelahoma-gtd.el ends here
