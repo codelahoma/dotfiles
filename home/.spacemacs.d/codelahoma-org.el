@@ -119,6 +119,8 @@
   (interactive)
   ;; Create directory structure
   (codelahoma-gtd-create-directories)
+  ;; Create initial files if they don't exist
+  (codelahoma-gtd-create-files)
   ;; Load core components
   (codelahoma-gtd-load-component 'foundation-setup)
   (codelahoma-gtd-load-component 'core-engine)
@@ -201,10 +203,13 @@
 (defun codelahoma-gtd-update-agenda-files ()
   "Update the list of agenda files."
   (setq codelahoma-gtd-agenda-files
-        (mapcar (lambda (file-def)
-                  (expand-file-name (car file-def) codelahoma-gtd-directory))
-                codelahoma-gtd-files))
-  (setq org-agenda-files codelahoma-gtd-agenda-files))
+        (cl-remove-if-not
+         #'file-exists-p
+         (mapcar (lambda (file-def)
+                   (expand-file-name (car file-def) codelahoma-gtd-directory))
+                 codelahoma-gtd-files)))
+  (setq org-agenda-files codelahoma-gtd-agenda-files)
+  (message "GTD: Set agenda files to: %s" codelahoma-gtd-agenda-files))
 
 (codelahoma-gtd-load-component 'core-files)
 
@@ -680,12 +685,18 @@
 (defun codelahoma-gtd-open-inbox ()
   "Open GTD inbox file."
   (interactive)
-  (find-file (codelahoma-gtd-inbox-file)))
+  (let ((inbox-file (codelahoma-gtd-inbox-file)))
+    (unless (file-exists-p inbox-file)
+      (codelahoma-gtd-create-files))
+    (find-file inbox-file)))
 
 (defun codelahoma-gtd-open-projects ()
   "Open GTD projects file."
   (interactive)
-  (find-file (codelahoma-gtd-projects-file)))
+  (let ((projects-file (codelahoma-gtd-projects-file)))
+    (unless (file-exists-p projects-file)
+      (codelahoma-gtd-create-files))
+    (find-file projects-file)))
 
 (defun codelahoma-gtd-open-next-actions ()
   "Open GTD next actions view."
@@ -840,6 +851,13 @@
   ;; Additional workaround for org-element issues
   (when (boundp 'org-element--cache)
     (setq org-element--cache nil))
+    
+  ;; Ensure the macro is available
+  (unless (fboundp 'org-element-with-disabled-cache)
+    (defmacro org-element-with-disabled-cache (&rest body)
+      "Execute BODY with org-element cache disabled (compatibility shim)."
+      `(let ((org-element-use-cache nil))
+         ,@body)))
   
   (let ((headline '(:inherit default :weight bold)))
     (custom-theme-set-faces
@@ -965,6 +983,12 @@
 
 (defun codelahoma-gtd-setup-agenda-views ()
   "Configure org-agenda custom views for GTD."
+  ;; Ensure media.org exists before setting up agenda views
+  (let ((media-file (codelahoma-gtd-file "media")))
+    (unless (file-exists-p media-file)
+      (with-temp-buffer
+        (insert "#+TITLE: Media Tracker\n#+STARTUP: overview\n\n* Movies :movie:\n\n* TV Shows :tv:\n")
+        (write-file media-file))))
   (setq org-agenda-custom-commands
         '(("g" "GTD View"
            ((agenda "" ((org-agenda-span 'day)
@@ -1003,7 +1027,8 @@
                    (org-agenda-files (list (codelahoma-gtd-file "media")))
                    (org-agenda-sorting-strategy '(priority-down effort-up))))
             (tags "media+CLOSED>=\"<-1m>\""
-                  ((org-agenda-overriding-header "🎬 Recently Watched"))))))))
+                  ((org-agenda-overriding-header "🎬 Recently Watched")
+                   (org-agenda-files (list (codelahoma-gtd-file "media"))))))))))
 
 (codelahoma-gtd-load-component 'agenda-integration)
 
@@ -1244,6 +1269,19 @@
                 (not (string-match-p "/share/emacs/.*/lisp/org" org-location))
                 (not (string-match-p "/Cellar/.*/share/emacs/.*/lisp/org" org-location))))))
 
+  ;; Set up keybindings after spacemacs is ready
+  (with-eval-after-load 'spacemacs
+    (codelahoma-gtd-setup-keybindings)
+    (message "GTD: Keybindings setup complete"))
+  
+  ;; Also try to set up keybindings via idle timer as fallback
+  (run-with-idle-timer 1 nil
+    (lambda ()
+      (when (and (fboundp 'spacemacs/declare-prefix)
+                 (fboundp 'spacemacs/set-leader-keys))
+        (codelahoma-gtd-setup-keybindings)
+        (message "GTD: Keybindings setup complete (via timer)"))))
+
   ;; Delay activation until Spacemacs org is loaded
   (with-eval-after-load 'org
     ;; Only activate if we have a recent org version (not the built-in one)
@@ -1251,7 +1289,6 @@
       (message "GTD: Org version: %s from %s" (org-version) (locate-library "org"))
       (message "GTD: Setting up system...")
       (codelahoma-gtd-activate-simple)  ; Use the version without org-roam
-      (codelahoma-gtd-setup-keybindings)
       (message "GTD: System setup complete, keybindings should be available")))
 
 ;; Alternative: Use run-with-idle-timer to ensure proper package loading
@@ -1262,8 +1299,47 @@
         (message "GTD: Late initialization...")
         (message "GTD: Org version: %s from %s" (org-version) (locate-library "org"))
         (codelahoma-gtd-activate-simple)
-        (codelahoma-gtd-setup-keybindings)
         (message "GTD: System activated via idle timer")))))
+
+;; Diagnostic function
+(defun codelahoma-gtd-diagnose ()
+  "Diagnose GTD system setup."
+  (interactive)
+  (with-output-to-temp-buffer "*GTD Diagnostics*"
+    (princ "GTD System Diagnostics\n")
+    (princ "=====================\n\n")
+    
+    ;; Check directories
+    (princ (format "GTD Directory: %s\n" codelahoma-gtd-directory))
+    (princ (format "  Exists: %s\n" (file-exists-p codelahoma-gtd-directory)))
+    
+    ;; Check files
+    (princ "\nGTD Files:\n")
+    (dolist (file-def codelahoma-gtd-files)
+      (let ((filepath (expand-file-name (car file-def) codelahoma-gtd-directory)))
+        (princ (format "  %s: %s\n" (car file-def) 
+                       (if (file-exists-p filepath) "EXISTS" "MISSING")))))
+    
+    ;; Check agenda files
+    (princ (format "\nAgenda Files: %s\n" org-agenda-files))
+    
+    ;; Check keybindings
+    (princ "\nKeybindings:\n")
+    (princ (format "  SPC o o defined: %s\n" 
+                   (if (and (boundp 'spacemacs-default-map)
+                           (lookup-key spacemacs-default-map (kbd "o o")))
+                       "YES" "NO")))
+    
+    ;; Check org version
+    (princ (format "\nOrg Version: %s\n" (if (fboundp 'org-version) (org-version) "NOT LOADED")))
+    (princ (format "Org Location: %s\n" (locate-library "org")))
+    
+    ;; Check components loaded
+    (princ (format "\nComponents Loaded: %s\n" codelahoma-gtd-components-loaded))))
+
+;; Initialize GTD system if not already done
+(unless codelahoma-gtd-components-loaded
+  (message "GTD: Initial file load, deferring activation..."))
 
 (provide 'codelahoma-gtd)
 ;;; codelahoma-gtd.el ends here
