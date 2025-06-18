@@ -1467,10 +1467,28 @@ The GTD system follows a modular component architecture:
       (codelahoma-gtd-setup-org-roam)
       (message "GTD: Org-roam integration activated")))
 
-  ;; Auto-activate when org loads (using the simpler version)
+  ;; Delay activation until Spacemacs org is loaded
   (with-eval-after-load 'org
-    (message "GTD: Setting up system...")
-    (codelahoma-gtd-activate-simple)  ; Use the version without org-roam
-    (codelahoma-gtd-setup-keybindings)
-    (message "GTD: System setup complete, keybindings should be available"))
+    ;; Only activate if we have a recent org version (not the built-in one)
+    (when (and (fboundp 'org-version)
+               (not (string-match-p "/share/emacs/.*/lisp/org" (or load-file-name ""))))
+      (message "GTD: Org version: %s" (org-version))
+      (message "GTD: Setting up system...")
+      (codelahoma-gtd-activate-simple)  ; Use the version without org-roam
+      (codelahoma-gtd-setup-keybindings)
+      (message "GTD: System setup complete, keybindings should be available")))
+
+;; Alternative: Use run-with-idle-timer to ensure proper package loading
+(run-with-idle-timer 2 nil
+  (lambda ()
+    (when (and (featurep 'org)
+               (not (string-match-p "/share/emacs/.*/lisp/org" 
+                                   (or (file-name-directory (locate-library "org")) ""))))
+      (unless codelahoma-gtd-components-loaded
+        (message "GTD: Late initialization...")
+        (codelahoma-gtd-activate-simple)
+        (codelahoma-gtd-setup-keybindings)))))
+
+(provide 'codelahoma-gtd)
+;;; codelahoma-gtd.el ends here
 #+end_src

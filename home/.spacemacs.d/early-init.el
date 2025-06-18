@@ -6,6 +6,14 @@
 
 ;;; Code:
 
+;; Prevent loading of built-in org-mode
+(setq load-path (cl-remove-if (lambda (path)
+                                (string-match-p "lisp/org\\'" path))
+                              load-path))
+
+;; Ensure we don't accidentally load built-in org
+(setq org-inhibit-startup t)
+
 ;; Fix for org-element-with-disabled-cache error
 (eval-and-compile
   (unless (fboundp 'org-element-with-disabled-cache)
