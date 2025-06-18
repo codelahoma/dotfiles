@@ -48,6 +48,9 @@ The following special values of the =noweb-ref= header argument will cause a cod
 * startup
 General variables that need to be set before packages load.
 #+begin_src emacs-lisp :noweb-ref user-init
+  ;; Prevent native compilation of problematic org files
+  ;; This fixes the issue where built-in org gets compiled and loaded
+  (setq native-comp-jit-compilation-deny-list '(".*org-element.*" ".*org-macs.*" ".*org-compat.*"))
   (setq comp-deferred-compilation t)
 #+end_src
 
@@ -1651,6 +1654,7 @@ Configures the base distribution and the layers I want installed and configure.
 ** Load CodeLahoma Org Extensions  
 #+begin_src emacs-lisp :noweb-ref user-config
   ;; Load CodeLahoma Org Extensions (centralized org configuration)
+  ;; TEMPORARILY DISABLED FOR TESTING
   (with-eval-after-load 'org
     (let ((codelahoma-org-file (expand-file-name "~/.spacemacs.d/codelahoma-org.el")))
       (when (file-exists-p codelahoma-org-file)

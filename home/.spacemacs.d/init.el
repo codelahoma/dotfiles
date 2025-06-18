@@ -804,6 +804,7 @@ See the header of this file for more information."
        (lambda (key _value)
          (file-notify-rm-watch key))
        file-notify-descriptors)))
+(setq native-comp-jit-compilation-deny-list '(".*org-element.*"))
 (setq comp-deferred-compilation t)
   
 (defun dotspacemacs/user-load ()
@@ -1084,6 +1085,7 @@ before packages are loaded."
     (interactive)
     (shell-command "printf %s \"$(uuidgen)\"" t))
   ;; Load CodeLahoma Org Extensions (centralized org configuration)
+  ;; TEMPORARILY DISABLED FOR TESTING
   (with-eval-after-load 'org
     (let ((codelahoma-org-file (expand-file-name "~/.spacemacs.d/codelahoma-org.el")))
       (when (file-exists-p codelahoma-org-file)
