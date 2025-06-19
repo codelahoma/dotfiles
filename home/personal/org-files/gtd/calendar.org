@@ -1,0 +1,71 @@
+#+TITLE: Calendar & Meetings
+#+CATEGORY: calendar
+#+FILETAGS: :gtd:calendar:
+#+STARTUP: overview
+
+* About This File
+Time-specific commitments including meetings, appointments, and deadlines.
+Items with MEETING state will appear in agenda views.
+
+* Recurring Meetings
+** MEETING Weekly Team Standup                                         :work:
+   SCHEDULED: <2025-06-19 Wed 09:00-09:30 +1w>
+   :PROPERTIES:
+   :CREATED: [2025-06-18 Tue]
+   :LOCATION: @zoom
+   :ATTENDEES: Dev team
+   :END:
+   
+*** Agenda
+- Sprint progress
+- Blockers
+- Today's focus
+
+** MEETING Monthly 1-on-1 with Manager                                :work:
+   SCHEDULED: <2025-06-25 Tue 14:00-15:00 +1m>
+   :PROPERTIES:
+   :CREATED: [2025-06-18 Tue]
+   :LOCATION: @office
+   :ATTENDEES: Sarah Johnson
+   :END:
+
+* One-off Meetings
+** MEETING Architecture Review - Auth System                           :work:
+   SCHEDULED: <2025-06-20 Thu 10:00-11:30>
+   :PROPERTIES:
+   :CREATED: [2025-06-18 Tue]
+   :LOCATION: Conference Room B
+   :ATTENDEES: Tech leads, Security team
+   :END:
+   
+*** Preparation
+- [ ] Create architecture diagrams
+- [ ] Document security considerations
+- [ ] Prepare migration plan
+
+*** Agenda
+1. Current state overview
+2. Proposed changes
+3. Security review
+4. Migration strategy
+5. Timeline and resources
+
+** MEETING Dentist Appointment                                    :personal:
+   SCHEDULED: <2025-06-24 Mon 15:30-16:30>
+   :PROPERTIES:
+   :CREATED: [2025-06-18 Tue]
+   :LOCATION: Downtown Dental
+   :END:
+   
+   Regular checkup and cleaning
+
+* Important Dates
+** Project deadline: Feature X launch                                  :work:
+   DEADLINE: <2025-07-01 Mon>
+   
+** Vacation: Summer break                                         :personal:
+   <2025-07-15 Mon>--<2025-07-26 Fri>
+   
+** Conference: TechConf 2025                                           :work:
+   <2025-09-10 Tue>--<2025-09-12 Thu>
+   Location: San Francisco

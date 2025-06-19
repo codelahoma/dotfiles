@@ -1,0 +1,56 @@
+#+TITLE: Next Actions
+#+CATEGORY: next-actions
+#+FILETAGS: :gtd:actions:
+#+STARTUP: overview
+
+* About This File
+Next actions are single, physical, visible actions you can take.
+Organize by context - where you need to be or what tools you need.
+
+* Context: @computer                                              :@computer:
+** NEXT Email team about Friday standup change                        :work:
+   SCHEDULED: <2025-06-19 Wed>
+   :PROPERTIES:
+   :CREATED: [2025-06-18 Tue]
+   :EFFORT: 0:05
+   :END:
+
+** NEXT Fix CSS layout bug in header                                  :work:
+   :PROPERTIES:
+   :CREATED: [2025-06-18 Tue]
+   :EFFORT: 0:30
+   :END:
+
+* Context: @phone                                                    :@phone:
+** NEXT Call dentist for appointment                              :personal:
+   :PROPERTIES:
+   :CREATED: [2025-06-18 Tue]
+   :EFFORT: 0:10
+   :END:
+   
+* Context: @email                                                    :@email:
+** NEXT Reply to client about project scope                           :work:
+   DEADLINE: <2025-06-20 Thu>
+   :PROPERTIES:
+   :CREATED: [2025-06-18 Tue]
+   :EFFORT: 0:20
+   :END:
+
+* Context: @errands                                                :@errands:
+** NEXT Buy milk and coffee                                       :personal:
+   :PROPERTIES:
+   :CREATED: [2025-06-18 Tue]
+   :END:
+
+* Context: @home                                                      :@home:
+** NEXT Install new shelves in garage                             :personal:
+   :PROPERTIES:
+   :CREATED: [2025-06-18 Tue]
+   :EFFORT: 2:00
+   :END:
+
+* Context: @office                                                  :@office:
+** NEXT Return borrowed book to Sarah                                 :work:
+   :PROPERTIES:
+   :CREATED: [2025-06-18 Tue]
+   :END:
