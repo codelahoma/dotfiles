@@ -1,0 +1,13 @@
+#+TITLE: GTD Inbox
+#+CATEGORY: inbox
+#+FILETAGS: :gtd:inbox:
+#+STARTUP: overview
+
+* About This File
+This is your GTD inbox - the capture point for all thoughts, tasks, and commitments.
+Process this to zero regularly using the clarify process.
+
+Press ~SPC o o c i~ from anywhere to quickly capture items here.
+
+* Inbox
+# New items will appear here
