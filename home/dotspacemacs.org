@@ -1653,13 +1653,69 @@ Configures the base distribution and the layers I want installed and configure.
 
 ** Load CodeLahoma Org Extensions  
 #+begin_src emacs-lisp :noweb-ref user-config
-  ;; Load CodeLahoma Org Extensions (centralized org configuration)
-  ;; DISABLED - GTD system removed for reimplementation
-  ;; (with-eval-after-load 'org
-  ;;   (let ((codelahoma-org-file (expand-file-name "~/.spacemacs.d/codelahoma-org.el")))
-  ;;     (when (file-exists-p codelahoma-org-file)
-  ;;       (load-file codelahoma-org-file)
-  ;;       (message "Loaded CodeLahoma org extensions from %s" codelahoma-org-file))))
+  ;; Load Personal GTD-Zettelkasten System
+  (with-eval-after-load 'org
+    ;; Load configuration first
+    (add-to-list 'load-path "~/.spacemacs.d/codelahoma-gtd/")
+    (add-to-list 'load-path "~/.spacemacs.d/")
+    
+    ;; Check if modules exist and load them
+    (let ((gtd-dir (expand-file-name "~/.spacemacs.d/codelahoma-gtd/")))
+      (if (file-exists-p (concat gtd-dir "codelahoma-gtd-config.el"))
+          (condition-case err
+              (progn
+                (require 'codelahoma-gtd-config)
+                (require 'codelahoma-gtd-core)
+                (require 'codelahoma-gtd-capture)
+                (require 'codelahoma-gtd-process)
+                (require 'codelahoma-gtd-review)
+                (require 'codelahoma-gtd-roam)
+                ;; Load UI (required for keybindings)
+                (when (file-exists-p "~/.spacemacs.d/codelahoma-ui.el")
+                  (load-file "~/.spacemacs.d/codelahoma-ui.el"))
+                
+                ;; Initialize system
+                (codelahoma-gtd-initialize)
+                (codelahoma-gtd-setup-keybindings)
+                (codelahoma-gtd-enable-auto-save)
+                
+                ;; Optional: Load bridge if it exists (Phase 5 feature)
+                (when (file-exists-p "~/.spacemacs.d/codelahoma-bridge.el")
+                  (condition-case nil
+                      (load-file "~/.spacemacs.d/codelahoma-bridge.el")
+                    (error (message "Bridge module not ready yet"))))
+                (message "GTD system loaded successfully"))
+            (error (message "Error loading GTD modules: %s" err)))
+        (message "GTD modules not found at %s - check homesick link" gtd-dir)))
+    
+    ;; Configure org-roam for knowledge management
+    (use-package org-roam
+      :ensure t
+      :custom
+      (org-roam-directory "~/personal/org-files/knowledge/")
+      (org-roam-db-location "~/personal/org-files/.org-roam.db")
+      (org-roam-completion-everywhere t)
+      :config
+      (setq org-roam-node-display-template 
+            (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+      (org-roam-db-autosync-mode)
+      
+      ;; Personal capture templates
+      (setq org-roam-capture-templates
+            '(("d" "default" plain "%?"
+               :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                                  "#+title: ${title}\n#+created: %U\n#+filetags: \n\n")
+               :unnarrowed t)
+              ("p" "permanent" plain "%?"
+               :target (file+head "permanent/%<%Y%m%d%H%M%S>-${slug}.org"
+                                  "#+title: ${title}\n#+created: %U\n#+type: permanent\n#+filetags: \n\n")
+               :unnarrowed t)
+              ("l" "literature" plain "%?"
+               :target (file+head "literature/%<%Y%m%d%H%M%S>-${slug}.org"
+                                  "#+title: ${title}\n#+author: %^{Author}\n#+created: %U\n#+type: literature\n#+filetags: \n\n")
+               :unnarrowed t))))
+    
+    (message "Personal GTD-Zettelkasten system loaded"))
 #+end_src
 
 * .spacemacs Preamble
