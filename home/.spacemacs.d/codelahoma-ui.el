@@ -93,7 +93,8 @@
   (spacemacs/set-leader-keys
     "o o d r" 'codelahoma-gtd-reload
     "o o d b" 'codelahoma-gtd-benchmark-capture
-    "o o d i" 'codelahoma-gtd-initialize))
+    "o o d i" 'codelahoma-gtd-initialize
+    "o o d v" 'codelahoma-gtd-validate-structure))
 
 (defun codelahoma-gtd-reload ()
   "Reload all GTD configuration files."

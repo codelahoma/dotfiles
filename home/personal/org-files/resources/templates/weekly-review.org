@@ -1,0 +1,74 @@
+#+TITLE: Weekly Review Template
+#+FILETAGS: :review:weekly:
+#+STARTUP: content
+
+* Weekly Review - [%<%Y-%m-%d %a>]
+
+** Get Clear
+*** [ ] Process Inbox to Zero
+    - Physical inbox
+    - Email inbox
+    - Org inbox.org
+    
+*** [ ] Empty Your Head
+    - Do a mind sweep
+    - Capture any loose thoughts
+    
+*** [ ] Review Action Lists
+    - [ ] Next Actions
+    - [ ] Waiting For
+    - [ ] Projects
+    
+** Get Current
+*** [ ] Review Previous Calendar Data
+    - What did I accomplish?
+    - What didn't happen that should have?
+    
+*** [ ] Review Upcoming Calendar
+    - Next week's appointments
+    - Deadlines approaching
+    - Important dates
+    
+*** [ ] Review Project List
+    For each project:
+    - [ ] Is it still relevant?
+    - [ ] What's the next action?
+    - [ ] Any new actions to add?
+    
+*** [ ] Review Waiting For List
+    - [ ] Follow up on delegated items
+    - [ ] Check status of pending items
+    
+*** [ ] Review Someday/Maybe List
+    - [ ] Any to activate?
+    - [ ] Any to remove?
+    
+** Get Creative
+*** [ ] Review Your Goals
+    - Annual goals progress
+    - Quarterly objectives
+    - Monthly targets
+    
+*** [ ] Brainstorm New Projects/Ideas
+    - What would I like to accomplish?
+    - Any new opportunities?
+    
+*** [ ] Review Areas of Focus
+    - Personal
+    - Work
+    - Health
+    - Relationships
+    - Learning
+    - Finance
+
+** Weekly Reflection
+*** What went well this week?
+
+*** What could be improved?
+
+*** Key learnings:
+
+*** Priorities for next week:
+1. 
+2. 
+3.
