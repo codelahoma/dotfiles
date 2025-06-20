@@ -196,7 +196,6 @@ export PATH="/Users/rodk/.homesick/repos/dotfiles/.flowloom/bin:$PATH"
 
 # Additional aliases and functions
 function gi() { curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@ ;}
-alias claude="/Users/rodk/.claude/local/claude"
 
 # Enhanced orgg alias to sync both org-files and .catalyst
 alias orgg='(cd ~/personal/org-files && git-sync && cd .catalyst && git-sync)'
@@ -210,3 +209,6 @@ export PATH="/Users/rodk/work/atlas-up-ai/.flowloom/bin:$PATH"
 fpath+=~/.zfunc; autoload -Uz compinit; compinit
 
 eval $(thefuck --alias)
+
+# Zekko shell integration
+[ -f "/Users/rodk/my-zekko/bin/zekko-shell-integration.sh" ] && source "/Users/rodk/my-zekko/bin/zekko-shell-integration.sh"

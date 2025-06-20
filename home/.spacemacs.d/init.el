@@ -23,8 +23,8 @@
       `(let ((org-element-use-cache nil))
          ,@body))))
 
-;; Disable org-element caching to prevent issues
-(setq org-element-use-cache nil)
+;; ;; Disable org-element caching to prevent issues
+;; (setq org-element-use-cache nil)
 (defun dotspacemacs/layers ()
   "Layer configuration:
 This function should only modify configuration layer settings."
@@ -69,9 +69,9 @@ This function should only modify configuration layer settings."
                       auto-completion-use-company-box t
                       auto-completion-use-company-posframe t
                       auto-completion-enable-sort-by-usage t
-     
+
                       spacemacs-default-company-backends '(company-files company-capf company-keywords))
-     
+
      (colors :variables
              colors-colorize-identifiers 'variables)
      emoji
@@ -146,19 +146,19 @@ This function should only modify configuration layer settings."
      ;;              tree-sitter-fold-enable t
      ;;              tree-sitter-fold-indicators-enable nil)
      pass
-     
+
      ;; github-copilot
-     
+
      chrome
      docker
      git
      (wakatime :variables
                wakatime-api-key "c3241a98-9066-4792-87de-163047db98b3"
                wakatime-cli-path "/opt/homebrew/bin/wakatime-cli")
-     
+
      (elfeed :variables
              elfeed-db-directory "~/personal/org-files/elfeed-db"
-             rmh-elfeed-org-files (list "~/personal/org-files/elfeed.org")) 
+             rmh-elfeed-org-files (list "~/personal/org-files/elfeed.org"))
      ;; (compleseus :variables
      ;;             compleseus-enable-marginalia t  ;; Enable annotations
      ;;             compleseus-enable-consult t     ;; Enable Consult for advanced commands
@@ -166,7 +166,7 @@ This function should only modify configuration layer settings."
      ;;             compleseus-enable-corfu t       ;; Enable Corfu for completion-at-point
      ;;             compleseus-corfu-auto t         ;; Auto popup completions in Corfu
      ;;             compleseus-enable-embark t)     ;; Enable Embark for candidate actions
-     
+
      bm
      command-log
      copy-as-format
@@ -179,7 +179,7 @@ This function should only modify configuration layer settings."
                      enable-flyspell-auto-completion t)
      (version-control :variables
                       version-control-diff-side 'left)
-     
+
      (tree-sitter :variables
                   spacemacs-tree-sitter-hl-black-list '(js2-mode rjsx-mode)
                   tree-sitter-syntax-highlight-enable t
@@ -225,7 +225,7 @@ This function should only modify configuration layer settings."
                                       ;;                     :repo "joshcho/ChatGPT.el"))
                                       gptel
                                       (gptel-extensions :location "/Users/rodk//.emacs.d/private/gptel-extensions.el/")
-                                      
+
                                       direnv
                                       pinboard
                                       ;; (copilot :location (recipe
@@ -341,7 +341,7 @@ It should only modify the values of Spacemacs settings."
    ;; (default 'vim)
    dotspacemacs-editing-style '(vim :variables
                                     vim-style-visual-line-move-text t
-                                )
+                                    )
 
    ;; If non-nil show the version string in the Spacemacs buffer. It will
    ;; appear as (spacemacs version)@(emacs version)
@@ -485,9 +485,9 @@ It should only modify the values of Spacemacs settings."
                                 :weight normal
                                 :width normal)
                                ("Hack Nerd Font"
-                               :size 18.0
-                               :weight normal
-                               :width normal)
+                                :size 18.0
+                                :weight normal
+                                :width normal)
                                ("Hack"
                                 :size 18.0
                                 :weight normal
@@ -496,7 +496,7 @@ It should only modify the values of Spacemacs settings."
                                 :size 18.0
                                 :weight normal
                                 :width normal)
-                               
+
                                )
 
    ;; The leader key (default "SPC")
@@ -649,15 +649,15 @@ It should only modify the values of Spacemacs settings."
    ;; When used in a plist, `visual' takes precedence over `relative'.
    ;; (default nil)
    dotspacemacs-line-numbers '(:relative nil
-                              :visible t
-                              :disabled-for-modes dired-mode
-                                                  doc-view-mode
-                                                  markdown-mode
-                                                  pdf-view-mode
-                                                  text-mode
-                                                  xml-mode
-                                                  sgml-mode
-                              :size-limit-kb 1000)
+                                         :visible t
+                                         :disabled-for-modes dired-mode
+                                         doc-view-mode
+                                         markdown-mode
+                                         pdf-view-mode
+                                         text-mode
+                                         xml-mode
+                                         sgml-mode
+                                         :size-limit-kb 1000)
    ;; dotspacemacs-line-numbers nil
 
    ;; Code folding method. Possible values are `evil', `origami' and `vimish'.
@@ -779,36 +779,36 @@ default it calls `spacemacs/load-spacemacs-env' which loads the environment
 variables declared in `~/.spacemacs.env' or `~/.spacemacs.d/.spacemacs.env'.
 See the header of this file for more information."
   (spacemacs/load-spacemacs-env))
-  (defun dotspacemacs/user-init ()
-    "Initialization for user code:
+(defun dotspacemacs/user-init ()
+  "Initialization for user code:
   This function is called immediately after `dotspacemacs/init', before layer
   configuration.
   It is mostly for variables that should be set before packages are loaded.
   If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
-    ;; add the private directory
-    (add-to-list 'load-path "/Users/rodk/.emacs.d/private/")
+  ;; add the private directory
+  (add-to-list 'load-path "/Users/rodk/.emacs.d/private/")
 
-    (require 'asdf)
-    (asdf-enable)
+  (require 'asdf)
+  (asdf-enable)
 
-    ;; (require 'chatgpt)
+  ;; (require 'chatgpt)
 
-    (load-file "/Users/rodk/.emacs.d/private/local/narrow-indirect.el")
+  (load-file "/Users/rodk/.emacs.d/private/local/narrow-indirect.el")
 
 
-    (defun file-notify-rm-all-watches ()
-      "Remove all existing file notification watches from Emacs."
-      (interactive)
-      (maphash
-       (lambda (key _value)
-         (file-notify-rm-watch key))
-       file-notify-descriptors)))
+  (defun file-notify-rm-all-watches ()
+    "Remove all existing file notification watches from Emacs."
+    (interactive)
+    (maphash
+     (lambda (key _value)
+       (file-notify-rm-watch key))
+     file-notify-descriptors)))
 ;; Prevent native compilation of problematic org files
 ;; This fixes the issue where built-in org gets compiled and loaded
 (setq native-comp-jit-compilation-deny-list '(".*org-element.*" ".*org-macs.*" ".*org-compat.*"))
 (setq comp-deferred-compilation t)
-  
+
 (defun dotspacemacs/user-load ()
   "Library to load while dumping.
 This function is called only while dumping Spacemacs configuration. You can
@@ -834,7 +834,7 @@ before packages are loaded."
        (t
         (set-face-attribute 'default nil :height 120))   ;; Small screen
        )))
-  
+
   (add-hook 'window-setup-hook 'codelahoma/set-font-size-based-on-screen)
   (custom-set-faces
    '(company-tooltip-common
@@ -850,13 +850,13 @@ before packages are loaded."
   (advice-add 'better-jumper-jump-forward :after #'evil-scroll-line-to-center)
   (add-hook 'bookmark-after-jump-hook 'evil-scroll-line-to-center)
   (font-lock-add-keywords 'python-mode
-                          '(("\\(lambda\\) " 
+                          '(("\\(lambda\\) "
                              (0 (prog1 ()
                                   (compose-region
                                    (match-beginning 1)
                                    (match-end 1)
                                    "λ"))))))
-  
+
   (let* ((variable-tuple
           (cond
            ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
@@ -869,7 +869,7 @@ before packages are loaded."
            (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
          (headline           `(:inherit default :weight normal ))
          )
-  
+
     (custom-theme-set-faces
      'user
      '(fixed-pitch ((t ( :family "FiraMono Nerd Font" :height 1.0))))
@@ -899,7 +899,7 @@ before packages are loaded."
             ("MEETING" . ?⏰)
             ("CANCELLED" . ?❌)
             ("ATTENDED" . ?📝)
-            ("ANSWERED" . ?👍) 
+            ("ANSWERED" . ?👍)
             ("DONE" . ?✅)))
     (org-superstar-restart))
   ;; Set default bullet scheme - now handled by codelahoma-org extensions
@@ -917,28 +917,28 @@ before packages are loaded."
            (command (format "xmllint --noout --schema %s %s 2>&1"
                             (shell-quote-argument xsd-file)
                             (shell-quote-argument xml-file))))
-  
+
       ;; Kill existing validation buffer if it exists
       (when (get-buffer buffer-name)
         (kill-buffer buffer-name))
-  
+
       ;; Run command and capture output
       (with-current-buffer (get-buffer-create buffer-name)
         (erase-buffer)
         (insert (shell-command-to-string command))
-  
+
         ;; Set compilation mode to enable error jumping
         (compilation-mode)
-  
+
         ;; Add error regexp for XML validation errors
         (set (make-local-variable 'compilation-error-regexp-alist-alist)
              (list (cons 'xml-error error-regexp)))
         (set (make-local-variable 'compilation-error-regexp-alist)
              '(xml-error))
-  
+
         ;; Show the buffer
         (display-buffer (current-buffer))
-  
+
         ;; If no errors, close the buffer after a short delay
         (if (= (buffer-size) 0)
             (progn
@@ -954,30 +954,30 @@ before packages are loaded."
   (require 'gptel)
   (require 'gptel-extensions)
   (setq gptel-default-mode 'org-mode)
-  
+
   (defun rk/gptel-before-advice (&rest args)
     "Before advice for =gptel' function. Sets =api-key= parameter
   from =auth-source-search' results."
     (let ((auth-info (nth 0 (auth-source-search :host "openai.com"))))
       (setq-local gptel-api-key (plist-get auth-info :secret))))
-  
+
   (advice-add 'gptel :before #'rk/gptel-before-advice)
   (add-hook 'find-file-hook 'direnv-update-directory-environment)
-  
+
   (with-eval-after-load 'company
     ;; disable inline previews
     (delq 'company-preview-if-just-one-frontend company-frontends))
-  
+
   ;; (with-eval-after-load 'copilot
   ;;   (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
   ;;   (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
   ;;   (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
   ;;   (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word))
-  
+
   ;; (add-hook 'prog-mode-hook 'copilot-mode)
   (with-eval-after-load 'elfeed
     (require 'elfeed)
-    
+
     (defun elfeed-save-to-org-roam-dailies ()
       "Save the current elfeed entry to org-roam dailies."
       (interactive)
@@ -996,80 +996,80 @@ before packages are loaded."
           (insert (concat "[[" link "][" link "]]\n\n"))
           (insert (concat content "\n"))
           (save-buffer))))
-  
+
     ;; Bind the function to a key for easy access
     (define-key elfeed-search-mode-map (kbd "o") 'elfeed-save-to-org-roam-dailies))
-  
+
   ;; ;; Enable Vertico globally
   ;; ;; (vertico-mode 1)
-  
+
   ;; ;; Enable Marginalia annotations
   ;; (marginalia-mode 2)
-  
+
   ;; ;; Configure Orderless matching
   ;; (with-eval-after-load 'orderless
   ;;   (setq completion-styles '(orderless)
   ;;         completion-category-overrides '((file (styles . (partial-completion))))))
-  
+
   ;; ;; Embark key bindings
   ;; (global-set-key (kbd "C-.") #'embark-act)        ;; Act on candidate
   ;; (global-set-key (kbd "C-,") #'embark-dwim)      ;; Default action
   ;; (setq embark-action-indicator
   ;;       (lambda (map) (which-key--show-keymap "Embark Actions" map nil nil 'no-paging))
   ;;       embark-become-indicator embark-action-indicator)
-  
+
   ;; ;; Corfu configuration
   ;; (setq corfu-auto t                  ;; Enable auto-popup
   ;;       corfu-cycle t)                ;; Allow cycling through candidates
   ;; (global-corfu-mode 1)
-  
+
   ;; ;; Additional Consult settings
   ;; (setq consult-narrow-key "<")       ;; Narrowing prefix key
   ;; (setq consult-project-root-function #'projectile-project-root) ;; Use Projectile for root detection
-   (defun my-info-mode-hook ()
-     (local-set-key (kbd "n") 'Info-next)
-     (local-set-key (kbd "p") 'Info-prev)
-     (local-set-key (kbd "u") 'Info-up)
-     (local-set-key (kbd "m") 'Info-menu)
-     (local-set-key (kbd "s") 'Info-search)
-     (local-set-key (kbd "f") 'Info-follow-nearest-node))
-  
-   (add-hook 'Info-mode-hook 'my-info-mode-hook)
-  
-  
-  
-   ;; ;; Bind the function to a key for easy access
-   (defun renumber-region (start end)
-     "Renumber the lines in the region from START to END."
-     (interactive "r")
-     (let ((line-number 1))
-       (goto-char start)
-       (while (and (< (point) end) (not (eobp)))
-         (if (re-search-forward "^\\([0-9]+\\)\\(\\..*\\)$" (line-end-position) t)
-             (replace-match (format "%d\\2" line-number))
-           (forward-line 1))
-         (setq line-number (1+ line-number))
-         (forward-line 1))))
-  
-   (global-set-key (kbd "C-c r") 'renumber-region)
-   (setq helm-ag-use-grep-ignore-list nil)
-   (defun insert-current-date-time ()
-     "Insert the current date and time."
-     (interactive)
-     (insert (format-time-string "%Y-%m-%d %H:%M:%S")))
-  
-   (spacemacs/set-leader-keys "otd" 'insert-current-date-time)
+  (defun my-info-mode-hook ()
+    (local-set-key (kbd "n") 'Info-next)
+    (local-set-key (kbd "p") 'Info-prev)
+    (local-set-key (kbd "u") 'Info-up)
+    (local-set-key (kbd "m") 'Info-menu)
+    (local-set-key (kbd "s") 'Info-search)
+    (local-set-key (kbd "f") 'Info-follow-nearest-node))
+
+  (add-hook 'Info-mode-hook 'my-info-mode-hook)
+
+
+
+  ;; ;; Bind the function to a key for easy access
+  (defun renumber-region (start end)
+    "Renumber the lines in the region from START to END."
+    (interactive "r")
+    (let ((line-number 1))
+      (goto-char start)
+      (while (and (< (point) end) (not (eobp)))
+        (if (re-search-forward "^\\([0-9]+\\)\\(\\..*\\)$" (line-end-position) t)
+            (replace-match (format "%d\\2" line-number))
+          (forward-line 1))
+        (setq line-number (1+ line-number))
+        (forward-line 1))))
+
+  (global-set-key (kbd "C-c r") 'renumber-region)
+  (setq helm-ag-use-grep-ignore-list nil)
+  (defun insert-current-date-time ()
+    "Insert the current date and time."
+    (interactive)
+    (insert (format-time-string "%Y-%m-%d %H:%M:%S")))
+
+  (spacemacs/set-leader-keys "otd" 'insert-current-date-time)
   (global-set-key (kbd "C-c C-x C-c") 'org-copy-current-source-block)
   (defun rk/insert-spacemacs-config-block ()
-  "Insert org-babel source block for Spacemacs config."
-  (interactive)
-  (let* ((targets (rk/get-spacemacs-config-targets))
-         (target (completing-read "Choose target or specify new: " targets nil t)))
-    (setq rk/last-inserted-config-target target)
-    (insert (format "#+begin_src emacs-lisp :noweb-ref %s\n\n" target)
-            (format "  ;; insert your code here\n\n")
-            "#+end_src\n")))
-  
+    "Insert org-babel source block for Spacemacs config."
+    (interactive)
+    (let* ((targets (rk/get-spacemacs-config-targets))
+           (target (completing-read "Choose target or specify new: " targets nil t)))
+      (setq rk/last-inserted-config-target target)
+      (insert (format "#+begin_src emacs-lisp :noweb-ref %s\n\n" target)
+              (format "  ;; insert your code here\n\n")
+              "#+end_src\n")))
+
   (defun rk/get-spacemacs-config-targets ()
     "Get list of unique Spacemacs config targets from noweb references in source blocks with matching header."
     (interactive)
@@ -1081,7 +1081,7 @@ before packages are loaded."
             (unless (member target targets)
               (push target targets)))))
       targets))
-  
+
   (global-set-key (kbd "C-c i") #'rk/insert-spacemacs-config-block)
   (defun codelahoma/insert-random-uid ()
     (interactive)
@@ -1095,27 +1095,27 @@ before packages are loaded."
   ;;       (message "Loaded CodeLahoma org extensions from %s" codelahoma-org-file))))          ; Collects all general :noweb-ref user-config blocks
   (spacemacs/declare-prefix "ob" "buffer")
   (spacemacs/set-leader-keys "obn" 'spacemacs/new-empty-buffer)
-  
+
   (spacemacs/declare-prefix "oc" "copy")
   (spacemacs/set-leader-keys "ocl" 'avy-copy-line)
   (spacemacs/set-leader-keys "ocp" 'forge-copy-url-at-point-as-kill)
-  
+
   (spacemacs/declare-prefix "ox" "text")
   (spacemacs/set-leader-keys "oxw" 'white-space-cleanup)
-  
+
   (spacemacs/declare-prefix "oh" "Hammerspoon")
   (spacemacs/set-leader-keys "ohr" 'rk/reset-hammerspoon) ; Ensure rk/reset-hammerspoon is defined elsewhere (e.g. user-config)
-  
+
   (spacemacs/declare-prefix "oC" "Claude")
   (spacemacs/set-leader-keys "oCC" 'rk/clip-for-claude) ; Ensure rk/clip-for-claude is defined elsewhere (e.g. user-config)
-  
+
   ;; System clipboard integration for visual state
   (define-key evil-visual-state-map (kbd "s-c") (kbd "\"+y"))
   (define-key evil-visual-state-map (kbd "s-v") (kbd "\"+p"))
-  
+
   ;; Override default Spacemacs frame killer or add alias
   (evil-leader/set-key "q q" 'spacemacs/frame-killer)
-  
+
   ;; If you intend to use this, uncomment and ensure rk/helm-files-do-rg is defined elsewhere
   ;; (evil-leader/set-key "/" 'rk/helm-files-do-rg)
   (spacemacs/declare-prefix "of" "folding")
@@ -1126,7 +1126,7 @@ before packages are loaded."
   (spacemacs/declare-prefix "oa" "applications")
   (spacemacs/set-leader-keys
     "oap" 'pinboard); <<<--- ADD THIS LINE HERE
-            ; Collects the remaining to-organize block
+                                        ; Collects the remaining to-organize block
 
   (when (file-exists-p custom-file)
     (load-file custom-file)))

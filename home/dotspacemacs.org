@@ -1680,19 +1680,19 @@ A brief heading to the file, defining lexical binding and warning that the confi
 
   ;; Fix for org-element-lineage-map compatibility
   ;; This function is needed for org-gtd and other packages that expect it
-  (unless (fboundp 'org-element-lineage-map)
-    (defalias 'org-element-lineage-map 'org-element-lineage))
+  ;; (unless (fboundp 'org-element-lineage-map)
+  ;;   (defalias 'org-element-lineage-map 'org-element-lineage))
   
-  ;; Fix for org-element-with-disabled-cache error
-  (eval-and-compile
-    (unless (fboundp 'org-element-with-disabled-cache)
-      (defmacro org-element-with-disabled-cache (&rest body)
-        "Execute BODY with org-element cache disabled (compatibility shim)."
-        `(let ((org-element-use-cache nil))
-           ,@body))))
+  ;; ;; Fix for org-element-with-disabled-cache error
+  ;; (eval-and-compile
+  ;;   (unless (fboundp 'org-element-with-disabled-cache)
+  ;;     (defmacro org-element-with-disabled-cache (&rest body)
+  ;;       "Execute BODY with org-element cache disabled (compatibility shim)."
+  ;;       `(let ((org-element-use-cache nil))
+  ;;          ,@body))))
   
-  ;; Disable org-element caching to prevent issues
-  (setq org-element-use-cache nil)
+  ;; ;; Disable org-element caching to prevent issues
+  ;; (setq org-element-use-cache nil)
 #+end_src
 
 
