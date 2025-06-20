@@ -140,5 +140,66 @@
     (setq codelahoma-gtd-auto-save-timer nil)
     (message "GTD auto-save disabled")))
 
+;; Directory validation
+(defun codelahoma-gtd-validate-structure ()
+  "Validate GTD directory structure and report status."
+  (interactive)
+  (let ((base-dir (expand-file-name "~/personal/org-files/"))
+        (all-good t)
+        (messages '()))
+    
+    ;; Check base directory
+    (unless (file-exists-p base-dir)
+      (setq all-good nil)
+      (push (format "✗ Base directory missing: %s" base-dir) messages))
+    
+    ;; Check required directories
+    (let ((required-dirs '("gtd" "gtd/archive" "gtd/reviews"
+                          "knowledge" "knowledge/permanent" 
+                          "knowledge/literature" "knowledge/references"
+                          "knowledge/projects" "knowledge/daily"
+                          "areas" "resources" "resources/templates"
+                          "resources/checklists")))
+      (dolist (dir required-dirs)
+        (let ((full-path (expand-file-name dir base-dir)))
+          (unless (file-exists-p full-path)
+            (setq all-good nil)
+            (push (format "✗ Directory missing: %s" dir) messages)))))
+    
+    ;; Check required GTD files
+    (let ((required-files '("inbox.org" "projects.org" "next-actions.org"
+                           "waiting-for.org" "someday.org" "calendar.org" 
+                           "media.org")))
+      (dolist (file required-files)
+        (let ((full-path (expand-file-name (concat "gtd/" file) base-dir)))
+          (unless (file-exists-p full-path)
+            (setq all-good nil)
+            (push (format "✗ File missing: gtd/%s" file) messages)))))
+    
+    ;; Report status
+    (if all-good
+        (message "✓ GTD directory structure validated successfully")
+      (message "GTD structure validation failed:\n%s" 
+               (mapconcat 'identity (reverse messages) "\n")))
+    
+    all-good))
+
+;; Run validation on load
+(defvar codelahoma-gtd-structure-valid nil
+  "Whether the GTD directory structure has been validated.")
+
+(defun codelahoma-gtd-check-structure-on-startup ()
+  "Check GTD structure on startup and create if needed."
+  (unless codelahoma-gtd-structure-valid
+    (if (codelahoma-gtd-validate-structure)
+        (setq codelahoma-gtd-structure-valid t)
+      (when (y-or-n-p "GTD structure incomplete. Create missing directories/files? ")
+        (codelahoma-gtd-ensure-directories)
+        (codelahoma-gtd-verify-files)
+        (setq codelahoma-gtd-structure-valid (codelahoma-gtd-validate-structure))))))
+
+;; Add to initialization
+(add-hook 'after-init-hook 'codelahoma-gtd-check-structure-on-startup)
+
 (provide 'codelahoma-gtd-core)
 ;;; codelahoma-gtd-core.el ends here
