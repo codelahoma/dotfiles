@@ -33,7 +33,10 @@
   ;; Process submenu
   (spacemacs/declare-prefix "o o p" "process")
   (spacemacs/set-leader-keys
-    "o o p i" 'codelahoma-gtd-process-inbox)
+    "o o p i" 'codelahoma-gtd-process-inbox
+    "o o p r" (lambda () (interactive) (message "Refile item - coming in Phase 2"))
+    "o o p d" (lambda () (interactive) (message "Delegate item - coming in Phase 2"))
+    "o o p c" (lambda () (interactive) (message "Convert to project - coming in Phase 2")))
   
   ;; Navigate submenu
   (spacemacs/declare-prefix "o o n" "navigate")
@@ -50,7 +53,9 @@
   (spacemacs/declare-prefix "o o r" "review")
   (spacemacs/set-leader-keys
     "o o r d" 'codelahoma-gtd-daily-review
-    "o o r w" 'codelahoma-gtd-weekly-review)
+    "o o r w" 'codelahoma-gtd-weekly-review
+    "o o r m" (lambda () (interactive) (message "Monthly review - coming in Phase 3"))
+    "o o r p" (lambda () (interactive) (message "Project review - coming in Phase 3")))
   
   ;; Agenda submenu
   (spacemacs/declare-prefix "o o a" "agenda")
@@ -87,6 +92,11 @@
   ;; Save command
   (spacemacs/set-leader-keys
     "o o s" 'org-save-all-org-buffers)
+  
+  ;; Help/Documentation
+  (spacemacs/set-leader-keys
+    "o o h" 'codelahoma-gtd-help
+    "o o ?" 'codelahoma-gtd-help)
   
   ;; Development submenu (temporary for Phase 1)
   (spacemacs/declare-prefix "o o d" "development")
@@ -128,6 +138,32 @@
     (save-buffer)
     (message "Capture completed in %.3f seconds"
              (float-time (time-subtract (current-time) start-time)))))
+
+(defun codelahoma-gtd-help ()
+  "Display GTD-Zettelkasten keybinding help."
+  (interactive)
+  (with-output-to-temp-buffer "*GTD Help*"
+    (princ "GTD-Zettelkasten System Help\n")
+    (princ "============================\n\n")
+    (princ "All commands start with: SPC o o\n\n")
+    
+    (princ "Quick Reference:\n")
+    (princ "---------------\n")
+    (princ "  SPC o o c i   - Capture to inbox\n")
+    (princ "  SPC o o n i   - Navigate to inbox\n")
+    (princ "  SPC o o p i   - Process inbox items\n")
+    (princ "  SPC o o r w   - Weekly review\n")
+    (princ "  SPC o o z n   - Find/create Zettelkasten note\n")
+    (princ "  SPC o o s     - Save all org buffers\n")
+    (princ "  SPC o o ?     - This help\n\n")
+    
+    (princ "For full keybinding list, see which-key (SPC o o)\n")
+    (princ "Or check the implementation plan in .flowloom/plans/\n\n")
+    
+    (princ "Current Phase: Phase 1 - Foundation\n")
+    (princ "Some commands show 'coming soon' - these will be\n")
+    (princ "implemented in future phases.\n"))
+  (switch-to-buffer-other-window "*GTD Help*"))
 
 (provide 'codelahoma-ui)
 ;;; codelahoma-ui.el ends here

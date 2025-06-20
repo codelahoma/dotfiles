@@ -11,3 +11,5 @@ Press ~SPC o o c i~ from anywhere to quickly capture items here.
 
 * Inbox
 # New items will appear here
+
+* TODO Test capture item :benchmark:
