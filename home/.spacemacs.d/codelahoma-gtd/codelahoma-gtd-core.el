@@ -431,6 +431,10 @@
   ;; Phase 3: Configure agenda if available
   (when (featurep 'codelahoma-gtd-agenda)
     (codelahoma-gtd-configure-agenda))
+  ;; Phase 3: Enable auto-save if available
+  (when (featurep 'codelahoma-gtd-autosave)
+    (codelahoma-gtd-enable-auto-save)
+    (codelahoma-gtd-enable-sync-indicator))
   (message "GTD Phase 2 initialized"))
 
 (defun codelahoma-gtd-workflow-status ()

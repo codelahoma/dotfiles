@@ -24,6 +24,8 @@
   (require 'codelahoma-gtd-agenda))
 (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-quick.el")
   (require 'codelahoma-gtd-quick))
+(when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-autosave.el")
+  (require 'codelahoma-gtd-autosave))
 ;; Bridge module is optional (Phase 5)
 ;; (require 'codelahoma-bridge)
 
@@ -165,6 +167,18 @@
       "o o q RET" 'codelahoma-gtd-quick-process-inbox
       "o o q SPC" 'codelahoma-gtd-quick-complete-and-next))
   
+  ;; Save and backup submenu (Phase 3)
+  (when (featurep 'codelahoma-gtd-autosave)
+    (spacemacs/declare-prefix "o o b" "backup")
+    (spacemacs/set-leader-keys
+      "o o b e" 'codelahoma-gtd-enable-auto-save
+      "o o b d" 'codelahoma-gtd-disable-auto-save
+      "o o b s" 'codelahoma-gtd-auto-save-status
+      "o o b l" 'codelahoma-gtd-list-backups
+      "o o b r" 'codelahoma-gtd-restore-backup
+      "o o b c" 'codelahoma-gtd-check-all-files
+      "o o b !" 'codelahoma-gtd-emergency-backup))
+  
   ;; Save command
   (spacemacs/set-leader-keys
     "o o s" 'org-save-all-org-buffers)
@@ -195,6 +209,7 @@
                      codelahoma-gtd-contexts
                      codelahoma-gtd-agenda
                      codelahoma-gtd-quick
+                     codelahoma-gtd-autosave
                      codelahoma-ui))
     (when (featurep feature)
       (unload-feature feature t)))
@@ -211,6 +226,8 @@
     (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-agenda.el"))
   (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-quick.el")
     (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-quick.el"))
+  (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-autosave.el")
+    (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-autosave.el"))
   (load-file "~/.spacemacs.d/codelahoma-ui.el")
   (codelahoma-gtd-setup-keybindings)
   (message "GTD system reloaded"))
