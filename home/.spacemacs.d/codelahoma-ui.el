@@ -28,7 +28,12 @@
   (spacemacs/declare-prefix "o o c" "capture")
   (spacemacs/set-leader-keys
     "o o c i" 'codelahoma-gtd-capture-inbox
-    "o o c c" 'codelahoma-gtd-capture-generic)
+    "o o c c" 'codelahoma-gtd-capture-generic
+    "o o c t" 'codelahoma-gtd-capture-task
+    "o o c p" 'codelahoma-gtd-capture-phone
+    "o o c m" 'codelahoma-gtd-capture-meeting
+    "o o c e" 'codelahoma-gtd-capture-email
+    "o o c x" 'codelahoma-gtd-capture-with-context)
   
   ;; Process submenu
   (spacemacs/declare-prefix "o o p" "process")
