@@ -22,20 +22,22 @@
 (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-weekly-review.el")
   (require 'codelahoma-gtd-weekly-review))
 
-;; Forward declarations for extended reviews
-(defun codelahoma-gtd-monthly-review ()
-  "Execute monthly review process."
-  (interactive)
-  (if (featurep 'codelahoma-gtd-monthly-review)
-      (codelahoma-gtd-execute-monthly-review)
-    (message "Monthly review - coming in Phase 4")))
+;; Load monthly/quarterly review functionality
+(when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-monthly-review.el")
+  (require 'codelahoma-gtd-monthly-review))
 
-(defun codelahoma-gtd-quarterly-review ()
-  "Execute quarterly review process."
-  (interactive) 
-  (if (featurep 'codelahoma-gtd-monthly-review)
-      (codelahoma-gtd-execute-quarterly-review)
-    (message "Quarterly review - coming in Phase 4")))
+;; These are now defined in the monthly-review module, so only define if not loaded
+(unless (fboundp 'codelahoma-gtd-monthly-review)
+  (defun codelahoma-gtd-monthly-review ()
+    "Execute monthly review process."
+    (interactive)
+    (message "Loading monthly review module...")))
+
+(unless (fboundp 'codelahoma-gtd-quarterly-review)
+  (defun codelahoma-gtd-quarterly-review ()
+    "Execute quarterly review process."
+    (interactive) 
+    (message "Loading quarterly review module...")))
 
 ;; Temporary compatibility functions
 (unless (fboundp 'codelahoma-gtd-daily-review)
