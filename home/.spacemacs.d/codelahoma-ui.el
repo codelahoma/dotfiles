@@ -103,6 +103,16 @@
   ;;   "o o i l" 'codelahoma-bridge-link-to-knowledge
   ;;   "o o i e" 'codelahoma-bridge-extract-actions)
   
+  ;; Project submenu
+  (spacemacs/declare-prefix "o o j" "projects")
+  (spacemacs/set-leader-keys
+    "o o j n" 'codelahoma-gtd-new-project
+    "o o j t" 'codelahoma-gtd-new-project-from-template
+    "o o j l" 'codelahoma-gtd-list-projects
+    "o o j s" 'codelahoma-gtd-project-status
+    "o o j f" 'codelahoma-gtd-find-stalled-projects
+    "o o j a" 'codelahoma-gtd-archive-completed-projects)
+  
   ;; Save command
   (spacemacs/set-leader-keys
     "o o s" 'org-save-all-org-buffers)
