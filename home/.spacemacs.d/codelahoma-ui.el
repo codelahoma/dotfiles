@@ -39,9 +39,9 @@
   (spacemacs/declare-prefix "o o p" "process")
   (spacemacs/set-leader-keys
     "o o p i" 'codelahoma-gtd-process-inbox
-    "o o p r" (lambda () (interactive) (message "Refile item - coming in Phase 2"))
-    "o o p d" 'codelahoma-gtd-delegate-task
-    "o o p c" 'codelahoma-gtd-convert-to-project)
+    "o o p b" 'codelahoma-gtd-bulk-process
+    "o o p c" 'codelahoma-gtd-clarify-item
+    "o o p s" 'codelahoma-gtd-process-statistics)
   
   ;; Task state submenu
   (spacemacs/declare-prefix "o o t" "task states")

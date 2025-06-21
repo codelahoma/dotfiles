@@ -151,10 +151,13 @@
   ;; Initialize org-roam
   (codelahoma-gtd-roam-setup)
   (codelahoma-gtd-roam-initialize)
-  ;; Phase 2: Setup todo keywords and capture
+  ;; Phase 2: Setup todo keywords, capture, and processing
   (codelahoma-gtd-setup-todo-keywords)
   (require 'codelahoma-gtd-capture)
   (codelahoma-gtd-setup-capture)
+  (require 'codelahoma-gtd-process)
+  (codelahoma-gtd-setup-refile-targets)
+  (codelahoma-gtd-setup-processing-hooks)
   (message "GTD system initialized successfully"))
 
 (defun codelahoma-gtd-open-file (file)
