@@ -26,6 +26,10 @@
 (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-monthly-review.el")
   (require 'codelahoma-gtd-monthly-review))
 
+;; Load analytics functionality
+(when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-analytics.el")
+  (require 'codelahoma-gtd-analytics))
+
 ;; These are now defined in the monthly-review module, so only define if not loaded
 (unless (fboundp 'codelahoma-gtd-monthly-review)
   (defun codelahoma-gtd-monthly-review ()

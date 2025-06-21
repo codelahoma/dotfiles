@@ -76,8 +76,12 @@
       (insert "1. [ ] \n2. [ ] \n3. [ ] \n")
       
       ;; Time estimate
-      (insert (format "\n* Review completed in %.1f minutes\n"
-                     (/ (float-time (time-subtract (current-time) start-time)) 60))))
+      (let ((duration (/ (float-time (time-subtract (current-time) start-time)) 60)))
+        (insert (format "\n* Review completed in %.1f minutes\n" duration))
+        ;; Record analytics
+        (when (featurep 'codelahoma-gtd-analytics)
+          (codelahoma-gtd-record-review 'daily)
+          (codelahoma-gtd-record-review-duration 'daily duration))))
     
     (switch-to-buffer review-buffer)
     (goto-char (point-min))
