@@ -48,6 +48,11 @@
     "o o p c" 'codelahoma-gtd-clarify-item
     "o o p s" 'codelahoma-gtd-process-statistics)
   
+  ;; Decision support (Phase 3)
+  (spacemacs/set-leader-keys
+    "o o p d" 'codelahoma-gtd-decision-tree
+    "o o p n" 'codelahoma-gtd-smart-next-action)
+  
   ;; Task state submenu
   (spacemacs/declare-prefix "o o t" "task states")
   (spacemacs/set-leader-keys
