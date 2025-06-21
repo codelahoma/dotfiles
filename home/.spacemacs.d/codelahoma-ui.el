@@ -26,8 +26,9 @@
   (require 'codelahoma-gtd-quick))
 (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-autosave.el")
   (require 'codelahoma-gtd-autosave))
-;; Bridge module is optional (Phase 5)
-;; (require 'codelahoma-bridge)
+;; Bridge module (Phase 5)
+(when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge.el")
+  (require 'codelahoma-bridge))
 
 (defun codelahoma-gtd-setup-keybindings ()
   "Set up GTD keybindings under SPC o o."
@@ -165,11 +166,19 @@
       "o o z f l" 'codelahoma-gtd-roam-find-literature
       "o o z f j" 'codelahoma-gtd-roam-find-by-project))
   
-  ;; Integration submenu (Phase 5 - commented out for now)
-  ;; (spacemacs/declare-prefix "o o i" "integrate")
-  ;; (spacemacs/set-leader-keys
-  ;;   "o o i l" 'codelahoma-bridge-link-to-knowledge
-  ;;   "o o i e" 'codelahoma-bridge-extract-actions)
+  ;; Integration submenu (Phase 5)
+  (when (featurep 'codelahoma-bridge)
+    (spacemacs/declare-prefix "o o i" "integrate")
+    (spacemacs/set-leader-keys
+      "o o i l" 'codelahoma-bridge-link-task-to-note
+      "o o i e" 'codelahoma-bridge-extract-tasks-from-note
+      "o o i n" 'codelahoma-bridge-navigate-link
+      "o o i c" 'codelahoma-bridge-create-linked-note
+      "o o i u" 'codelahoma-bridge-unlink-task
+      "o o i s" 'codelahoma-bridge-show-linked-tasks
+      "o o i U" 'codelahoma-bridge-update-links
+      "o o i k" 'codelahoma-bridge-count-links
+      "o o i j" 'codelahoma-bridge-jump-to-linked))
   
   ;; Project submenu
   (spacemacs/declare-prefix "o o j" "projects")
