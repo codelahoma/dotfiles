@@ -115,6 +115,19 @@
       "o o r i" 'codelahoma-gtd-insights-dashboard
       "o o r e" 'codelahoma-gtd-export-analytics))
   
+  ;; Reminders and automation (Phase 4)
+  (when (featurep 'codelahoma-gtd-reminders)
+    (spacemacs/declare-prefix "o o R" "reminders")
+    (spacemacs/set-leader-keys
+      "o o R e" 'codelahoma-gtd-enable-auto-reminders
+      "o o R d" 'codelahoma-gtd-disable-auto-reminders
+      "o o R s" 'codelahoma-gtd-reminder-status
+      "o o R r" 'codelahoma-gtd-start-reminders
+      "o o R x" 'codelahoma-gtd-stop-reminders
+      "o o R i" 'codelahoma-gtd-inbox-overflow-check
+      "o o R p" 'codelahoma-gtd-stalled-projects-check
+      "o o R c" 'codelahoma-gtd-check-streak-status))
+  
   ;; Agenda submenu
   (spacemacs/declare-prefix "o o a" "agenda")
   (spacemacs/set-leader-keys
