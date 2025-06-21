@@ -22,6 +22,8 @@
   (require 'codelahoma-gtd-contexts))
 (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-agenda.el")
   (require 'codelahoma-gtd-agenda))
+(when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-quick.el")
+  (require 'codelahoma-gtd-quick))
 ;; Bridge module is optional (Phase 5)
 ;; (require 'codelahoma-bridge)
 
@@ -143,6 +145,26 @@
       "o o x s" 'codelahoma-gtd-suggest-next-task
       "o o x e" 'codelahoma-gtd-set-energy-level))
   
+  ;; Quick access submenu (Phase 3)
+  (when (featurep 'codelahoma-gtd-quick)
+    (spacemacs/declare-prefix "o o q" "quick")
+    (spacemacs/set-leader-keys
+      "o o q q" 'codelahoma-gtd-quick-nav/body
+      "o o q s" 'codelahoma-gtd-quick-status
+      "o o q t" 'codelahoma-gtd-quick-today
+      "o o q w" 'codelahoma-gtd-quick-week-ahead
+      "o o q c" 'codelahoma-gtd-quick-capture-task
+      "o o q n" 'codelahoma-gtd-quick-note
+      "o o q d" 'codelahoma-gtd-quick-dashboard
+      "o o q i" 'codelahoma-gtd-quick-inbox-count
+      "o o q p" 'codelahoma-gtd-quick-stalled-projects
+      "o o q x" 'codelahoma-gtd-quick-switch-context
+      "o o q e" 'codelahoma-gtd-quick-energy-level
+      "o o q j" 'codelahoma-gtd-jump-to-project
+      ;; Quick workflow commands
+      "o o q RET" 'codelahoma-gtd-quick-process-inbox
+      "o o q SPC" 'codelahoma-gtd-quick-complete-and-next))
+  
   ;; Save command
   (spacemacs/set-leader-keys
     "o o s" 'org-save-all-org-buffers)
@@ -170,6 +192,9 @@
                      codelahoma-gtd-process
                      codelahoma-gtd-review
                      codelahoma-gtd-roam
+                     codelahoma-gtd-contexts
+                     codelahoma-gtd-agenda
+                     codelahoma-gtd-quick
                      codelahoma-ui))
     (when (featurep feature)
       (unload-feature feature t)))
@@ -179,6 +204,13 @@
   (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-process.el")
   (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-review.el")
   (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-roam.el")
+  ;; Phase 3 modules
+  (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-contexts.el")
+    (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-contexts.el"))
+  (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-agenda.el")
+    (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-agenda.el"))
+  (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-quick.el")
+    (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-quick.el"))
   (load-file "~/.spacemacs.d/codelahoma-ui.el")
   (codelahoma-gtd-setup-keybindings)
   (message "GTD system reloaded"))
