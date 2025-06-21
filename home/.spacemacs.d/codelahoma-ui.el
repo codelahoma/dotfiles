@@ -31,6 +31,8 @@
   (require 'codelahoma-bridge))
 (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-workflows.el")
   (require 'codelahoma-bridge-workflows))
+(when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-projects.el")
+  (require 'codelahoma-bridge-projects))
 
 (defun codelahoma-gtd-setup-keybindings ()
   "Set up GTD keybindings under SPC o o."
@@ -201,6 +203,17 @@
     "o o j s" 'codelahoma-gtd-project-status
     "o o j f" 'codelahoma-gtd-find-stalled-projects
     "o o j a" 'codelahoma-gtd-archive-completed-projects)
+  
+  ;; Project knowledge integration (Phase 5)
+  (when (featurep 'codelahoma-bridge-projects)
+    (spacemacs/set-leader-keys
+      "o o j w" 'codelahoma-bridge-create-project-wiki
+      "o o j W" 'codelahoma-bridge-open-project-wiki
+      "o o j r" 'codelahoma-bridge-add-project-reference
+      "o o j d" 'codelahoma-bridge-decision-log
+      "o o j L" 'codelahoma-bridge-project-lessons-learned
+      "o o j S" 'codelahoma-bridge-save-lessons-learned
+      "o o j k" 'codelahoma-bridge-project-knowledge-summary))
   
   ;; Context submenu (Phase 3)
   (when (featurep 'codelahoma-gtd-contexts)
