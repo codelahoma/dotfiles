@@ -18,6 +18,10 @@
 (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-daily-review.el")
   (require 'codelahoma-gtd-daily-review))
 
+;; Load weekly review functionality
+(when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-weekly-review.el")
+  (require 'codelahoma-gtd-weekly-review))
+
 ;; Forward declarations for extended reviews
 (defun codelahoma-gtd-monthly-review ()
   "Execute monthly review process."
@@ -42,39 +46,12 @@
         (codelahoma-gtd-morning-review)
       (message "Daily review - loading..."))))
 
+;; This compatibility function is now only used if weekly review module fails to load
 (unless (fboundp 'codelahoma-gtd-weekly-review)
   (defun codelahoma-gtd-weekly-review ()
     "Execute weekly review process."
     (interactive)
-    (let ((review-buffer (get-buffer-create "*GTD Weekly Review*")))
-      (with-current-buffer review-buffer
-        (erase-buffer)
-        (org-mode)
-        (insert "#+TITLE: Weekly Review\n")
-        (insert "#+DATE: " (format-time-string "%Y-%m-%d") "\n\n")
-        
-        (insert "* Get Clear\n")
-        (insert "** [ ] Collect Loose Papers and Materials\n")
-        (insert "** [ ] Get Inbox to Zero\n")
-        (insert "** [ ] Empty Your Head\n\n")
-        
-        (insert "* Get Current\n")
-        (insert "** [ ] Review Action Lists\n")
-        (insert "** [ ] Review Previous Calendar\n")
-        (insert "** [ ] Review Upcoming Calendar\n")
-        (insert "** [ ] Review Waiting For List\n")
-        (insert "** [ ] Review Project List\n")
-        (insert "** [ ] Review Someday/Maybe List\n\n")
-        
-        (insert "* Get Creative\n")
-        (insert "** [ ] Review Your Purpose and Principles\n")
-        (insert "** [ ] Review Your Vision\n")
-        (insert "** [ ] Review Your Goals and Objectives\n")
-        (insert "** [ ] Review Your Areas of Focus\n")
-        (insert "** [ ] Be Creative and Courageous\n"))
-      
-      (switch-to-buffer review-buffer)
-      (goto-char (point-min)))))
+    (message "Loading weekly review module...")))
 
 (provide 'codelahoma-gtd-review)
 ;;; codelahoma-gtd-review.el ends here
