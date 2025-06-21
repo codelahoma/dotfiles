@@ -30,6 +30,10 @@
 (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-analytics.el")
   (require 'codelahoma-gtd-analytics))
 
+;; Load reminders and automation
+(when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-reminders.el")
+  (require 'codelahoma-gtd-reminders))
+
 ;; These are now defined in the monthly-review module, so only define if not loaded
 (unless (fboundp 'codelahoma-gtd-monthly-review)
   (defun codelahoma-gtd-monthly-review ()
