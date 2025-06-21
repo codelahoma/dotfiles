@@ -1,0 +1,28 @@
+PROMPT FOR PHASE 2 PLANNING:
+
+You are about to plan Phase 2 of a GTD-Zettelkasten system implementation. Please follow these workflow guidelines:
+
+FlowLoom Workflow Mode: Put on your `mode:workflow` mindset and use `plan:detailed` approach. This means following formal FlowLoom process with numbered plan files and creating detailed implementation plans with specific tasks, checklists, and code examples.
+
+Key Context:
+1. Memory Location: Read the transition context first:
+   - Use: `mcp__basic-memory__read_note` with identifier "GTD Phase 1 to Phase 2 Transition Context"
+   - This contains module architecture, keybindings, and what needs implementation
+
+2. Plan Locations in `.flowloom/plans/gtd-zettelkasten-system/`:
+   - `110_personal-gtd-zettelkasten_high_level_hybrid-implementation.md` - Shows Phase 2 is Week 2, focusing on Custom GTD Engine Core
+   - `120_personal-gtd-zettelkasten_implementation_phase1-foundation.md` - Phase 1 reference (completed)
+
+3. Your Task:
+   - Create `220_personal-gtd-zettelkasten_implementation_phase2-gtd-engine.md`
+   - Implement placeholder modules from Phase 1 (capture, process)
+   - Focus on: task states, capture templates, inbox operations, project structure
+   - Maintain `SPC o o` keybinding namespace
+
+4. Technical Context:
+   - Branch: gtd-system-greenfield
+   - Architecture: Hybrid (Custom GTD + Org-Roam)
+   - Personal use only
+   - Use existing module structure in `~/.spacemacs.d/codelahoma-gtd/`
+
+Start by reading the memory context, then review high-level plans, then create the detailed Phase 2 implementation plan.

@@ -35,8 +35,17 @@
   (spacemacs/set-leader-keys
     "o o p i" 'codelahoma-gtd-process-inbox
     "o o p r" (lambda () (interactive) (message "Refile item - coming in Phase 2"))
-    "o o p d" (lambda () (interactive) (message "Delegate item - coming in Phase 2"))
-    "o o p c" (lambda () (interactive) (message "Convert to project - coming in Phase 2")))
+    "o o p d" 'codelahoma-gtd-delegate-task
+    "o o p c" 'codelahoma-gtd-convert-to-project)
+  
+  ;; Task state submenu
+  (spacemacs/declare-prefix "o o t" "task states")
+  (spacemacs/set-leader-keys
+    "o o t n" 'codelahoma-gtd-set-next-action
+    "o o t t" 'org-todo
+    "o o t s" 'org-schedule
+    "o o t d" 'org-deadline
+    "o o t p" 'org-priority)
   
   ;; Navigate submenu
   (spacemacs/declare-prefix "o o n" "navigate")
