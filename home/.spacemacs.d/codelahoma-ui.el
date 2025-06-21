@@ -82,8 +82,20 @@
   (spacemacs/set-leader-keys
     "o o r d" 'codelahoma-gtd-daily-review
     "o o r w" 'codelahoma-gtd-weekly-review
-    "o o r m" (lambda () (interactive) (message "Monthly review - coming in Phase 3"))
-    "o o r p" (lambda () (interactive) (message "Project review - coming in Phase 3")))
+    "o o r m" 'codelahoma-gtd-monthly-review
+    "o o r q" 'codelahoma-gtd-quarterly-review)
+  
+  ;; Enhanced daily review commands (Phase 4)
+  (when (featurep 'codelahoma-gtd-daily-review)
+    (spacemacs/set-leader-keys
+      "o o r M" 'codelahoma-gtd-morning-review
+      "o o r E" 'codelahoma-gtd-evening-review
+      "o o r s m" 'codelahoma-gtd-save-morning-review
+      "o o r s e" 'codelahoma-gtd-save-evening-review
+      "o o r j" 'codelahoma-gtd-daily-journal-entry
+      ;; Quick checks
+      "o o r c m" 'codelahoma-gtd-quick-morning-check
+      "o o r c e" 'codelahoma-gtd-quick-evening-check))
   
   ;; Agenda submenu
   (spacemacs/declare-prefix "o o a" "agenda")
