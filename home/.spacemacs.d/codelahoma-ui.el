@@ -109,6 +109,12 @@
       "o o r s m" 'codelahoma-gtd-save-monthly-review
       "o o r s q" 'codelahoma-gtd-save-quarterly-review))
   
+  ;; Analytics and insights (Phase 4)
+  (when (featurep 'codelahoma-gtd-analytics)
+    (spacemacs/set-leader-keys
+      "o o r i" 'codelahoma-gtd-insights-dashboard
+      "o o r e" 'codelahoma-gtd-export-analytics))
+  
   ;; Agenda submenu
   (spacemacs/declare-prefix "o o a" "agenda")
   (spacemacs/set-leader-keys

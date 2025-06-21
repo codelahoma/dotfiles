@@ -44,7 +44,8 @@
 (defun codelahoma-gtd-execute-monthly-review ()
   "Execute the full monthly review process."
   (let ((review-buffer (get-buffer-create "*GTD Monthly Review*"))
-        (month-name (format-time-string "%B %Y")))
+        (month-name (format-time-string "%B %Y"))
+        (start-time (current-time)))
     (with-current-buffer review-buffer
       (erase-buffer)
       (org-mode)
@@ -77,7 +78,15 @@
       (insert "Key insights from this month:\n")
       (insert "1. \n2. \n3. \n\n")
       (insert "What patterns do I notice?\n- \n\n")
-      (insert "What would make next month successful?\n- \n"))
+      (insert "What would make next month successful?\n- \n")
+      
+      ;; Review duration
+      (let ((duration (/ (float-time (time-subtract (current-time) start-time)) 60)))
+        (insert (format "\n\n* Review completed in %.1f minutes\n" duration))
+        ;; Record analytics
+        (when (featurep 'codelahoma-gtd-analytics)
+          (codelahoma-gtd-record-review 'monthly)
+          (codelahoma-gtd-record-review-duration 'monthly duration))))
     
     (switch-to-buffer review-buffer)
     (goto-char (point-min))
@@ -182,7 +191,8 @@
   "Execute the full quarterly review process."
   (let ((review-buffer (get-buffer-create "*GTD Quarterly Review*"))
         (quarter (1+ (/ (1- (string-to-number (format-time-string "%m"))) 3)))
-        (year (string-to-number (format-time-string "%Y"))))
+        (year (string-to-number (format-time-string "%Y")))
+        (start-time (current-time)))
     (with-current-buffer review-buffer
       (erase-buffer)
       (org-mode)
@@ -211,7 +221,15 @@
       
       ;; Annual progress check
       (insert "\n* Annual Progress Check\n")
-      (codelahoma-gtd-quarterly-annual-progress quarter))
+      (codelahoma-gtd-quarterly-annual-progress quarter)
+      
+      ;; Review duration
+      (let ((duration (/ (float-time (time-subtract (current-time) start-time)) 60)))
+        (insert (format "\n\n* Review completed in %.1f minutes\n" duration))
+        ;; Record analytics
+        (when (featurep 'codelahoma-gtd-analytics)
+          (codelahoma-gtd-record-review 'quarterly)
+          (codelahoma-gtd-record-review-duration 'quarterly duration))))
     
     (switch-to-buffer review-buffer)
     (goto-char (point-min))))
@@ -312,7 +330,8 @@
   "Execute annual review process."
   (interactive)
   (let ((review-buffer (get-buffer-create "*GTD Annual Review*"))
-        (year (string-to-number (format-time-string "%Y"))))
+        (year (string-to-number (format-time-string "%Y")))
+        (start-time (current-time)))
     (with-current-buffer review-buffer
       (erase-buffer)
       (org-mode)
@@ -335,7 +354,15 @@
       (insert "Theme for next year: \n")
       (insert "Why: \n\n")
       (insert "Three words to describe next year:\n")
-      (insert "1. \n2. \n3. \n"))
+      (insert "1. \n2. \n3. \n")
+      
+      ;; Review duration
+      (let ((duration (/ (float-time (time-subtract (current-time) start-time)) 60)))
+        (insert (format "\n\n* Review completed in %.1f minutes\n" duration))
+        ;; Record analytics
+        (when (featurep 'codelahoma-gtd-analytics)
+          (codelahoma-gtd-record-review 'annual)
+          (codelahoma-gtd-record-review-duration 'annual duration))))
     
     (switch-to-buffer review-buffer)))
 

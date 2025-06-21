@@ -376,7 +376,8 @@
     ;; Save and record review
     (codelahoma-gtd-save-weekly-review)
     (when (featurep 'codelahoma-gtd-analytics)
-      (codelahoma-gtd-record-review 'weekly))))
+      (codelahoma-gtd-record-review 'weekly)
+      (codelahoma-gtd-record-review-duration 'weekly (/ duration 60)))))
 
 ;;; Weekly Metrics
 
