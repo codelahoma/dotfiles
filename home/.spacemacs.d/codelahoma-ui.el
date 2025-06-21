@@ -97,6 +97,11 @@
       "o o r c m" 'codelahoma-gtd-quick-morning-check
       "o o r c e" 'codelahoma-gtd-quick-evening-check))
   
+  ;; Weekly review commands (Phase 4)
+  (when (featurep 'codelahoma-gtd-weekly-review)
+    (spacemacs/set-leader-keys
+      "o o r c w" 'codelahoma-gtd-quick-weekly-check))
+  
   ;; Agenda submenu
   (spacemacs/declare-prefix "o o a" "agenda")
   (spacemacs/set-leader-keys
