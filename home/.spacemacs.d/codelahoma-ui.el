@@ -102,6 +102,13 @@
     (spacemacs/set-leader-keys
       "o o r c w" 'codelahoma-gtd-quick-weekly-check))
   
+  ;; Monthly/quarterly review commands (Phase 4)
+  (when (featurep 'codelahoma-gtd-monthly-review)
+    (spacemacs/set-leader-keys
+      "o o r a" 'codelahoma-gtd-annual-review
+      "o o r s m" 'codelahoma-gtd-save-monthly-review
+      "o o r s q" 'codelahoma-gtd-save-quarterly-review))
+  
   ;; Agenda submenu
   (spacemacs/declare-prefix "o o a" "agenda")
   (spacemacs/set-leader-keys
