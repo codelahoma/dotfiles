@@ -20,6 +20,8 @@
 ;; Phase 3 modules
 (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-contexts.el")
   (require 'codelahoma-gtd-contexts))
+(when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-agenda.el")
+  (require 'codelahoma-gtd-agenda))
 ;; Bridge module is optional (Phase 5)
 ;; (require 'codelahoma-bridge)
 
@@ -78,7 +80,18 @@
   (spacemacs/declare-prefix "o o a" "agenda")
   (spacemacs/set-leader-keys
     "o o a a" 'org-agenda
-    "o o a g" (lambda () (interactive) (message "GTD view - coming soon")))
+    "o o a g" (lambda () (interactive) (org-agenda nil "g")))
+  
+  ;; Enhanced agenda views (Phase 3)
+  (when (featurep 'codelahoma-gtd-agenda)
+    (spacemacs/set-leader-keys
+      "o o a d" 'codelahoma-gtd-daily-dashboard
+      "o o a w" 'codelahoma-gtd-weekly-planning
+      "o o a c" 'codelahoma-gtd-agenda-by-context
+      "o o a e" 'codelahoma-gtd-agenda-by-energy
+      "o o a f" 'codelahoma-gtd-focus-session
+      "o o a m" 'codelahoma-gtd-morning-review
+      "o o a s" 'codelahoma-gtd-someday-review))
   
   ;; Zettelkasten submenu (when org-roam is available)
   (spacemacs/declare-prefix "o o z" "zettelkasten")
