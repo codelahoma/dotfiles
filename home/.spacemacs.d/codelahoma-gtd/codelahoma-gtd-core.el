@@ -418,5 +418,115 @@
 ;; Add to initialization
 (add-hook 'after-init-hook 'codelahoma-gtd-check-structure-on-startup)
 
+;;; Phase 2 Integration Functions
+
+(defun codelahoma-gtd-initialize-phase2 ()
+  "Initialize Phase 2 GTD components."
+  (codelahoma-gtd-setup-todo-keywords)
+  (require 'codelahoma-gtd-capture)
+  (codelahoma-gtd-setup-capture)
+  (require 'codelahoma-gtd-process)
+  (codelahoma-gtd-setup-refile-targets)
+  (codelahoma-gtd-setup-processing-hooks)
+  (message "GTD Phase 2 initialized"))
+
+(defun codelahoma-gtd-workflow-status ()
+  "Show current GTD system status."
+  (interactive)
+  (let* ((inbox-count (codelahoma-gtd-count-entries "inbox.org"))
+         (next-count (codelahoma-gtd-count-entries "next-actions.org" "NEXT"))
+         (waiting-count (codelahoma-gtd-count-entries "waiting-for.org" "WAITING"))
+         (project-count (codelahoma-gtd-count-entries "projects.org" "PROJECT"))
+         (today-count (length (org-agenda-get-day-entries 
+                              (expand-file-name "calendar.org" codelahoma-gtd-directory)
+                              (calendar-current-date)))))
+    (message "GTD Status - Inbox: %d | Next: %d | Waiting: %d | Projects: %d | Today: %d"
+             inbox-count next-count waiting-count project-count today-count)))
+
+(defun codelahoma-gtd-count-entries (file &optional todo-keyword)
+  "Count entries in FILE, optionally filtered by TODO-KEYWORD."
+  (let ((count 0)
+        (path (expand-file-name file codelahoma-gtd-directory)))
+    (when (file-exists-p path)
+      (with-current-buffer (find-file-noselect path)
+        (save-excursion
+          (goto-char (point-min))
+          (if todo-keyword
+              (while (re-search-forward (format "^\\*+ %s " todo-keyword) nil t)
+                (cl-incf count))
+            (while (org-next-visible-heading 1)
+              (cl-incf count))))))
+    count))
+
+;; Performance benchmarking
+(defun codelahoma-gtd-benchmark-operations ()
+  "Benchmark key GTD operations."
+  (interactive)
+  (let ((results '()))
+    ;; Benchmark capture
+    (push (cons "Capture" 
+                (benchmark-elapse (codelahoma-gtd-capture-inbox)))
+          results)
+    ;; Benchmark refile
+    (push (cons "Refile" 
+                (benchmark-elapse 
+                 (with-current-buffer (find-file-noselect 
+                                      (expand-file-name "inbox.org" codelahoma-gtd-directory))
+                   (goto-char (point-min))
+                   (org-refile-get-targets))))
+          results)
+    ;; Benchmark project list
+    (push (cons "List Projects" 
+                (benchmark-elapse (codelahoma-gtd-get-all-projects)))
+          results)
+    ;; Display results
+    (with-output-to-temp-buffer "*GTD Benchmarks*"
+      (princ "GTD Operation Benchmarks\n")
+      (princ "========================\n\n")
+      (dolist (result (nreverse results))
+        (princ (format "%-15s: %.3f seconds\n" (car result) (cdr result)))))))
+
+;; Error recovery
+(defun codelahoma-gtd-check-health ()
+  "Check GTD system health and fix common issues."
+  (interactive)
+  (let ((issues '()))
+    ;; Check required files exist
+    (dolist (file '("inbox.org" "projects.org" "next-actions.org" 
+                   "waiting-for.org" "someday.org"))
+      (unless (file-exists-p (expand-file-name file codelahoma-gtd-directory))
+        (push (format "Missing file: %s" file) issues)))
+    ;; Check for corrupted properties
+    (dolist (file (directory-files codelahoma-gtd-directory t "\\.org$"))
+      (with-current-buffer (find-file-noselect file)
+        (save-excursion
+          (goto-char (point-min))
+          (while (re-search-forward "^:PROPERTIES:" nil t)
+            (unless (re-search-forward "^:END:" nil t)
+              (push (format "Unclosed properties drawer in %s" 
+                           (file-name-nondirectory file)) 
+                    issues))))))
+    ;; Report or fix issues
+    (if issues
+        (progn
+          (with-output-to-temp-buffer "*GTD Health Check*"
+            (princ "GTD System Issues Found:\n")
+            (princ "========================\n\n")
+            (dolist (issue issues)
+              (princ (format "- %s\n" issue))))
+          (when (y-or-n-p "Attempt automatic fixes? ")
+            (codelahoma-gtd-auto-fix-issues issues)))
+      (message "GTD system health check passed ✓"))))
+
+(defun codelahoma-gtd-auto-fix-issues (issues)
+  "Attempt to automatically fix common issues."
+  (dolist (issue issues)
+    (cond
+     ((string-match "Missing file: \\(.+\\)" issue)
+      (codelahoma-gtd-verify-files)
+      (message "Created missing files"))
+     ((string-match "Unclosed properties drawer" issue)
+      (message "Please manually fix unclosed property drawers")))))
+
 (provide 'codelahoma-gtd-core)
 ;;; codelahoma-gtd-core.el ends here

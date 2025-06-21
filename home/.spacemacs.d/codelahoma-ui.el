@@ -120,13 +120,14 @@
   ;; Help/Documentation
   (spacemacs/set-leader-keys
     "o o h" 'codelahoma-gtd-help
-    "o o ?" 'codelahoma-gtd-help)
+    "o o ?" 'codelahoma-gtd-workflow-status)
   
-  ;; Development submenu (temporary for Phase 1)
+  ;; Development submenu
   (spacemacs/declare-prefix "o o d" "development")
   (spacemacs/set-leader-keys
     "o o d r" 'codelahoma-gtd-reload
-    "o o d b" 'codelahoma-gtd-benchmark-capture
+    "o o d b" 'codelahoma-gtd-benchmark-operations
+    "o o d h" 'codelahoma-gtd-check-health
     "o o d i" 'codelahoma-gtd-initialize
     "o o d v" 'codelahoma-gtd-validate-structure))
 
@@ -184,9 +185,16 @@
     (princ "For full keybinding list, see which-key (SPC o o)\n")
     (princ "Or check the implementation plan in .flowloom/plans/\n\n")
     
-    (princ "Current Phase: Phase 1 - Foundation\n")
-    (princ "Some commands show 'coming soon' - these will be\n")
-    (princ "implemented in future phases.\n"))
+    (princ "Current Phase: Phase 2 - GTD Engine Core\n")
+    (princ "\nPhase 2 Features:\n")
+    (princ "-----------------\n")
+    (princ "  ✓ Task state management (TODO/NEXT/WAITING/PROJECT)\n")
+    (princ "  ✓ Intelligent capture with context detection\n")
+    (princ "  ✓ Inbox processing workflow\n")
+    (princ "  ✓ Project and area structure\n")
+    (princ "  ✓ Refile suggestions and bulk operations\n")
+    (princ "\nStatus: " )
+    (princ (propertize "Operational" 'face '(:foreground "#86dc2f" :weight bold))))
   (switch-to-buffer-other-window "*GTD Help*"))
 
 (provide 'codelahoma-ui)
