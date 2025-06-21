@@ -531,5 +531,232 @@
      ((string-match "Unclosed properties drawer" issue)
       (message "Please manually fix unclosed property drawers")))))
 
+;;; Decision Support Functions (Phase 3)
+
+(defun codelahoma-gtd-smart-next-action ()
+  "Intelligently suggest the next action based on multiple factors."
+  (interactive)
+  (let* ((current-contexts (if (fboundp 'codelahoma-gtd-current-contexts)
+                              (codelahoma-gtd-current-contexts)
+                            '("@anywhere")))
+         (current-energy (if (boundp 'codelahoma-gtd-current-energy)
+                           codelahoma-gtd-current-energy
+                          "medium"))
+         (available-time (codelahoma-gtd-estimate-available-time))
+         (tasks (codelahoma-gtd-score-all-tasks current-contexts 
+                                               current-energy 
+                                               available-time)))
+    (if tasks
+        (codelahoma-gtd-present-smart-suggestions tasks)
+      (message "No suitable tasks found for current context"))))
+
+(defun codelahoma-gtd-score-all-tasks (contexts energy time)
+  "Score all available tasks based on CONTEXTS, ENERGY, and TIME."
+  (let ((scored-tasks '()))
+    (dolist (file (directory-files codelahoma-gtd-directory t "\\.org$"))
+      (with-current-buffer (find-file-noselect file)
+        (org-map-entries
+         (lambda ()
+           (when (member (org-get-todo-state) '("NEXT" "TODO"))
+             (let ((score (codelahoma-gtd-calculate-task-score 
+                          contexts energy time)))
+               (when (> score 0)
+                 (push (list :title (org-get-heading t t t t)
+                           :score score
+                           :context (org-entry-get nil "CONTEXT")
+                           :effort (org-entry-get nil "Effort")
+                           :priority (org-get-priority (org-get-heading))
+                           :deadline (org-get-deadline-time nil)
+                           :file file
+                           :point (point))
+                       scored-tasks)))))
+         "TODO|NEXT")))
+    ;; Sort by score
+    (sort scored-tasks (lambda (a b) (> (plist-get a :score) 
+                                       (plist-get b :score))))))
+
+(defun codelahoma-gtd-calculate-task-score (contexts energy time)
+  "Calculate task score based on CONTEXTS, ENERGY, and TIME."
+  (let ((score 0)
+        (task-context (org-entry-get nil "CONTEXT"))
+        (task-effort (org-entry-get nil "Effort"))
+        (task-energy (org-entry-get nil "ENERGY_REQUIRED"))
+        (deadline (org-get-deadline-time nil))
+        (priority (org-get-priority (org-get-heading))))
+    
+    ;; Context match (40 points max)
+    (when (or (not task-context)
+              (member task-context contexts))
+      (cl-incf score 40))
+    
+    ;; Priority score (30 points max)
+    (cl-incf score (/ (* (- priority ?A) 30) 3))
+    
+    ;; Deadline urgency (20 points max)
+    (when deadline
+      (let ((days-until (/ (- deadline (float-time)) 86400)))
+        (cond
+         ((< days-until 1) (cl-incf score 20))
+         ((< days-until 3) (cl-incf score 15))
+         ((< days-until 7) (cl-incf score 10))
+         ((< days-until 14) (cl-incf score 5)))))
+    
+    ;; Energy match (10 points max)
+    (when (or (not task-energy)
+              (and (fboundp 'codelahoma-gtd-energy-match-p)
+                   (codelahoma-gtd-energy-match-p energy task-energy)))
+      (cl-incf score 10))
+    
+    ;; Time fit (penalty for tasks too long)
+    (when (and task-effort time)
+      (let ((effort-minutes (codelahoma-gtd-effort-to-minutes task-effort)))
+        (when (> effort-minutes time)
+          (cl-decf score 20))))
+    
+    score))
+
+(defun codelahoma-gtd-estimate-available-time ()
+  "Estimate available time until next appointment."
+  (let* ((now (current-time))
+         (next-appt (codelahoma-gtd-next-appointment-time)))
+    (if next-appt
+        (/ (- next-appt (float-time now)) 60) ; minutes
+      120))) ; Default 2 hours if no appointments
+
+(defun codelahoma-gtd-next-appointment-time ()
+  "Get time of next appointment from calendar."
+  ;; Simple implementation - could be enhanced with calendar integration
+  nil)
+
+(defun codelahoma-gtd-effort-to-minutes (effort)
+  "Convert EFFORT string to minutes."
+  (when effort
+    (cond
+     ((string-match "\\([0-9]+\\)h" effort)
+      (* 60 (string-to-number (match-string 1 effort))))
+     ((string-match "\\([0-9]+\\)m" effort)
+      (string-to-number (match-string 1 effort)))
+     ((string-match "\\([0-9]+\\)d" effort)
+      (* 480 (string-to-number (match-string 1 effort)))) ; 8 hours per day
+     (t 30)))) ; Default 30 minutes
+
+(defun codelahoma-gtd-present-smart-suggestions (tasks)
+  "Present TASKS as smart suggestions."
+  (let ((buffer (get-buffer-create "*GTD Smart Suggestions*")))
+    (with-current-buffer buffer
+      (read-only-mode -1)
+      (erase-buffer)
+      (insert "Smart Task Suggestions\n")
+      (insert "======================\n\n")
+      (insert (format "Context: %s | Energy: %s | Available time: %d min\n\n"
+                     (if (fboundp 'codelahoma-gtd-current-contexts)
+                         (mapconcat #'identity (codelahoma-gtd-current-contexts) ", ")
+                       "@anywhere")
+                     (if (boundp 'codelahoma-gtd-current-energy)
+                         codelahoma-gtd-current-energy
+                       "medium")
+                     (codelahoma-gtd-estimate-available-time)))
+      
+      (let ((count 0))
+        (dolist (task (seq-take tasks 5))
+          (cl-incf count)
+          (let ((start (point)))
+            (insert (format "%d. %s (Score: %d)\n"
+                           count
+                           (plist-get task :title)
+                           (plist-get task :score)))
+            (insert (format "   %s | Priority %s | Effort: %s\n"
+                           (or (plist-get task :context) "Any context")
+                           (char-to-string (plist-get task :priority))
+                           (or (plist-get task :effort) "?")))
+            (when (plist-get task :deadline)
+              (insert (format "   Deadline: %s\n"
+                             (format-time-string "%Y-%m-%d" 
+                                               (plist-get task :deadline)))))
+            (insert "\n")
+            ;; Make clickable
+            (put-text-property start (1- (point)) 'task-data task)
+            (put-text-property start (1- (point)) 'keymap 
+                              (let ((map (make-sparse-keymap)))
+                                (define-key map [mouse-1] 'codelahoma-gtd-open-task)
+                                (define-key map (kbd "RET") 'codelahoma-gtd-open-task)
+                                map)))))
+      (goto-char (point-min))
+      (read-only-mode 1))
+    (display-buffer buffer)))
+
+(defun codelahoma-gtd-open-task ()
+  "Open task at point."
+  (interactive)
+  (let ((task-data (get-text-property (point) 'task-data)))
+    (when task-data
+      (find-file (plist-get task-data :file))
+      (goto-char (plist-get task-data :point))
+      (org-show-entry))))
+
+;;; Decision Tree Processing
+
+(defun codelahoma-gtd-decision-tree ()
+  "Interactive decision tree for processing."
+  (interactive)
+  (let ((item (org-get-heading t t t t)))
+    (message "Processing: %s" item)
+    
+    ;; Is it actionable?
+    (if (y-or-n-p "Is this actionable? ")
+        (progn
+          ;; Yes - determine action type
+          (if (y-or-n-p "Will it take less than 2 minutes? ")
+              (progn
+                (message "Do it now!")
+                (org-todo "ACTIVE"))
+            ;; More than 2 minutes
+            (if (y-or-n-p "Is this a project (multiple steps)? ")
+                (codelahoma-gtd-convert-to-project)
+              ;; Single action
+              (progn
+                (org-todo "TODO")
+                (when (fboundp 'codelahoma-gtd-assign-context)
+                  (codelahoma-gtd-assign-context))
+                (when (y-or-n-p "Can you delegate this? ")
+                  (codelahoma-gtd-delegate-task))
+                (when (y-or-n-p "Schedule for specific time? ")
+                  (org-schedule nil))))))
+      ;; Not actionable
+      (if (y-or-n-p "Is this reference material? ")
+          (progn
+            (org-set-tags ":REFERENCE:")
+            (org-refile nil nil (list nil 
+                                    (expand-file-name "reference.org" 
+                                                     codelahoma-gtd-directory)
+                                    nil nil)))
+        ;; Not reference
+        (if (y-or-n-p "Might this be useful someday? ")
+            (progn
+              (org-set-tags ":SOMEDAY:")
+              (org-refile nil nil (list nil
+                                      (expand-file-name "someday.org"
+                                                       codelahoma-gtd-directory)
+                                      nil nil)))
+          ;; Trash it
+          (when (y-or-n-p "Delete this item? ")
+            (org-cut-subtree)))))))
+
+;;; Count overdue tasks
+
+(defun codelahoma-gtd-count-overdue ()
+  "Count overdue tasks."
+  (let ((count 0)
+        (today (float-time)))
+    (dolist (file (directory-files codelahoma-gtd-directory t "\\.org$"))
+      (with-current-buffer (find-file-noselect file)
+        (org-map-entries
+         (lambda ()
+           (let ((deadline (org-get-deadline-time nil)))
+             (when (and deadline (< deadline today))
+               (cl-incf count))))
+         "TODO|NEXT")))
+    count))
+
 (provide 'codelahoma-gtd-core)
 ;;; codelahoma-gtd-core.el ends here
