@@ -17,6 +17,9 @@
 (require 'codelahoma-gtd-process)
 (require 'codelahoma-gtd-review)
 (require 'codelahoma-gtd-roam)
+;; Phase 3 modules
+(when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-contexts.el")
+  (require 'codelahoma-gtd-contexts))
 ;; Bridge module is optional (Phase 5)
 ;; (require 'codelahoma-bridge)
 
@@ -112,6 +115,15 @@
     "o o j s" 'codelahoma-gtd-project-status
     "o o j f" 'codelahoma-gtd-find-stalled-projects
     "o o j a" 'codelahoma-gtd-archive-completed-projects)
+  
+  ;; Context submenu (Phase 3)
+  (when (featurep 'codelahoma-gtd-contexts)
+    (spacemacs/declare-prefix "o o x" "contexts")
+    (spacemacs/set-leader-keys
+      "o o x a" 'codelahoma-gtd-assign-context
+      "o o x f" 'codelahoma-gtd-filter-by-context
+      "o o x s" 'codelahoma-gtd-suggest-next-task
+      "o o x e" 'codelahoma-gtd-set-energy-level))
   
   ;; Save command
   (spacemacs/set-leader-keys
