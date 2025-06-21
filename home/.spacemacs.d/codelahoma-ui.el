@@ -29,6 +29,8 @@
 ;; Bridge module (Phase 5)
 (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge.el")
   (require 'codelahoma-bridge))
+(when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-workflows.el")
+  (require 'codelahoma-bridge-workflows))
 
 (defun codelahoma-gtd-setup-keybindings ()
   "Set up GTD keybindings under SPC o o."
@@ -179,6 +181,16 @@
       "o o i U" 'codelahoma-bridge-update-links
       "o o i k" 'codelahoma-bridge-count-links
       "o o i j" 'codelahoma-bridge-jump-to-linked))
+  
+  ;; Knowledge workflows (Phase 5)
+  (when (featurep 'codelahoma-bridge-workflows)
+    (spacemacs/declare-prefix "o o k" "knowledge")
+    (spacemacs/set-leader-keys
+      "o o k r" 'codelahoma-bridge-create-reading-task
+      "o o k R" 'codelahoma-bridge-research-workflow
+      "o o k l" 'codelahoma-bridge-learning-project
+      "o o k i" 'codelahoma-bridge-insight-capture
+      "o o k k" 'codelahoma-bridge-knowledge-review))
   
   ;; Project submenu
   (spacemacs/declare-prefix "o o j" "projects")
