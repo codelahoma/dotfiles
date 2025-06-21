@@ -104,6 +104,126 @@
   :type '(repeat string)
   :group 'codelahoma-gtd)
 
+;;; Project Management Functions
+
+(defun codelahoma-gtd-new-project ()
+  "Create a new GTD project with template."
+  (interactive)
+  (let* ((title (read-string "Project title: "))
+         (area (completing-read "Area of focus: " codelahoma-gtd-areas-of-focus))
+         (outcome (read-string "Desired outcome: "))
+         (deadline (org-read-date nil nil nil "Deadline (optional): ")))
+    (find-file (expand-file-name "projects.org" codelahoma-gtd-directory))
+    (goto-char (point-max))
+    (insert (format "\n* PROJECT %s :%s:\n" title (codelahoma-gtd-area-to-tag area)))
+    (org-set-property "AREA_OF_FOCUS" area)
+    (org-set-property "OUTCOME" outcome)
+    (when deadline
+      (org-deadline nil deadline))
+    (org-set-property "PROJECT_CREATED" (format-time-string "[%Y-%m-%d %a]"))
+    (org-set-property "STATUS" "Active")
+    (insert "\n** Purpose/Outcome\n" outcome "\n\n")
+    (insert "** Success Criteria\n- [ ] \n\n")
+    (insert "** Next Actions\n*** NEXT \n\n")
+    (insert "** Project Notes\n")
+    (insert (format "Created: %s\n\n" (format-time-string "%Y-%m-%d")))
+    (goto-char (point-min))
+    (re-search-forward "\\*\\*\\* NEXT " nil t)
+    (message "Project created - add next actions")))
+
+(defun codelahoma-gtd-area-to-tag (area)
+  "Convert area name to org tag."
+  (upcase (replace-regexp-in-string 
+           "[& ]+" "_" 
+           (replace-regexp-in-string "[^[:alnum:]& ]" "" area))))
+
+(defun codelahoma-gtd-list-projects (&optional area)
+  "List all projects, optionally filtered by area."
+  (interactive)
+  (let ((org-agenda-files (list (expand-file-name "projects.org" codelahoma-gtd-directory))))
+    (org-tags-view nil (concat "PROJECT" (when area (format "+%s" (codelahoma-gtd-area-to-tag area)))))))
+
+(defun codelahoma-gtd-project-status ()
+  "Show project status overview."
+  (interactive)
+  (let ((projects (codelahoma-gtd-get-all-projects))
+        (active 0) (stalled 0) (completed 0))
+    (dolist (project projects)
+      (pcase (plist-get project :status)
+        ("Active" (cl-incf active))
+        ("Stalled" (cl-incf stalled))
+        ("Completed" (cl-incf completed))))
+    (message "Projects - Active: %d, Stalled: %d, Completed: %d, Total: %d" 
+             active stalled completed (length projects))))
+
+(defun codelahoma-gtd-get-all-projects ()
+  "Get all projects as a list of plists."
+  (let ((projects '()))
+    (with-current-buffer (find-file-noselect 
+                         (expand-file-name "projects.org" codelahoma-gtd-directory))
+      (org-map-entries
+       (lambda ()
+         (push (list :title (org-get-heading t t t t)
+                    :status (or (org-entry-get nil "STATUS") "Active")
+                    :area (org-entry-get nil "AREA_OF_FOCUS")
+                    :deadline (org-get-deadline-time nil))
+               projects))
+       "PROJECT"))
+    (nreverse projects)))
+
+(defun codelahoma-gtd-find-stalled-projects ()
+  "Find projects with no NEXT actions."
+  (interactive)
+  (let ((org-agenda-files (list (expand-file-name "projects.org" codelahoma-gtd-directory))))
+    (org-tags-view nil "PROJECT-TODO=\"NEXT\"")))
+
+(defun codelahoma-gtd-archive-completed-projects ()
+  "Archive completed projects."
+  (interactive)
+  (when (y-or-n-p "Archive all completed projects? ")
+    (find-file (expand-file-name "projects.org" codelahoma-gtd-directory))
+    (org-map-entries
+     (lambda ()
+       (when (string= (org-get-todo-state) "COMPLETED")
+         (org-archive-subtree)
+         (setq org-map-continue-from (point))))
+     "PROJECT")
+    (org-save-all-org-buffers)
+    (message "Completed projects archived")))
+
+;;; Project Templates
+
+(defcustom codelahoma-gtd-project-templates
+  '(("software" . ((properties . (("PROJECT_TYPE" . "Software Development")))
+                   (sections . ("Purpose/Outcome" "Requirements" "Technical Design" 
+                               "Implementation Plan" "Testing Strategy" "Next Actions"))))
+    ("learning" . ((properties . (("PROJECT_TYPE" . "Learning")))
+                   (sections . ("Learning Objectives" "Resources" "Study Plan" 
+                               "Practice Exercises" "Progress Tracking" "Next Actions"))))
+    ("home" . ((properties . (("PROJECT_TYPE" . "Home Improvement")))
+               (sections . ("Desired Result" "Materials Needed" "Steps" 
+                           "Budget" "Timeline" "Next Actions")))))
+  "Project templates by type."
+  :type 'alist
+  :group 'codelahoma-gtd)
+
+(defun codelahoma-gtd-new-project-from-template ()
+  "Create a new project from a template."
+  (interactive)
+  (let* ((template-name (completing-read "Project template: " 
+                                        (mapcar #'car codelahoma-gtd-project-templates)))
+         (template (alist-get template-name codelahoma-gtd-project-templates nil nil #'string=))
+         (title (read-string "Project title: ")))
+    (codelahoma-gtd-new-project)
+    ;; Apply template properties
+    (dolist (prop (alist-get 'properties template))
+      (org-set-property (car prop) (cdr prop)))
+    ;; Apply template sections
+    (goto-char (point-max))
+    (dolist (section (alist-get 'sections template))
+      (unless (string= section "Next Actions") ; Already added by new-project
+        (insert (format "\n** %s\n\n" section))))))
+
 (defun codelahoma-gtd-ensure-directories ()
   "Ensure all GTD directories exist."
   (interactive)
