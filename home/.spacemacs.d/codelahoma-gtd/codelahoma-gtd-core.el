@@ -428,6 +428,9 @@
   (require 'codelahoma-gtd-process)
   (codelahoma-gtd-setup-refile-targets)
   (codelahoma-gtd-setup-processing-hooks)
+  ;; Phase 3: Configure agenda if available
+  (when (featurep 'codelahoma-gtd-agenda)
+    (codelahoma-gtd-configure-agenda))
   (message "GTD Phase 2 initialized"))
 
 (defun codelahoma-gtd-workflow-status ()
