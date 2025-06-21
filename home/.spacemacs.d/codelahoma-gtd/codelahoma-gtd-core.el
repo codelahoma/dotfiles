@@ -14,6 +14,96 @@
 (require 'codelahoma-gtd-config)
 (require 'codelahoma-gtd-roam)
 
+;;; Task State Management
+
+(defcustom codelahoma-gtd-todo-keywords
+  '((sequence "TODO(t)" "NEXT(n)" "ACTIVE(a)" "|" "DONE(d)")
+    (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")
+    (sequence "PROJECT(p)" "|" "COMPLETED(C)"))
+  "GTD task state keywords."
+  :type 'sexp
+  :group 'codelahoma-gtd)
+
+(defcustom codelahoma-gtd-todo-keyword-faces
+  '(("TODO" . (:foreground "#dc752f" :weight bold))
+    ("NEXT" . (:foreground "#4f97d7" :weight bold))
+    ("ACTIVE" . (:foreground "#f2241f" :weight bold))
+    ("DONE" . (:foreground "#86dc2f" :weight bold))
+    ("WAITING" . (:foreground "#b1951d" :weight bold))
+    ("HOLD" . (:foreground "#a45bad" :weight bold))
+    ("CANCELLED" . (:foreground "#9f8766" :weight bold :strike-through t))
+    ("PROJECT" . (:foreground "#2d9574" :weight bold :box t))
+    ("COMPLETED" . (:foreground "#86dc2f" :weight bold :box t)))
+  "Face properties for GTD todo keywords."
+  :type 'alist
+  :group 'codelahoma-gtd)
+
+(defun codelahoma-gtd-setup-todo-keywords ()
+  "Configure org-mode with GTD todo keywords."
+  (setq org-todo-keywords codelahoma-gtd-todo-keywords)
+  (setq org-todo-keyword-faces codelahoma-gtd-todo-keyword-faces)
+  
+  ;; State change logging
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
+  
+  ;; Fast todo selection
+  (setq org-use-fast-todo-selection t)
+  (setq org-treat-S-cursor-todo-selection-as-state-change nil))
+
+(defun codelahoma-gtd-set-next-action ()
+  "Mark current task as NEXT action."
+  (interactive)
+  (when (eq major-mode 'org-mode)
+    (org-todo "NEXT")
+    (org-priority ?A)
+    (when (org-entry-get nil "DELEGATED_TO")
+      (org-set-property "DELEGATED_TO" nil))
+    (message "Task marked as NEXT action")))
+
+(defun codelahoma-gtd-delegate-task ()
+  "Delegate current task and set to WAITING."
+  (interactive)
+  (when (eq major-mode 'org-mode)
+    (let ((delegate-to (read-string "Delegate to: ")))
+      (org-todo "WAITING")
+      (org-set-property "DELEGATED_TO" delegate-to)
+      (org-set-property "DELEGATED_ON" (format-time-string "[%Y-%m-%d %a]"))
+      (org-entry-put nil "WAITING_REASON" (format "Delegated to %s" delegate-to))
+      (message "Task delegated to %s" delegate-to))))
+
+(defun codelahoma-gtd-convert-to-project ()
+  "Convert current task to a project."
+  (interactive)
+  (when (eq major-mode 'org-mode)
+    (org-todo "PROJECT")
+    (org-set-property "PROJECT_CREATED" (format-time-string "[%Y-%m-%d %a]"))
+    ;; Add project planning template
+    (org-end-of-subtree)
+    (insert "\n** Outcomes\n- [ ] \n\n** Next Actions\n*** NEXT \n\n** Notes\n")
+    (message "Converted to project - add outcomes and next actions")))
+
+;;; Project and Area Structure
+
+(defcustom codelahoma-gtd-project-properties
+  '("PROJECT_TYPE" "OUTCOME" "DEADLINE" "STAKEHOLDER" "STATUS")
+  "Properties to track for projects."
+  :type '(repeat string)
+  :group 'codelahoma-gtd)
+
+(defcustom codelahoma-gtd-areas-of-focus
+  '("Personal Development"
+    "Health & Fitness"
+    "Relationships"
+    "Career"
+    "Finance"
+    "Home & Environment"
+    "Hobbies & Recreation"
+    "Community & Service")
+  "Areas of responsibility for life management."
+  :type '(repeat string)
+  :group 'codelahoma-gtd)
+
 (defun codelahoma-gtd-ensure-directories ()
   "Ensure all GTD directories exist."
   (interactive)
@@ -61,6 +151,8 @@
   ;; Initialize org-roam
   (codelahoma-gtd-roam-setup)
   (codelahoma-gtd-roam-initialize)
+  ;; Phase 2: Setup todo keywords
+  (codelahoma-gtd-setup-todo-keywords)
   (message "GTD system initialized successfully"))
 
 (defun codelahoma-gtd-open-file (file)
