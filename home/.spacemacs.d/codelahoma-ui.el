@@ -33,6 +33,8 @@
   (require 'codelahoma-bridge-workflows))
 (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-projects.el")
   (require 'codelahoma-bridge-projects))
+(when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-suggestions.el")
+  (require 'codelahoma-bridge-suggestions))
 
 (defun codelahoma-gtd-setup-keybindings ()
   "Set up GTD keybindings under SPC o o."
@@ -215,6 +217,16 @@
       "o o j S" 'codelahoma-bridge-save-lessons-learned
       "o o j k" 'codelahoma-bridge-project-knowledge-summary))
   
+  ;; Smart suggestions (Phase 5)
+  (when (featurep 'codelahoma-bridge-suggestions)
+    (spacemacs/declare-prefix "o o S" "suggestions")
+    (spacemacs/set-leader-keys
+      "o o S s" 'codelahoma-bridge-suggest-related-knowledge
+      "o o S p" 'codelahoma-bridge-suggest-for-project
+      "o o S c" 'codelahoma-bridge-suggest-by-context
+      "o o S a" 'codelahoma-bridge-auto-suggest-mode
+      "o o S r" 'codelahoma-bridge-refresh-suggestions))
+  
   ;; Context submenu (Phase 3)
   (when (featurep 'codelahoma-gtd-contexts)
     (spacemacs/declare-prefix "o o x" "contexts")
@@ -287,6 +299,10 @@
                      codelahoma-gtd-agenda
                      codelahoma-gtd-quick
                      codelahoma-gtd-autosave
+                     codelahoma-bridge
+                     codelahoma-bridge-workflows
+                     codelahoma-bridge-projects
+                     codelahoma-bridge-suggestions
                      codelahoma-ui))
     (when (featurep feature)
       (unload-feature feature t)))
@@ -305,6 +321,15 @@
     (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-quick.el"))
   (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-autosave.el")
     (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-gtd-autosave.el"))
+  ;; Phase 5 modules
+  (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge.el")
+    (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge.el"))
+  (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-workflows.el")
+    (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-workflows.el"))
+  (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-projects.el")
+    (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-projects.el"))
+  (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-suggestions.el")
+    (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-suggestions.el"))
   (load-file "~/.spacemacs.d/codelahoma-ui.el")
   (codelahoma-gtd-setup-keybindings)
   (message "GTD system reloaded"))
