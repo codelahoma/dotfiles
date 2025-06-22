@@ -37,10 +37,17 @@
   (require 'codelahoma-bridge-suggestions))
 (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-metrics.el")
   (require 'codelahoma-bridge-metrics))
+;; Phase 6 modules
+(when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-dashboard.el")
+  (require 'codelahoma-dashboard))
 
 (defun codelahoma-gtd-setup-keybindings ()
   "Set up GTD keybindings under SPC o o."
   (spacemacs/declare-prefix "o o" "GTD/Zettelkasten")
+  
+  ;; Main dashboard (SPC for quick access)
+  (spacemacs/set-leader-keys
+    "o o SPC" 'codelahoma-dashboard)
   
   ;; Capture submenu
   (spacemacs/declare-prefix "o o c" "capture")
@@ -315,6 +322,7 @@
                      codelahoma-bridge-projects
                      codelahoma-bridge-suggestions
                      codelahoma-bridge-metrics
+                     codelahoma-dashboard
                      codelahoma-ui))
     (when (featurep feature)
       (unload-feature feature t)))
@@ -344,6 +352,9 @@
     (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-suggestions.el"))
   (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-metrics.el")
     (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-metrics.el"))
+  ;; Phase 6 modules
+  (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-dashboard.el")
+    (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-dashboard.el"))
   (load-file "~/.spacemacs.d/codelahoma-ui.el")
   (codelahoma-gtd-setup-keybindings)
   (message "GTD system reloaded"))
@@ -380,14 +391,14 @@
     (princ "For full keybinding list, see which-key (SPC o o)\n")
     (princ "Or check the implementation plan in .flowloom/plans/\n\n")
     
-    (princ "Current Phase: Phase 5 - Knowledge Integration Bridge\n")
-    (princ "\nPhase 5 Features:\n")
+    (princ "Current Phase: Phase 6 - Unified Interface\n")
+    (princ "\nPhase 6 Features:\n")
     (princ "-----------------\n")
-    (princ "  ✓ Bidirectional task-note linking\n")
-    (princ "  ✓ Knowledge-driven workflows\n")
-    (princ "  ✓ Project knowledge integration\n")
-    (princ "  ✓ Smart knowledge suggestions\n")
-    (princ "  ✓ Knowledge metrics and insights\n")
+    (princ "  ✓ Unified dashboard (SPC o o SPC)\n")
+    (princ "  ⏳ Command palette\n")
+    (princ "  ⏳ Unified search\n")
+    (princ "  ⏳ Status bar integration\n")
+    (princ "  ⏳ Polished UX\n")
     (princ "\nStatus: " )
     (princ (propertize "Operational" 'face '(:foreground "#86dc2f" :weight bold))))
   (switch-to-buffer-other-window "*GTD Help*"))
