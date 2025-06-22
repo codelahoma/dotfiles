@@ -35,6 +35,8 @@
   (require 'codelahoma-bridge-projects))
 (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-suggestions.el")
   (require 'codelahoma-bridge-suggestions))
+(when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-metrics.el")
+  (require 'codelahoma-bridge-metrics))
 
 (defun codelahoma-gtd-setup-keybindings ()
   "Set up GTD keybindings under SPC o o."
@@ -227,6 +229,15 @@
       "o o S a" 'codelahoma-bridge-auto-suggest-mode
       "o o S r" 'codelahoma-bridge-refresh-suggestions))
   
+  ;; Knowledge metrics (Phase 5)
+  (when (featurep 'codelahoma-bridge-metrics)
+    (spacemacs/declare-prefix "o o m" "metrics")
+    (spacemacs/set-leader-keys
+      "o o m d" 'codelahoma-bridge-knowledge-dashboard
+      "o o m g" 'codelahoma-bridge-visualize-graph
+      "o o m e" 'codelahoma-bridge-export-metrics
+      "o o m r" 'codelahoma-bridge-refresh-dashboard))
+  
   ;; Context submenu (Phase 3)
   (when (featurep 'codelahoma-gtd-contexts)
     (spacemacs/declare-prefix "o o x" "contexts")
@@ -303,6 +314,7 @@
                      codelahoma-bridge-workflows
                      codelahoma-bridge-projects
                      codelahoma-bridge-suggestions
+                     codelahoma-bridge-metrics
                      codelahoma-ui))
     (when (featurep feature)
       (unload-feature feature t)))
@@ -330,6 +342,8 @@
     (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-projects.el"))
   (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-suggestions.el")
     (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-suggestions.el"))
+  (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-metrics.el")
+    (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge-metrics.el"))
   (load-file "~/.spacemacs.d/codelahoma-ui.el")
   (codelahoma-gtd-setup-keybindings)
   (message "GTD system reloaded"))
@@ -366,14 +380,14 @@
     (princ "For full keybinding list, see which-key (SPC o o)\n")
     (princ "Or check the implementation plan in .flowloom/plans/\n\n")
     
-    (princ "Current Phase: Phase 2 - GTD Engine Core\n")
-    (princ "\nPhase 2 Features:\n")
+    (princ "Current Phase: Phase 5 - Knowledge Integration Bridge\n")
+    (princ "\nPhase 5 Features:\n")
     (princ "-----------------\n")
-    (princ "  ✓ Task state management (TODO/NEXT/WAITING/PROJECT)\n")
-    (princ "  ✓ Intelligent capture with context detection\n")
-    (princ "  ✓ Inbox processing workflow\n")
-    (princ "  ✓ Project and area structure\n")
-    (princ "  ✓ Refile suggestions and bulk operations\n")
+    (princ "  ✓ Bidirectional task-note linking\n")
+    (princ "  ✓ Knowledge-driven workflows\n")
+    (princ "  ✓ Project knowledge integration\n")
+    (princ "  ✓ Smart knowledge suggestions\n")
+    (princ "  ✓ Knowledge metrics and insights\n")
     (princ "\nStatus: " )
     (princ (propertize "Operational" 'face '(:foreground "#86dc2f" :weight bold))))
   (switch-to-buffer-other-window "*GTD Help*"))
