@@ -40,6 +40,8 @@
 ;; Phase 6 modules
 (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-dashboard.el")
   (require 'codelahoma-dashboard))
+(when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-command-palette.el")
+  (require 'codelahoma-command-palette))
 
 (defun codelahoma-gtd-setup-keybindings ()
   "Set up GTD keybindings under SPC o o."
@@ -48,6 +50,13 @@
   ;; Main dashboard (SPC for quick access)
   (spacemacs/set-leader-keys
     "o o SPC" 'codelahoma-dashboard)
+  
+  ;; Command palette (Phase 6)
+  (when (featurep 'codelahoma-command-palette)
+    (spacemacs/set-leader-keys
+      "o o o" 'codelahoma-command-palette
+      "o o O" 'codelahoma-command-fuzzy-search
+      "o o /" 'codelahoma-command-by-category))
   
   ;; Capture submenu
   (spacemacs/declare-prefix "o o c" "capture")
@@ -323,6 +332,7 @@
                      codelahoma-bridge-suggestions
                      codelahoma-bridge-metrics
                      codelahoma-dashboard
+                     codelahoma-command-palette
                      codelahoma-ui))
     (when (featurep feature)
       (unload-feature feature t)))
@@ -355,6 +365,8 @@
   ;; Phase 6 modules
   (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-dashboard.el")
     (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-dashboard.el"))
+  (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-command-palette.el")
+    (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-command-palette.el"))
   (load-file "~/.spacemacs.d/codelahoma-ui.el")
   (codelahoma-gtd-setup-keybindings)
   (message "GTD system reloaded"))
@@ -395,7 +407,7 @@
     (princ "\nPhase 6 Features:\n")
     (princ "-----------------\n")
     (princ "  ✓ Unified dashboard (SPC o o SPC)\n")
-    (princ "  ⏳ Command palette\n")
+    (princ "  ✓ Command palette (SPC o o o)\n")
     (princ "  ⏳ Unified search\n")
     (princ "  ⏳ Status bar integration\n")
     (princ "  ⏳ Polished UX\n")
