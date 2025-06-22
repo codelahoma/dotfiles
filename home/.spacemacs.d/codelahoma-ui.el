@@ -44,6 +44,10 @@
   (require 'codelahoma-command-palette))
 (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-unified-search.el")
   (require 'codelahoma-unified-search))
+(when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-status-bar.el")
+  (require 'codelahoma-status-bar))
+(when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-ux-polish.el")
+  (require 'codelahoma-ux-polish))
 
 (defun codelahoma-gtd-setup-keybindings ()
   "Set up GTD keybindings under SPC o o."
@@ -306,9 +310,26 @@
       "o o b c" 'codelahoma-gtd-check-all-files
       "o o b !" 'codelahoma-gtd-emergency-backup))
   
-  ;; Save command
+  ;; Status bar and UX (Phase 6)
+  (when (featurep 'codelahoma-status-bar)
+    (spacemacs/declare-prefix "o o B" "status-bar")
+    (spacemacs/set-leader-keys
+      "o o B e" 'codelahoma-status-bar-enable
+      "o o B d" 'codelahoma-status-bar-disable
+      "o o B m" 'codelahoma-status-bar-mode))
+  
+  (when (featurep 'codelahoma-ux-polish)
+    (spacemacs/declare-prefix "o o U" "ux")
+    (spacemacs/set-leader-keys
+      "o o U o" 'codelahoma-ux-onboarding
+      "o o U t" 'codelahoma-ux-interactive-tutorial
+      "o o U w" 'codelahoma-ux-welcome-screen
+      "o o U u" 'codelahoma-ux-undo
+      "o o U r" 'codelahoma-ux-redo))
+  
+  ;; Save command (use w for write)
   (spacemacs/set-leader-keys
-    "o o s" 'org-save-all-org-buffers)
+    "o o w" 'org-save-all-org-buffers)
   
   ;; Help/Documentation
   (spacemacs/set-leader-keys
@@ -345,6 +366,8 @@
                      codelahoma-dashboard
                      codelahoma-command-palette
                      codelahoma-unified-search
+                     codelahoma-status-bar
+                     codelahoma-ux-polish
                      codelahoma-ui))
     (when (featurep feature)
       (unload-feature feature t)))
@@ -381,6 +404,10 @@
     (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-command-palette.el"))
   (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-unified-search.el")
     (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-unified-search.el"))
+  (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-status-bar.el")
+    (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-status-bar.el"))
+  (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-ux-polish.el")
+    (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-ux-polish.el"))
   (load-file "~/.spacemacs.d/codelahoma-ui.el")
   (codelahoma-gtd-setup-keybindings)
   (message "GTD system reloaded"))
@@ -411,7 +438,7 @@
     (princ "  SPC o o p i   - Process inbox items\n")
     (princ "  SPC o o r w   - Weekly review\n")
     (princ "  SPC o o z n   - Find/create Zettelkasten note\n")
-    (princ "  SPC o o s     - Save all org buffers\n")
+    (princ "  SPC o o w     - Save all org buffers\n")
     (princ "  SPC o o ?     - This help\n\n")
     
     (princ "For full keybinding list, see which-key (SPC o o)\n")
@@ -423,8 +450,8 @@
     (princ "  ✓ Unified dashboard (SPC o o SPC)\n")
     (princ "  ✓ Command palette (SPC o o o)\n")
     (princ "  ✓ Unified search (SPC o o s s)\n")
-    (princ "  ⏳ Status bar integration\n")
-    (princ "  ⏳ Polished UX\n")
+    (princ "  ✓ Status bar integration\n")
+    (princ "  ✓ Polished UX with onboarding\n")
     (princ "\nStatus: " )
     (princ (propertize "Operational" 'face '(:foreground "#86dc2f" :weight bold))))
   (switch-to-buffer-other-window "*GTD Help*"))
