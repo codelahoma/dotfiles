@@ -42,6 +42,8 @@
   (require 'codelahoma-dashboard))
 (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-command-palette.el")
   (require 'codelahoma-command-palette))
+(when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-unified-search.el")
+  (require 'codelahoma-unified-search))
 
 (defun codelahoma-gtd-setup-keybindings ()
   "Set up GTD keybindings under SPC o o."
@@ -57,6 +59,15 @@
       "o o o" 'codelahoma-command-palette
       "o o O" 'codelahoma-command-fuzzy-search
       "o o /" 'codelahoma-command-by-category))
+  
+  ;; Unified search (Phase 6)
+  (when (featurep 'codelahoma-unified-search)
+    (spacemacs/declare-prefix "o o s" "search")
+    (spacemacs/set-leader-keys
+      "o o s s" 'codelahoma-search
+      "o o s a" 'codelahoma-search-advanced
+      "o o s l" 'codelahoma-search-load
+      "o o s S" 'codelahoma-search-save))
   
   ;; Capture submenu
   (spacemacs/declare-prefix "o o c" "capture")
@@ -333,6 +344,7 @@
                      codelahoma-bridge-metrics
                      codelahoma-dashboard
                      codelahoma-command-palette
+                     codelahoma-unified-search
                      codelahoma-ui))
     (when (featurep feature)
       (unload-feature feature t)))
@@ -367,6 +379,8 @@
     (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-dashboard.el"))
   (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-command-palette.el")
     (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-command-palette.el"))
+  (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-unified-search.el")
+    (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-unified-search.el"))
   (load-file "~/.spacemacs.d/codelahoma-ui.el")
   (codelahoma-gtd-setup-keybindings)
   (message "GTD system reloaded"))
@@ -408,7 +422,7 @@
     (princ "-----------------\n")
     (princ "  ✓ Unified dashboard (SPC o o SPC)\n")
     (princ "  ✓ Command palette (SPC o o o)\n")
-    (princ "  ⏳ Unified search\n")
+    (princ "  ✓ Unified search (SPC o o s s)\n")
     (princ "  ⏳ Status bar integration\n")
     (princ "  ⏳ Polished UX\n")
     (princ "\nStatus: " )
