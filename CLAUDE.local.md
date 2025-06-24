@@ -39,3 +39,6 @@ This tests whether the slashload startup context was successfully loaded and int
 
 ## FlowLoom Commands Location
 - All flowloom commands can be found under .claude/commands/flowloom
+
+## Tool Capabilities
+- You have access to mmdc for creating images to include in markdown documents you produce
