@@ -1102,6 +1102,7 @@ before packages are loaded."
                 (require 'codelahoma-gtd-capture)
                 (require 'codelahoma-gtd-process)
                 (require 'codelahoma-gtd-review)
+                (require 'codelahoma-gtd-roam)
                 ;; Load UI (required for keybindings)
                 (when (file-exists-p "~/.spacemacs.d/codelahoma-ui.el")
                   (load-file "~/.spacemacs.d/codelahoma-ui.el"))
@@ -1112,9 +1113,9 @@ before packages are loaded."
                 (codelahoma-gtd-enable-auto-save)
                 
                 ;; Optional: Load bridge if it exists (Phase 5 feature)
-                (when (file-exists-p "~/.spacemacs.d/codelahoma-bridge.el")
+                (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge.el")
                   (condition-case nil
-                      (load-file "~/.spacemacs.d/codelahoma-bridge.el")
+                      (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge.el")
                     (error (message "Bridge module not ready yet"))))
                 (message "GTD system loaded successfully"))
             (error (message "Error loading GTD modules: %s" err)))
