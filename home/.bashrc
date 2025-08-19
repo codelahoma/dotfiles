@@ -57,3 +57,7 @@ command_exists() {
 
 # Minimal prompt for non-interactive use
 export PS1='$ '
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/rodk/.lmstudio/bin"
+# End of LM Studio CLI section
+
