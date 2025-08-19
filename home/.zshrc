@@ -147,9 +147,6 @@ alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"'
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# RVM (Ruby Version Manager) - only add to PATH
-export PATH="$PATH:$HOME/.rvm/bin"
-alias loadrvm='[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"'
 
 # swiftenv
 if which swiftenv > /dev/null; then eval "$(swiftenv init -)"; fi
@@ -191,22 +188,19 @@ fi
 
 # p10k configuration
 [[ ! -f ~/.homesick/repos/dotfiles/home/.p10k.zsh ]] || source ~/.homesick/repos/dotfiles/home/.p10k.zsh
-# FlowLoom
-export PATH="/Users/rodk/.homesick/repos/dotfiles/.flowloom/bin:$PATH"
 
 # Additional aliases and functions
 function gi() { curl -sLw "\n" https://www.toptal.com/developers/gitignore/api/$@ ;}
-alias claude="/Users/rodk/.claude/local/claude"
 
 # Enhanced orgg alias to sync both org-files and .catalyst
 alias orgg='(cd ~/personal/org-files && git-sync && cd .catalyst && git-sync)'
 
-# FlowLoom
-export PATH="/Users/rodk/github/flowloom/packages/flowloom_installer/.flowloom/bin:$PATH"
-
-# FlowLoom
-export PATH="/Users/rodk/work/atlas-up-ai/.flowloom/bin:$PATH"
 
 fpath+=~/.zfunc; autoload -Uz compinit; compinit
 
 eval $(thefuck --alias)
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/rodk/.lmstudio/bin"
+# End of LM Studio CLI section
+

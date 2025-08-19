@@ -108,7 +108,9 @@ Chrome = "com.google.Chrome"
 Spotify = "com.spotify.client"
 Notion = "notion.id"
 Zoom = "us.zoom.xos"
+Safari = "com.apple.Safari"
 
+-- DefaultBrowser = Safari
 DefaultBrowser = Chrome
 if  work_machines[machine] ~= nil  then
   Install:andUse("URLDispatcher",
@@ -117,11 +119,8 @@ if  work_machines[machine] ~= nil  then
                     decode_slack_redir_urls = true,
                     url_patterns = {
                       { "https?://open.spotify.com", Spotify},
-                      { "https?://www.notion.so", Notion},
-                      { "https?://bitbucket.org/kitewire", Bitbucket},
-                      { "https?://bitbucket.org/", Bitbucket},
-                      { "https?://kitewire.atlassian.net", Jira},
-                      { "https?://*.zoom.us", Zoom}
+                      -- { "https?://www.notion.so", Notion},
+                      -- { "https?://*.zoom.us", Zoom}
                     },
                     default_handler = DefaultBrowser
                   },
@@ -334,60 +333,31 @@ end
 
 
 
-if work_machines[machine] ~= nil then
-  hotkey.bind(hyper, "a", appLauncher('Stickies'))
-  hotkey.bind(magic, "a", functionLauncher(focusOrOpenChromeProfile, {profileWork, winNameWork, "https://tenant1.localhost:8000/admin/"}))
-
-  hotkey.bind(hyper, "b", appLauncher('ChatGPT'))
-  hotkey.bind(magic, "b", appLauncher('Bazecor'))
-  hotkey.bind(hyper, "c", hs.toggleConsole)
-  hotkey.bind(magic, "c", appLauncher('Claude'))
-  hotkey.bind(hyper, "d", appLauncher('Dash'))
-  hotkey.bind(magic, "d", appLauncher('Discord'))
-  hotkey.bind(hyper, "f", appLauncher('DBeaver'))
-  hotkey.bind(magic, "f", appLauncher("Safari"))
-  hotkey.bind(hyper, "g", appLauncher('Atlas Jupyter'))
-  hotkey.bind(hyper, "h", appLauncher('Docker Desktop'))
-  hotkey.bind(hyper, "i", appLauncher('iTerm'))
-  hotkey.bind(hyper, "j", appLauncher('Emacs'))
-  hotkey.bind(magic, "j", appLauncher('Zed'))
-  hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
-  hotkey.bind(magic, "k", appLauncher('Marked'))
-  hotkey.bind(hyper, "l", appLauncher('Google Calendar'))
-  hotkey.bind(hyper, "n", appLauncher('Notion'))
-  hotkey.bind(hyper, "o", appLauncher('Slack'))
-  hotkey.bind(hyper, "p", appLauncher('Perplexity AI'))
-  hotkey.bind(hyper, "q", appLauncher('1Password'))
-  hotkey.bind(hyper, "r", hs.reload)
-  hotkey.bind(hyper, "s", hs.grid.show)
-  hotkey.bind(magic, "s", appLauncher("Safari"))
-  hotkey.bind(hyper, "t", appLauncher("DEVONthink 3"))
-  hotkey.bind(hyper, "u", open750)
-  hotkey.bind(hyper, "v", pasteLauncher())
-  hotkey.bind(hyper, "w", appLauncher('Warp'))
-  hotkey.bind(hyper, "y", appLauncher('Jira'))
-  hotkey.bind(hyper, "z", appLauncher("zoom.us"))
-  hotkey.bind(magic, "z", appLauncher("Zotero"))
-  hotkey.bind(hyper, ";", appLauncher('Spotify'))
-  hotkey.bind(hyper, "0", centerOnMainDisplay)
-else
-  hotkey.bind(hyper, "a", appLauncher('Arduino IDE'))
-  hotkey.bind(hyper, "c", hs.toggleConsole)
-  hotkey.bind(hyper, "d", appLauncher('Dash'))
-  hotkey.bind(hyper, "i", appLauncher('iTerm'))
-  hotkey.bind(hyper, "j", appLauncher('Emacs'))
-  hotkey.bind(magic, "j", appLauncher('Zed'))
-  hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
-  hotkey.bind(hyper, "o", appLauncher('Slack'))
-  hotkey.bind(hyper, "p", appLauncher('Preview'))
-  hotkey.bind(hyper, "r", hs.reload)
-  hotkey.bind(hyper, "s", hs.grid.show)
-  hotkey.bind(hyper, "u", open750)
-  hotkey.bind(hyper, "v", pasteLauncher())
-  hotkey.bind(hyper, "0", centerOnMainDisplay)
-  hotkey.bind(hyper, "q", appLauncher('1Password 7'))
-  hotkey.bind(hyper, ";", appLauncher('Spotify'))
-end
+hotkey.bind(hyper, "a", appLauncher('Stickies'))
+hotkey.bind(hyper, "b", appLauncher('ChatGPT'))
+hotkey.bind(magic, "b", appLauncher('Bazecor'))
+hotkey.bind(hyper, "c", hs.toggleConsole)
+hotkey.bind(magic, "c", appLauncher('Claude'))
+hotkey.bind(hyper, "d", appLauncher('Dash'))
+hotkey.bind(magic, "d", appLauncher('Discord'))
+hotkey.bind(hyper, "f", appLauncher('DBeaver'))
+hotkey.bind(hyper, "i", appLauncher('iTerm'))
+hotkey.bind(hyper, "j", appLauncher('Emacs'))
+hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
+hotkey.bind(magic, "k", appLauncher('Marked'))
+hotkey.bind(hyper, "l", appLauncher('Fantastical'))
+hotkey.bind(hyper, "o", appLauncher('Slack'))
+hotkey.bind(hyper, "p", appLauncher('Perplexity AI'))
+hotkey.bind(hyper, "q", appLauncher('1Password'))
+hotkey.bind(hyper, "r", hs.reload)
+hotkey.bind(hyper, "s", hs.grid.show)
+hotkey.bind(magic, "s", appLauncher("Safari"))
+hotkey.bind(hyper, "t", appLauncher("DEVONthink 3"))
+hotkey.bind(hyper, "u", open750)
+hotkey.bind(hyper, "v", pasteLauncher())
+hotkey.bind(magic, "z", appLauncher("Zotero"))
+hotkey.bind(hyper, ";", appLauncher('Spotify'))
+hotkey.bind(hyper, "0", centerOnMainDisplay)
 
 -- menuModal = hs.hotkey.modal.new(hyper, "n")
 -- menuModal.alertUID = ""
