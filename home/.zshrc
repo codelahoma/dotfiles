@@ -204,3 +204,5 @@ eval $(thefuck --alias)
 export PATH="$PATH:/Users/rodk/.lmstudio/bin"
 # End of LM Studio CLI section
 
+# Zekko shell integration
+[ -f "/Users/rodk/my-zekko/bin/zekko-shell-integration.sh" ] && source "/Users/rodk/my-zekko/bin/zekko-shell-integration.sh"

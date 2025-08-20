@@ -48,6 +48,9 @@ The following special values of the =noweb-ref= header argument will cause a cod
 * startup
 General variables that need to be set before packages load.
 #+begin_src emacs-lisp :noweb-ref user-init
+  ;; Prevent native compilation of problematic org files
+  ;; This fixes the issue where built-in org gets compiled and loaded
+  (setq native-comp-jit-compilation-deny-list '(".*org-element.*" ".*org-macs.*" ".*org-compat.*"))
   (setq comp-deferred-compilation t)
 #+end_src
 
@@ -210,10 +213,6 @@ This section defines various custom keybindings that were previously in the to-o
   :weight normal
   :width normal)
   ("Hack"
-   :size 18.0
-   :weight normal
-   :width normal)
-  ("MesloLGS NF"
    :size 18.0
    :weight normal
    :width normal)
@@ -1521,7 +1520,25 @@ Configures the base distribution and the layers I want installed and configure.
   ;; Mode line
   (set-face-attribute 'mode-line nil :height 1.08)
 
+  (setq lsp-ruff-server-command '("ruff" "server"))
 
+  (defun rk/clip-for-claude ()
+    "Copy a reference to the current file (and line range if a region is active)
+    to the kill-ring. The string will take the form:
+    \"It is located in /path/to/file\"; if a region is active, it will append the
+    line numbers (e.g., \"It is located in /path/to/file, lines 10-20\")."
+    (interactive)
+    (unless buffer-file-name
+      (error "Current buffer is not visiting a file"))
+    (let ((file buffer-file-name)
+          (location (if (use-region-p)
+                        (format "It is located in %s, lines %d-%d"
+                                buffer-file-name
+                                (line-number-at-pos (region-beginning))
+                                (line-number-at-pos (region-end)))
+                      (format "It is located in %s" buffer-file-name))))
+      (kill-new location)
+      (message "%s" location)))
 
 
   (defun url-found-p (url)
@@ -1630,21 +1647,75 @@ Configures the base distribution and the layers I want installed and configure.
     (setq imp-user-filter #'markdown-html)
     (cl-incf imp-last-state)
     (imp--notify-clients))
-
-
-
 #+end_src
 
 * Org Mode Configuration
 
 ** Load CodeLahoma Org Extensions  
 #+begin_src emacs-lisp :noweb-ref user-config
-  ;; Load CodeLahoma Org Extensions (centralized org configuration)
+  ;; Load Personal GTD-Zettelkasten System
   (with-eval-after-load 'org
-    (let ((codelahoma-org-file (expand-file-name "~/.spacemacs.d/codelahoma-org.el")))
-      (when (file-exists-p codelahoma-org-file)
-        (load-file codelahoma-org-file)
-        (message "Loaded CodeLahoma org extensions from %s" codelahoma-org-file))))
+    ;; Load configuration first
+    (add-to-list 'load-path "~/.spacemacs.d/codelahoma-gtd/")
+    (add-to-list 'load-path "~/.spacemacs.d/")
+    
+    ;; Check if modules exist and load them
+    (let ((gtd-dir (expand-file-name "~/.spacemacs.d/codelahoma-gtd/")))
+      (if (file-exists-p (concat gtd-dir "codelahoma-gtd-config.el"))
+          (condition-case err
+              (progn
+                (require 'codelahoma-gtd-config)
+                (require 'codelahoma-gtd-core)
+                (require 'codelahoma-gtd-capture)
+                (require 'codelahoma-gtd-process)
+                (require 'codelahoma-gtd-review)
+                (require 'codelahoma-gtd-roam)
+                ;; Load UI (required for keybindings)
+                (when (file-exists-p "~/.spacemacs.d/codelahoma-ui.el")
+                  (load-file "~/.spacemacs.d/codelahoma-ui.el"))
+                
+                ;; Initialize system
+                (codelahoma-gtd-initialize)
+                (codelahoma-gtd-setup-keybindings)
+                (codelahoma-gtd-enable-auto-save)
+                
+                ;; Optional: Load bridge if it exists (Phase 5 feature)
+                (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge.el")
+                  (condition-case nil
+                      (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge.el")
+                    (error (message "Bridge module not ready yet"))))
+                (message "GTD system loaded successfully"))
+            (error (message "Error loading GTD modules: %s" err)))
+        (message "GTD modules not found at %s - check homesick link" gtd-dir)))
+    
+    ;; Configure org-roam for knowledge management
+    (use-package org-roam
+      :ensure t
+      :custom
+      (org-roam-directory "~/personal/org-files/knowledge/")
+      (org-roam-db-location "~/personal/org-files/.org-roam.db")
+      (org-roam-completion-everywhere t)
+      :config
+      (setq org-roam-node-display-template 
+            (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+      (org-roam-db-autosync-mode)
+      
+      ;; Personal capture templates
+      (setq org-roam-capture-templates
+            '(("d" "default" plain "%?"
+               :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                                  "#+title: ${title}\n#+created: %U\n#+filetags: \n\n")
+               :unnarrowed t)
+              ("p" "permanent" plain "%?"
+               :target (file+head "permanent/%<%Y%m%d%H%M%S>-${slug}.org"
+                                  "#+title: ${title}\n#+created: %U\n#+type: permanent\n#+filetags: \n\n")
+               :unnarrowed t)
+              ("l" "literature" plain "%?"
+               :target (file+head "literature/%<%Y%m%d%H%M%S>-${slug}.org"
+                                  "#+title: ${title}\n#+author: %^{Author}\n#+created: %U\n#+type: literature\n#+filetags: \n\n")
+               :unnarrowed t))))
+    
+    (message "Personal GTD-Zettelkasten system loaded"))
 #+end_src
 
 * .spacemacs Preamble
@@ -1657,6 +1728,27 @@ A brief heading to the file, defining lexical binding and warning that the confi
 
   ;; NOTE: DO NOT EDIT THIS FILE DIRECTLY!!!
   ;; This file is autogenerated from ~dotspacemacs.org~, and changes should be made there, then the file tangled.
+
+  ;; init-preload.el loading disabled - GTD system removed
+  ;; (let ((init-preload-file (expand-file-name "~/.spacemacs.d/init-preload.el")))
+  ;;   (when (file-exists-p init-preload-file)
+  ;;     (load init-preload-file)))
+
+  ;; Fix for org-element-lineage-map compatibility
+  ;; This function is needed for org-gtd and other packages that expect it
+  ;; (unless (fboundp 'org-element-lineage-map)
+  ;;   (defalias 'org-element-lineage-map 'org-element-lineage))
+  
+  ;; ;; Fix for org-element-with-disabled-cache error
+  ;; (eval-and-compile
+  ;;   (unless (fboundp 'org-element-with-disabled-cache)
+  ;;     (defmacro org-element-with-disabled-cache (&rest body)
+  ;;       "Execute BODY with org-element cache disabled (compatibility shim)."
+  ;;       `(let ((org-element-use-cache nil))
+  ;;          ,@body))))
+  
+  ;; ;; Disable org-element caching to prevent issues
+  ;; (setq org-element-use-cache nil)
 #+end_src
 
 

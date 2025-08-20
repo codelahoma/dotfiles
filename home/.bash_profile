@@ -3,7 +3,10 @@
 
 # Source bashrc for interactive shells
 [[ -r ~/.bashrc ]] && source ~/.bashrc
+
 # Added by LM Studio CLI (lms)
 export PATH="$PATH:/Users/rodk/.lmstudio/bin"
 # End of LM Studio CLI section
 
+# Zekko shell integration
+[ -f "/Users/rodk/my-zekko/bin/zekko-shell-integration.sh" ] && source "/Users/rodk/my-zekko/bin/zekko-shell-integration.sh"
