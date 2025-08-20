@@ -28,8 +28,16 @@ The GTD system follows a modular component architecture:
 ;; A comprehensive GTD implementation for Spacemacs
 
 ;;; Code:
-
 (require 'cl-lib)  ; For defstruct
+
+;; Early compatibility fixes
+(eval-and-compile
+  ;; Fix for org-element caching issues
+  (unless (fboundp 'org-element-with-disabled-cache)
+    (defmacro org-element-with-disabled-cache (&rest body)
+      "Execute BODY with org-element cache disabled (compatibility shim)."
+      `(let ((org-element-use-cache nil))
+         ,@body))))
 
 (defgroup codelahoma-gtd nil
   "GTD system configuration."
@@ -40,6 +48,53 @@ The GTD system follows a modular component architecture:
   "Base directory for GTD files."
   :type 'directory
   :group 'codelahoma-gtd)
+
+(defcustom codelahoma-gtd-knowledge-directory "~/personal/org-files/knowledge/"
+  "Base directory for Zettelkasten knowledge files."
+  :type 'directory
+  :group 'codelahoma-gtd)
+
+(defcustom codelahoma-gtd-daily-directory "~/personal/org-files/daily/"
+  "Base directory for daily notes."
+  :type 'directory
+  :group 'codelahoma-gtd)
+
+(defcustom codelahoma-roam-directory "~/personal/org-files/knowledge/"
+  "Directory for Zettelkasten notes."
+  :type 'directory
+  :group 'codelahoma-gtd)
+
+(defvar codelahoma-roam-capture-templates
+  '(("n" "permanent note" plain
+     "%?"
+     :target (file+head "${slug}.org"
+                        "#+title: ${title}\n#+created: %U\n#+filetags: :permanent:\n")
+     :unnarrowed t)
+    
+    ("l" "literature note" plain
+     "* Source\n- Author: %^{Author}\n- Type: %^{Type|book|article|video|course}\n- Date: %U\n- Link: %^{Link}\n\n* Key Ideas\n%?\n\n* Personal Thoughts\n\n* Questions\n\n* Action Items\n- [ ] \n\n* Related Notes\n- "
+     :target (file+head "literature/${slug}.org"
+                        "#+title: ${title}\n#+created: %U\n#+filetags: :literature:\n")
+     :unnarrowed t)
+    
+    ("r" "reference note" plain
+     "* Overview\n%?\n\n* Key Points\n\n* Examples\n\n* Related Topics\n- "
+     :target (file+head "references/${slug}.org"
+                        "#+title: ${title}\n#+created: %U\n#+filetags: :reference:\n")
+     :unnarrowed t)
+    
+    ("d" "daily note" entry
+     "* %<%H:%M> %?"
+     :target (file+head "daily/%<%Y-%m-%d>.org"
+                        "#+title: %<%Y-%m-%d %A>\n#+created: %U\n#+filetags: :daily:\n\n* Morning Review\n- [ ] Review calendar\n- [ ] Review GTD inbox\n- [ ] Set daily priorities\n\n* Work Log\n\n* Personal Log\n\n* Evening Review\n- [ ] Process inbox\n- [ ] Update task states\n- [ ] Plan tomorrow\n")
+     :unnarrowed t)
+    
+    ("p" "project note" plain
+     "* Overview\nGTD Link: [[file:../gtd/projects.org::*%^{Project Name}]]\n\n* Goals\n%?\n\n* Key Decisions\n\n* Resources\n\n* Progress Log\n\n* Lessons Learned\n"
+     :target (file+head "projects/${slug}.org"
+                        "#+title: ${title} Knowledge Base\n#+created: %U\n#+filetags: :project:\n")
+     :unnarrowed t))
+  "Roam capture templates for Zettelkasten.")
 
 (defvar codelahoma-gtd-components-loaded nil
   "List of loaded GTD components.")
@@ -103,20 +158,25 @@ The GTD system follows a modular component architecture:
 
 #+begin_src emacs-lisp
 (defvar codelahoma-gtd-files
-  '(("inbox.org" . "Inbox")
-    ("projects.org" . "Projects") 
-    ("next-actions.org" . "Next Actions")
-    ("waiting-for.org" . "Waiting For")
-    ("someday-maybe.org" . "Someday/Maybe")
-    ("reference.org" . "Reference")
-    ("tickler.org" . "Tickler"))
+  '(("inbox.org" . "GTD Inbox")
+    ("projects.org" . "GTD Projects") 
+    ("someday.org" . "Someday/Maybe")
+    ("calendar.org" . "Calendar"))
   "GTD file definitions.")
 
 (defun codelahoma-gtd-create-directories ()
   "Create GTD directory structure."
   (make-directory codelahoma-gtd-directory t)
   (make-directory (concat codelahoma-gtd-directory "archive/") t)
-  (make-directory (concat codelahoma-gtd-directory "reviews/") t))
+  (make-directory codelahoma-gtd-knowledge-directory t)
+  (make-directory (concat codelahoma-gtd-knowledge-directory "permanent/") t)
+  (make-directory (concat codelahoma-gtd-knowledge-directory "literature/") t)
+  (make-directory codelahoma-gtd-daily-directory t)
+  (make-directory (expand-file-name "areas" (file-name-directory (directory-file-name codelahoma-gtd-directory))) t)
+  (make-directory (expand-file-name "resources" (file-name-directory (directory-file-name codelahoma-gtd-directory))) t)
+  (make-directory (expand-file-name "system" (file-name-directory (directory-file-name codelahoma-gtd-directory))) t)
+  (make-directory (expand-file-name "system/templates" (file-name-directory (directory-file-name codelahoma-gtd-directory))) t)
+  (make-directory (expand-file-name "system/reviews" (file-name-directory (directory-file-name codelahoma-gtd-directory))) t))
 
 (defun codelahoma-gtd-create-files ()
   "Create initial GTD files if they don't exist."
@@ -151,8 +211,9 @@ The GTD system follows a modular component architecture:
 (defun codelahoma-gtd-setup-states ()
   "Configure org-mode states for GTD."
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "WAITING(w@/!)" "HOLD(h@/!)" 
-                    "|" "DONE(d!)" "CANCELLED(c@)")))
+        '((sequence "TODO(t)" "NEXT(n)" "WAITING(w@)" "SOMEDAY(s)" "HOLD(h@)" 
+                    "|" "DONE(d!)" "CANCELLED(c@)")
+          (sequence "EVENT(e)" "APPOINTMENT(a)" "|" "DONE(d!)" "CANCELLED(c@)")))
   
   (setq org-todo-keyword-faces
         (mapcar (lambda (state)
@@ -283,7 +344,25 @@ The GTD system follows a modular component architecture:
   (spacemacs/set-leader-keys "ooam" 'codelahoma-gtd-agenda-media)
   
   ;; Save all org buffers
-  (spacemacs/set-leader-keys "oos" 'org-save-all-org-buffers))
+  (spacemacs/set-leader-keys "oos" 'org-save-all-org-buffers)
+  
+  ;; Zettelkasten (Knowledge Management)
+  (spacemacs/declare-prefix "ooz" "zettelkasten")
+  (spacemacs/set-leader-keys "oozn" 'org-roam-node-find)
+  (spacemacs/set-leader-keys "oozi" 'org-roam-node-insert)
+  (spacemacs/set-leader-keys "oozc" 'org-roam-capture)
+  (spacemacs/set-leader-keys "oozd" 'org-roam-dailies-goto-today)
+  (spacemacs/set-leader-keys "oozD" 'org-roam-dailies-goto-date)
+  (spacemacs/set-leader-keys "oozb" 'org-roam-buffer-toggle)
+  (spacemacs/set-leader-keys "oozg" 'org-roam-graph)
+  (spacemacs/set-leader-keys "oozr" 'org-roam-ref-find)
+  
+  ;; Integration between GTD and Zettelkasten
+  (spacemacs/declare-prefix "ooi" "integrate")
+  (spacemacs/set-leader-keys "ooil" 'codelahoma-gtd-link-to-roam)
+  (spacemacs/set-leader-keys "ooie" 'codelahoma-gtd-extract-actions)
+  (spacemacs/set-leader-keys "ooir" 'codelahoma-gtd-review-project-knowledge)
+  (spacemacs/set-leader-keys "ooit" 'codelahoma-gtd-create-task-from-note))
 
 (codelahoma-gtd-load-component 'keybindings)
 #+end_src
@@ -389,30 +468,30 @@ The GTD system follows a modular component architecture:
 
 #+begin_src emacs-lisp
 (defvar codelahoma-gtd-capture-templates
-  '(("i" "Inbox" entry (file codelahoma-gtd-inbox-file)
+  `(("i" "Inbox" entry (file ,#'codelahoma-gtd-inbox-file)
      "* TODO %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n  %i")
     
     ("p" "Personal")
-    ("pi" "Personal Inbox" entry (file codelahoma-gtd-inbox-file)
+    ("pi" "Personal Inbox" entry (file ,#'codelahoma-gtd-inbox-file)
      "* TODO %? :personal:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n  %i")
-    ("pp" "Personal Project" entry (file codelahoma-gtd-projects-file)
+    ("pp" "Personal Project" entry (file ,#'codelahoma-gtd-projects-file)
      "* TODO %? [/] :personal:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n** TODO First task")
-    ("pn" "Personal Next Action" entry (file codelahoma-gtd-file "next-actions")
+    ("pn" "Personal Next Action" entry (file ,(lambda () (codelahoma-gtd-file "next-actions")))
      "* NEXT %? :personal:\n  :PROPERTIES:\n  :CREATED: %U\n  :CONTEXT: %^{Context|@home|@errands|@calls|@computer}\n  :END:")
     
     ("w" "Work")
-    ("wi" "Work Inbox" entry (file codelahoma-gtd-inbox-file)
+    ("wi" "Work Inbox" entry (file ,#'codelahoma-gtd-inbox-file)
      "* TODO %? :work:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n  %i")
-    ("wp" "Work Project" entry (file codelahoma-gtd-projects-file)
+    ("wp" "Work Project" entry (file ,#'codelahoma-gtd-projects-file)
      "* TODO %? [/] :work:\n  :PROPERTIES:\n  :CREATED: %U\n  :END:\n** TODO First task")
-    ("wn" "Work Next Action" entry (file codelahoma-gtd-file "next-actions")
+    ("wn" "Work Next Action" entry (file ,(lambda () (codelahoma-gtd-file "next-actions")))
      "* NEXT %? :work:\n  :PROPERTIES:\n  :CREATED: %U\n  :CONTEXT: %^{Context|@office|@calls|@computer|@meetings}\n  :END:")
-    ("ww" "Work Waiting For" entry (file codelahoma-gtd-file "waiting-for")
+    ("ww" "Work Waiting For" entry (file ,(lambda () (codelahoma-gtd-file "waiting-for")))
      "* WAITING %? :work:waiting:\n  :PROPERTIES:\n  :CREATED: %U\n  :WAITING_ON: %^{Waiting on}\n  :END:")
     
-    ("n" "Next Action (Generic)" entry (file codelahoma-gtd-file "next-actions")
+    ("n" "Next Action (Generic)" entry (file ,(lambda () (codelahoma-gtd-file "next-actions")))
      "* NEXT %?\n  :PROPERTIES:\n  :CREATED: %U\n  :CONTEXT: %^{Context|@home|@office|@errands|@calls|@computer}\n  :END:")
-    ("W" "Waiting For (Generic)" entry (file codelahoma-gtd-file "waiting-for")
+    ("W" "Waiting For (Generic)" entry (file ,(lambda () (codelahoma-gtd-file "waiting-for")))
      "* WAITING %? :waiting:\n  :PROPERTIES:\n  :CREATED: %U\n  :WAITING_ON: %^{Waiting on}\n  :END:")
     
     ("m" "Media")
@@ -673,6 +752,35 @@ The GTD system follows a modular component architecture:
           (codelahoma-gtd-process-current-item))))))
 
 (codelahoma-gtd-load-component 'inbox-processing)
+
+;; Navigation functions
+(defun codelahoma-gtd-open-inbox ()
+  "Open GTD inbox file."
+  (interactive)
+  (find-file (codelahoma-gtd-inbox-file)))
+
+(defun codelahoma-gtd-open-projects ()
+  "Open GTD projects file."
+  (interactive)
+  (find-file (codelahoma-gtd-projects-file)))
+
+(defun codelahoma-gtd-open-next-actions ()
+  "Open GTD next actions view."
+  (interactive)
+  (org-agenda nil "g")
+  (org-agenda-filter-apply '("+NEXT") 'tag))
+
+(defun codelahoma-gtd-open-someday ()
+  "Open GTD someday/maybe file."
+  (interactive)
+  (find-file (expand-file-name "someday.org" codelahoma-gtd-directory)))
+
+(defun codelahoma-gtd-open-calendar ()
+  "Open GTD calendar file."
+  (interactive)
+  (find-file (expand-file-name "calendar.org" codelahoma-gtd-directory)))
+
+(codelahoma-gtd-load-component 'navigation)
 #+end_src
 
 * [150] Review System
@@ -829,6 +937,13 @@ The GTD system follows a modular component architecture:
 #+begin_src emacs-lisp
 ;; Org appearance and font faces (moved from dotspacemacs.org)
 (with-eval-after-load 'org
+  ;; Fix for org-element caching issues
+  (setq org-element-use-cache nil)
+  
+  ;; Additional workaround for org-element issues
+  (when (boundp 'org-element--cache)
+    (setq org-element--cache nil))
+  
   (let ((headline '(:inherit default :weight bold)))
     (custom-theme-set-faces
      'user
@@ -973,12 +1088,11 @@ The GTD system follows a modular component architecture:
 #+end_src
 
 ** Org-agenda Integration
-
 #+begin_src emacs-lisp
 (defun codelahoma-gtd-setup-agenda-views ()
   "Configure org-agenda custom views for GTD."
   (setq org-agenda-custom-commands
-        '(("g" "GTD Views"
+        '(("g" "GTD View"
            ((agenda "" ((org-agenda-span 'day)
                         (org-agenda-start-with-log-mode t)))
             (todo "NEXT" ((org-agenda-overriding-header "Next Actions")))
@@ -996,25 +1110,19 @@ The GTD system follows a modular component architecture:
             (todo "WAITING" ((org-agenda-overriding-header "All Waiting Items")))
             (todo "SOMEDAY" ((org-agenda-overriding-header "Someday/Maybe")))))
           ("p" "Personal View"
-           ((agenda "" ((org-agenda-span 'day)
-                        (org-agenda-tag-filter-preset '("+personal"))))
-            (todo "NEXT" ((org-agenda-overriding-header "Personal Next Actions")
-                          (org-agenda-tag-filter-preset '("+personal"))))
-            (todo "WAITING" ((org-agenda-overriding-header "Personal Waiting For")
-                            (org-agenda-tag-filter-preset '("+personal"))))
+           ((agenda "" ((org-agenda-span 'day)))
+            (todo "NEXT" ((org-agenda-overriding-header "Personal Next Actions")))
+            (todo "WAITING" ((org-agenda-overriding-header "Personal Waiting For")))
             (todo "TODO" ((org-agenda-overriding-header "Personal Projects")
-                          (org-agenda-tag-filter-preset '("+personal"))
-                          (org-agenda-files (list (codelahoma-gtd-projects-file)))))))
+                          (org-agenda-files (list (codelahoma-gtd-projects-file))))))
+           ((org-agenda-tag-filter-preset '("+personal" "-work"))))
           ("W" "Work View"
-           ((agenda "" ((org-agenda-span 'day)
-                        (org-agenda-tag-filter-preset '("+work"))))
-            (todo "NEXT" ((org-agenda-overriding-header "Work Next Actions")
-                          (org-agenda-tag-filter-preset '("+work"))))
-            (todo "WAITING" ((org-agenda-overriding-header "Work Waiting For")
-                            (org-agenda-tag-filter-preset '("+work"))))
+           ((agenda "" ((org-agenda-span 'day)))
+            (todo "NEXT" ((org-agenda-overriding-header "Work Next Actions")))
+            (todo "WAITING" ((org-agenda-overriding-header "Work Waiting For")))
             (todo "TODO" ((org-agenda-overriding-header "Work Projects")
-                          (org-agenda-tag-filter-preset '("+work"))
-                          (org-agenda-files (list (codelahoma-gtd-projects-file)))))))
+                          (org-agenda-files (list (codelahoma-gtd-projects-file))))))
+           ((org-agenda-tag-filter-preset '("+work" "-personal"))))
           ("m" "Media Dashboard"
            ((todo "TODO|NEXT" 
                   ((org-agenda-overriding-header "📺 Media Queue")
@@ -1124,44 +1232,41 @@ The GTD system follows a modular component architecture:
 ** Org-Roam Configuration
 
 #+begin_src emacs-lisp
-(defcustom codelahoma-roam-directory "~/personal/org-files/roam/"
-  "Directory for Zettelkasten notes."
-  :type 'directory
-  :group 'codelahoma-gtd)
-
-(defvar codelahoma-roam-capture-templates
-  '(("n" "permanent note" plain
-     "%?"
-     :target (file+head "${slug}.org"
-                        "#+title: ${title}\n#+created: %U\n#+filetags: :permanent:\n")
-     :unnarrowed t)
-    
-    ("l" "literature note" plain
-     "* Source\n- Author: %^{Author}\n- Type: %^{Type|book|article|video|course}\n- Date: %U\n- Link: %^{Link}\n\n* Key Ideas\n%?\n\n* Personal Thoughts\n\n* Questions\n\n* Action Items\n- [ ] \n\n* Related Notes\n- "
-     :target (file+head "literature/${slug}.org"
-                        "#+title: ${title}\n#+created: %U\n#+filetags: :literature:\n")
-     :unnarrowed t)
-    
-    ("r" "reference note" plain
-     "* Overview\n%?\n\n* Key Points\n\n* Examples\n\n* Related Topics\n- "
-     :target (file+head "references/${slug}.org"
-                        "#+title: ${title}\n#+created: %U\n#+filetags: :reference:\n")
-     :unnarrowed t)
-    
-    ("d" "daily note" entry
-     "* %<%H:%M> %?"
-     :target (file+head "daily/%<%Y-%m-%d>.org"
-                        "#+title: %<%Y-%m-%d %A>\n#+created: %U\n#+filetags: :daily:\n\n* Morning Review\n- [ ] Review calendar\n- [ ] Review GTD inbox\n- [ ] Set daily priorities\n\n* Work Log\n\n* Personal Log\n\n* Evening Review\n- [ ] Process inbox\n- [ ] Update task states\n- [ ] Plan tomorrow\n")
-     :unnarrowed t)
-    
-    ("p" "project note" plain
-     "* Overview\nGTD Link: [[file:../gtd/projects.org::*%^{Project Name}]]\n\n* Goals\n%?\n\n* Key Decisions\n\n* Resources\n\n* Progress Log\n\n* Lessons Learned\n"
-     :target (file+head "projects/${slug}.org"
-                        "#+title: ${title} Knowledge Base\n#+created: %U\n#+filetags: :project:\n")
-     :unnarrowed t))
-  "Roam capture templates for Zettelkasten.")
+;; codelahoma-roam-directory and codelahoma-roam-capture-templates 
+;; are defined in the foundation section
 
 (codelahoma-gtd-load-component 'roam-templates)
+
+(defun codelahoma-gtd-setup-org-roam ()
+  "Configure org-roam for Zettelkasten."
+  (when (require 'org-roam nil t)
+    (setq org-roam-v2-ack t)
+    (setq org-roam-directory codelahoma-roam-directory)
+    (setq org-roam-dailies-directory "daily/")
+    (setq org-roam-completion-everywhere t)
+    (setq org-roam-capture-templates codelahoma-roam-capture-templates)
+    (setq org-roam-dailies-capture-templates
+          '(("d" "default" entry "* %?"
+             :target (file+head "%<%Y-%m-%d>.org"
+                               "#+title: %<%Y-%m-%d>
+#+filetags: :daily:
+
+* Morning Planning
+- [ ] Review calendar
+- [ ] Check NEXT actions  
+- [ ] Set 3 priorities
+
+* Captured Thoughts
+
+* Journal
+
+* Evening Review
+- [ ] Process inbox
+- [ ] Create tomorrow's note"))))
+    (org-roam-db-autosync-mode)
+    (message "Org-roam configured for Zettelkasten")))
+
+(codelahoma-gtd-load-component 'org-roam-setup)
 #+end_src
 
 ** Roam Keybindings
@@ -1203,10 +1308,12 @@ The GTD system follows a modular component architecture:
 (defun codelahoma-gtd-link-to-roam ()
   "Link current GTD item to a Zettelkasten note."
   (interactive)
-  (when (org-at-heading-p)
-    (let ((node (org-roam-node-read)))
-      (org-set-property "ROAM_REF" (org-roam-node-id node))
-      (message "Linked to: %s" (org-roam-node-title node)))))
+  (if (featurep 'org-roam)
+      (when (org-at-heading-p)
+        (let ((node (org-roam-node-read)))
+          (org-set-property "ROAM_REF" (org-roam-node-id node))
+          (message "Linked to: %s" (org-roam-node-title node))))
+    (message "Org-roam not available. Please install it first.")))
 
 (defun codelahoma-gtd-extract-actions ()
   "Extract TODO items from current buffer to GTD inbox."
@@ -1228,14 +1335,20 @@ The GTD system follows a modular component architecture:
         (save-buffer))
       (message "Extracted %d actions to GTD inbox" (length actions)))))
 
-(defun codelahoma-gtd-task-from-note ()
+(defun codelahoma-gtd-create-task-from-note ()
   "Create a GTD task from current Zettelkasten note."
   (interactive)
-  (let* ((title (org-roam-node-title (org-roam-node-at-point)))
-         (id (org-roam-node-id (org-roam-node-at-point))))
-    (org-capture nil "i")
-    (insert title)
-    (org-set-property "ROAM_REF" id)))
+  (if (featurep 'org-roam)
+      (let* ((node (org-roam-node-at-point))
+             (title (when node (org-roam-node-title node)))
+             (id (when node (org-roam-node-id node))))
+        (if node
+            (progn
+              (org-capture nil "i")
+              (insert title)
+              (org-set-property "ROAM_REF" id))
+          (message "No org-roam node at point")))
+    (message "Org-roam not available. Please install it first.")))
 
 (defun codelahoma-gtd-review-project-knowledge ()
   "Review knowledge base for current project."
@@ -1338,23 +1451,52 @@ The GTD system follows a modular component architecture:
 * Activation
 
 #+begin_src emacs-lisp
-;; Ensure all components are loaded
-(defun codelahoma-gtd-activate ()
-  "Activate the GTD system."
-  (interactive)
-  (codelahoma-gtd-initialize)
-  (codelahoma-gtd-setup-states)
-  (codelahoma-gtd-setup-capture-templates)
-  (codelahoma-gtd-setup-agenda-views)
-  (codelahoma-gtd-update-agenda-files)
-  (message "GTD system activated"))
+  (defun codelahoma-gtd-activate-simple ()
+    "Activate the GTD system (without org-roam setup)."
+    (interactive)
+    (codelahoma-gtd-initialize)
+    (codelahoma-gtd-setup-states)
+    (codelahoma-gtd-setup-capture-templates)
+    (codelahoma-gtd-setup-agenda-views)
+    (codelahoma-gtd-update-agenda-files)
+    (message "GTD system activated"))
 
-;; Auto-activate when org loads
-(with-eval-after-load 'org
-  (message "GTD: Setting up system...")
-  (codelahoma-gtd-activate)
-  (codelahoma-gtd-setup-keybindings)
-  (message "GTD: System setup complete, keybindings should be available"))
+  ;; Then add this to handle org-roam setup separately:
+  (with-eval-after-load 'org-roam
+    (when (fboundp 'codelahoma-gtd-setup-org-roam)
+      (codelahoma-gtd-setup-org-roam)
+      (message "GTD: Org-roam integration activated")))
+
+  ;; Function to check if we have the right org version
+  (defun codelahoma-gtd-correct-org-loaded-p ()
+    "Check if the correct (non-builtin) org version is loaded."
+    (and (featurep 'org)
+         (fboundp 'org-version)
+         (let ((org-location (locate-library "org")))
+           (and org-location
+                (not (string-match-p "/share/emacs/.*/lisp/org" org-location))
+                (not (string-match-p "/Cellar/.*/share/emacs/.*/lisp/org" org-location))))))
+
+  ;; Delay activation until Spacemacs org is loaded
+  (with-eval-after-load 'org
+    ;; Only activate if we have a recent org version (not the built-in one)
+    (when (codelahoma-gtd-correct-org-loaded-p)
+      (message "GTD: Org version: %s from %s" (org-version) (locate-library "org"))
+      (message "GTD: Setting up system...")
+      (codelahoma-gtd-activate-simple)  ; Use the version without org-roam
+      (codelahoma-gtd-setup-keybindings)
+      (message "GTD: System setup complete, keybindings should be available")))
+
+;; Alternative: Use run-with-idle-timer to ensure proper package loading
+(run-with-idle-timer 3 nil
+  (lambda ()
+    (when (codelahoma-gtd-correct-org-loaded-p)
+      (unless codelahoma-gtd-components-loaded
+        (message "GTD: Late initialization...")
+        (message "GTD: Org version: %s from %s" (org-version) (locate-library "org"))
+        (codelahoma-gtd-activate-simple)
+        (codelahoma-gtd-setup-keybindings)
+        (message "GTD: System activated via idle timer")))))
 
 (provide 'codelahoma-gtd)
 ;;; codelahoma-gtd.el ends here

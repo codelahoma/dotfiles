@@ -1,0 +1,81 @@
+#+TITLE: Travel Checklist
+#+FILETAGS: :checklist:travel:
+
+* Before Trip (1 week out)
+** Documents
+   - [ ] Passport/ID valid and not expiring soon
+   - [ ] Visa requirements checked
+   - [ ] Travel insurance arranged
+   - [ ] Copies of important documents (physical & digital)
+   - [ ] Emergency contacts list
+   
+** Bookings
+   - [ ] Flight confirmation
+   - [ ] Hotel reservations
+   - [ ] Car rental (if needed)
+   - [ ] Airport parking/transport arranged
+   
+** Health
+   - [ ] Vaccinations up to date
+   - [ ] Prescription medications (enough + extra)
+   - [ ] Travel medical kit
+   
+** Financial
+   - [ ] Notify bank/credit cards of travel
+   - [ ] Foreign currency ordered
+   - [ ] Budget planned
+
+* Packing (1-2 days out)
+** Electronics
+   - [ ] Phone + charger
+   - [ ] Laptop + charger
+   - [ ] Power adapters
+   - [ ] Headphones
+   - [ ] Camera + accessories
+   
+** Clothing
+   - [ ] Weather-appropriate clothes
+   - [ ] Comfortable walking shoes
+   - [ ] Formal wear (if needed)
+   - [ ] Underwear/socks (# days + 2)
+   
+** Toiletries
+   - [ ] Toothbrush/toothpaste
+   - [ ] Shampoo/soap (travel size)
+   - [ ] Deodorant
+   - [ ] Razor
+   - [ ] Sunscreen
+   - [ ] Medications
+   
+** Travel Comfort
+   - [ ] Neck pillow
+   - [ ] Eye mask
+   - [ ] Earplugs
+   - [ ] Snacks
+   - [ ] Water bottle (empty for security)
+   - [ ] Entertainment (books/tablet)
+
+* Day of Travel
+** Home Prep
+   - [ ] Lights/timers set
+   - [ ] Thermostat adjusted
+   - [ ] Mail hold requested
+   - [ ] Plants watered
+   - [ ] Fridge cleaned out
+   - [ ] Trash taken out
+   - [ ] Doors/windows locked
+   
+** Final Checks
+   - [ ] Boarding pass downloaded
+   - [ ] Check-in completed
+   - [ ] Taxi/ride scheduled
+   - [ ] House keys with neighbor/friend
+   - [ ] Wallet/passport easily accessible
+
+* Return Home
+   - [ ] Unpack promptly
+   - [ ] Laundry started
+   - [ ] Expense reports filed
+   - [ ] Photos backed up
+   - [ ] Thank you notes sent
+   - [ ] Next trip improvements noted

@@ -1,0 +1,55 @@
+#+TITLE: Someday/Maybe
+#+CATEGORY: someday
+#+FILETAGS: :gtd:someday:
+#+STARTUP: overview
+
+* About This File
+Ideas and projects you might want to do someday, but not committed to now.
+Review during weekly review to see if any should become active.
+
+* Personal Someday/Maybe                                           :personal:
+** SOMEDAY Learn to play guitar
+   :PROPERTIES:
+   :CREATED: [2025-06-18 Tue]
+   :END:
+   
+** SOMEDAY Write a technical blog
+   :PROPERTIES:
+   :CREATED: [2025-06-18 Tue]
+   :END:
+   
+** SOMEDAY Build a home automation system
+   :PROPERTIES:
+   :CREATED: [2025-06-18 Tue]
+   :END:
+
+** SOMEDAY Take a photography course
+   :PROPERTIES:
+   :CREATED: [2025-06-18 Tue]
+   :END:
+
+* Professional Someday/Maybe                                           :work:
+** SOMEDAY Get AWS certification
+   :PROPERTIES:
+   :CREATED: [2025-06-18 Tue]
+   :END:
+
+** SOMEDAY Contribute to major open source project
+   :PROPERTIES:
+   :CREATED: [2025-06-18 Tue]
+   :END:
+   
+** SOMEDAY Speak at a tech conference
+   :PROPERTIES:
+   :CREATED: [2025-06-18 Tue]
+   :END:
+
+* Books to Read                                                       :books:
+** SOMEDAY "Deep Work" by Cal Newport
+** SOMEDAY "The Pragmatic Programmer" by Hunt & Thomas
+** SOMEDAY "Antifragile" by Nassim Taleb
+
+* Places to Visit                                                    :travel:
+** SOMEDAY Japan - Tokyo and Kyoto
+** SOMEDAY Iceland - Northern lights
+** SOMEDAY New Zealand - Hiking trails
