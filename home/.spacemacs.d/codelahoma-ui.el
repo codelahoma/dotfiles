@@ -456,5 +456,12 @@
     (princ (propertize "Operational" 'face '(:foreground "#86dc2f" :weight bold))))
   (switch-to-buffer-other-window "*GTD Help*"))
 
+;; Initialize status bar if enabled
+(when (and (featurep 'codelahoma-status-bar)
+           (boundp 'codelahoma-status-bar-enabled)
+           codelahoma-status-bar-enabled
+           (fboundp 'codelahoma-status-bar-enable))
+  (codelahoma-status-bar-enable))
+
 (provide 'codelahoma-ui)
 ;;; codelahoma-ui.el ends here

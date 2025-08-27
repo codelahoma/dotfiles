@@ -96,7 +96,7 @@
 (defun codelahoma-dashboard-insert-overview ()
   "Insert system overview widget."
   (codelahoma-dashboard-widget-header "📊 System Overview")
-  (let* ((inbox-count (codelahoma-gtd-inbox-count))
+  (let* ((inbox-count (codelahoma-gtd-quick-inbox-count))
          (next-count (codelahoma-dashboard-count-next-actions))
          (waiting-count (codelahoma-dashboard-count-waiting-for))
          (project-count (codelahoma-dashboard-count-active-projects))
@@ -136,7 +136,7 @@
   "Insert inbox status widget."
   (codelahoma-dashboard-widget-header "📥 Inbox Status")
   (let ((items (codelahoma-dashboard-get-inbox-items 5))
-        (total (codelahoma-gtd-inbox-count)))
+        (total (codelahoma-gtd-quick-inbox-count)))
     (if items
         (progn
           (dolist (item items)

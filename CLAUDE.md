@@ -47,11 +47,17 @@ Key directories:
 - `/home`: Contains the actual dotfiles that will be symlinked to the user's home directory
 - `/home/.spacemacs.d`: Spacemacs configuration with init.el (auto-generated from dotspacemacs.org)
 - `/home/karabiner-config`: Karabiner Elements keyboard customization
-- `/home/Library/Application Support`: Application-specific configurations (iTerm2, MailMate)
+- `/home/Library/Application Support`: Application-specific configurations (iTerm2)
 - `/home/personal/org-files`: GTD org-mode files and organization system
 - `/home/bin`: Custom shell scripts and utilities
-- `/.flowloom`: FlowLoom system files
-- `/.claude`: Claude Code configuration
+- `/.flowloom`: FlowLoom system files (when installed)
+- `/.claude`: Claude Code configuration (when present)
+- `/src`: Python source modules
+  - `/src/configuration`: Configuration loader and models
+  - `/src/memory_monitor`: Memory monitoring system
+  - `/src/worm`: WORM (Write-Once-Read-Many) orchestrator
+- `/ui`: Swift UI components for FlowLoom UI
+- `/demo-gallery`: HTML demos and interactive tools
 
 ### Configuration Architecture
 - **Spacemacs**: Configuration is generated from literate programming files (*.org), not edited directly
@@ -59,7 +65,23 @@ Key directories:
 - **GTD System**: Comprehensive Getting Things Done workflow in org-mode with custom capture templates
 - **Shell Scripts**: Located in `/home/bin` for various utilities
 
+### Language Versions (.tool-versions)
+- **Python**: 3.11.1
+- **Node.js**: 24.6.0
+
+### Python Dependencies (requirements.txt)
+- PyYAML, psutil, rich, click, jinja2 - Required for FlowLoom components
+
 ## Commands
+
+### Development Setup
+```bash
+# Install Python dependencies for FlowLoom components
+pip install -r requirements.txt
+
+# Install Node.js dependencies (Claude Code CLI)
+npm install
+```
 
 ### Homesick Management
 ```bash
@@ -74,6 +96,9 @@ git push
 
 # Check current linking status
 homesick status dotfiles
+
+# Refresh symlinks after changes
+homesick unlink dotfiles && homesick link dotfiles
 ```
 
 ### Important Configuration Notes
@@ -81,13 +106,17 @@ homesick status dotfiles
 - **DO NOT edit `/home/.spacemacs.d/codelahoma-org.el` directly** - it's tangled from `codelahoma-org.org`
   - After editing `codelahoma-org.org`, you must tangle it with `C-c C-v t` to regenerate the .el file
   - Spacemacs loads the tangled .el file, not the .org source
+- **DO NOT edit `/home/.hammerspoon/init.lua` directly** - it's auto-generated from `init.org`
+  - After editing `init.org`, tangle it with `C-c C-v t` to regenerate the .lua file
+  - Auto-reloads Hammerspoon on tangle via Emacs hook
 - **Karabiner rules** are in `/home/karabiner-config/karabiner.json` for keyboard customization
 - **GTD org files** are expected to be in `~/personal/org-files/` (inbox.org, projects.org, work.org, etc.)
 - **Shell scripts** in `/home/bin` should be executable and may require PATH updates
+- **FlowLoom logs** are written to `./logs/` directory when UI is running
 
 ### FlowLoom Commands
 ```bash
-# Start FlowLoom UI
+# Start FlowLoom UI (launches UI and Terminal Bridge in background)
 ./launch-flowloom-ui.sh
 
 # Stop FlowLoom UI
@@ -95,6 +124,53 @@ homesick status dotfiles
 
 # Toggle FlowLoom UI
 ./toggle-flowloom-ui.sh
+```
+
+### Python Module Development
+```bash
+# Run memory monitor commands
+python -m src.memory_monitor.cli
+
+# Run worm orchestrator
+python -m src.worm.orchestrator
+
+# Test Python modules
+python -m pytest src/  # If pytest is installed
+```
+
+### Git Synchronization
+```bash
+# Auto-sync with intelligent conflict resolution
+home/bin/git-sync
+
+# Full repository sync (configuration and code)
+# Type "sync" to trigger comprehensive synchronization
+```
+
+### Shell Scripts (home/bin)
+```bash
+# tmux session management with FZF
+home/bin/tmux-sessionizer
+
+# Convert daily logs
+home/bin/convert_daily_logs.sh
+
+# Generate PDF from diff
+home/bin/diff2pdf.sh
+```
+
+### Hammerspoon Automation
+```bash
+# Reload Hammerspoon configuration
+# Press: Hyper+R (Control+Option+Shift+Command+R)
+
+# Common hotkeys (Hyper = Control+Option+Shift+Command):
+# Hyper+J → Emacs
+# Hyper+K → Google Chrome
+# Hyper+I → iTerm
+# Hyper+O → Slack
+# Hyper+S → Grid overlay for window positioning
+# Hyper+0 → Center window on main display
 ```
 
 ## Slashload Command Definition
@@ -142,6 +218,10 @@ I maintain persistent memory across sessions to:
 - Coordinate with other FlowLoom instances
 - Preserve context for complex workflows
 - Learn from past implementations
+
+Memory files are stored in:
+- **fl-memory.json**: Dynamic development intelligence (entity-relationship model)
+- **basic-memory**: Static documentation and reference
 
 ## Working Principles
 

@@ -244,14 +244,22 @@ _q_: Quit
 
 ;;; Quick Reviews
 
+(defun codelahoma-gtd-get-inbox-count ()
+  "Return the number of items in the inbox."
+  (codelahoma-gtd-count-entries "inbox.org"))
+
 (defun codelahoma-gtd-quick-inbox-count ()
-  "Show inbox count with option to process."
+  "Show inbox count with option to process.
+This function returns the count when called non-interactively."
   (interactive)
-  (let ((count (codelahoma-gtd-count-entries "inbox.org")))
-    (if (> count 0)
-        (when (y-or-n-p (format "%d items in inbox. Process now? " count))
-          (codelahoma-gtd-process-inbox))
-      (message "Inbox is empty! 🎉"))))
+  (let ((count (codelahoma-gtd-get-inbox-count)))
+    (if (called-interactively-p 'interactive)
+        (if (> count 0)
+            (when (y-or-n-p (format "%d items in inbox. Process now? " count))
+              (codelahoma-gtd-process-inbox))
+          (message "Inbox is empty! 🎉"))
+      ;; When called non-interactively, just return the count
+      count)))
 
 (defun codelahoma-gtd-quick-stalled-projects ()
   "Quick check for stalled projects."

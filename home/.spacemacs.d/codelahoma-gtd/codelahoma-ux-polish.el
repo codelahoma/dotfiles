@@ -261,7 +261,7 @@
 
 (defun codelahoma-ux-verify-capture ()
   "Verify capture was performed."
-  (> (codelahoma-gtd-inbox-count) 0))
+  (> (codelahoma-gtd-quick-inbox-count) 0))
 
 (defun codelahoma-ux-tutorial-complete ()
   "Complete the tutorial."
@@ -506,7 +506,7 @@
         ;; Daily summary
         (insert "Today's Summary:\n")
         (insert "───────────────\n")
-        (insert (format "• Inbox items: %d\n" (codelahoma-gtd-inbox-count)))
+        (insert (format "• Inbox items: %d\n" (codelahoma-gtd-quick-inbox-count)))
         (insert (format "• Next actions: %d\n" 
                        (codelahoma-dashboard-count-next-actions)))
         (insert (format "• Completed today: %d\n" 
