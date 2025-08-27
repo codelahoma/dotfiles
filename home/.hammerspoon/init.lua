@@ -297,42 +297,6 @@ function focusOrOpenChromeProfile(profileDir, windowName, url)
     }):start()
 end
 
-Fastmail = "com.webcatalog.juli.fastmail"  
-selectEmailModal = hs.hotkey.modal.new(hyper, "m")
-
-function selectEmailModal:entered()
-  hs.alert.show("Press 'g' for Gmail, 'f' for Fastmail", 0.5)
-end
-
-selectEmailModal:bind("", "g", function()
-  selectEmailModal:exit()
-  appLauncher('GMail')()
-end)
-
-selectEmailModal:bind("", "f", function()
-  selectEmailModal:exit()
-  appLauncher('Spark Mail')()
-end)
-
-selectEmailModal:bind("", "escape", function()
-  selectEmailModal:exit()
-end)
-hotkey.bind(hyper, "m", function()
-              selectEmailModal:enter()
-end)
-
-function functionLauncher(func, args)
-  return function()
-    if type(func) == "function" then
-      func(args)
-    else
-      hs.execute(func)
-    end
-  end
-end
-
-
-
 hotkey.bind(hyper, "a", appLauncher('Stickies'))
 hotkey.bind(hyper, "b", appLauncher('ChatGPT'))
 hotkey.bind(magic, "b", appLauncher('Bazecor'))
@@ -346,6 +310,7 @@ hotkey.bind(hyper, "j", appLauncher('Emacs'))
 hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
 hotkey.bind(magic, "k", appLauncher('Marked'))
 hotkey.bind(hyper, "l", appLauncher('Fantastical'))
+hotkey.bind(hyper, "m", appLauncher('Spark Mail'))
 hotkey.bind(hyper, "o", appLauncher('Slack'))
 hotkey.bind(hyper, "p", appLauncher('Perplexity AI'))
 hotkey.bind(hyper, "q", appLauncher('1Password'))
@@ -368,7 +333,7 @@ hotkey.bind(hyper, "0", centerOnMainDisplay)
 -- b - Brave Browser Dev
 -- c - Google Calendar
 -- d - Dash
--- m - MailMate
+-- m - Mail (removed MailMate)
 -- n - Notion
 -- p - Postman
 -- s - Stickies
@@ -397,7 +362,7 @@ hotkey.bind(hyper, "0", centerOnMainDisplay)
 -- menuModal:bind("", "b", "Brave Browser Dev", nil, function() application.launchOrFocus("Brave Browser Dev") menuModal:exit() end, nil)
 -- menuModal:bind("", "c", "Google Calendar", nil, function() application.launchOrFocusByBundleID("com.webcatalog.juli.google-calendar") menuModal:exit() end, nil)
 -- menuModal:bind("", "d", "dash", nil, function() application.launchOrFocus("Dash") menuModal:exit() end, nil)
--- menuModal:bind("", "m", "MailMate", nil, function() application.launchOrFocus("MailMate") menuModal:exit() end, nil)
+-- menuModal:bind("", "m", "Mail", nil, function() application.launchOrFocus("Mail") menuModal:exit() end, nil)
 -- menuModal:bind("", "n", "Notion", nil, function() application.launchOrFocus("Notion") menuModal:exit() end, nil)
 -- menuModal:bind("", "p", "postman", nil, function() application.launchOrFocus("Postman") menuModal:exit() end, nil)
 -- menuModal:bind("", "s", "stickies", nil, function() application.launchOrFocus("Stickies") menuModal:exit() end, nil)

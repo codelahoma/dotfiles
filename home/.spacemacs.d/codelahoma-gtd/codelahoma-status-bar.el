@@ -21,12 +21,7 @@
 (defcustom codelahoma-status-bar-enabled t
   "Enable GTD status in mode line."
   :type 'boolean
-  :group 'codelahoma-gtd
-  :set (lambda (symbol value)
-         (set-default symbol value)
-         (if value
-             (codelahoma-status-bar-enable)
-           (codelahoma-status-bar-disable))))
+  :group 'codelahoma-gtd)
 
 (defcustom codelahoma-status-bar-update-interval 60
   "Seconds between status bar updates."
@@ -109,7 +104,7 @@
 (defun codelahoma-status-bar-inbox ()
   "Return inbox status for mode line."
   (let* ((count (codelahoma-status-bar-get-cached 'inbox-count
-                                                  'codelahoma-gtd-inbox-count))
+                                                  'codelahoma-gtd-quick-inbox-count))
          (face (cond
                 ((= count 0) 'success)
                 ((> count codelahoma-status-bar-inbox-warning-threshold) 'error)
@@ -343,13 +338,17 @@
 
 ;;; Minor Mode
 
+;;;###autoload
 (define-minor-mode codelahoma-status-bar-mode
   "Toggle GTD status bar display."
   :global t
   :group 'codelahoma-gtd
+  :init-value nil
   (if codelahoma-status-bar-mode
-      (codelahoma-status-bar-enable)
-    (codelahoma-status-bar-disable)))
+      (when (fboundp 'codelahoma-status-bar-enable)
+        (codelahoma-status-bar-enable))
+    (when (fboundp 'codelahoma-status-bar-disable)
+      (codelahoma-status-bar-disable))))
 
 ;;; Initialize
 
@@ -359,9 +358,7 @@
             (when (string= org-state "DONE")
               (codelahoma-status-bar-task-completed))))
 
-;; Enable by default if configured
-(when codelahoma-status-bar-enabled
-  (add-hook 'after-init-hook #'codelahoma-status-bar-enable))
+;; Auto-enable will be handled by codelahoma-ui.el after all modules are loaded
 
 (provide 'codelahoma-status-bar)
 ;;; codelahoma-status-bar.el ends here

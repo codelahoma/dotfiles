@@ -1092,34 +1092,27 @@ before packages are loaded."
     (add-to-list 'load-path "~/.spacemacs.d/codelahoma-gtd/")
     (add-to-list 'load-path "~/.spacemacs.d/")
     
-    ;; Check if modules exist and load them
-    (let ((gtd-dir (expand-file-name "~/.spacemacs.d/codelahoma-gtd/")))
-      (if (file-exists-p (concat gtd-dir "codelahoma-gtd-config.el"))
-          (condition-case err
-              (progn
-                (require 'codelahoma-gtd-config)
-                (require 'codelahoma-gtd-core)
-                (require 'codelahoma-gtd-capture)
-                (require 'codelahoma-gtd-process)
-                (require 'codelahoma-gtd-review)
-                (require 'codelahoma-gtd-roam)
-                ;; Load UI (required for keybindings)
-                (when (file-exists-p "~/.spacemacs.d/codelahoma-ui.el")
-                  (load-file "~/.spacemacs.d/codelahoma-ui.el"))
-                
-                ;; Initialize system
-                (codelahoma-gtd-initialize)
-                (codelahoma-gtd-setup-keybindings)
-                (codelahoma-gtd-enable-auto-save)
-                
-                ;; Optional: Load bridge if it exists (Phase 5 feature)
-                (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge.el")
-                  (condition-case nil
-                      (load-file "~/.spacemacs.d/codelahoma-gtd/codelahoma-bridge.el")
-                    (error (message "Bridge module not ready yet"))))
-                (message "GTD system loaded successfully"))
-            (error (message "Error loading GTD modules: %s" err)))
-        (message "GTD modules not found at %s - check homesick link" gtd-dir)))
+    ;; DISABLED - GTD system causing org-mode hangs
+    ;; To manually load, use M-x codelahoma-gtd-minimal-load
+    (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd-minimal.el")
+      (load-file "~/.spacemacs.d/codelahoma-gtd-minimal.el")
+      (message "GTD minimal loader available - use M-x codelahoma-gtd-minimal-load"))
+    
+    ;; Set up the keybindings for GTD system
+    (spacemacs/declare-prefix "o" "user-defined")  
+    (spacemacs/declare-prefix "o o" "GTD/Zettelkasten")
+    (spacemacs/set-leader-keys
+      "o o l" 'codelahoma-gtd-minimal-load
+      "o o ?" (lambda () (interactive) (message "GTD: Press SPC o o l to load GTD system")))
+    
+    ;; Original loader disabled due to org-mode hang
+    ;; (when (file-exists-p "~/.spacemacs.d/codelahoma-gtd-loader.el")
+    ;;   (condition-case err
+    ;;       (progn
+    ;;         (load-file "~/.spacemacs.d/codelahoma-gtd-loader.el")
+    ;;         (codelahoma-gtd-init))
+    ;;     (error
+    ;;      (message "Error loading GTD system: %s" err))))
     
     ;; Configure org-roam for knowledge management
     (use-package org-roam
@@ -1131,7 +1124,8 @@ before packages are loaded."
       :config
       (setq org-roam-node-display-template 
             (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-      (org-roam-db-autosync-mode)
+      ;; DISABLED - causing org-mode to hang at 100% CPU
+      ;; (org-roam-db-autosync-mode)
       
       ;; Personal capture templates
       (setq org-roam-capture-templates

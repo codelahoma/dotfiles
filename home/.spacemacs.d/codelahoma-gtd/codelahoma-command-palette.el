@@ -13,7 +13,8 @@
 
 (require 'codelahoma-gtd-config)
 (require 'codelahoma-gtd-core)
-(require 'codelahoma-ui)
+;; Remove circular dependency - codelahoma-ui will load this file
+;; (require 'codelahoma-ui)
 (require 'cl-lib)
 
 ;;; Configuration

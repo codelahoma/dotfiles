@@ -12,7 +12,8 @@
 ;;; Code:
 
 (require 'codelahoma-gtd-config)
-(require 'codelahoma-gtd-roam)
+;; Don't require roam here to avoid circular dependencies
+;; It will be loaded by codelahoma-ui.el
 
 ;;; Task State Management
 
@@ -268,14 +269,16 @@
   (interactive)
   (codelahoma-gtd-ensure-directories)
   (codelahoma-gtd-verify-files)
-  ;; Initialize org-roam
-  (codelahoma-gtd-roam-setup)
-  (codelahoma-gtd-roam-initialize)
+  ;; Initialize org-roam if available
+  (when (fboundp 'codelahoma-gtd-roam-setup)
+    (codelahoma-gtd-roam-setup))
+  (when (fboundp 'codelahoma-gtd-roam-initialize)
+    (codelahoma-gtd-roam-initialize))
   ;; Phase 2: Setup todo keywords, capture, and processing
   (codelahoma-gtd-setup-todo-keywords)
-  (require 'codelahoma-gtd-capture)
-  (codelahoma-gtd-setup-capture)
-  (require 'codelahoma-gtd-process)
+  ;; Setup capture if available
+  (when (fboundp 'codelahoma-gtd-setup-capture)
+    (codelahoma-gtd-setup-capture))
   (codelahoma-gtd-setup-refile-targets)
   (codelahoma-gtd-setup-processing-hooks)
   (message "GTD system initialized successfully"))
