@@ -68,13 +68,6 @@ Abbreviations for frequently used modules
   machine = hs.host.localizedName()
 #+end_src
 
-Which systems are work and which are home
-
-#+begin_src lua
-  work_machines = {["codelahoma"] = true, ["codelahoma-kw"] = true, ["codelahoma-kw-m1"] = true, ["codelahoma-atlasup"] = true }
-  home_machines = {["m1-mini"] = true}
-#+end_src
-
 #+RESULTS:
 
 * Josh's Window functions
@@ -216,40 +209,21 @@ The [[http://www.hammerspoon.org/Spoons/WindowGrid.html][WindowGrid]] spoon sets
 
   -- DefaultBrowser = Safari
   DefaultBrowser = Chrome
-  if  work_machines[machine] ~= nil  then
-    Install:andUse("URLDispatcher",
-                  {
-                    config = {
-                      decode_slack_redir_urls = true,
-                      url_patterns = {
-                        { "https?://open.spotify.com", Spotify},
-                        -- { "https?://www.notion.so", Notion},
-                        -- { "https?://*.zoom.us", Zoom}
-                      },
-                      default_handler = DefaultBrowser
+  Install:andUse("URLDispatcher",
+                {
+                  config = {
+                    decode_slack_redir_urls = true,
+                    url_patterns = {
+                      { "https?://open.spotify.com", Spotify},
+                      -- { "https?://www.notion.so", Notion},
+                      -- { "https?://*.zoom.us", Zoom}
                     },
-                    start = true,
-                    loglevel = 'debug'
-                  }
-    )
-  end
-
-  if home_machines[machine] ~= nil then
-    Install:andUse("URLDispatcher",
-                  {
-                    config = {
-                      url_patterns = {
-                      },
-                      url_redir_decoders = {
-                      },
-                      default_handler = DefaultBrowser
-                    },
-                    start = true,
-                    --                   loglevel = 'debug'
-                  }
-    )
-
-  end
+                    default_handler = DefaultBrowser
+                  },
+                  start = true,
+                  loglevel = 'debug'
+                }
+  )
 #+end_src
 
 * Global Key Bindings
@@ -659,48 +633,6 @@ The KSheet spoon provides for showing the keybindings for the currently active a
 
       hs.osascript.applescript(script)
     end
-
-
-  -- **1. Define the profile identifiers (internal folder names from chrome://version):**
-  local profileWork     = "Profile 1"      -- e.g. rod@atlasup.com profile's folder name
-  local profilePersonal = "Default"        -- e.g. rod.knowlton@gmail.com profile's folder name
-
-  -- **2. Define unique window name markers for each profile:**
-  local winNameWork     = "rod@atlasup.com - Google Chrome"      -- Window name for Work profile (set via Chrome or flag)
-  local winNamePersonal = "rod.knowlton@gmail.com - Google Chrome"  -- Window name for Personal profile
-
-  -- **3. Function to focus an existing profile window or open a new one:**
-  function focusOrOpenChromeProfile(profileDir, windowName, url)
-      -- Log the function call and parameters
-      hs.console.printStyledtext(string.format(
-          "🔍 Invoking focusOrOpenChromeProfile:\n  profileDir = %s\n  windowName = %s\n  url = %s\n",
-          profileDir, windowName, url
-      ))
-
-      local chromeWindows = hs.window.filter.new(false):setAppFilter("Google Chrome"):getWindows()
-      for _, win in ipairs(chromeWindows) do
-          local title = win:title():lower()
-          if title:find(windowName:lower(), 1, true) then
-              hs.console.printStyledtext("✅ Found matching Chrome window. Focusing it now.\n")
-              win:focus()
-              return
-          end
-      end
-
-      -- Log fallback
-      hs.console.printStyledtext("🚀 No matching window found. Launching new Chrome window...\n")
-
-      -- Launch new Chrome window with specified profile and URL
-      hs.task.new("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", nil, function()
-          hs.console.printStyledtext("📦 Chrome task finished (or failed to start).\n")
-          return false
-      end, {
-          "--profile-directory=" .. profileDir,
-          "--new-window",
-          "--window-name=" .. windowName,
-          url
-      }):start()
-  end
 #+end_src
 
 #+RESULTS:
@@ -718,7 +650,7 @@ The KSheet spoon provides for showing the keybindings for the currently active a
   hotkey.bind(hyper, "f", appLauncher('DBeaver'))
   hotkey.bind(hyper, "i", appLauncher('iTerm'))
   hotkey.bind(hyper, "j", appLauncher('Emacs'))
-  hotkey.bind(hyper, "k", appLauncher('Google Chrome'))
+  hotkey.bind(hyper, "k", appLauncher('Comet'))
   hotkey.bind(magic, "k", appLauncher('Marked'))
   hotkey.bind(hyper, "l", appLauncher('Fantastical'))
   hotkey.bind(hyper, "m", appLauncher('Spark Mail'))
@@ -727,8 +659,6 @@ The KSheet spoon provides for showing the keybindings for the currently active a
   hotkey.bind(hyper, "q", appLauncher('1Password'))
   hotkey.bind(hyper, "r", hs.reload)
   hotkey.bind(hyper, "s", hs.grid.show)
-  hotkey.bind(magic, "s", appLauncher("Safari"))
-  hotkey.bind(hyper, "t", appLauncher("DEVONthink 3"))
   hotkey.bind(hyper, "u", open750)
   hotkey.bind(hyper, "v", pasteLauncher())
   hotkey.bind(magic, "z", appLauncher("Zotero"))
@@ -738,8 +668,6 @@ The KSheet spoon provides for showing the keybindings for the currently active a
 #+end_src
 
 #+RESULTS:
-
-If it's my work laptop, the work set, otherwise my personal set.
 
 * Hotkey Model Madness
 
