@@ -525,7 +525,7 @@ Using =fold-this= because vimish folding is unfortuntely too laggy on some large
   ;;                     :fetcher github
   ;;                     :repo "joshcho/ChatGPT.el"))
   gptel
-  (gptel-extensions :location "/Users/rodk//.emacs.d/private/gptel-extensions.el/")
+  (gptel-extensions :location "~/.emacs.d/private/gptel-extensions.el/")
 
 #+end_src
 
