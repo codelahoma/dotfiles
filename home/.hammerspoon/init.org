@@ -529,14 +529,43 @@ The KSheet spoon provides for showing the keybindings for the currently active a
        }
 
        _statsWindow = hs.webview.new(windowFrame)
-          :windowStyle({"titled", "closable", "utility", "HUD", "nonactivating"})
+          :windowStyle({"titled", "closable", "utility", "HUD"})
           :html(html)
           :allowTextEntry(false)
           :windowTitle("App Launch Statistics")
           :level(hs.drawing.windowLevels.floating)
           :show()
 
-       -- Auto-close on losing focus
+       -- Add ESC key handler to close window
+       local escWatcher = hs.eventtap.new({hs.eventtap.event.types.keyDown}, function(event)
+          local keyCode = event:getKeyCode()
+          if keyCode == 53 then -- ESC key
+             if _statsWindow then
+                _statsWindow:delete()
+                _statsWindow = nil
+                if escWatcher then
+                   escWatcher:stop()
+                end
+                return true
+             end
+          end
+          return false
+       end)
+       escWatcher:start()
+
+       -- Close window when it loses focus (click outside)
+       _statsWindow:windowCallback(function(action)
+          if action == "focusChange" then
+             if _statsWindow then
+                _statsWindow:delete()
+                _statsWindow = nil
+                if escWatcher then
+                   escWatcher:stop()
+                end
+             end
+          end
+       end)
+
        _statsWindow:bringToFront()
     end
 
