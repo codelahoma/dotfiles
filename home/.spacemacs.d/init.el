@@ -224,7 +224,7 @@ This function should only modify configuration layer settings."
                                       ;;                     :fetcher github
                                       ;;                     :repo "joshcho/ChatGPT.el"))
                                       gptel
-                                      (gptel-extensions :location "/Users/rodk//.emacs.d/private/gptel-extensions.el/")
+                                      (gptel-extensions :location "~/.emacs.d/private/gptel-extensions.el/")
                                       
                                       direnv
                                       pinboard
