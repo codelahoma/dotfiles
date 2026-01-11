@@ -18,9 +18,6 @@ screen = hs.screen
 spotify = hs.spotify
 machine = hs.host.localizedName()
 
-work_machines = {["codelahoma"] = true, ["codelahoma-kw"] = true, ["codelahoma-kw-m1"] = true, ["codelahoma-atlasup"] = true }
-home_machines = {["m1-mini"] = true}
-
 -- -- https://github.com/fikovnik/ShiftIt/wiki/The-Hammerspoon-Alternative
 -- -- https://github.com/derekwyatt/dotfiles/blob/master/hammerspoon-init.lua
 -- hs.window.animationDuration = 0
@@ -112,40 +109,21 @@ Safari = "com.apple.Safari"
 
 -- DefaultBrowser = Safari
 DefaultBrowser = Chrome
-if  work_machines[machine] ~= nil  then
-  Install:andUse("URLDispatcher",
-                {
-                  config = {
-                    decode_slack_redir_urls = true,
-                    url_patterns = {
-                      { "https?://open.spotify.com", Spotify},
-                      -- { "https?://www.notion.so", Notion},
-                      -- { "https?://*.zoom.us", Zoom}
-                    },
-                    default_handler = DefaultBrowser
+Install:andUse("URLDispatcher",
+              {
+                config = {
+                  decode_slack_redir_urls = true,
+                  url_patterns = {
+                    { "https?://open.spotify.com", Spotify},
+                    -- { "https?://www.notion.so", Notion},
+                    -- { "https?://*.zoom.us", Zoom}
                   },
-                  start = true,
-                  loglevel = 'debug'
-                }
-  )
-end
-
-if home_machines[machine] ~= nil then
-  Install:andUse("URLDispatcher",
-                {
-                  config = {
-                    url_patterns = {
-                    },
-                    url_redir_decoders = {
-                    },
-                    default_handler = DefaultBrowser
-                  },
-                  start = true,
-                  --                   loglevel = 'debug'
-                }
-  )
-
-end
+                  default_handler = DefaultBrowser
+                },
+                start = true,
+                loglevel = 'debug'
+              }
+)
 
 local function setHeadphones()
   hs.audiodevice.findOutputByName("soundcore Space One"):setDefaultOutputDevice()
@@ -166,6 +144,288 @@ Install:andUse("KSheet", {
 })
 
 _centeredWindowsFormerPositions = {}
+  _appLaunchStats = {}
+  _statsFilePath = hs.configdir .. "/app_launch_stats.json"
+
+  -- Load app launch statistics from file
+  local function loadAppStats()
+     local file = io.open(_statsFilePath, "r")
+     if file then
+        local content = file:read("*a")
+        file:close()
+        local success, decoded = pcall(hs.json.decode, content)
+        if success and decoded then
+           _appLaunchStats = decoded
+        end
+     end
+  end
+
+  -- Save app launch statistics to file
+  local function saveAppStats()
+     local file = io.open(_statsFilePath, "w")
+     if file then
+        local encoded = hs.json.encode(_appLaunchStats)
+        file:write(encoded)
+        file:close()
+     end
+  end
+
+  -- Track app launch
+  local function trackAppLaunch(appName)
+     if not _appLaunchStats[appName] then
+        _appLaunchStats[appName] = {
+           count = 0,
+           lastLaunched = nil
+        }
+     end
+     _appLaunchStats[appName].count = _appLaunchStats[appName].count + 1
+     _appLaunchStats[appName].lastLaunched = os.time()
+     saveAppStats()
+  end
+
+  -- Display app launch statistics in graphical window
+  _statsWindow = nil
+
+  local function showAppStats()
+     -- Convert to sorted array
+     local statsArray = {}
+     local totalLaunches = 0
+     for appName, stats in pairs(_appLaunchStats) do
+        table.insert(statsArray, {
+           name = appName,
+           count = stats.count,
+           lastLaunched = stats.lastLaunched
+        })
+        totalLaunches = totalLaunches + stats.count
+     end
+
+     -- Sort by count (descending)
+     table.sort(statsArray, function(a, b)
+        return a.count > b.count
+     end)
+
+     -- Build HTML content
+     local html = [[
+     <!DOCTYPE html>
+     <html>
+     <head>
+        <style>
+           body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+              margin: 0;
+              padding: 20px;
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              color: #333;
+           }
+           .container {
+              max-width: 700px;
+              margin: 0 auto;
+              background: white;
+              border-radius: 12px;
+              box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+              overflow: hidden;
+           }
+           .header {
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              color: white;
+              padding: 25px;
+              text-align: center;
+           }
+           .header h1 {
+              margin: 0;
+              font-size: 28px;
+              font-weight: 600;
+           }
+           .header .subtitle {
+              margin-top: 8px;
+              opacity: 0.9;
+              font-size: 14px;
+           }
+           .stats-table {
+              padding: 20px;
+           }
+           table {
+              width: 100%;
+              border-collapse: collapse;
+           }
+           th {
+              background: #f8f9fa;
+              padding: 12px;
+              text-align: left;
+              font-weight: 600;
+              color: #495057;
+              border-bottom: 2px solid #dee2e6;
+           }
+           td {
+              padding: 12px;
+              border-bottom: 1px solid #e9ecef;
+           }
+           tr:hover {
+              background: #f8f9fa;
+           }
+           .rank {
+              color: #6c757d;
+              font-weight: 600;
+              width: 50px;
+           }
+           .app-name {
+              font-weight: 500;
+              color: #212529;
+           }
+           .count {
+              font-weight: 600;
+              color: #667eea;
+              text-align: center;
+              width: 80px;
+           }
+           .last-used {
+              color: #6c757d;
+              font-size: 13px;
+              text-align: right;
+              width: 150px;
+           }
+           .empty-state {
+              text-align: center;
+              padding: 60px 20px;
+              color: #6c757d;
+           }
+           .footer {
+              padding: 15px 20px;
+              background: #f8f9fa;
+              text-align: center;
+              color: #6c757d;
+              font-size: 13px;
+              border-top: 1px solid #dee2e6;
+           }
+        </style>
+     </head>
+     <body>
+        <div class="container">
+           <div class="header">
+              <h1>📊 App Launch Statistics</h1>
+              <div class="subtitle">Total Launches: ]] .. totalLaunches .. [[</div>
+           </div>
+           <div class="stats-table">
+     ]]
+
+     if #statsArray == 0 then
+        html = html .. [[
+              <div class="empty-state">
+                 <h3>No statistics recorded yet</h3>
+                 <p>Start using your app launcher shortcuts to see statistics here.</p>
+              </div>
+        ]]
+     else
+        html = html .. [[
+              <table>
+                 <thead>
+                    <tr>
+                       <th class="rank">#</th>
+                       <th class="app-name">Application</th>
+                       <th class="count">Launches</th>
+                       <th class="last-used">Last Used</th>
+                    </tr>
+                 </thead>
+                 <tbody>
+        ]]
+
+        for i, stat in ipairs(statsArray) do
+           local lastUsed = "Never"
+           if stat.lastLaunched then
+              local timeDiff = os.time() - stat.lastLaunched
+              if timeDiff < 60 then
+                 lastUsed = "Just now"
+              elseif timeDiff < 3600 then
+                 lastUsed = string.format("%.0f min ago", timeDiff / 60)
+              elseif timeDiff < 86400 then
+                 lastUsed = string.format("%.0f hours ago", timeDiff / 3600)
+              else
+                 lastUsed = string.format("%.0f days ago", timeDiff / 86400)
+              end
+           end
+
+           html = html .. string.format([[
+                    <tr>
+                       <td class="rank">%d</td>
+                       <td class="app-name">%s</td>
+                       <td class="count">%d</td>
+                       <td class="last-used">%s</td>
+                    </tr>
+           ]], i, stat.name, stat.count, lastUsed)
+        end
+
+        html = html .. [[
+                 </tbody>
+              </table>
+        ]]
+     end
+
+     html = html .. [[
+           </div>
+           <div class="footer">
+              Press ESC or click outside to close
+           </div>
+        </div>
+     </body>
+     </html>
+     ]]
+
+     -- Close existing window if open
+     if _statsWindow then
+        _statsWindow:delete()
+        _statsWindow = nil
+     end
+
+     -- Create webview window
+     local mainScreen = hs.screen.mainScreen()
+     local mainFrame = mainScreen:frame()
+     local windowFrame = {
+        x = mainFrame.x + (mainFrame.w - 750) / 2,
+        y = mainFrame.y + (mainFrame.h - 600) / 2,
+        w = 750,
+        h = 600
+     }
+
+     _statsWindow = hs.webview.new(windowFrame)
+        :windowStyle({"titled", "closable", "utility", "HUD"})
+        :html(html)
+        :allowTextEntry(false)
+        :windowTitle("App Launch Statistics")
+        :level(hs.drawing.windowLevels.floating)
+        :show()
+
+     -- Add ESC key handler to close window
+     local escWatcher = hs.eventtap.new({hs.eventtap.event.types.keyDown}, function(event)
+        local keyCode = event:getKeyCode()
+        if keyCode == 53 then -- ESC key
+           if _statsWindow then
+              _statsWindow:delete()
+              _statsWindow = nil
+              if escWatcher then
+                 escWatcher:stop()
+              end
+              return true
+           end
+        end
+        return false
+     end)
+     escWatcher:start()
+
+     -- Close window when it loses focus (click outside)
+     _statsWindow:windowCallback(function(action)
+        if action == "focusChange" then
+           if _statsWindow then
+              _statsWindow:delete()
+              _statsWindow = nil
+              if escWatcher then
+                 escWatcher:stop()
+              end
+           end
+        end
+     end)
+
+     _statsWindow:bringToFront()
+  end
 
   local function centerOnMainDisplay()
      local win = window.focusedWindow()
@@ -190,7 +450,10 @@ _centeredWindowsFormerPositions = {}
 
   local function appLauncher(app)
     return function()
-      launched = application.launchOrFocus(app) 
+      -- Track the app launch
+      trackAppLaunch(app)
+
+      launched = application.launchOrFocus(app)
       if not launched then
         launched = application.launchOrFocusByBundleID(app)
       end
@@ -255,48 +518,6 @@ end tell
     hs.osascript.applescript(script)
   end
 
-
--- **1. Define the profile identifiers (internal folder names from chrome://version):**
-local profileWork     = "Profile 1"      -- e.g. rod@atlasup.com profile's folder name
-local profilePersonal = "Default"        -- e.g. rod.knowlton@gmail.com profile's folder name
-
--- **2. Define unique window name markers for each profile:**
-local winNameWork     = "rod@atlasup.com - Google Chrome"      -- Window name for Work profile (set via Chrome or flag)
-local winNamePersonal = "rod.knowlton@gmail.com - Google Chrome"  -- Window name for Personal profile
-
--- **3. Function to focus an existing profile window or open a new one:**
-function focusOrOpenChromeProfile(profileDir, windowName, url)
-    -- Log the function call and parameters
-    hs.console.printStyledtext(string.format(
-        "🔍 Invoking focusOrOpenChromeProfile:\n  profileDir = %s\n  windowName = %s\n  url = %s\n",
-        profileDir, windowName, url
-    ))
-
-    local chromeWindows = hs.window.filter.new(false):setAppFilter("Google Chrome"):getWindows()
-    for _, win in ipairs(chromeWindows) do
-        local title = win:title():lower()
-        if title:find(windowName:lower(), 1, true) then
-            hs.console.printStyledtext("✅ Found matching Chrome window. Focusing it now.\n")
-            win:focus()
-            return
-        end
-    end
-
-    -- Log fallback
-    hs.console.printStyledtext("🚀 No matching window found. Launching new Chrome window...\n")
-
-    -- Launch new Chrome window with specified profile and URL
-    hs.task.new("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", nil, function()
-        hs.console.printStyledtext("📦 Chrome task finished (or failed to start).\n")
-        return false
-    end, {
-        "--profile-directory=" .. profileDir,
-        "--new-window",
-        "--window-name=" .. windowName,
-        url
-    }):start()
-end
-
 hotkey.bind(hyper, "a", appLauncher('Stickies'))
 hotkey.bind(hyper, "b", appLauncher('ChatGPT'))
 hotkey.bind(magic, "b", appLauncher('Bazecor'))
@@ -312,7 +533,7 @@ hotkey.bind(magic, "k", appLauncher('Marked'))
 hotkey.bind(hyper, "l", appLauncher('Fantastical'))
 hotkey.bind(hyper, "m", appLauncher('Spark Mail'))
 hotkey.bind(hyper, "o", appLauncher('Slack'))
-hotkey.bind(hyper, "p", appLauncher('Perplexity AI'))
+hotkey.bind(hyper, "p", appLauncher('Perplexity'))
 hotkey.bind(hyper, "q", appLauncher('1Password'))
 hotkey.bind(hyper, "r", hs.reload)
 hotkey.bind(hyper, "s", hs.grid.show)
@@ -323,6 +544,7 @@ hotkey.bind(hyper, "v", pasteLauncher())
 hotkey.bind(magic, "z", appLauncher("Zotero"))
 hotkey.bind(hyper, ";", appLauncher('Spotify'))
 hotkey.bind(hyper, "0", centerOnMainDisplay)
+hotkey.bind(magic, "/", showAppStats)
 
 -- menuModal = hs.hotkey.modal.new(hyper, "n")
 -- menuModal.alertUID = ""
@@ -395,5 +617,7 @@ if hs.fs.attributes(localfile) then
 end
 
 hs.ipc.cliInstall("/opt/homebrew")
+
+loadAppStats()
 
 hs.alert.show("Config Loaded")
