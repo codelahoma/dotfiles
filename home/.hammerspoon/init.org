@@ -705,7 +705,7 @@ The KSheet spoon provides for showing the keybindings for the currently active a
   hotkey.bind(magic, "z", appLauncher("Zotero"))
   hotkey.bind(hyper, ";", appLauncher('Spotify'))
   hotkey.bind(hyper, "0", centerOnMainDisplay)
-  hotkey.bind(hyper, "/", showAppStats)
+  hotkey.bind(magic, "/", showAppStats)
 #+end_src
 
 #+RESULTS:
