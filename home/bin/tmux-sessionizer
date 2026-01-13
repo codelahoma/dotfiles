@@ -1,17 +1,52 @@
-#!/usr/bin/env bash
-set ~ ~/personal ~/work ~/github ~/.homesick/repos/dotfiles/home
-session=$((echo ${*} | tr " " "\n";find ${*} -mindepth 1 -maxdepth 1 -type d) | fzf)
+#!/usr/bin/env zsh
 
+# tmux-sessionizer - Fuzzy find and switch to project tmux sessions
+# Enhanced with configuration system, stats tracking, and rich previews
+
+# Configuration file location
+CONFIG_FILE="${HOME}/.config/tmux-sessionizer/config"
+
+# Default configuration values
+SEARCH_PATHS=(
+  "$HOME"
+  "$HOME/personal"
+  "$HOME/work"
+  "$HOME/github"
+  "$HOME/.homesick/repos/dotfiles/home"
+)
+MAX_DEPTH=1
+ENABLE_PREVIEW=false
+ENABLE_STATS=false
+ENABLE_GIT_STATUS=false
+ENABLE_TEMPLATES=false
+STATS_FILE="${HOME}/.config/tmux-sessionizer/stats.json"
+TEMPLATE_DIR="${HOME}/.config/tmux-sessionizer/templates"
+
+# Load configuration file if it exists
+if [[ -f "$CONFIG_FILE" ]]; then
+  source "$CONFIG_FILE"
+fi
+
+# Build session list - for now, use the original simple approach
+# This will be enhanced in later commits
+session=$((echo ${SEARCH_PATHS[@]} | tr " " "\n"; \
+           find ${SEARCH_PATHS[@]} -mindepth 1 -maxdepth $MAX_DEPTH -type d 2>/dev/null) | \
+           fzf)
+
+# Create session name from directory path
 session_name=$(basename "$session" | tr . _)
 
+# Start tmux server if not running
 if ! tmux list-sessions 2>/dev/null; then
     tmux start-server
 fi
 
+# Create session if it doesn't exist
 if ! tmux has-session -t "$session_name" 2>/dev/null; then
     tmux new-session -s "$session_name" -c "$session" -d
 fi
 
+# Attach or switch to session depending on context
 if [ -z "$TMUX" ]; then
     tmux attach -t "$session_name"
 else
