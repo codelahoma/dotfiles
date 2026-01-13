@@ -1,0 +1,27 @@
+# tmux-sessionizer configuration file
+# This file is sourced by tmux-sessionizer on startup
+
+# Search paths for project directories
+# Directories will be searched one level deep for subdirectories
+SEARCH_PATHS=(
+  "$HOME"
+  "$HOME/personal"
+  "$HOME/work"
+  "$HOME/github"
+  "$HOME/.homesick/repos/dotfiles/home"
+)
+
+# Maximum depth for directory search (1 = immediate subdirectories only)
+MAX_DEPTH=1
+
+# Feature toggles
+ENABLE_PREVIEW=true        # Show rich preview pane in fzf
+ENABLE_STATS=true          # Track session usage statistics
+ENABLE_GIT_STATUS=true     # Show git status indicators
+ENABLE_TEMPLATES=true      # Apply session templates based on project type
+
+# Stats file location
+STATS_FILE="$HOME/.config/tmux-sessionizer/stats.json"
+
+# Template directory
+TEMPLATE_DIR="$HOME/.config/tmux-sessionizer/templates"
