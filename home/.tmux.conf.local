@@ -339,6 +339,10 @@ set -g mouse on
 # (thanks, Josh Mize)
 set escape-time 0
 
+# switch to most recently used session when destroying current session
+# prevents detaching when exiting last shell; only exits tmux when last session closes
+set-option -g detach-on-destroy off
+
 # force Vi mode
 #   really you should export VISUAL or EDITOR environment variable, see manual
 set -g status-keys vi
