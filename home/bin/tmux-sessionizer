@@ -424,8 +424,33 @@ if ! tmux list-sessions 2>/dev/null; then
 fi
 
 # Create session if it doesn't exist
+session_created=false
 if ! tmux has-session -t "$session_name" 2>/dev/null; then
     tmux new-session -s "$session_name" -c "$session" -d
+    session_created=true
+fi
+
+# Apply template if session was just created and templates are enabled
+if [[ "$session_created" == "true" && "$ENABLE_TEMPLATES" == "true" ]]; then
+    local project_type=$(detect_project_type "$session")
+    local template_file=""
+
+    # Check for custom template in project root
+    if [[ -f "$session/.tmux-template" ]]; then
+        template_file="$session/.tmux-template"
+    # Check for project-type specific template
+    elif [[ -f "$TEMPLATE_DIR/${project_type}.tmux" ]]; then
+        template_file="$TEMPLATE_DIR/${project_type}.tmux"
+    # Fall back to default template
+    elif [[ -f "$TEMPLATE_DIR/default.tmux" ]]; then
+        template_file="$TEMPLATE_DIR/default.tmux"
+    fi
+
+    # Apply template if found
+    if [[ -n "$template_file" && -f "$template_file" ]]; then
+        # Source the template, passing session name as argument
+        (cd "$session" && bash "$template_file" "$session_name" 2>/dev/null)
+    fi
 fi
 
 # Attach or switch to session depending on context
