@@ -81,12 +81,12 @@ This function should only modify configuration layer settings."
           lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols)
           lsp-lens-enable t
           ;; Diagnostics
-          lsp-diagnostics-provider :flycheck
+          lsp-diagnostics-provider 'flycheck
           lsp-modeline-diagnostics-enable t)
      
      (tree-sitter :variables
                   tree-sitter-syntax-highlight-enable t
-                  tree-sitter-fold-enable t
+                  tree-sitter-fold-enable nil
                   tree-sitter-fold-indicators-enable nil)
      
      docker
@@ -121,7 +121,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-additional-packages
    '(
      ;; AI Integration
-     gptel
+     (gptel :location (recipe :fetcher github :repo "karthink/gptel"))
      (gptel-extensions :location "~/.emacs.d/private/gptel-extensions.el/")
      
      ;; Essential Tools
