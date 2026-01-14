@@ -107,6 +107,73 @@ format_last_used() {
   fi
 }
 
+detect_project_type() {
+  local dir="$1"
+
+  # Check for specific project markers
+  [[ -f "$dir/Cargo.toml" ]] && echo "rust" && return
+  [[ -f "$dir/package.json" ]] && echo "nodejs" && return
+  [[ -f "$dir/pyproject.toml" ]] || [[ -f "$dir/setup.py" ]] || [[ -f "$dir/requirements.txt" ]] && echo "python" && return
+  [[ -f "$dir/go.mod" ]] && echo "go" && return
+  [[ -d "$dir/.homesick" ]] && echo "dotfiles" && return
+  [[ -f "$dir/Gemfile" ]] && echo "ruby" && return
+  [[ -f "$dir/pom.xml" ]] || [[ -f "$dir/build.gradle" ]] && echo "java" && return
+
+  # Check for .git with specific patterns
+  if [[ -d "$dir/.git" ]]; then
+    local remote=$(git -C "$dir" remote get-url origin 2>/dev/null)
+    [[ "$remote" =~ dotfiles ]] && echo "dotfiles" && return
+  fi
+
+  echo "general"
+}
+
+get_project_type_icon() {
+  local type="$1"
+
+  case "$type" in
+    rust)     echo "🦀" ;;
+    nodejs)   echo "📦" ;;
+    python)   echo "🐍" ;;
+    go)       echo "🐹" ;;
+    dotfiles) echo "🏠" ;;
+    ruby)     echo "💎" ;;
+    java)     echo "☕" ;;
+    *)        echo "💻" ;;
+  esac
+}
+
+get_git_status() {
+  local dir="$1"
+  [[ "$ENABLE_GIT_STATUS" != "true" ]] && echo "" && return
+  [[ ! -d "$dir/.git" ]] && echo "" && return
+
+  cd "$dir" 2>/dev/null || return
+
+  # Check if repo is clean
+  if git diff-index --quiet HEAD -- 2>/dev/null; then
+    # Clean repo, check if ahead/behind
+    local ahead=$(git rev-list --count @{u}..HEAD 2>/dev/null)
+    local behind=$(git rev-list --count HEAD..@{u} 2>/dev/null)
+
+    if [[ -n "$ahead" && "$ahead" -gt 0 ]] || [[ -n "$behind" && "$behind" -gt 0 ]]; then
+      echo "~"  # Ahead or behind
+    else
+      echo "✓"  # Clean and in sync
+    fi
+  else
+    echo "✗"  # Dirty (uncommitted changes)
+  fi
+
+  cd - >/dev/null 2>&1
+}
+
+get_git_status_icon() {
+  local status="$1"
+  [[ -z "$status" ]] && echo " " && return
+  echo "$status"
+}
+
 build_directory_list_with_metadata() {
   local stats=$(load_stats)
   local directories=()
@@ -120,6 +187,8 @@ build_directory_list_with_metadata() {
     [[ -z "$dir" ]] && continue
 
     local basename_dir=$(basename "$dir")
+    local project_type=$(detect_project_type "$dir")
+    local git_status=$(get_git_status "$dir")
     local display_line="$dir"
 
     # Add frecency score if stats enabled
@@ -133,11 +202,14 @@ build_directory_list_with_metadata() {
         local time_str=$(format_last_used "$last_used")
 
         # Format with score for sorting
-        display_line=$(printf "%06.2f|%s|%s|%s" "$frecency" "$dir" "$count" "$time_str")
+        display_line=$(printf "%06.2f|%s|%s|%s|%s|%s" "$frecency" "$dir" "$count" "$time_str" "$project_type" "$git_status")
       else
         # No stats, default score of 0
-        display_line=$(printf "000.00|%s|0|never" "$dir")
+        display_line=$(printf "000.00|%s|0|never|%s|%s" "$dir" "$project_type" "$git_status")
       fi
+    else
+      # No stats, just add project type and git status
+      display_line=$(printf "%s|%s|%s" "$dir" "$project_type" "$git_status")
     fi
 
     directories+=("$display_line")
@@ -154,24 +226,42 @@ build_directory_list_with_metadata() {
 format_directory_entry() {
   local line="$1"
 
-  if [[ "$ENABLE_STATS" == "true" && "$line" =~ \| ]]; then
-    local frecency=$(echo "$line" | cut -d'|' -f1)
-    local dir=$(echo "$line" | cut -d'|' -f2)
-    local count=$(echo "$line" | cut -d'|' -f3)
-    local time_str=$(echo "$line" | cut -d'|' -f4)
+  if [[ "$line" =~ \| ]]; then
+    if [[ "$ENABLE_STATS" == "true" ]]; then
+      local frecency=$(echo "$line" | cut -d'|' -f1)
+      local dir=$(echo "$line" | cut -d'|' -f2)
+      local count=$(echo "$line" | cut -d'|' -f3)
+      local time_str=$(echo "$line" | cut -d'|' -f4)
+      local project_type=$(echo "$line" | cut -d'|' -f5)
+      local git_status=$(echo "$line" | cut -d'|' -f6)
 
-    # Add star emoji for top entries (score > 20)
-    local star=""
-    if (( $(echo "$frecency > 20" | bc -l) )); then
-      star="⭐ "
-    fi
+      # Get icons
+      local type_icon=$(get_project_type_icon "$project_type")
+      local git_icon=$(get_git_status_icon "$git_status")
 
-    # Format: [star] [score] path (time, count uses)
-    printf "%s%-6.0f  %s" "$star" "$frecency" "$dir"
-    if [[ "$count" != "0" ]]; then
-      printf "  \033[90m(%s, %dx)\033[0m" "$time_str" "$count"
+      # Add star emoji for top entries (score > 20)
+      local star=""
+      if (( $(echo "$frecency > 20" | bc -l) )); then
+        star="⭐ "
+      fi
+
+      # Format: [star] [score] [git] [type] path (time, count uses)
+      printf "%s%-6.0f  %s %s %s" "$star" "$frecency" "$git_icon" "$type_icon" "$dir"
+      if [[ "$count" != "0" ]]; then
+        printf "  \033[90m(%s, %dx)\033[0m" "$time_str" "$count"
+      fi
+      echo
+    else
+      # No stats mode: just dir|type|git
+      local dir=$(echo "$line" | cut -d'|' -f1)
+      local project_type=$(echo "$line" | cut -d'|' -f2)
+      local git_status=$(echo "$line" | cut -d'|' -f3)
+
+      local type_icon=$(get_project_type_icon "$project_type")
+      local git_icon=$(get_git_status_icon "$git_status")
+
+      printf "%s %s %s\n" "$git_icon" "$type_icon" "$dir"
     fi
-    echo
   else
     echo "$line"
   fi
@@ -180,10 +270,16 @@ format_directory_entry() {
 extract_directory_from_line() {
   local line="$1"
 
-  if [[ "$ENABLE_STATS" == "true" && "$line" =~ \| ]]; then
-    echo "$line" | cut -d'|' -f2
+  if [[ "$line" =~ \| ]]; then
+    if [[ "$ENABLE_STATS" == "true" ]]; then
+      echo "$line" | cut -d'|' -f2
+    else
+      echo "$line" | cut -d'|' -f1
+    fi
   else
-    echo "$line"
+    # Fallback: extract path from formatted line
+    # Remove star, score, icons, and metadata
+    echo "$line" | sed -E 's/^[⭐ ]*[0-9]+  [^ ]+ [^ ]+ //' | awk '{print $1}'
   fi
 }
 
