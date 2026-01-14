@@ -228,7 +228,7 @@ tmux_conf_theme_right_separator_sub="|"
 #     - #{username_ssh}
 tmux_conf_theme_status_left="#{prefix} #{circled_session_name} | ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} | #{loadavg} "
 # tmux_conf_theme_status_right=" #{prefix}#{pairing}#{synchronized} | #{?window_zoomed_flag, ,🔍 | #{username}#{root} | #{hostname} | Continuum status: #{continuum_status} "
-tmux_conf_theme_status_right='#{battery_hbar} | #(curl -m 1 wttr.in?format=1\&u 2>/dev/null; sleep 900) | %R , %d %b | #{continuum_status}'
+tmux_conf_theme_status_right='#{battery_hbar} | #(curl -m 1 wttr.in?format=1\&u 2>/dev/null; sleep 900) | %R , %d %b'
 
 #
 # status left style
@@ -409,9 +409,11 @@ set -g @plugin 'tmux-plugins/tmux-copycat'
 set -g @plugin 'tmux-plugins/tmux-logging'
 set -g @plugin 'laktak/extrakto'
 set -g @plugin 'tmux-plugins/tmux-resurrect'
-set -g @plugin 'tmux-plugins/tmux-continuum'
-set -g @continuum-restore 'on'
-set -g @continuum-save-interval '60'
+# Continuum disabled to prevent auto-save session bloat
+# Use manual save with Ctrl-A Ctrl-s instead
+# set -g @plugin 'tmux-plugins/tmux-continuum'
+# set -g @continuum-restore 'on'
+# set -g @continuum-save-interval '60'
 
 # -- custom variables ----------------------------------------------------------
 
