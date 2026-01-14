@@ -235,7 +235,7 @@ build_directory_list_with_metadata() {
 format_directory_entry() {
   local line="$1"
 
-  if [[ "$line" =~ \| ]]; then
+  if [[ "$line" == *"|"* ]]; then
     if [[ "$ENABLE_STATS" == "true" ]]; then
       local frecency=$(echo "$line" | cut -d'|' -f1)
       local dir=$(echo "$line" | cut -d'|' -f2)
@@ -279,7 +279,7 @@ format_directory_entry() {
 extract_directory_from_line() {
   local line="$1"
 
-  if [[ "$line" =~ \| ]]; then
+  if [[ "$line" == *"|"* ]]; then
     if [[ "$ENABLE_STATS" == "true" ]]; then
       echo "$line" | cut -d'|' -f2
     else
