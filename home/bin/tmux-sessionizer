@@ -254,12 +254,12 @@ format_directory_entry() {
         star="⭐ "
       fi
 
-      # Format: [star] [score] [git] [type] path (time, count uses)
+      # Format: [star] [score] [git] [type] path (time, count uses) TAB actual_path
       printf "%s%-6.0f  %s %s %s" "$star" "$frecency" "$git_icon" "$type_icon" "$dir"
       if [[ "$count" != "0" ]]; then
         printf "  \033[90m(%s, %dx)\033[0m" "$time_str" "$count"
       fi
-      echo
+      printf "\t%s\n" "$dir"
     else
       # No stats mode: just dir|type|git
       local dir=$(echo "$line" | cut -d'|' -f1)
@@ -269,7 +269,7 @@ format_directory_entry() {
       local type_icon=$(get_project_type_icon "$project_type")
       local git_icon=$(get_git_status_icon "$git_status")
 
-      printf "%s %s %s\n" "$git_icon" "$type_icon" "$dir"
+      printf "%s %s %s\t%s\n" "$git_icon" "$type_icon" "$dir" "$dir"
     fi
   else
     echo "$line"
@@ -279,16 +279,12 @@ format_directory_entry() {
 extract_directory_from_line() {
   local line="$1"
 
-  if [[ "$line" == *"|"* ]]; then
-    if [[ "$ENABLE_STATS" == "true" ]]; then
-      echo "$line" | cut -d'|' -f2
-    else
-      echo "$line" | cut -d'|' -f1
-    fi
+  # Extract path from after tab delimiter (appended by format_directory_entry)
+  if [[ "$line" == *$'\t'* ]]; then
+    echo "$line" | cut -d$'\t' -f2
   else
-    # Fallback: extract path from formatted line
-    # Remove star (if present), score, git icon, type icon, then get the path
-    echo "$line" | sed -E 's/^⭐ //; s/^[0-9]+ +[^ ]+ [^ ]+ //' | awk '{print $1}'
+    # Fallback: line is already just a path
+    echo "$line"
   fi
 }
 
