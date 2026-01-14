@@ -27,14 +27,189 @@ if [[ -f "$CONFIG_FILE" ]]; then
   source "$CONFIG_FILE"
 fi
 
-# Build session list - for now, use the original simple approach
-# This will be enhanced in later commits
-session=$((echo ${SEARCH_PATHS[@]} | tr " " "\n"; \
-           find ${SEARCH_PATHS[@]} -mindepth 1 -maxdepth $MAX_DEPTH -type d 2>/dev/null) | \
-           fzf)
+# Stats management functions
+load_stats() {
+  if [[ -f "$STATS_FILE" ]]; then
+    cat "$STATS_FILE"
+  else
+    echo "{}"
+  fi
+}
+
+save_stats() {
+  local stats="$1"
+  echo "$stats" > "$STATS_FILE"
+}
+
+track_session_launch() {
+  local session_path="$1"
+  [[ "$ENABLE_STATS" != "true" ]] && return
+
+  local stats=$(load_stats)
+  local current_time=$(date +%s)
+  local session_key=$(basename "$session_path")
+
+  # Update or create stats entry using jq
+  stats=$(echo "$stats" | jq --arg key "$session_key" \
+                              --arg path "$session_path" \
+                              --arg time "$current_time" \
+    'if .[$key] then
+      .[$key].count += 1 | .[$key].lastUsed = ($time | tonumber)
+    else
+      .[$key] = {path: $path, count: 1, lastUsed: ($time | tonumber)}
+    end')
+
+  save_stats "$stats"
+}
+
+calculate_frecency_score() {
+  local count="$1"
+  local last_used="$2"
+  local current_time=$(date +%s)
+
+  # Days since last use
+  local days_diff=$(( (current_time - last_used) / 86400 ))
+
+  # Recency weight: exponential decay
+  # Recent (0-1 day): 1.0, 1-7 days: 0.8, 7-30 days: 0.5, 30+ days: 0.2
+  local recency_weight=0.2
+  if [[ $days_diff -le 1 ]]; then
+    recency_weight=1.0
+  elif [[ $days_diff -le 7 ]]; then
+    recency_weight=0.8
+  elif [[ $days_diff -le 30 ]]; then
+    recency_weight=0.5
+  fi
+
+  # Frecency = (frequency * 0.5) + (recency * 50 * 0.5)
+  # Scale recency component to be comparable to frequency
+  local frecency=$(echo "$count * 0.5 + $recency_weight * 50 * 0.5" | bc -l)
+  printf "%.2f" "$frecency"
+}
+
+format_last_used() {
+  local last_used="$1"
+  local current_time=$(date +%s)
+  local diff=$((current_time - last_used))
+
+  if [[ $diff -lt 3600 ]]; then
+    local minutes=$((diff / 60))
+    echo "${minutes}m ago"
+  elif [[ $diff -lt 86400 ]]; then
+    local hours=$((diff / 3600))
+    echo "${hours}h ago"
+  elif [[ $diff -lt 604800 ]]; then
+    local days=$((diff / 86400))
+    echo "${days}d ago"
+  else
+    local weeks=$((diff / 604800))
+    echo "${weeks}w ago"
+  fi
+}
+
+build_directory_list_with_metadata() {
+  local stats=$(load_stats)
+  local directories=()
+
+  # Find all directories
+  local found_dirs=$((echo ${SEARCH_PATHS[@]} | tr " " "\n"; \
+                      find ${SEARCH_PATHS[@]} -mindepth 1 -maxdepth $MAX_DEPTH -type d 2>/dev/null))
+
+  # Process each directory
+  while IFS= read -r dir; do
+    [[ -z "$dir" ]] && continue
+
+    local basename_dir=$(basename "$dir")
+    local display_line="$dir"
+
+    # Add frecency score if stats enabled
+    if [[ "$ENABLE_STATS" == "true" ]]; then
+      local stats_entry=$(echo "$stats" | jq -r --arg key "$basename_dir" '.[$key] // empty')
+
+      if [[ -n "$stats_entry" ]]; then
+        local count=$(echo "$stats_entry" | jq -r '.count')
+        local last_used=$(echo "$stats_entry" | jq -r '.lastUsed')
+        local frecency=$(calculate_frecency_score "$count" "$last_used")
+        local time_str=$(format_last_used "$last_used")
+
+        # Format with score for sorting
+        display_line=$(printf "%06.2f|%s|%s|%s" "$frecency" "$dir" "$count" "$time_str")
+      else
+        # No stats, default score of 0
+        display_line=$(printf "000.00|%s|0|never" "$dir")
+      fi
+    fi
+
+    directories+=("$display_line")
+  done <<< "$found_dirs"
+
+  # Sort by frecency (first field) if stats enabled
+  if [[ "$ENABLE_STATS" == "true" ]]; then
+    printf "%s\n" "${directories[@]}" | sort -t'|' -k1 -rn
+  else
+    printf "%s\n" "${directories[@]}"
+  fi
+}
+
+format_directory_entry() {
+  local line="$1"
+
+  if [[ "$ENABLE_STATS" == "true" && "$line" =~ \| ]]; then
+    local frecency=$(echo "$line" | cut -d'|' -f1)
+    local dir=$(echo "$line" | cut -d'|' -f2)
+    local count=$(echo "$line" | cut -d'|' -f3)
+    local time_str=$(echo "$line" | cut -d'|' -f4)
+
+    # Add star emoji for top entries (score > 20)
+    local star=""
+    if (( $(echo "$frecency > 20" | bc -l) )); then
+      star="⭐ "
+    fi
+
+    # Format: [star] [score] path (time, count uses)
+    printf "%s%-6.0f  %s" "$star" "$frecency" "$dir"
+    if [[ "$count" != "0" ]]; then
+      printf "  \033[90m(%s, %dx)\033[0m" "$time_str" "$count"
+    fi
+    echo
+  else
+    echo "$line"
+  fi
+}
+
+extract_directory_from_line() {
+  local line="$1"
+
+  if [[ "$ENABLE_STATS" == "true" && "$line" =~ \| ]]; then
+    echo "$line" | cut -d'|' -f2
+  else
+    echo "$line"
+  fi
+}
+
+# Build directory list
+directories=$(build_directory_list_with_metadata)
+
+# Format for display
+formatted_list=""
+while IFS= read -r line; do
+  [[ -z "$line" ]] && continue
+  formatted_list+="$(format_directory_entry "$line")"$'\n'
+done <<< "$directories"
+
+# Show in fzf
+selected=$(echo "$formatted_list" | fzf --ansi)
+
+# Extract actual directory path
+session=$(extract_directory_from_line "$selected")
+
+[[ -z "$session" ]] && exit 0
 
 # Create session name from directory path
 session_name=$(basename "$session" | tr . _)
+
+# Track session launch
+track_session_launch "$session"
 
 # Start tmux server if not running
 if ! tmux list-sessions 2>/dev/null; then
