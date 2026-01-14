@@ -525,6 +525,9 @@ This section defines the main dotspacemacs/init function.
   (setq backup-directory-alist
         `(("." . ,(concat user-emacs-directory "backups"))))
   (setq create-lockfiles nil)
+
+  ;; Browse URL - use system handler (routes through Hammerspoon URLDispatcher)
+  (setq browse-url-browser-function 'browse-url-default-macosx-browser)
 #+end_src
 
 ** gptel Configuration (AI Integration)
