@@ -138,9 +138,9 @@ detect_project_type() {
 }
 
 get_project_type_icon() {
-  local type="$1"
+  local proj_type="$1"
 
-  case "$type" in
+  case "$proj_type" in
     rust)     echo "🦀" ;;
     nodejs)   echo "📦" ;;
     python)   echo "🐍" ;;
