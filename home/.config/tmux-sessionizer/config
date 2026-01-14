@@ -8,7 +8,7 @@ SEARCH_PATHS=(
   "$HOME/personal"
   "$HOME/work"
   "$HOME/github"
-  "$HOME/.homesick/repos/dotfiles/home"
+  "$HOME/.homesick/repos/dotfiles"
 )
 
 # Maximum depth for directory search (1 = immediate subdirectories only)
