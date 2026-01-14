@@ -178,9 +178,9 @@ get_git_status() {
 }
 
 get_git_status_icon() {
-  local status="$1"
-  [[ -z "$status" ]] && echo " " && return
-  echo "$status"
+  local git_st="$1"
+  [[ -z "$git_st" ]] && echo " " && return
+  echo "$git_st"
 }
 
 build_directory_list_with_metadata() {
