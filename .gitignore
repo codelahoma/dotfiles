@@ -14,3 +14,4 @@ home/personal/
 
 # Org-mode export files
 home/dotspacemacs-modular.org.org
+home/.config/tmux-sessionizer/stats.json
