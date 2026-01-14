@@ -188,8 +188,8 @@ build_directory_list_with_metadata() {
   local directories=()
 
   # Find all directories
-  local found_dirs=$((echo ${SEARCH_PATHS[@]} | tr " " "\n"; \
-                      find ${SEARCH_PATHS[@]} -mindepth 1 -maxdepth $MAX_DEPTH -type d 2>/dev/null))
+  local found_dirs=$(echo ${SEARCH_PATHS[@]} | tr " " "\n"; \
+                     find ${SEARCH_PATHS[@]} -mindepth 1 -maxdepth $MAX_DEPTH -type d 2>/dev/null)
 
   # Process each directory
   while IFS= read -r dir; do
@@ -287,8 +287,8 @@ extract_directory_from_line() {
     fi
   else
     # Fallback: extract path from formatted line
-    # Remove star, score, icons, and metadata
-    echo "$line" | sed -E 's/^[⭐ ]*[0-9]+  [^ ]+ [^ ]+ //' | awk '{print $1}'
+    # Remove star (if present), score, git icon, type icon, then get the path
+    echo "$line" | sed -E 's/^⭐ //; s/^[0-9]+ +[^ ]+ [^ ]+ //' | awk '{print $1}'
   fi
 }
 
