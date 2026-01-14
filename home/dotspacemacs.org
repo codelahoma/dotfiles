@@ -152,6 +152,7 @@ This function defines layer configuration and package management.
 
   ;; Other languages
   emacs-lisp
+  lua
   react
 #+end_src
 

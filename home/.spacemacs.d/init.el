@@ -58,6 +58,7 @@ This function should only modify configuration layer settings."
      
      ;; Other languages
      emacs-lisp
+     lua
      react
      (org :variables
           org-enable-roam-support t
