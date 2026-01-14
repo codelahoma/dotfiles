@@ -3,6 +3,15 @@
 # tmux-sessionizer - Fuzzy find and switch to project tmux sessions
 # Enhanced with configuration system, stats tracking, and rich previews
 
+# Handle preview mode (called by fzf)
+if [[ "$1" == "--preview" ]]; then
+  shift
+  PREVIEW_MODE=true
+  PREVIEW_LINE="$*"
+else
+  PREVIEW_MODE=false
+fi
+
 # Configuration file location
 CONFIG_FILE="${HOME}/.config/tmux-sessionizer/config"
 
@@ -283,6 +292,99 @@ extract_directory_from_line() {
   fi
 }
 
+preview_directory() {
+  local line="$1"
+  local dir=$(extract_directory_from_line "$line")
+
+  [[ -z "$dir" || ! -d "$dir" ]] && echo "Invalid directory" && return
+
+  local basename_dir=$(basename "$dir")
+  local project_type=$(detect_project_type "$dir")
+  local type_icon=$(get_project_type_icon "$project_type")
+
+  # Header
+  echo "📂 Project: $basename_dir"
+  echo "📍 $dir"
+  echo ""
+
+  # Usage statistics
+  if [[ "$ENABLE_STATS" == "true" ]]; then
+    local stats=$(load_stats)
+    local stats_entry=$(echo "$stats" | jq -r --arg key "$basename_dir" '.[$key] // empty')
+
+    if [[ -n "$stats_entry" ]]; then
+      local count=$(echo "$stats_entry" | jq -r '.count')
+      local last_used=$(echo "$stats_entry" | jq -r '.lastUsed')
+      local time_str=$(format_last_used "$last_used")
+
+      echo "🔥 Used $count times (last: $time_str)"
+      echo ""
+    fi
+  fi
+
+  # Git status
+  if [[ -d "$dir/.git" ]]; then
+    echo "Git Status:"
+    cd "$dir" 2>/dev/null || return
+
+    local branch=$(git branch --show-current 2>/dev/null)
+    local ahead=$(git rev-list --count @{u}..HEAD 2>/dev/null)
+    local behind=$(git rev-list --count HEAD..@{u} 2>/dev/null)
+
+    if [[ -n "$branch" ]]; then
+      echo "  Branch: $branch"
+    fi
+
+    if git diff-index --quiet HEAD -- 2>/dev/null; then
+      echo "  Status: ✓ Clean"
+    else
+      echo "  Status: ✗ Uncommitted changes"
+    fi
+
+    if [[ -n "$ahead" && "$ahead" -gt 0 ]]; then
+      echo "  ↑ $ahead commit(s) ahead"
+    fi
+
+    if [[ -n "$behind" && "$behind" -gt 0 ]]; then
+      echo "  ↓ $behind commit(s) behind"
+    fi
+
+    cd - >/dev/null 2>&1
+    echo ""
+  fi
+
+  # Recent files
+  echo "Recent Files:"
+  find "$dir" -maxdepth 2 -type f -not -path '*/\.*' 2>/dev/null | \
+    xargs ls -t 2>/dev/null | \
+    head -5 | \
+    sed "s|$dir/||" | \
+    sed 's/^/  /'
+
+  echo ""
+
+  # Project info
+  echo "Project Type: $type_icon $project_type"
+
+  # Check for template
+  if [[ "$ENABLE_TEMPLATES" == "true" ]]; then
+    local template_file="$TEMPLATE_DIR/${project_type}.tmux"
+    if [[ -f "$template_file" ]]; then
+      echo "Template: ${project_type}.tmux"
+    elif [[ -f "$dir/.tmux-template" ]]; then
+      echo "Template: .tmux-template (custom)"
+    else
+      echo "Template: default"
+    fi
+  fi
+}
+
+# Handle preview mode
+if [[ "$PREVIEW_MODE" == "true" ]]; then
+  preview_directory "$PREVIEW_LINE"
+  exit 0
+fi
+
 # Build directory list
 directories=$(build_directory_list_with_metadata)
 
@@ -293,8 +395,17 @@ while IFS= read -r line; do
   formatted_list+="$(format_directory_entry "$line")"$'\n'
 done <<< "$directories"
 
-# Show in fzf
-selected=$(echo "$formatted_list" | fzf --ansi)
+# Configure fzf with preview if enabled
+if [[ "$ENABLE_PREVIEW" == "true" ]]; then
+  selected=$(echo "$formatted_list" | fzf \
+    --ansi \
+    --preview="$0 --preview {}" \
+    --preview-window='right:50%:wrap' \
+    --bind='ctrl-/:toggle-preview' \
+    --header='CTRL-/: toggle preview | ENTER: select session')
+else
+  selected=$(echo "$formatted_list" | fzf --ansi)
+fi
 
 # Extract actual directory path
 session=$(extract_directory_from_line "$selected")
