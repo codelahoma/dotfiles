@@ -131,7 +131,7 @@ detect_project_type() {
   # Check for .git with specific patterns
   if [[ -d "$dir/.git" ]]; then
     local remote=$(git -C "$dir" remote get-url origin 2>/dev/null)
-    [[ "$remote" =~ dotfiles ]] && echo "dotfiles" && return
+    [[ "$remote" == *dotfiles* ]] && echo "dotfiles" && return
   fi
 
   echo "general"
