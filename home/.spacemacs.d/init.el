@@ -361,6 +361,9 @@ configuration."
   (setq backup-directory-alist
         `(("." . ,(concat user-emacs-directory "backups"))))
   (setq create-lockfiles nil)
+  
+  ;; Browse URL - use system handler (routes through Hammerspoon URLDispatcher)
+  (setq browse-url-browser-function 'browse-url-default-macosx-browser)
     (use-package gptel
       :after org
       :config

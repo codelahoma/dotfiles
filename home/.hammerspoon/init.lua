@@ -106,9 +106,12 @@ Spotify = "com.spotify.client"
 Notion = "notion.id"
 Zoom = "us.zoom.xos"
 Safari = "com.apple.Safari"
+Arc = "company.thebrowser.Browser"
+Comet = "ai.perplexity.comet"
 
 -- DefaultBrowser = Safari
-DefaultBrowser = Chrome
+-- DefaultBrowser = Chrome
+DefaultBrowser = Comet
 Install:andUse("URLDispatcher",
               {
                 config = {
