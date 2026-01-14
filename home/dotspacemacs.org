@@ -190,12 +190,12 @@ This function defines layer configuration and package management.
        lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols)
        lsp-lens-enable t
        ;; Diagnostics
-       lsp-diagnostics-provider :flycheck
+       lsp-diagnostics-provider 'flycheck
        lsp-modeline-diagnostics-enable t)
 
   (tree-sitter :variables
                tree-sitter-syntax-highlight-enable t
-               tree-sitter-fold-enable t
+               tree-sitter-fold-enable nil
                tree-sitter-fold-indicators-enable nil)
 
   docker
