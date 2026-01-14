@@ -121,7 +121,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-additional-packages
    '(
      ;; AI Integration
-     (gptel :location (recipe :fetcher github :repo "karthink/gptel"))
+     gptel  ;; Install from MELPA (quelpa broken with Emacs 30.2)
      (gptel-extensions :location "~/.emacs.d/private/gptel-extensions.el/")
      
      ;; Essential Tools
