@@ -104,6 +104,7 @@ This function should only modify configuration layer settings."
      version-control
      (mu4e :variables
            mu4e-installation-path "/opt/homebrew/share/emacs/site-lisp/mu/mu4e"
+           mu4e-mu-binary "/opt/homebrew/bin/mu"
            mu4e-enable-notifications t
            mu4e-enable-mode-line t
            mu4e-org-compose-support t)
@@ -416,24 +417,32 @@ configuration."
     ;; Load gptel-extensions if available
     (when (file-exists-p "~/.emacs.d/private/gptel-extensions.el/gptel-extensions.el")
       (require 'gptel-extensions))
+  ;; Use pass (password-store) for SMTP authentication
+  (require 'auth-source-pass)
+  (auth-source-pass-enable)
+  (setq auth-source-pass-filename "~/.password-store")
+  ;; Map SMTP server lookup to mbsync password entry
+  (setq auth-sources '(password-store))
+  
   (with-eval-after-load 'mu4e
     ;; Basic paths
-    (setq mu4e-maildir "~/Mail"
+    (setq mu4e-maildir "~/Maildir/Fastmail"
           mu4e-attachment-dir "~/Downloads"
           mu4e-get-mail-command "mbsync -a"
           mu4e-update-interval 300)
   
-    ;; Folders (customize per email provider)
-    (setq mu4e-sent-folder   "/Sent"
+    ;; Folders (Fastmail folder names)
+    (setq mu4e-sent-folder   "/Sent Items"
           mu4e-drafts-folder "/Drafts"
           mu4e-trash-folder  "/Trash"
           mu4e-refile-folder "/Archive")
   
-    ;; SMTP (restore from backup or configure manually)
+    ;; SMTP (Fastmail) - password from pass via auth-source-pass
     (setq message-send-mail-function 'smtpmail-send-it
-          smtpmail-smtp-server "smtp.example.com"  ; Update with actual server
-          smtpmail-smtp-service 587
-          smtpmail-stream-type 'starttls)
+          smtpmail-smtp-server "smtp.fastmail.com"
+          smtpmail-smtp-service 465
+          smtpmail-stream-type 'ssl
+          smtpmail-smtp-user "knowshank@fastmail.com")
   
     ;; View settings
     (setq mu4e-view-show-images t
