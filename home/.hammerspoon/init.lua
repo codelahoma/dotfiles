@@ -111,7 +111,9 @@ Comet = "ai.perplexity.comet"
 
 -- DefaultBrowser = Safari
 -- DefaultBrowser = Chrome
-DefaultBrowser = Comet
+-- DefaultBrowser = Comet
+DefaultBrowser = Arc
+
 Install:andUse("URLDispatcher",
               {
                 config = {
@@ -531,7 +533,7 @@ hotkey.bind(magic, "d", appLauncher('Discord'))
 hotkey.bind(hyper, "f", appLauncher('DBeaver'))
 hotkey.bind(hyper, "i", appLauncher('iTerm'))
 hotkey.bind(hyper, "j", appLauncher('Emacs'))
-hotkey.bind(hyper, "k", appLauncher('Comet'))
+hotkey.bind(hyper, "k", appLauncher('Arc'))
 hotkey.bind(magic, "k", appLauncher('Marked'))
 hotkey.bind(meh, "k", appLauncher('Google Chrome'))
 hotkey.bind(hyper, "l", appLauncher('Fantastical'))

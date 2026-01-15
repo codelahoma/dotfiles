@@ -211,7 +211,9 @@ The [[http://www.hammerspoon.org/Spoons/WindowGrid.html][WindowGrid]] spoon sets
 
   -- DefaultBrowser = Safari
   -- DefaultBrowser = Chrome
-  DefaultBrowser = Comet
+  -- DefaultBrowser = Comet
+  DefaultBrowser = Arc
+
   Install:andUse("URLDispatcher",
                 {
                   config = {
@@ -653,7 +655,7 @@ The KSheet spoon provides for showing the keybindings for the currently active a
   hotkey.bind(hyper, "f", appLauncher('DBeaver'))
   hotkey.bind(hyper, "i", appLauncher('iTerm'))
   hotkey.bind(hyper, "j", appLauncher('Emacs'))
-  hotkey.bind(hyper, "k", appLauncher('Comet'))
+  hotkey.bind(hyper, "k", appLauncher('Arc'))
   hotkey.bind(magic, "k", appLauncher('Marked'))
   hotkey.bind(meh, "k", appLauncher('Google Chrome'))
   hotkey.bind(hyper, "l", appLauncher('Fantastical'))
