@@ -378,6 +378,12 @@ unbind C-b
 set -g prefix C-a
 bind C-a send-prefix
 
+# Quick switch to last session (toggle between two sessions)
+bind-key L switch-client -l
+
+# Session selector sorted by most recently used
+bind-key S choose-tree -s -O time
+
 # move status line to top
 #set -g status-position top
 
