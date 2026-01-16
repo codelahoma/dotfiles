@@ -256,6 +256,13 @@ This function defines layer configuration and package management.
   org-noter-pdftools
   fold-this
 
+  ;; Org Export Backends
+  ox-reveal
+  ox-gfm
+  ox-jira
+  ox-slack
+  ox-jekyll-md
+
   ;; UI/Theme
   fira-code-mode
   highlight-indent-guides

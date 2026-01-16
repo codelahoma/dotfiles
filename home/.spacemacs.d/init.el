@@ -139,6 +139,13 @@ This function should only modify configuration layer settings."
      org-noter-pdftools
      fold-this
      
+     ;; Org Export Backends
+     ox-reveal
+     ox-gfm
+     ox-jira
+     ox-slack
+     ox-jekyll-md
+     
      ;; UI/Theme
      fira-code-mode
      highlight-indent-guides
