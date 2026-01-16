@@ -1,7 +1,10 @@
+# PATH configuration
 PATH="/opt/homebrew/bin:/Users/rodk/.local/bin:~/bin:/opt/local/bin:/opt/local/sbin:~/usr/local/opt/coreutils/libexec/gnubin:/Library/Android/sdk/tools:~/Library/Android/sdk/platform-tools:$PATH"
 export PATH="/Users/rodk/bin:/usr/local/opt/qt@5.5/bin:$PATH"
-export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
+export PATH="/opt/homebrew/opt/sqlite/bin:$PATH"
+export PATH="$PATH:/Users/rodk/.lmstudio/bin"
 export PATH=/Users/rodk/Library/Python/3.9/bin:$PATH
+export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
 
 # # for virutalenvwrapper
 # export WORKON_HOME=~/Envs
@@ -10,6 +13,10 @@ export PATH=/Users/rodk/Library/Python/3.9/bin:$PATH
 export EDITOR="$HOME/.local/bin/ec"
 export VISUAL="$HOME/.local/bin/ec"
 export FCEDIT="$HOME/.local/bin/ec"
+
+# Tool configuration
+export BAT_THEME="Monokai Extended Bright"
+export HOMESHICK_DIR=/opt/homebrew/opt/homeshick
 
 # Locale
 export LANG="en_US.UTF-8"
@@ -55,6 +62,14 @@ if [[ "$(uname -s)"  == "Darwin" ]] ; then
     if [[ -d "/opt/homebrew/lib/gcc/15" ]]; then
         export LIBRARY_PATH="/opt/homebrew/lib/gcc/15:${LIBRARY_PATH}"
     fi
+
+    # Compilation flags for Homebrew packages
+    export LDFLAGS="-L/opt/homebrew/opt/sqlite/lib -L/usr/local/opt/zlib/lib -L/usr/local/opt/bzip2/lib"
+    export CPPFLAGS="-I/opt/homebrew/opt/sqlite/include -I/usr/local/opt/zlib/include -I/usr/local/opt/bzip2/include"
+    export PKG_CONFIG_PATH="/opt/homebrew/opt/sqlite/lib/pkgconfig"
+
+    # macOS system flags
+    export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
     ulimit -n unlimited
 

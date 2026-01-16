@@ -36,9 +36,6 @@ source $ZSH/oh-my-zsh.sh
 # Zsh options
 unsetopt nomatch
 
-# Editor and basic utilities
-export EDITOR='/opt/homebrew/bin/emacsclient -nw'
-
 # Key bindings
 bindkey '^X^E' edit-command-line
 bindkey -s ^F "tmux-sessionizer\n"
@@ -122,9 +119,6 @@ iterm2_print_user_vars() {
 }
 ITERM2_SQUELCH_MARK=1
 
-# Bat configuration
-export BAT_THEME="Monokai Extended Bright"
-
 # Package managers
 # Homebrew
 eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -137,8 +131,7 @@ if [ -n "$INSIDE_EMACS" ]; then
     direnv reload
 fi
 
-# Homeshick for dotfiles
-export HOMESHICK_DIR=/opt/homebrew/opt/homeshick
+# Homeshick for dotfiles (HOMESHICK_DIR set in .zshenv)
 source /opt/homebrew/opt/homeshick/homeshick.sh
 
 # NVM (Node Version Manager)
@@ -157,17 +150,9 @@ eval "$(zoxide init zsh)"
 # Environment variables
 export DISPLAY_MAC=`ifconfig en0 | grep "inet " | cut -d " " -f2`:0
 export HELPDIR=/usr/local/share/zsh/help
-export ZSH_WAKATIME_BIN=/opt/homebrew/bin/wakatime-cli
 
-# System flags
+# System flags (env vars moved to .zshenv)
 ulimit -n 4096  # Increase file descriptor limit
-export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
-
-# Library paths
-export LDFLAGS="-L/opt/homebrew/opt/sqlite/lib -L/usr/local/opt/zlib/lib -L/usr/local/opt/bzip2/lib"
-export CPPFLAGS="-I/opt/homebrew/opt/sqlite/include -I/usr/local/opt/zlib/include -I/usr/local/opt/bzip2/include"
-export PKG_CONFIG_PATH="/opt/homebrew/opt/sqlite/lib/pkgconfig"
-export PATH="/opt/homebrew/opt/sqlite/bin:$PATH"
 
 # Additional plugins
 source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
@@ -199,10 +184,6 @@ alias orgg='(cd ~/personal/org-files && git-sync && cd .catalyst && git-sync)'
 fpath+=~/.zfunc; autoload -Uz compinit; compinit
 
 eval $(thefuck --alias)
-
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/rodk/.lmstudio/bin"
-# End of LM Studio CLI section
 
 # Zekko shell integration
 [ -f "/Users/rodk/my-zekko/bin/zekko-shell-integration.sh" ] && source "/Users/rodk/my-zekko/bin/zekko-shell-integration.sh"
