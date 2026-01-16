@@ -17,7 +17,6 @@ CONFIG_FILE="${HOME}/.config/tmux-sessionizer/config"
 
 # Default configuration values
 SEARCH_PATHS=(
-  "$HOME"
   "$HOME/personal"
   "$HOME/work"
   "$HOME/github"
@@ -28,6 +27,7 @@ ENABLE_PREVIEW=false
 ENABLE_STATS=false
 ENABLE_GIT_STATUS=false
 ENABLE_TEMPLATES=false
+INCLUDE_HOME_TOPLEVEL=false
 STATS_FILE="${HOME}/.config/tmux-sessionizer/stats.json"
 TEMPLATE_DIR="${HOME}/.config/tmux-sessionizer/templates"
 
@@ -187,9 +187,37 @@ build_directory_list_with_metadata() {
   local stats=$(load_stats)
   local directories=()
 
-  # Find all directories
+  # Build list of directories to scan
   local found_dirs=$(echo ${SEARCH_PATHS[@]} | tr " " "\n"; \
                      find ${SEARCH_PATHS[@]} -mindepth 1 -maxdepth $MAX_DEPTH -type d 2>/dev/null)
+
+  # Add home top-level directories if enabled (but not their children)
+  if [[ "$INCLUDE_HOME_TOPLEVEL" == "true" ]]; then
+    # Get all immediate children of $HOME
+    for home_dir in "$HOME"/*/; do
+      [[ ! -d "$home_dir" ]] && continue
+      home_dir="${home_dir%/}"  # Remove trailing slash
+
+      # Skip if it's already in SEARCH_PATHS or is a child of a SEARCH_PATH
+      local skip=false
+      for search_path in "${SEARCH_PATHS[@]}"; do
+        # Normalize search_path (expand $HOME, remove trailing slash)
+        local normalized_path="${search_path%/}"
+        if [[ "$home_dir" == "$normalized_path" ]] || [[ "$home_dir" == "$normalized_path"/* ]]; then
+          skip=true
+          break
+        fi
+      done
+
+      # Skip hidden directories and common non-project dirs
+      local basename_dir=$(basename "$home_dir")
+      [[ "$basename_dir" == .* ]] && skip=true
+
+      if [[ "$skip" == "false" ]]; then
+        found_dirs+=$'\n'"$home_dir"
+      fi
+    done
+  fi
 
   # Process each directory
   while IFS= read -r dir; do
@@ -392,15 +420,17 @@ while IFS= read -r line; do
 done <<< "$directories"
 
 # Configure fzf with preview if enabled
+# --tiebreak=index preserves frecency order when match scores are equal
 if [[ "$ENABLE_PREVIEW" == "true" ]]; then
   selected=$(echo "$formatted_list" | fzf \
     --ansi \
+    --tiebreak=index \
     --preview="$0 --preview {}" \
     --preview-window='right:50%:wrap' \
     --bind='ctrl-/:toggle-preview' \
     --header='CTRL-/: toggle preview | ENTER: select session')
 else
-  selected=$(echo "$formatted_list" | fzf --ansi)
+  selected=$(echo "$formatted_list" | fzf --ansi --tiebreak=index)
 fi
 
 # Extract actual directory path
