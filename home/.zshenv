@@ -6,6 +6,11 @@ export PATH=/Users/rodk/Library/Python/3.9/bin:$PATH
 # # for virutalenvwrapper
 # export WORKON_HOME=~/Envs
 
+# Default editor
+export EDITOR="$HOME/.local/bin/ec"
+export VISUAL="$HOME/.local/bin/ec"
+export FCEDIT="$HOME/.local/bin/ec"
+
 # Locale
 export LANG="en_US.UTF-8"
 export LC_COLLATE="en_US.UTF-8"
