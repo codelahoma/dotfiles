@@ -326,6 +326,29 @@ configuration."
             ("CANCELED" . ?✗)))
   
     (org-superstar-restart))
+  (with-eval-after-load 'org
+    (setq org-export-backends
+          '(ascii        ; Plain text
+            html         ; Web pages
+            icalendar    ; Calendar
+            latex        ; LaTeX/PDF
+            md           ; Markdown
+            odt          ; LibreOffice
+            org          ; Clean org export
+            beamer       ; LaTeX presentations
+            )))
+  
+  ;; Additional export backends (require ox-* packages)
+  (use-package ox-reveal
+    :after org
+    :config
+    (setq org-reveal-root "file:///Users/rodk/.emacs.d/private/reveal.js"))
+  
+  (use-package ox-gfm :after org)        ; GitHub Flavored Markdown
+  (use-package ox-jira :after org)       ; JIRA markup
+  (use-package ox-slack :after org)      ; Slack formatting
+  (use-package ox-confluence :after org) ; Atlassian Confluence
+  (use-package ox-jekyll-md :after org)  ; Jekyll blog posts
   ;; Python
   (with-eval-after-load 'flycheck
     (setq flycheck-python-pyright-executable "pyright"))
