@@ -93,3 +93,21 @@ Layer-specific variables are set in the layer declaration in `dotspacemacs.org`,
 ### Noweb References
 
 The `dotspacemacs.org` uses noweb syntax. Source blocks tagged with `:noweb-ref config-layers` or `:noweb-ref user-config` are collected into the appropriate sections during tangling.
+
+## Troubleshooting
+
+### tmux Scrollback Issues
+
+The tmux config has `allow-passthrough on` (line 446 of `.tmux.conf.local`) which lets applications send escape sequences directly to iTerm2. If scrollback stops working inside tmux:
+
+1. **Quick fix**: Start a fresh tmux server (`tmux kill-server && tmux`)
+2. **Diagnose**: Corrupted terminal state is often the cause, not config changes
+3. **Test passthrough**: `tmux set -g allow-passthrough off` temporarily
+
+To capture terminal escape sequences for debugging:
+
+```bash
+script -q /tmp/output.txt
+# run commands, then exit
+cat -v /tmp/output.txt | less  # look for ^[[2J, ^[[3J, ^[[?1049h
+```
