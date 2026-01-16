@@ -281,6 +281,13 @@ This function defines the environment variables for your Emacs session.")
   "Initialization for user code:
 This function is called immediately after `dotspacemacs/init', before layer
 configuration."
+  ;; GCC library path for native compilation (macOS + Homebrew)
+  (when (and (eq system-type 'darwin)
+             (file-directory-p "/opt/homebrew/lib/gcc/15"))
+    (setenv "LIBRARY_PATH"
+            (concat "/opt/homebrew/lib/gcc/15:"
+                    (or (getenv "LIBRARY_PATH") ""))))
+  
   ;; Prevent native compilation of problematic org files
   (setq native-comp-jit-compilation-deny-list '(".*org-element.*" ".*org-macs.*" ".*org-compat.*"))
   (setq comp-deferred-compilation t)

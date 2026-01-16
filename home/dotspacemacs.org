@@ -43,6 +43,13 @@ The configuration is organized into logical sections for easy navigation and mai
 * Startup Configuration
 
 #+begin_src emacs-lisp :noweb-ref user-init
+  ;; GCC library path for native compilation (macOS + Homebrew)
+  (when (and (eq system-type 'darwin)
+             (file-directory-p "/opt/homebrew/lib/gcc/15"))
+    (setenv "LIBRARY_PATH"
+            (concat "/opt/homebrew/lib/gcc/15:"
+                    (or (getenv "LIBRARY_PATH") ""))))
+
   ;; Prevent native compilation of problematic org files
   (setq native-comp-jit-compilation-deny-list '(".*org-element.*" ".*org-macs.*" ".*org-compat.*"))
   (setq comp-deferred-compilation t)
