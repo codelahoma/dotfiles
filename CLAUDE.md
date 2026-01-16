@@ -38,8 +38,13 @@ homeshick check dotfiles
 # Sync mail
 mbsync -a
 
-# Reindex after config changes
-mu init --maildir=~/Maildir/Fastmail --my-address=knowshank@fastmail.com
+# Reindex after config changes (all addresses are aliases via Fastmail)
+mu init --maildir=~/Maildir/Fastmail \
+  --my-address=rod@rodknowlton.com \
+  --my-address=rod.knowlton@gmail.com \
+  --my-address=codelahoma@gmail.com \
+  --my-address=knowshank@knowshank.com \
+  --my-address=knowshank@fastmail.com
 mu index
 ```
 

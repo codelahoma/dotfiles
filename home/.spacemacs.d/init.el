@@ -481,6 +481,14 @@ configuration."
           smtpmail-stream-type 'ssl
           smtpmail-smtp-user "knowshank@fastmail.com")
   
+    ;; Valid sender addresses (aliases routed through Fastmail)
+    (setq mu4e-user-mail-address-list
+          '("rod@rodknowlton.com"
+            "rod.knowlton@gmail.com"
+            "codelahoma@gmail.com"
+            "knowshank@knowshank.com"
+            "knowshank@fastmail.com"))
+  
     ;; View settings
     (setq mu4e-view-show-images t
           mu4e-view-show-addresses t
