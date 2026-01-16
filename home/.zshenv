@@ -40,10 +40,15 @@ if [[ "$(uname -s)"  == "Darwin" ]] ; then
     [[ -n "$SDKROOT" ]]                    || export SDKROOT="$(xcrun --show-sdk-path)"
 
     # Workaround for OpenSSL header/library paths (for GCC & LINKER)
-    pfx_openssl="/usr/local/opt/openssl@1.1"  # Change this if openssl was not installed via homebrew 
+    pfx_openssl="/usr/local/opt/openssl@1.1"  # Change this if openssl was not installed via homebrew
     if [[ -d "$pfx_openssl" ]]  ; then
         export CPATH="${pfx_openssl}/include:${CPATH}"                # Headers for C pre-processor
         export LIBRARY_PATH="${pfx_openssl}/lib:${LIBRARY_PATH}"      # libraries (for the linker)
+    fi
+
+    # GCC/libgccjit for Emacs native compilation
+    if [[ -d "/opt/homebrew/lib/gcc/15" ]]; then
+        export LIBRARY_PATH="/opt/homebrew/lib/gcc/15:${LIBRARY_PATH}"
     fi
 
     ulimit -n unlimited
