@@ -22,7 +22,7 @@ Channel fastmail
 Far :fastmail-remote:
 Near :fastmail-local:
 Patterns *
-Expunge None
+Expunge Both
 CopyArrivalDate yes
 Sync All
 Create Near
