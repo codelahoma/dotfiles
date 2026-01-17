@@ -462,6 +462,9 @@ configuration."
   (setq auth-sources '(password-store))
   
   (with-eval-after-load 'mu4e
+    ;; Primary email address (quiets mu4e warning)
+    (setq user-mail-address "rod@rodknowlton.com")
+  
     ;; Basic paths
     (setq mu4e-maildir "~/Maildir/Fastmail"
           mu4e-attachment-dir "~/Downloads"
@@ -493,7 +496,23 @@ configuration."
     (setq mu4e-view-show-images t
           mu4e-view-show-addresses t
           mu4e-html2text-command "w3m -T text/html"
-          mu4e-compose-format-flowed t))
+          mu4e-compose-format-flowed t)
+  
+    ;; Bookmarks (shortcuts on mu4e home screen)
+    (setq mu4e-bookmarks
+          '((:name "Inbox"   :query "maildir:/Inbox"   :key ?i)
+            (:name "Archive" :query "maildir:/Archive" :key ?a)))
+  
+    ;; Custom action: search for other emails from sender
+    (defun rk/mu4e-action-search-sender (msg)
+      "Search for other messages from the sender of MSG."
+      (let* ((from (mu4e-message-field msg :from))
+             (sender (cdr (car from))))
+        (mu4e-search (format "from:%s" sender))))
+  
+    ;; View actions - press 'a' in message view to see available actions
+    (add-to-list 'mu4e-view-actions
+                 '("Ssearch for sender" . rk/mu4e-action-search-sender) t))
   ;; Claude AI integration
   (defun rk/clip-for-claude ()
     "Copy file path and content with line numbers for Claude AI"
