@@ -148,6 +148,11 @@ Install:andUse("KSheet", {
                  }
 })
 
+hs.loadSpoon("MouseCircle")
+spoon.MouseCircle:bindHotkeys({
+  show = { meh, "m" }
+})
+
 _centeredWindowsFormerPositions = {}
   _appLaunchStats = {}
   _statsFilePath = hs.configdir .. "/app_launch_stats.json"

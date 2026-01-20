@@ -260,6 +260,18 @@ The KSheet spoon provides for showing the keybindings for the currently active a
                    }
   })
 #+end_src
+
+* Find Mouse Pointer
+
+The MouseCircle spoon draws a circle around the mouse pointer to help locate it.
+
+#+begin_src lua
+  hs.loadSpoon("MouseCircle")
+  spoon.MouseCircle:bindHotkeys({
+    show = { meh, "m" }
+  })
+#+end_src
+
 * Fast navigation to core apps 
 
 ** Helper Functions
