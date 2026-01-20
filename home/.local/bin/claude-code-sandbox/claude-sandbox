@@ -1,0 +1,517 @@
+#!/usr/bin/env bash
+#
+# claude-sandbox - Run Claude Code in a sandboxed Docker container
+#
+# Usage: claude-sandbox [options] [repository]
+#
+# Options:
+#   -h, --help          Show this help message
+#   -b, --build         Force rebuild of the Docker image
+#   -m, --mount         Mount local repo instead of cloning (for local repos)
+#   -n, --name NAME     Container name (default: claude-sandbox)
+#   --no-skip-perms     Don't use --dangerously-skip-permissions
+#   --no-user-config    Don't mount ~/.claude user configuration
+#   --use-api-key       Use ANTHROPIC_API_KEY instead of subscription
+#
+# Repository can be:
+#   - A GitHub URL (https://github.com/user/repo or git@github.com:user/repo)
+#   - A local path to a git repository
+#   - Omitted (uses current directory if it's a git repo)
+#
+# Authentication:
+#   Defaults to subscription via ~/.claude/ credentials.
+#   Use --use-api-key to use ANTHROPIC_API_KEY for API billing.
+#
+# Claude Code Assets (automatically included):
+#   Project-level (from repo):
+#     - .claude/          Project settings, memory, context
+#     - CLAUDE.md         Project instructions
+#     - .claudeignore     Files for Claude to ignore
+#   User-level (from ~/.claude):
+#     - settings.json     User preferences
+#     - credentials       API configuration
+#     - (mounted unless --no-user-config)
+
+set -euo pipefail
+
+# Configuration
+IMAGE_NAME="claude-code-sandbox"
+CONTAINER_NAME="claude-sandbox"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOCKERFILE_PATH="${SCRIPT_DIR}/Dockerfile"
+
+# Claude Code asset patterns (project-level)
+CLAUDE_ASSETS=(
+    ".claude"
+    "CLAUDE.md"
+    ".claudeignore"
+    "claude.config.json"
+)
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Options
+FORCE_BUILD=false
+MOUNT_LOCAL=false
+SKIP_PERMS=true
+MOUNT_USER_CONFIG=true
+USE_API_KEY=false
+DRY_RUN=false
+REPO_ARG=""
+
+log_info() { echo -e "${BLUE}[INFO]${NC} $*"; }
+log_success() { echo -e "${GREEN}[SUCCESS]${NC} $*"; }
+log_warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
+log_error() { echo -e "${RED}[ERROR]${NC} $*" >&2; }
+
+show_help() {
+    cat << 'EOF'
+claude-sandbox - Run Claude Code in a sandboxed Docker container
+
+USAGE:
+    claude-sandbox [OPTIONS] [REPOSITORY]
+
+OPTIONS:
+    -h, --help          Show this help message
+    -b, --build         Force rebuild of the Docker image
+    -m, --mount         Mount local repo instead of cloning
+    -n, --name NAME     Container name (default: claude-sandbox)
+    --dry-run           Show what would be done without starting Claude
+    --no-skip-perms     Don't use --dangerously-skip-permissions
+    --no-user-config    Don't mount ~/.claude user configuration
+    --use-api-key       Use ANTHROPIC_API_KEY instead of subscription
+
+REPOSITORY:
+    Can be one of:
+    - A GitHub URL (https://github.com/user/repo)
+    - A GitHub SSH URL (git@github.com:user/repo)
+    - A local path to a git repository
+    - Omitted: uses current directory if it's a git repo
+
+CLAUDE CODE ASSETS:
+    Project-level (automatically included from repo):
+    - .claude/          Project settings, memory, conversation context
+    - CLAUDE.md         Project-specific instructions for Claude
+    - .claudeignore     Files/patterns for Claude to ignore
+    - claude.config.json  Optional project configuration
+
+    User-level (mounted from ~/.claude by default):
+    - settings.json     Your Claude Code preferences
+    - credentials       API keys and auth tokens
+    - Use --no-user-config to disable
+
+ENVIRONMENT VARIABLES:
+    ANTHROPIC_API_KEY   Required: Your Anthropic API key
+    GITHUB_TOKEN        Optional: For private repository access
+    SSH_AUTH_SOCK       Optional: SSH agent socket for git auth
+
+EXAMPLES:
+    # Use current directory's repo
+    claude-sandbox
+
+    # Clone and work on a GitHub repo
+    claude-sandbox https://github.com/user/repo
+
+    # Mount a local repo (changes persist)
+    claude-sandbox -m /path/to/local/repo
+
+    # Force rebuild image and use specific container name
+    claude-sandbox -b -n my-project https://github.com/user/repo
+
+    # Run without user config (fresh Claude settings)
+    claude-sandbox --no-user-config
+EOF
+}
+
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                show_help
+                exit 0
+                ;;
+            -b|--build)
+                FORCE_BUILD=true
+                shift
+                ;;
+            -m|--mount)
+                MOUNT_LOCAL=true
+                shift
+                ;;
+            -n|--name)
+                CONTAINER_NAME="$2"
+                shift 2
+                ;;
+            --dry-run)
+                DRY_RUN=true
+                shift
+                ;;
+            --no-skip-perms)
+                SKIP_PERMS=false
+                shift
+                ;;
+            --no-user-config)
+                MOUNT_USER_CONFIG=false
+                shift
+                ;;
+            --use-api-key)
+                USE_API_KEY=true
+                shift
+                ;;
+            -*)
+                log_error "Unknown option: $1"
+                show_help
+                exit 1
+                ;;
+            *)
+                REPO_ARG="$1"
+                shift
+                ;;
+        esac
+    done
+}
+
+check_prerequisites() {
+    if ! command -v docker &> /dev/null; then
+        log_error "Docker is not installed or not in PATH"
+        exit 1
+    fi
+
+    if ! docker info &> /dev/null; then
+        log_error "Docker daemon is not running or you don't have permission"
+        exit 1
+    fi
+
+    # Check for authentication methods
+    local has_api_key=false
+    local has_claude_auth=false
+
+    if [[ -n "${ANTHROPIC_API_KEY:-}" ]]; then
+        has_api_key=true
+    fi
+
+    # Check for subscription auth
+    # macOS: credentials stored in Keychain
+    # Linux: credentials stored in ~/.claude/.credentials.json
+    if [[ "$(uname)" == "Darwin" ]]; then
+        if security find-generic-password -s "Claude Code-credentials" -w &>/dev/null; then
+            has_claude_auth=true
+        fi
+    else
+        if [[ -f "$HOME/.claude/.credentials.json" ]]; then
+            has_claude_auth=true
+        fi
+    fi
+
+    # Determine which auth to use (prefer subscription unless --use-api-key)
+    if [[ "$USE_API_KEY" == "true" ]]; then
+        if [[ "$has_api_key" == "false" ]]; then
+            log_error "ANTHROPIC_API_KEY not set but --use-api-key was specified"
+            exit 1
+        fi
+        log_info "Using API key authentication (API billing)"
+    elif [[ "$has_claude_auth" == "true" ]]; then
+        log_info "Using Claude login authentication (subscription)"
+    elif [[ "$has_api_key" == "true" ]]; then
+        log_warn "No subscription login found, falling back to API key"
+        log_info "Run 'claude' on your host to login, or use --use-api-key to silence this warning"
+        USE_API_KEY=true
+    else
+        log_error "No authentication found"
+        log_info "Either:"
+        log_info "  1. Run 'claude' on your host first to login with your subscription"
+        log_info "  2. Set ANTHROPIC_API_KEY and use --use-api-key for API billing"
+        exit 1
+    fi
+}
+
+is_git_repo() {
+    local path="${1:-.}"
+    git -C "$path" rev-parse --git-dir &> /dev/null
+}
+
+get_repo_root() {
+    local path="${1:-.}"
+    git -C "$path" rev-parse --show-toplevel 2>/dev/null
+}
+
+get_repo_name() {
+    local repo="$1"
+    # Extract repo name from URL or path
+    basename "${repo%.git}"
+}
+
+is_remote_url() {
+    local repo="$1"
+    [[ "$repo" =~ ^https?:// ]] || [[ "$repo" =~ ^git@ ]]
+}
+
+build_image() {
+    local needs_build=false
+
+    if [[ "$FORCE_BUILD" == "true" ]]; then
+        needs_build=true
+        log_info "Force rebuild requested"
+    elif ! docker image inspect "$IMAGE_NAME" &> /dev/null; then
+        needs_build=true
+        log_info "Image doesn't exist, building..."
+    fi
+
+    if [[ "$needs_build" == "true" ]]; then
+        log_info "Building Docker image: $IMAGE_NAME"
+        docker build -t "$IMAGE_NAME" -f "$DOCKERFILE_PATH" "$SCRIPT_DIR"
+        log_success "Image built successfully"
+    else
+        log_info "Using existing image: $IMAGE_NAME"
+    fi
+}
+
+cleanup_container() {
+    if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+        log_info "Removing existing container: $CONTAINER_NAME"
+        docker rm -f "$CONTAINER_NAME" &> /dev/null || true
+    fi
+}
+
+# 1Password item name for Claude Code container token (created via `claude setup-token`)
+OP_ITEM_NAME="${CLAUDE_SANDBOX_OP_ITEM:-Claude Code Container Token}"
+
+# Prepare credentials for container
+# Sets CLAUDE_OAUTH_TOKEN with the access token for CLAUDE_CODE_OAUTH_TOKEN env var
+# Priority: 1) Already set CLAUDE_CODE_OAUTH_TOKEN, 2) 1Password, 3) Keychain (may not work)
+CLAUDE_OAUTH_TOKEN=""
+prepare_credentials() {
+    if [[ "$USE_API_KEY" == "true" ]]; then
+        return  # Using API key, no need for OAuth credentials
+    fi
+
+    # Check if already set in environment
+    if [[ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]]; then
+        CLAUDE_OAUTH_TOKEN="$CLAUDE_CODE_OAUTH_TOKEN"
+        log_info "Using CLAUDE_CODE_OAUTH_TOKEN from environment"
+        return
+    fi
+
+    # Try 1Password first (requires `claude setup-token` to generate long-lived token)
+    if command -v op &>/dev/null; then
+        local op_token op_exit
+        op_token=$(op item get "$OP_ITEM_NAME" --fields credential --reveal 2>&1)
+        op_exit=$?
+        if [[ $op_exit -eq 0 && -n "$op_token" && "$op_token" == sk-ant-* ]]; then
+            CLAUDE_OAUTH_TOKEN="$op_token"
+            log_info "Using OAuth token from 1Password ($OP_ITEM_NAME)"
+            return
+        else
+            log_warn "1Password lookup failed (exit=$op_exit): ${op_token:0:50}"
+        fi
+    fi
+
+    # Fallback: try macOS Keychain (NOTE: this token may not work for interactive sessions)
+    if [[ "$(uname)" == "Darwin" ]]; then
+        local creds_json
+        creds_json=$(security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null)
+        if [[ -n "$creds_json" ]]; then
+            if command -v jq &>/dev/null; then
+                CLAUDE_OAUTH_TOKEN=$(echo "$creds_json" | jq -r '.claudeAiOauth.accessToken')
+            else
+                CLAUDE_OAUTH_TOKEN=$(echo "$creds_json" | grep -o '"accessToken":"[^"]*"' | cut -d'"' -f4)
+            fi
+            if [[ -n "$CLAUDE_OAUTH_TOKEN" ]]; then
+                log_warn "Using Keychain token (may not work - run 'claude setup-token' for reliable auth)"
+            fi
+        fi
+    fi
+    # Linux: Claude Code will read from ~/.claude/.credentials.json directly
+}
+
+cleanup_credentials() {
+    # No cleanup needed
+    :
+}
+
+detect_claude_assets() {
+    local repo_path="$1"
+    local found_assets=()
+
+    for asset in "${CLAUDE_ASSETS[@]}"; do
+        if [[ -e "$repo_path/$asset" ]]; then
+            found_assets+=("$asset")
+        fi
+    done
+
+    if [[ ${#found_assets[@]} -gt 0 ]]; then
+        log_info "Found Claude Code assets: ${found_assets[*]}"
+    fi
+}
+
+run_container() {
+    local repo="$1"
+    local docker_args=()
+    local claude_cmd="claude"
+
+    if [[ "$SKIP_PERMS" == "true" ]]; then
+        claude_cmd="claude --dangerously-skip-permissions"
+    fi
+
+    # Base docker arguments
+    docker_args+=(
+        "run"
+        "-it"
+        "--rm"
+        "--name" "$CONTAINER_NAME"
+        "--hostname" "claude-sandbox"
+    )
+
+    # Pass through API key only if explicitly requested (for API billing)
+    if [[ "$USE_API_KEY" == "true" && -n "${ANTHROPIC_API_KEY:-}" ]]; then
+        docker_args+=("-e" "ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}")
+    fi
+
+    # Pass through GitHub token if available
+    if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+        docker_args+=("-e" "GITHUB_TOKEN=${GITHUB_TOKEN}")
+    fi
+
+    # Pass through SSH agent for git authentication
+    if [[ -n "${SSH_AUTH_SOCK:-}" ]]; then
+        docker_args+=(
+            "-v" "${SSH_AUTH_SOCK}:/ssh-agent"
+            "-e" "SSH_AUTH_SOCK=/ssh-agent"
+        )
+    fi
+
+    # Mount SSH keys (read-only) for git operations
+    if [[ -d "$HOME/.ssh" ]]; then
+        docker_args+=("-v" "$HOME/.ssh:/home/developer/.ssh:ro")
+    fi
+
+    # Mount user-level Claude Code configuration if it exists
+    if [[ "$MOUNT_USER_CONFIG" == "true" && -d "$HOME/.claude" ]]; then
+        log_info "Mounting user Claude config from ~/.claude"
+        docker_args+=("-v" "$HOME/.claude:/home/developer/.claude")
+    elif [[ "$MOUNT_USER_CONFIG" == "false" ]]; then
+        log_info "User Claude config disabled (--no-user-config)"
+    fi
+
+    # Set up OAuth token and skip onboarding in container
+    # Requires both .credentials.json AND ~/.claude.json with hasCompletedOnboarding (GitHub issue #8938)
+    local creds_setup=""
+    if [[ -n "$CLAUDE_OAUTH_TOKEN" ]]; then
+        # Create credentials JSON in the format Claude expects
+        local creds_json="{\"claudeAiOauth\":{\"accessToken\":\"${CLAUDE_OAUTH_TOKEN}\",\"refreshToken\":\"\",\"expiresAt\":1893456000000,\"scopes\":[\"user:inference\"]}}"
+        # Also create ~/.claude.json with hasCompletedOnboarding to skip onboarding prompts
+        creds_setup="mkdir -p ~/.claude && echo '${creds_json}' > ~/.claude/.credentials.json && echo '{\"hasCompletedOnboarding\":true}' > ~/.claude.json && "
+    fi
+
+    # Handle different repository scenarios
+    if [[ -z "$repo" ]]; then
+        # No repo specified, start in empty workspace
+        log_info "Starting Claude Code in empty workspace"
+        docker_args+=("$IMAGE_NAME" "bash" "-c" "${creds_setup}cd /home/developer/workspace && $claude_cmd")
+
+    elif is_remote_url "$repo"; then
+        # Clone remote repository
+        local repo_name
+        repo_name=$(get_repo_name "$repo")
+        log_info "Will clone remote repository: $repo"
+        log_info "Claude Code assets from repo will be available after clone"
+        docker_args+=(
+            "$IMAGE_NAME"
+            "bash" "-c"
+            "${creds_setup}cd /home/developer/workspace && git clone '$repo' '$repo_name' && cd '$repo_name' && $claude_cmd"
+        )
+
+    elif [[ -d "$repo" ]]; then
+        # Local directory
+        local abs_path
+        abs_path=$(cd "$repo" && pwd)
+
+        if ! is_git_repo "$abs_path"; then
+            log_warn "Directory is not a git repository: $abs_path"
+        fi
+
+        # Detect and report Claude Code assets in the repo
+        detect_claude_assets "$abs_path"
+
+        local repo_name
+        repo_name=$(basename "$abs_path")
+
+        if [[ "$MOUNT_LOCAL" == "true" ]]; then
+            # Mount the local repo (changes will persist)
+            log_info "Mounting local repository: $abs_path"
+            log_warn "Changes made will persist in your local repository!"
+            docker_args+=(
+                "-v" "$abs_path:/home/developer/workspace/$repo_name"
+                "$IMAGE_NAME"
+                "bash" "-c"
+                "${creds_setup}cd /home/developer/workspace/$repo_name && $claude_cmd"
+            )
+        else
+            # Copy repo into container (changes isolated)
+            log_info "Copying local repository into container: $abs_path"
+            log_info "Changes will NOT persist (use -m to mount instead)"
+
+            # Build the copy command to include hidden files like .claude/
+            # Using tar to properly handle hidden files and preserve structure
+            docker_args+=(
+                "-v" "$abs_path:/mnt/source:ro"
+                "$IMAGE_NAME"
+                "bash" "-c"
+                "${creds_setup}mkdir -p /home/developer/workspace/$repo_name && \
+                 cd /mnt/source && \
+                 tar cf - . | (cd /home/developer/workspace/$repo_name && tar xf -) && \
+                 cd /home/developer/workspace/$repo_name && \
+                 $claude_cmd"
+            )
+        fi
+    else
+        log_error "Repository not found: $repo"
+        exit 1
+    fi
+
+    log_info "Starting container: $CONTAINER_NAME"
+    echo ""
+
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_info "Dry run - would execute:"
+        # Redact OAuth token in output
+        local cmd="docker ${docker_args[*]}"
+        cmd=$(echo "$cmd" | sed 's/sk-ant-oat01-[^"'\'']*/<REDACTED>/g')
+        echo "$cmd"
+        return
+    fi
+
+    docker "${docker_args[@]}"
+}
+
+main() {
+    parse_args "$@"
+    check_prerequisites
+
+    # Determine repository to use
+    local repo="$REPO_ARG"
+
+    if [[ -z "$repo" ]]; then
+        # Check if current directory is a git repo
+        if is_git_repo "."; then
+            repo=$(get_repo_root ".")
+            log_info "Detected git repository: $repo"
+            # Default is to copy (isolated), use -m to mount (persist changes)
+        else
+            log_info "Not in a git repository, starting with empty workspace"
+        fi
+    fi
+
+    build_image
+    cleanup_container
+    prepare_credentials
+    trap cleanup_credentials EXIT
+    run_container "$repo"
+}
+
+main "$@"
