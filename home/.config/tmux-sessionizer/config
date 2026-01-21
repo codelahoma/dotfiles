@@ -6,6 +6,7 @@
 # NOTE: Removed $HOME - it includes too many non-project dirs (Downloads, Documents, etc.)
 # Add specific directories you want quick access to instead
 SEARCH_PATHS=(
+  "$HOME"
   "$HOME/github"
   "$HOME/gitlab"
   "$HOME/personal"

@@ -116,3 +116,18 @@ script -q /tmp/output.txt
 # run commands, then exit
 cat -v /tmp/output.txt | less  # look for ^[[2J, ^[[3J, ^[[?1049h
 ```
+
+### Emacs Stuck / Can't Quit
+
+If Emacs GUI is unresponsive or stuck in a prompt you can't escape:
+
+```bash
+# Graceful quit via emacsclient (saves buffers first)
+emacsclient -e '(save-buffers-kill-emacs)'
+
+# If that fails, send SIGTERM (gives Emacs chance to clean up)
+pkill -TERM Emacs
+
+# Last resort: force kill
+pkill -9 Emacs
+```
