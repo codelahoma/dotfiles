@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a dotfiles repository using **Homeshick** conventions. All dotfiles live under `home/` and get symlinked to `~` by homeshick. The repository uses **literate configuration** extensively—`.org` files tangle to generate actual config files.
 
+**Important:** Files in this repo are symlinked to `~` maintaining the same hierarchy. There's never a need to "check from the home directory" - always work with files in this repo directly. If symlinks seem missing, run `homeshick link -f dotfiles` to ensure all links are in place.
+
 ## Key Commands
 
 ### Tangling Literate Configs
@@ -130,4 +132,49 @@ pkill -TERM Emacs
 
 # Last resort: force kill
 pkill -9 Emacs
+```
+
+### mbsync Duplicate UID Errors
+
+**Symptoms:** mu4e kicks you back to main menu after update, or shows "Update process returned with non-zero exit code"
+
+**Diagnosis:**
+```bash
+mbsync -a 2>&1; echo "Exit code: $?"
+```
+
+Common errors:
+- `Maildir error: duplicate UID X in /path/to/folder`
+- `Maildir error: UID X is beyond highest assigned UID Y`
+
+**History:**
+- 2026-01-21: Trash folder had ~65 duplicate UIDs (111-299 range) plus UIDs beyond valid range (191840+). Old files from Oct 2024 sync conflicted with Jan 2026 files.
+- 2026-01-21 (same day, later): Trashing a single email triggered duplicate UID 300. Root cause: 296 orphaned files from Oct 2024 (filename prefix `1768500288.*`) were never cleaned up and had UIDs overlapping with current UID assignments. **Fix: Remove ALL orphaned files from old sync batch, not just duplicates found so far.**
+
+**Root cause pattern:** Old sync creates files, sync state gets corrupted/reset, server reassigns same UIDs to new emails, old orphaned files conflict. Check for files with old timestamps that don't match recent sync patterns.
+
+**Fix duplicate UIDs:**
+```bash
+# Find duplicates in a folder
+ls -1 ~/Maildir/Fastmail/Trash/cur/ | sed 's/.*,U=\([0-9]*\).*/\1/' | sort -n | uniq -d
+
+# Find files for a specific UID
+find ~/Maildir/Fastmail/Trash -name "*,U=204:*"
+
+# Remove older duplicate (check timestamps, keep newer)
+rm -f ~/Maildir/Fastmail/Trash/cur/OLDER_FILE_HERE
+```
+
+**Fix out-of-range UIDs:**
+```bash
+# Find UIDs beyond limit (check .uidvalidity for max)
+ls ~/Maildir/Fastmail/Trash/cur/ | grep -o 'U=[0-9]*' | sed 's/U=//' | awk '$1 > 3073 {print}'
+
+# Remove files with invalid UIDs - they'll re-sync from server
+rm -f ~/Maildir/Fastmail/Trash/cur/*U=INVALID_UID*
+```
+
+After fixing, run `mbsync -a` again until exit code is 0, then reindex mu4e:
+```bash
+mu index --rebuild
 ```

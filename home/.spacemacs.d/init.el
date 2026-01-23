@@ -281,6 +281,13 @@ This function defines the environment variables for your Emacs session.")
   "Initialization for user code:
 This function is called immediately after `dotspacemacs/init', before layer
 configuration."
+  ;; Homebrew paths for macOS (needed for vterm compilation, etc.)
+  (when (eq system-type 'darwin)
+    (let ((homebrew-bin "/opt/homebrew/bin"))
+      (when (file-directory-p homebrew-bin)
+        (add-to-list 'exec-path homebrew-bin)
+        (setenv "PATH" (concat homebrew-bin ":" (getenv "PATH"))))))
+  
   ;; GCC library path for native compilation (macOS + Homebrew)
   (when (and (eq system-type 'darwin)
              (file-directory-p "/opt/homebrew/lib/gcc/15"))
@@ -407,10 +414,18 @@ configuration."
       :after org
       :config
       ;; API Key Management - Use authinfo (built-in support)
-      ;; Add to ~/.authinfo: machine api.openai.com login apikey password sk-your-key-here
+      ;; Add to ~/.authinfo:
+      ;;   machine api.openai.com login apikey password sk-your-key-here
+      ;;   machine generativelanguage.googleapis.com login apikey password your-gemini-key
+      ;;   machine api.anthropic.com login apikey password sk-ant-your-key-here
   
-      ;; Default mode and model
-      (setq gptel-default-mode 'org-mode
+      ;; Additional backends
+      (gptel-make-gemini "Gemini" :key 'gptel-api-key)
+      (gptel-make-anthropic "Claude" :key 'gptel-api-key :stream t)
+  
+      ;; Default backend, mode and model
+      (setq gptel-backend gptel--openai
+            gptel-default-mode 'org-mode
             gptel-model "gpt-4")
   
       ;; Enable streaming for better UX
@@ -458,8 +473,8 @@ configuration."
   (require 'auth-source-pass)
   (auth-source-pass-enable)
   (setq auth-source-pass-filename "~/.password-store")
-  ;; Map SMTP server lookup to mbsync password entry
-  (setq auth-sources '(password-store))
+  ;; Auth sources: password-store for SMTP, authinfo for API keys (gptel)
+  (setq auth-sources '(password-store "~/.authinfo"))
   
   (with-eval-after-load 'mu4e
     ;; Primary email address (quiets mu4e warning)
@@ -469,7 +484,10 @@ configuration."
     (setq mu4e-maildir "~/Maildir/Fastmail"
           mu4e-attachment-dir "~/Downloads"
           mu4e-get-mail-command "mbsync -a"
-          mu4e-update-interval 300)
+          mu4e-update-interval 300
+          mu4e-index-update-in-background t  ; Don't block during index
+          mu4e-hide-index-messages t         ; Suppress index messages
+          mu4e-headers-auto-update nil)      ; Don't reset headers view after update
   
     ;; Folders (Fastmail folder names)
     (setq mu4e-sent-folder   "/Sent Items"
@@ -499,9 +517,12 @@ configuration."
           mu4e-compose-format-flowed t)
   
     ;; Bookmarks (shortcuts on mu4e home screen)
+    ;; BUG: First bookmark always exits immediately after search.
+    ;; Using a dummy entry as workaround until root cause is found.
     (setq mu4e-bookmarks
-          '((:name "Inbox"   :query "maildir:/Inbox"   :key ?i)
-            (:name "Archive" :query "maildir:/Archive" :key ?a)))
+          '((:name "[BUG] Don't use" :query "date:1970" :key ?0)
+            (:name "INBOX"           :query "maildir:/INBOX"   :key ?i)
+            (:name "Archive"         :query "maildir:/Archive" :key ?a)))
   
     ;; Custom action: search for other emails from sender
     (defun rk/mu4e-action-search-sender (msg)
@@ -513,6 +534,13 @@ configuration."
     ;; View actions - press 'a' in message view to see available actions
     (add-to-list 'mu4e-view-actions
                  '("Ssearch for sender" . rk/mu4e-action-search-sender) t))
+  
+  ;; Make mu4e buffers shared across all perspectives/layouts
+  ;; This prevents "buffer not in current perspective" errors when
+  ;; mu4e updates in the background while in a different layout
+  (with-eval-after-load 'persp-mode
+    (add-to-list 'persp-common-buffer-filter-functions
+                 (lambda (b) (string-prefix-p "*mu4e" (buffer-name b)))))
   ;; Claude AI integration
   (defun rk/clip-for-claude ()
     "Copy file path and content with line numbers for Claude AI"
@@ -583,6 +611,13 @@ configuration."
            (date (format-time-string "%Y-%m-%d")))
       (org-roam-dailies-capture-today nil "e")
       (insert (format "* [[%s][%s]]\n" url title))))
+  ;; Start Emacs server for emacsclient connections
+  (server-start)
+  
+  ;; Rebind quit keys: q q closes frame, q Q quits Emacs
+  (spacemacs/set-leader-keys
+    "qq" 'delete-frame
+    "qQ" 'spacemacs/prompt-kill-emacs)
   ;; User-defined prefix
   (spacemacs/declare-prefix "o" "user-defined")
   

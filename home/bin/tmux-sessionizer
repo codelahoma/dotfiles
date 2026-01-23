@@ -20,6 +20,7 @@ SEARCH_PATHS=(
   "$HOME/personal"
   "$HOME/work"
   "$HOME/github"
+  "$HOME/gitlab"
   "$HOME/.homesick/repos/dotfiles/home"
 )
 MAX_DEPTH=1
