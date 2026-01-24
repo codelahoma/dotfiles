@@ -103,6 +103,9 @@ local lastBatteryAlert = 0
 
 local function batteryCallback()
   local pct = hs.battery.percentage()
+  -- Guard: no battery present (desktops or unavailable data)
+  if pct == nil then return end
+
   local charging = hs.battery.isCharging()
   local now = os.time()
 
