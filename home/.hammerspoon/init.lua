@@ -542,7 +542,8 @@ _centeredWindowsFormerPositions = {}
         emacs:activate()
       else
         -- No GUI frame exists, create one via emacsclient
-        hs.task.new('/opt/homebrew/bin/emacsclient', nil, {'-c', '-n'}):start()
+        -- -a '' starts daemon if not running, -c creates new frame, -n returns immediately
+        hs.task.new('/opt/homebrew/bin/emacsclient', nil, {'-a', '', '-c', '-n'}):start()
         -- Activate Emacs after frame creation (slight delay for frame to appear)
         hs.timer.doAfter(0.3, function()
           local app = hs.application.find('Emacs')
@@ -555,8 +556,9 @@ _centeredWindowsFormerPositions = {}
   -- Quick Org Capture: trigger org-capture with inbox template
   local function quickOrgCapture()
     -- Trigger org-capture with inbox template
+    -- -a '' starts daemon if not running
     hs.task.new('/opt/homebrew/bin/emacsclient', nil,
-      {'-e', '(org-capture nil "i")'}):start()
+      {'-a', '', '-e', '(org-capture nil "i")'}):start()
     -- Focus Emacs after a brief delay for capture buffer
     hs.timer.doAfter(0.3, function()
       local emacs = hs.application.find('Emacs')
