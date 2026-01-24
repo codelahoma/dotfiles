@@ -18,48 +18,6 @@ screen = hs.screen
 spotify = hs.spotify
 machine = hs.host.localizedName()
 
--- -- https://github.com/fikovnik/ShiftIt/wiki/The-Hammerspoon-Alternative
--- -- https://github.com/derekwyatt/dotfiles/blob/master/hammerspoon-init.lua
--- hs.window.animationDuration = 0
--- units = {
---   right30       = { x = 0.70, y = 0.00, w = 0.30, h = 1.00 },
---   right50       = { x = 0.50, y = 0.00, w = 0.50, h = 1.00 },
---   right70       = { x = 0.30, y = 0.00, w = 0.70, h = 1.00 },
---   left70        = { x = 0.00, y = 0.00, w = 0.70, h = 1.00 },
---   left50        = { x = 0.00, y = 0.00, w = 0.50, h = 1.00 },
---   left30        = { x = 0.00, y = 0.00, w = 0.30, h = 1.00 },
---   top50         = { x = 0.00, y = 0.00, w = 1.00, h = 0.50 },
---   bot50         = { x = 0.00, y = 0.50, w = 1.00, h = 0.50 },
---   upright30     = { x = 0.70, y = 0.00, w = 0.30, h = 0.50 },
---   botright30    = { x = 0.70, y = 0.50, w = 0.30, h = 0.50 },
---   upleft70      = { x = 0.00, y = 0.00, w = 0.70, h = 0.50 },
---   botleft70     = { x = 0.00, y = 0.50, w = 0.70, h = 0.50 },
---   maximum       = { x = 0.00, y = 0.00, w = 1.00, h = 1.00 }
--- }
-
--- -- hs.hotkey.bind(meh, 'l', function() hs.window.focusedWindow():move(units.right30,    nil, true) end)
--- -- hs.hotkey.bind(meh, 'h', function() hs.window.focusedWindow():move(units.left70,     nil, true) end)
--- hs.hotkey.bind(meh, 'l', function() hs.window.focusedWindow():move(units.right50,    nil, true) end)
--- hs.hotkey.bind(meh, 'h', function() hs.window.focusedWindow():move(units.left50,     nil, true) end)
--- hs.hotkey.bind(meh, 'k', function() hs.window.focusedWindow():move(units.top50,      nil, true) end)
--- hs.hotkey.bind(meh, 'j', function() hs.window.focusedWindow():move(units.bot50,      nil, true) end)
--- hs.hotkey.bind(meh, ']', function() hs.window.focusedWindow():move(units.upright30,  nil, true) end)
--- hs.hotkey.bind(meh, '[', function() hs.window.focusedWindow():move(units.upleft70,   nil, true) end)
--- hs.hotkey.bind(meh, ';', function() hs.window.focusedWindow():move(units.botleft70,  nil, true) end)
--- hs.hotkey.bind(meh, "'", function() hs.window.focusedWindow():move(units.botright30, nil, true) end)
--- hs.hotkey.bind(meh, 'm', function() hs.window.focusedWindow():move(units.maximum,    nil, true) end)
-
--- -- https://stackoverflow.com/a/58662204
--- hs.hotkey.bind(meh, 'n', function()
---     -- get the focused window
---     local win = hs.window.focusedWindow()
---     -- get the screen where the focused window is displayed, a.k.a. current screen
---     local screen = win:screen()
---     -- compute the unitRect of the focused window relative to the current screen
---     -- and move the window to the next screen setting the same unitRect
---     win:move(win:frame():toUnitRect(screen:frame()), screen:next(), true, 0)
--- end)
-
 hs.loadSpoon("SpoonInstall")
 
 spoon.SpoonInstall.repos.rkspoons = {
@@ -91,12 +49,96 @@ Install:andUse("WindowGrid",
 )
 
 hs.grid.HINTS = {
- {'a', 's', 'd', 'f', '6', '7', '8', '0'}, 
- {'w', 'e', 'r', 't', 'z', 'x', '=', '9'}, 
- {'b', 'g', 'q', 'v', 'y', 'u', 'i', 'o'}, 
- {'1', 'p', '/', 'c', 'n', 'm', '.', '-'}, 
- {'5', '2', '3', '4', 'j', 'k', 'l', ';'}, 
+ {'a', 's', 'd', 'f', '6', '7', '8', '0'},
+ {'w', 'e', 'r', 't', 'z', 'x', '=', '9'},
+ {'b', 'g', 'q', 'v', 'y', 'u', 'i', 'o'},
+ {'1', 'p', '/', 'c', 'n', 'm', '.', '-'},
+ {'5', '2', '3', '4', 'j', 'k', 'l', ';'},
 }
+
+-- Window snapping functions
+local function snapLeft()
+  local win = hs.window.focusedWindow()
+  if win then win:moveToUnit({0, 0, 0.5, 1}) end
+end
+
+local function snapRight()
+  local win = hs.window.focusedWindow()
+  if win then win:moveToUnit({0.5, 0, 0.5, 1}) end
+end
+
+local function maximize()
+  local win = hs.window.focusedWindow()
+  if win then win:moveToUnit({0, 0, 1, 1}) end
+end
+
+local function centerWindow()
+  local win = hs.window.focusedWindow()
+  if win then win:moveToUnit({0.1, 0.1, 0.8, 0.8}) end
+end
+
+-- Window snapping keybindings
+hotkey.bind(hyper, "left", snapLeft)
+hotkey.bind(hyper, "right", snapRight)
+hotkey.bind(hyper, "up", maximize)
+hotkey.bind(hyper, "down", centerWindow)
+
+local function handleScreenChange()
+  local screens = hs.screen.allScreens()
+  local count = #screens
+
+  if count == 1 then
+    hs.alert.show("Single display mode")
+  elseif count == 2 then
+    hs.alert.show("Dual display mode")
+  else
+    hs.alert.show(count .. " displays connected")
+  end
+end
+
+screenWatcher = hs.screen.watcher.new(handleScreenChange)
+screenWatcher:start()
+
+local lastBatteryAlert = 0
+
+local function batteryCallback()
+  local pct = hs.battery.percentage()
+  local charging = hs.battery.isCharging()
+  local now = os.time()
+
+  -- Debounce: don't alert more than once per 5 minutes
+  if now - lastBatteryAlert < 300 then return end
+
+  if pct <= 20 and not charging then
+    hs.alert.show("Low battery: " .. math.floor(pct) .. "%", 5)
+    lastBatteryAlert = now
+  elseif pct >= 80 and charging then
+    hs.alert.show("Battery charged: " .. math.floor(pct) .. "%", 3)
+    lastBatteryAlert = now
+  end
+end
+
+batteryWatcher = hs.battery.watcher.new(batteryCallback)
+batteryWatcher:start()
+
+local watchedDevices = {
+  ["YubiKey"] = "YubiKey connected - ready for auth",
+  ["Dygma"] = "Dygma Defy connected",
+}
+
+local function usbCallback(data)
+  if data.eventType == "added" and data.productName then
+    for pattern, message in pairs(watchedDevices) do
+      if data.productName:match(pattern) then
+        hs.alert.show(message)
+        break
+      end
+    end
+  end
+end
+
+usbWatcher = hs.usb.watcher.new(usbCallback)
+usbWatcher:start()
 
 Qutebrowser = "org.qt-project.Qt.QtWebEngineCore"
 Bitbucket = "com.webcatalog.juli.bitbucket"
@@ -491,8 +533,8 @@ _centeredWindowsFormerPositions = {}
   local function emacsLauncher()
     return function()
       trackAppLaunch('Emacs')
-      local emacs = hs.application.get('Emacs')
-      if emacs and #emacs:allWindows() > 0 then
+      local emacs = hs.application.find('Emacs')
+      if emacs and emacs.allWindows and #emacs:allWindows() > 0 then
         -- Emacs has a GUI frame, just focus it
         emacs:activate()
       else
@@ -500,11 +542,23 @@ _centeredWindowsFormerPositions = {}
         hs.task.new('/opt/homebrew/bin/emacsclient', nil, {'-c', '-n'}):start()
         -- Activate Emacs after frame creation (slight delay for frame to appear)
         hs.timer.doAfter(0.3, function()
-          local app = hs.application.get('Emacs')
+          local app = hs.application.find('Emacs')
           if app then app:activate() end
         end)
       end
     end
+  end
+
+  -- Quick Org Capture: trigger org-capture with inbox template
+  local function quickOrgCapture()
+    -- Trigger org-capture with inbox template
+    hs.task.new('/opt/homebrew/bin/emacsclient', nil,
+      {'-e', '(org-capture nil "i")'}):start()
+    -- Focus Emacs after a brief delay for capture buffer
+    hs.timer.doAfter(0.3, function()
+      local emacs = hs.application.find('Emacs')
+      if emacs then emacs:activate() end
+    end)
   end
 
   function open750()
@@ -576,50 +630,7 @@ hotkey.bind(magic, "z", appLauncher("Zotero"))
 hotkey.bind(hyper, ";", appLauncher('Spotify'))
 hotkey.bind(hyper, "0", centerOnMainDisplay)
 hotkey.bind(magic, "/", showAppStats)
-
--- menuModal = hs.hotkey.modal.new(hyper, "n")
--- menuModal.alertUID = ""
--- menuModal.alertText = [[
--- Modal Menu
--- ----------
--- a - Activity Monitor
--- b - Brave Browser Dev
--- c - Google Calendar
--- d - Dash
--- m - Mail (removed MailMate)
--- n - Notion
--- p - Postman
--- s - Stickies
--- v - Paste
-
--- ESC - exit
--- ]]
-
-
--- function menuModal:entered()
---    self.alertUID = hs.alert(self.alertText, "forever")
--- end
-
--- function menuModal:exited()
---  i hs.alert.closeSpecific(self.alertUID)
--- end
-
--- -- in this example, Ctrl+Shift+h triggers this keybinding mode, which will allow us to use the ones defined below. A nice touch for usability: This also offers to show a message.
-
--- -- I recommend having this one at all times: Bind the escape key to exit keybinding mode:
--- menuModal:bind("", "escape", " not this time...", nil, function() menuModal:exit() end, nil)
-
--- -- An example binding I find useful: Type today's date in ISO format.
--- -- menuModal:bind("", "d", "today", nil, function() hs.eventtap.keyStrokes(os.date("%F")) menuModal:exit() end, nil)
--- menuModal:bind("", "a", "activity", nil, function() application.launchOrFocus("Activity Monitor") menuModal:exit() end, nil)
--- menuModal:bind("", "b", "Brave Browser Dev", nil, function() application.launchOrFocus("Brave Browser Dev") menuModal:exit() end, nil)
--- menuModal:bind("", "c", "Google Calendar", nil, function() application.launchOrFocusByBundleID("com.webcatalog.juli.google-calendar") menuModal:exit() end, nil)
--- menuModal:bind("", "d", "dash", nil, function() application.launchOrFocus("Dash") menuModal:exit() end, nil)
--- menuModal:bind("", "m", "Mail", nil, function() application.launchOrFocus("Mail") menuModal:exit() end, nil)
--- menuModal:bind("", "n", "Notion", nil, function() application.launchOrFocus("Notion") menuModal:exit() end, nil)
--- menuModal:bind("", "p", "postman", nil, function() application.launchOrFocus("Postman") menuModal:exit() end, nil)
--- menuModal:bind("", "s", "stickies", nil, function() application.launchOrFocus("Stickies") menuModal:exit() end, nil)
--- menuModal:bind("", "v", "paste", nil, function() hs.eventtap.keyStroke({"cmd", "shift"}, "v") menuModal:exit() end, nil)
+hotkey.bind(magic, "n", quickOrgCapture)
 
 caffeine = hs.menubar.new()
 hs.caffeinate.set("system", true, false)
