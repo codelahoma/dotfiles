@@ -498,6 +498,11 @@ _centeredWindowsFormerPositions = {}
       else
         -- No GUI frame exists, create one via emacsclient
         hs.task.new('/opt/homebrew/bin/emacsclient', nil, {'-c', '-n'}):start()
+        -- Activate Emacs after frame creation (slight delay for frame to appear)
+        hs.timer.doAfter(0.3, function()
+          local app = hs.application.get('Emacs')
+          if app then app:activate() end
+        end)
       end
     end
   end
