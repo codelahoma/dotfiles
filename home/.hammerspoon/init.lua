@@ -487,6 +487,21 @@ _centeredWindowsFormerPositions = {}
      end
   end
 
+  -- Emacs daemon-aware launcher: focus existing frame or create new one
+  local function emacsLauncher()
+    return function()
+      trackAppLaunch('Emacs')
+      local emacs = hs.application.get('Emacs')
+      if emacs and #emacs:allWindows() > 0 then
+        -- Emacs has a GUI frame, just focus it
+        emacs:activate()
+      else
+        -- No GUI frame exists, create one via emacsclient
+        hs.task.new('/opt/homebrew/bin/emacsclient', nil, {'-c', '-n'}):start()
+      end
+    end
+  end
+
   function open750()
     local url = "https://new.750words.com"
     local script = string.format([[
@@ -537,7 +552,7 @@ hotkey.bind(hyper, "d", appLauncher('Dash'))
 hotkey.bind(magic, "d", appLauncher('Discord'))
 hotkey.bind(hyper, "f", appLauncher('DBeaver'))
 hotkey.bind(hyper, "i", appLauncher('iTerm'))
-hotkey.bind(hyper, "j", appLauncher('Emacs'))
+hotkey.bind(hyper, "j", emacsLauncher())
 hotkey.bind(hyper, "k", appLauncher('Arc'))
 hotkey.bind(magic, "k", appLauncher('Marked'))
 hotkey.bind(meh, "k", appLauncher('Google Chrome'))
