@@ -1,0 +1,52 @@
+#!/bin/bash
+# youtube-to-org: Capture YouTube video to org inbox
+# Usage: youtube-to-org <youtube-url>
+
+set -euo pipefail
+
+# Find Emacs socket (macOS Shortcuts may not have TMPDIR set)
+EMACS_SOCKET=""
+for dir in "${TMPDIR:-/tmp}/emacs$(id -u)" "/var/folders"/*/*"/T/emacs$(id -u)"; do
+    if [[ -S "$dir/server" ]]; then
+        EMACS_SOCKET="$dir/server"
+        break
+    fi
+done
+
+if [[ -z "$EMACS_SOCKET" ]]; then
+    echo "Error: Cannot find Emacs server socket. Is Emacs daemon running?" >&2
+    exit 1
+fi
+
+URL="${1:-}"
+
+if [[ -z "$URL" ]]; then
+    echo "Usage: youtube-to-org <youtube-url>" >&2
+    exit 1
+fi
+
+# Extract metadata with yt-dlp (no download)
+TITLE=$(yt-dlp --get-title "$URL" 2>/dev/null) || {
+    echo "Failed to fetch video title" >&2
+    exit 1
+}
+
+# Use subshell to isolate pipefail; head closing early causes SIGPIPE which is expected
+DESC=$(yt-dlp --get-description "$URL" 2>/dev/null | head -20 || true)
+
+# Truncate description to first ~500 chars for abstract
+ABSTRACT=$(echo "$DESC" | head -c 500)
+[[ ${#DESC} -gt 500 ]] && ABSTRACT="${ABSTRACT}..."
+
+# Escape for elisp
+TITLE=$(echo "$TITLE" | sed 's/\\/\\\\/g; s/"/\\"/g')
+ABSTRACT=$(echo "$ABSTRACT" | sed 's/\\/\\\\/g; s/"/\\"/g')
+URL=$(echo "$URL" | sed 's/\\/\\\\/g; s/"/\\"/g')
+
+# Add to inbox via emacsclient
+/opt/homebrew/bin/emacsclient -s "$EMACS_SOCKET" -e "(with-current-buffer (find-file-noselect \"~/Dropbox/org/gtd/inbox.org\")
+  (goto-char (point-max))
+  (insert \"\n* TODO [[${URL}][${TITLE}]]\n${ABSTRACT}\n\")
+  (save-buffer))" >/dev/null
+
+echo "Captured: $TITLE"
