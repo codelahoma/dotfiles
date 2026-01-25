@@ -7,9 +7,9 @@ export PATH=/Users/rodk/Library/Python/3.9/bin:$PATH
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
 
 # Default editor
-export EDITOR="$HOME/.local/bin/ec"
-export VISUAL="$HOME/.local/bin/ec"
-export FCEDIT="$HOME/.local/bin/ec"
+export EDITOR="emacsclient -nc"
+export VISUAL="emacsclient -nc"
+export FCEDIT="emacsclient -nc"
 
 # Tool configuration
 export BAT_THEME="Monokai Extended Bright"

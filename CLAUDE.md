@@ -71,6 +71,7 @@ Located in `home/.emacs.d/private/`:
 
 ### Key Integrations
 
+- **Emacs Daemon**: Emacs runs as a daemon via Homebrew service (`brew services restart emacs-plus@30`). Use `emacsclient -c` to create new frames. Hammerspoon's `hyper+j` handles this automatically—focusing existing frames or creating new ones via emacsclient.
 - **Emacs ↔ Hammerspoon**: URLs from Emacs route through Hammerspoon's URLDispatcher to select browser. Edit-in-Emacs support via editWithEmacs.spoon.
 - **Email**: mu4e → mbsync → Fastmail. Passwords via `pass` (password-store) with auth-source-pass.
 - **Shell**: Zsh with oh-my-zsh, powerlevel10k theme. `Ctrl-F` triggers tmux-sessionizer.
