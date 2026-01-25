@@ -736,7 +736,7 @@ local hotkeyList = {
   {mod = "hyper", key = "k", desc = "Arc"},
   {mod = "magic", key = "k", desc = "Marked"},
   {mod = "meh",   key = "k", desc = "Chrome"},
-  {mod = "hyper", key = "l", desc = "Fantastical"},
+  {mod = "meh",   key = "l", desc = "Fantastical"},
   {mod = "hyper", key = "m", desc = "Spark Mail"},
   {mod = "hyper", key = "o", desc = "Slack"},
   {mod = "hyper", key = "p", desc = "Perplexity"},
@@ -1007,7 +1007,7 @@ hotkey.bind(hyper, "j", emacsLauncher())
 hotkey.bind(hyper, "k", appLauncher('Arc'))
 hotkey.bind(magic, "k", appLauncher('Marked'))
 hotkey.bind(meh, "k", appLauncher('Google Chrome'))
-hotkey.bind(hyper, "l", appLauncher('Fantastical'))
+hotkey.bind(meh, "l", appLauncher('Fantastical'))
 hotkey.bind(hyper, "m", appLauncher('Spark Mail'))
 hotkey.bind(hyper, "o", appLauncher('Slack'))
 hotkey.bind(hyper, "p", appLauncher('Perplexity'))
