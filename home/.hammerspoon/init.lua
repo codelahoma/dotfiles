@@ -720,6 +720,280 @@ end tell
     hs.osascript.applescript(script)
   end
 
+-- Hotkey reference data
+local hotkeyList = {
+  {mod = "hyper", key = "a", desc = "Stickies"},
+  {mod = "hyper", key = "b", desc = "ChatGPT"},
+  {mod = "magic", key = "b", desc = "Bazecor"},
+  {mod = "hyper", key = "c", desc = "HS Console"},
+  {mod = "magic", key = "c", desc = "Claude"},
+  {mod = "hyper", key = "d", desc = "Dash"},
+  {mod = "magic", key = "d", desc = "Discord"},
+  {mod = "hyper", key = "f", desc = "DBeaver"},
+  {mod = "hyper", key = "h", desc = "Hotkey Help"},
+  {mod = "hyper", key = "i", desc = "iTerm"},
+  {mod = "hyper", key = "j", desc = "Emacs"},
+  {mod = "hyper", key = "k", desc = "Arc"},
+  {mod = "magic", key = "k", desc = "Marked"},
+  {mod = "meh",   key = "k", desc = "Chrome"},
+  {mod = "hyper", key = "l", desc = "Fantastical"},
+  {mod = "hyper", key = "m", desc = "Spark Mail"},
+  {mod = "hyper", key = "o", desc = "Slack"},
+  {mod = "hyper", key = "p", desc = "Perplexity"},
+  {mod = "hyper", key = "q", desc = "1Password"},
+  {mod = "hyper", key = "r", desc = "Reload HS"},
+  {mod = "hyper", key = "s", desc = "Grid"},
+  {mod = "magic", key = "s", desc = "Safari"},
+  {mod = "hyper", key = "t", desc = "DEVONthink"},
+  {mod = "hyper", key = "u", desc = "750 Words"},
+  {mod = "hyper", key = "v", desc = "Paste"},
+  {mod = "magic", key = "z", desc = "Zotero"},
+  {mod = "hyper", key = ";", desc = "Spotify"},
+  {mod = "hyper", key = "0", desc = "Center Main"},
+  {mod = "magic", key = "/", desc = "App Stats"},
+  {mod = "magic", key = "n", desc = "Org Capture"},
+  {mod = "magic", key = "i", desc = "Brain Dump"},
+  {mod = "magic", key = "j", desc = "Journal"},
+  {mod = "magic", key = "t", desc = "Clock Toggle"},
+  {mod = "magic", key = "o", desc = "Note Clocked"},
+  {mod = "magic", key = "a", desc = "Agenda Today"},
+  {mod = "magic", key = "l", desc = "Link Capture"},
+  {mod = "magic", key = "space", desc = "Spotify Track"},
+  {mod = "magic", key = "h", desc = "Headphones"},
+  {mod = "hyper", key = "left", desc = "Snap Left"},
+  {mod = "hyper", key = "right", desc = "Snap Right"},
+  {mod = "hyper", key = "up", desc = "Maximize"},
+  {mod = "hyper", key = "down", desc = "Center"},
+}
+
+_hotkeyWindow = nil
+
+local function showHotkeyHelp()
+  -- Group by modifier
+  local groups = {hyper = {}, magic = {}, meh = {}}
+  for _, hk in ipairs(hotkeyList) do
+    table.insert(groups[hk.mod], hk)
+  end
+
+  -- Sort each group by key
+  for _, g in pairs(groups) do
+    table.sort(g, function(a, b) return a.key < b.key end)
+  end
+
+  -- Build HTML
+  local html = [[
+  <!DOCTYPE html>
+  <html>
+  <head>
+     <style>
+        body {
+           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+           margin: 0;
+           padding: 20px;
+           background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+           color: #333;
+        }
+        .container {
+           max-width: 1200px;
+           margin: 0 auto;
+           background: white;
+           border-radius: 12px;
+           box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+           overflow: hidden;
+        }
+        .header {
+           background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+           color: white;
+           padding: 20px;
+           text-align: center;
+        }
+        .header h1 {
+           margin: 0;
+           font-size: 24px;
+           font-weight: 600;
+        }
+        .header .subtitle {
+           margin-top: 6px;
+           opacity: 0.9;
+           font-size: 13px;
+        }
+        .sections {
+           display: flex;
+           padding: 15px;
+           gap: 15px;
+        }
+        .section {
+           flex: 1;
+           padding: 10px;
+           background: #f8f9fa;
+           border-radius: 8px;
+        }
+        .section.wide {
+           flex: 2;
+        }
+        .section-title {
+           font-weight: 600;
+           font-size: 13px;
+           color: #11998e;
+           margin-bottom: 8px;
+           padding-bottom: 6px;
+           border-bottom: 2px solid #11998e;
+           text-align: center;
+        }
+        .hotkey-grid {
+           display: grid;
+           grid-template-columns: repeat(2, 1fr);
+           gap: 2px;
+        }
+        .hotkey-grid.single {
+           grid-template-columns: 1fr;
+        }
+        .hotkey-item {
+           display: flex;
+           align-items: center;
+           padding: 4px 6px;
+           background: white;
+           border-radius: 4px;
+           gap: 8px;
+        }
+        .hotkey-item:hover {
+           background: #e9ecef;
+        }
+        .key {
+           font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+           font-weight: 600;
+           color: #495057;
+           background: #dee2e6;
+           padding: 2px 6px;
+           border-radius: 3px;
+           font-size: 11px;
+           white-space: nowrap;
+           min-width: 45px;
+           text-align: center;
+        }
+        .desc {
+           color: #212529;
+           font-size: 12px;
+        }
+        .footer {
+           padding: 10px 20px;
+           background: #f8f9fa;
+           text-align: center;
+           color: #6c757d;
+           font-size: 12px;
+           border-top: 1px solid #dee2e6;
+        }
+     </style>
+  </head>
+  <body>
+     <div class="container">
+        <div class="header">
+           <h1>⌨️ Hotkey Reference</h1>
+           <div class="subtitle">HYPER = ⌃⌥⇧⌘ &nbsp;|&nbsp; MAGIC = ⌃⌥⌘ &nbsp;|&nbsp; MEH = ⌃⌥⇧</div>
+        </div>
+        <div class="sections">
+           <div class="section wide">
+              <div class="section-title">HYPER</div>
+              <div class="hotkey-grid">
+  ]]
+
+  for _, hk in ipairs(groups.hyper) do
+     html = html .. string.format([[
+                 <div class="hotkey-item"><span class="key">%s</span><span class="desc">%s</span></div>
+     ]], hk.key, hk.desc)
+  end
+
+  html = html .. [[
+              </div>
+           </div>
+           <div class="section wide">
+              <div class="section-title">MAGIC</div>
+              <div class="hotkey-grid">
+  ]]
+
+  for _, hk in ipairs(groups.magic) do
+     html = html .. string.format([[
+                 <div class="hotkey-item"><span class="key">%s</span><span class="desc">%s</span></div>
+     ]], hk.key, hk.desc)
+  end
+
+  html = html .. [[
+              </div>
+           </div>
+           <div class="section">
+              <div class="section-title">MEH</div>
+              <div class="hotkey-grid single">
+  ]]
+
+  if #groups.meh > 0 then
+     for _, hk in ipairs(groups.meh) do
+        html = html .. string.format([[
+                 <div class="hotkey-item"><span class="key">%s</span><span class="desc">%s</span></div>
+        ]], hk.key, hk.desc)
+     end
+  else
+     html = html .. [[<div class="hotkey-item"><span class="desc" style="color:#999">None</span></div>]]
+  end
+
+  html = html .. [[
+              </div>
+           </div>
+        </div>
+        <div class="footer">
+           Press ESC or click outside to close
+        </div>
+     </div>
+  </body>
+  </html>
+  ]]
+
+  -- Close existing window if open
+  if _hotkeyWindow then
+     _hotkeyWindow:delete()
+     _hotkeyWindow = nil
+  end
+
+  -- Create webview window
+  local mainScreen = hs.screen.mainScreen()
+  local mainFrame = mainScreen:frame()
+  local windowFrame = {
+     x = mainFrame.x + (mainFrame.w - 1200) / 2,
+     y = mainFrame.y + (mainFrame.h - 680) / 2,
+     w = 1200,
+     h = 680
+  }
+
+  _hotkeyWindow = hs.webview.new(windowFrame)
+     :windowStyle({"titled", "closable", "utility", "HUD"})
+     :html(html)
+     :allowTextEntry(false)
+     :windowTitle("Hotkey Reference")
+     :level(hs.drawing.windowLevels.floating)
+     :show()
+
+  -- Add ESC key handler to close window
+  local escWatcher = hs.eventtap.new({hs.eventtap.event.types.keyDown}, function(event)
+     if event:getKeyCode() == 53 then  -- ESC key
+        if _hotkeyWindow then
+           _hotkeyWindow:delete()
+           _hotkeyWindow = nil
+        end
+        return true
+     end
+     return false
+  end)
+  escWatcher:start()
+
+  -- Stop watcher when window closes
+  _hotkeyWindow:windowCallback(function(action, wv)
+     if action == "closing" then
+        escWatcher:stop()
+        _hotkeyWindow = nil
+     end
+  end)
+end
+
+hotkey.bind(hyper, "h", showHotkeyHelp)
 hotkey.bind(hyper, "a", appLauncher('Stickies'))
 hotkey.bind(hyper, "b", appLauncher('ChatGPT'))
 hotkey.bind(magic, "b", appLauncher('Bazecor'))
