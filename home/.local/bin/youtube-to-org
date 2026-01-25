@@ -17,7 +17,8 @@ TITLE=$(yt-dlp --get-title "$URL" 2>/dev/null) || {
     exit 1
 }
 
-DESC=$(yt-dlp --get-description "$URL" 2>/dev/null | head -20) || DESC=""
+# Use subshell to isolate pipefail; head closing early causes SIGPIPE which is expected
+DESC=$(yt-dlp --get-description "$URL" 2>/dev/null | head -20 || true)
 
 # Truncate description to first ~500 chars for abstract
 ABSTRACT=$(echo "$DESC" | head -c 500)
