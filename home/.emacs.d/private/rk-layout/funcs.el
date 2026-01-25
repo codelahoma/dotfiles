@@ -34,9 +34,11 @@ If FRAME is nil, use selected frame."
       (when (file-writable-p rk-layout-framegeometry-file)
         (write-file rk-layout-framegeometry-file)))))
 
-(defun rk-layout-apply-geometry (frame)
-  "Apply saved geometry to FRAME."
-  (let ((framegeometry-file rk-layout-framegeometry-file))
+(defun rk-layout-apply-geometry (&optional frame)
+  "Apply saved geometry to FRAME.
+If FRAME is nil, use selected frame."
+  (let ((frame (or frame (selected-frame)))
+        (framegeometry-file rk-layout-framegeometry-file))
     (when (file-readable-p framegeometry-file)
       (load-file framegeometry-file)
       (when (and (boundp 'rk-layout-saved-geometry)
