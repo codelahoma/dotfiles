@@ -40,7 +40,7 @@ This function should only modify configuration layer settings."
              python-lsp-server 'pyright
              python-formatter 'black
              python-format-on-save t)
-
+     
      ;; JavaScript
      (javascript :variables
                  javascript-backend nil
@@ -48,14 +48,14 @@ This function should only modify configuration layer settings."
                  javascript-fmt-on-save t
                  javascript-fmt-tool 'prettier
                  node-add-modules-path t)
-
+     
      ;; TypeScript
      (typescript :variables
                  typescript-backend 'tide
                  typescript-fmt-tool 'prettier
                  typescript-fmt-on-save t
                  typescript-linter 'eslint)
-
+     
      ;; Other languages
      emacs-lisp
      lua
@@ -84,12 +84,12 @@ This function should only modify configuration layer settings."
           ;; Diagnostics
           lsp-diagnostics-provider 'flycheck
           lsp-modeline-diagnostics-enable t)
-
+     
      (tree-sitter :variables
                   tree-sitter-syntax-highlight-enable t
                   tree-sitter-fold-enable nil
                   tree-sitter-fold-indicators-enable nil)
-
+     
      docker
      git
      (shell :variables
@@ -125,33 +125,33 @@ This function should only modify configuration layer settings."
      ;; AI Integration
      gptel  ;; Install from MELPA (quelpa broken with Emacs 30.2)
      (gptel-extensions :location "~/.emacs.d/private/gptel-extensions.el/")
-
+     
      ;; Essential Tools
      evil-easymotion
      direnv
      editorconfig
      keychain-environment
      yasnippet-snippets
-
+     
      ;; Org/Writing
      org-roam-bibtex
      org-noter
      org-noter-pdftools
      fold-this
-
+     
      ;; Org Export Backends
      ox-reveal
      ox-gfm
      ox-jira
      ox-slack
      ox-jekyll-md
-
+     
      ;; UI/Theme
      fira-code-mode
      highlight-indent-guides
      ef-themes
      all-the-icons
-
+     
      ;; Data
      sqlite3
      mermaid-mode
@@ -287,14 +287,14 @@ configuration."
       (when (file-directory-p homebrew-bin)
         (add-to-list 'exec-path homebrew-bin)
         (setenv "PATH" (concat homebrew-bin ":" (getenv "PATH"))))))
-
+  
   ;; GCC library path for native compilation (macOS + Homebrew)
   (when (and (eq system-type 'darwin)
              (file-directory-p "/opt/homebrew/lib/gcc/15"))
     (setenv "LIBRARY_PATH"
             (concat "/opt/homebrew/lib/gcc/15:"
                     (or (getenv "LIBRARY_PATH") ""))))
-
+  
   ;; Prevent native compilation of problematic org files
   (setq native-comp-jit-compilation-deny-list '(".*org-element.*" ".*org-macs.*" ".*org-compat.*"))
   (setq comp-deferred-compilation t)
@@ -314,10 +314,10 @@ configuration."
    'user
    '(fixed-pitch ((t (:family "FiraMono Nerd Font" :height 1.0))))
    '(variable-pitch ((t (:family "Source Sans Pro" :height 1.1)))))
-
+  
   ;; Mode-line font adjustment
   (set-face-attribute 'mode-line nil :height 1.08)
-
+  
   ;; Enable font ligatures
   (with-eval-after-load 'fira-code-mode
     (global-fira-code-mode))
@@ -329,13 +329,13 @@ configuration."
   (with-eval-after-load 'org-superstar
     ;; Headline bullets
     (setq org-superstar-headline-bullets-list '("⦿" "⬦" "○" "▷"))
-
+  
     ;; Item bullets
     (setq org-superstar-item-bullet-alist
           '((?* . ?•)
             (?+ . ?➤)
             (?- . ?•)))
-
+  
     ;; TODO state bullets (aligned with gtd-zettelkasten: TODO NEXT WAITING | DONE CANCELED)
     (setq org-superstar-special-todo-items t
           org-superstar-remove-leading-stars t
@@ -345,7 +345,7 @@ configuration."
             ("WAITING" . ?⏸)
             ("DONE" . ?✓)
             ("CANCELED" . ?✗)))
-
+  
     (org-superstar-restart))
   (with-eval-after-load 'org
     (setq org-export-backends
@@ -358,13 +358,13 @@ configuration."
             org          ; Clean org export
             beamer       ; LaTeX presentations
             )))
-
+  
   ;; Additional export backends (require ox-* packages)
   (use-package ox-reveal
     :after org
     :config
     (setq org-reveal-root "file:///Users/rodk/.emacs.d/private/reveal.js"))
-
+  
   (use-package ox-gfm :after org)        ; GitHub Flavored Markdown
   (use-package ox-jira :after org)       ; JIRA markup
   (use-package ox-slack :after org)      ; Slack formatting
@@ -373,13 +373,13 @@ configuration."
   ;; Python
   (with-eval-after-load 'flycheck
     (setq flycheck-python-pyright-executable "pyright"))
-
+  
   (with-eval-after-load 'lsp-mode
     (add-to-list 'lsp-enabled-clients 'ruff-lsp))
-
+  
   ;; JavaScript/TypeScript
   (setq js2-strict-missing-semi-warning nil)
-
+  
   ;; XML folding
   (add-hook 'nxml-mode-hook #'(lambda() (hs-minor-mode 1)))
   (add-to-list 'hs-special-modes-alist
@@ -391,117 +391,118 @@ configuration."
                  nil))
   ;; Helm
   (setq helm-ag-use-grep-ignore-list nil)
-
+  
   ;; Projectile
   (setq projectile-globally-ignored-directories
         '(".git" "node_modules" "__pycache__" ".pytest_cache"))
-
+  
   ;; Dired
   (setq dired-listing-switches "-alh")
-
+  
   ;; Direnv
   (with-eval-after-load 'direnv
     (direnv-mode))
-
+  
   ;; Backup settings
   (setq backup-directory-alist
         `(("." . ,(concat user-emacs-directory "backups"))))
   (setq create-lockfiles nil)
-
+  
   ;; Browse URL - use system handler (routes through Hammerspoon URLDispatcher)
   (setq browse-url-browser-function 'browse-url-default-macosx-browser)
-  (use-package gptel
-    :after org
-    :config
-    ;; API Key Management - Use authinfo (built-in support)
-    ;; Add to ~/.authinfo:
-    ;;   machine api.openai.com login apikey password sk-your-key-here
-    ;;   machine generativelanguage.googleapis.com login apikey password your-gemini-key
-    ;;   machine api.anthropic.com login apikey password sk-ant-your-key-here
-
-    ;; Additional backends
-    (gptel-make-gemini "Gemini" :key 'gptel-api-key)
-    (gptel-make-anthropic "Claude" :key 'gptel-api-key :stream t)
-
-    ;; Default backend, mode and model
-    (setq gptel-backend gptel--openai
-          gptel-default-mode 'org-mode
-          gptel-model "gpt-4")
-
-    ;; Enable streaming for better UX
-    (setq gptel-stream t)
-
-    ;; Tool/Function calling support
-    (setq gptel-use-tools t
-          gptel-confirm-tool-calls 'always
-          gptel-include-tool-results 'auto)
-
-    ;; Org-mode specific features
-    (setq gptel-org-branching-context t)
-
-    ;; Response handling - auto-fill paragraphs
-    (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
-    (add-hook 'gptel-post-response-functions
-              (lambda (_) (fill-region (point-min) (point-max))))
-
-    ;; Useful presets
-    (gptel-make-preset "code-review"
-      :system "You are a code reviewer. Provide constructive feedback on code quality, \
+    (use-package gptel
+      :after org
+      :config
+      ;; API Key Management - Use authinfo (built-in support)
+      ;; Add to ~/.authinfo:
+      ;;   machine api.openai.com login apikey password sk-your-key-here
+      ;;   machine generativelanguage.googleapis.com login apikey password your-gemini-key
+      ;;   machine api.anthropic.com login apikey password sk-ant-your-key-here
+  
+      ;; Additional backends
+      (gptel-make-gemini "Gemini" :key 'gptel-api-key)
+      (gptel-make-anthropic "Claude" :key 'gptel-api-key :stream t)
+  
+      ;; Default backend, mode and model
+      (setq gptel-backend gptel--openai
+            gptel-default-mode 'org-mode
+            gptel-model "gpt-4")
+  
+      ;; Enable streaming for better UX
+      (setq gptel-stream t)
+  
+      ;; Tool/Function calling support
+      (setq gptel-use-tools t
+            gptel-confirm-tool-calls 'always
+            gptel-include-tool-results 'auto)
+  
+      ;; Org-mode specific features
+      (setq gptel-org-branching-context t)
+  
+      ;; Response handling - auto-fill paragraphs
+      (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
+      (add-hook 'gptel-post-response-functions
+                (lambda (_) (fill-region (point-min) (point-max))))
+  
+      ;; Useful presets
+      (gptel-make-preset "code-review"
+        :system "You are a code reviewer. Provide constructive feedback on code quality, \
   best practices, potential bugs, and improvements. Be specific and actionable."
-      :model "gpt-4")
-
-    (gptel-make-preset "writing-assistant"
-      :system "You are a writing assistant. Help improve clarity, grammar, style, and \
+        :model "gpt-4")
+  
+      (gptel-make-preset "writing-assistant"
+        :system "You are a writing assistant. Help improve clarity, grammar, style, and \
   structure. Maintain the author's voice while suggesting improvements."
-      :model "gpt-4")
-
-    (gptel-make-preset "quick-questions"
-      :system "Answer concisely and directly. Provide code examples when relevant."
-      :model "gpt-4o-mini")
-
-    ;; Keybindings
-    (spacemacs/set-leader-keys
-      "ag" 'gptel
-      "as" 'gptel-send
-      "ar" 'gptel-rewrite
-      "am" 'gptel-menu))
-
-  ;; Load gptel-extensions if available
-  (when (file-exists-p "~/.emacs.d/private/gptel-extensions.el/gptel-extensions.el")
-    (require 'gptel-extensions))
+        :model "gpt-4")
+  
+      (gptel-make-preset "quick-questions"
+        :system "Answer concisely and directly. Provide code examples when relevant."
+        :model "gpt-4o-mini")
+  
+      ;; Keybindings
+      (spacemacs/set-leader-keys
+        "ag" 'gptel
+        "as" 'gptel-send
+        "ar" 'gptel-rewrite
+        "am" 'gptel-menu))
+  
+    ;; Load gptel-extensions if available
+    (when (file-exists-p "~/.emacs.d/private/gptel-extensions.el/gptel-extensions.el")
+      (require 'gptel-extensions))
   ;; Use pass (password-store) for SMTP authentication
   (require 'auth-source-pass)
   (auth-source-pass-enable)
   (setq auth-source-pass-filename "~/.password-store")
   ;; Auth sources: password-store for SMTP, authinfo for API keys (gptel)
   (setq auth-sources '(password-store "~/.authinfo"))
-
+  
   (with-eval-after-load 'mu4e
     ;; Primary email address (quiets mu4e warning)
     (setq user-mail-address "rod@rodknowlton.com")
-
+  
     ;; Basic paths
     (setq mu4e-maildir "~/Maildir/Fastmail"
           mu4e-attachment-dir "~/Downloads"
           mu4e-get-mail-command "mbsync -a"
-          mu4e-update-interval 300
+          mu4e-update-interval nil  ; Manual updates only (U key)
           mu4e-index-update-in-background t  ; Don't block during index
           mu4e-hide-index-messages t         ; Suppress index messages
-          mu4e-headers-auto-update nil)      ; Don't reset headers view after update
-
+          mu4e-headers-auto-update nil       ; Don't reset headers view after update
+          mu4e-change-filenames-when-moving t) ; Rename files on move (required for mbsync)
+  
     ;; Folders (Fastmail folder names)
     (setq mu4e-sent-folder   "/Sent Items"
           mu4e-drafts-folder "/Drafts"
           mu4e-trash-folder  "/Trash"
           mu4e-refile-folder "/Archive")
-
+  
     ;; SMTP (Fastmail) - password from pass via auth-source-pass
     (setq message-send-mail-function 'smtpmail-send-it
           smtpmail-smtp-server "smtp.fastmail.com"
           smtpmail-smtp-service 465
           smtpmail-stream-type 'ssl
           smtpmail-smtp-user "knowshank@fastmail.com")
-
+  
     ;; Valid sender addresses (aliases routed through Fastmail)
     (setq mu4e-user-mail-address-list
           '("rod@rodknowlton.com"
@@ -509,13 +510,13 @@ configuration."
             "codelahoma@gmail.com"
             "knowshank@knowshank.com"
             "knowshank@fastmail.com"))
-
+  
     ;; View settings
     (setq mu4e-view-show-images t
           mu4e-view-show-addresses t
           mu4e-html2text-command "w3m -T text/html"
           mu4e-compose-format-flowed t)
-
+  
     ;; Bookmarks (shortcuts on mu4e home screen)
     ;; BUG: First bookmark always exits immediately after search.
     ;; Using a dummy entry as workaround until root cause is found.
@@ -523,18 +524,18 @@ configuration."
           '((:name "[BUG] Don't use" :query "date:1970" :key ?0)
             (:name "INBOX"           :query "maildir:/INBOX"   :key ?i)
             (:name "Archive"         :query "maildir:/Archive" :key ?a)))
-
+  
     ;; Custom action: search for other emails from sender
     (defun rk/mu4e-action-search-sender (msg)
       "Search for other messages from the sender of MSG."
       (let* ((from (mu4e-message-field msg :from))
              (sender (cdr (car from))))
         (mu4e-search (format "from:%s" sender))))
-
+  
     ;; View actions - press 'a' in message view to see available actions
     (add-to-list 'mu4e-view-actions
                  '("Ssearch for sender" . rk/mu4e-action-search-sender) t))
-
+  
   ;; Make mu4e buffers shared across all perspectives/layouts
   ;; This prevents "buffer not in current perspective" errors when
   ;; mu4e updates in the background while in a different layout
@@ -558,10 +559,10 @@ configuration."
                                        (setq start-line (1+ start-line))))
                                    lines))
            (output (concat file-path ":\n"
-                           (mapconcat 'identity numbered-lines "\n"))))
+                          (mapconcat 'identity numbered-lines "\n"))))
       (kill-new output)
       (message "Copied %d lines to clipboard with line numbers" (length lines))))
-
+  
   ;; Markdown preview with impatient-mode
   (defun markdown-html (buffer)
     "Convert markdown buffer to HTML for preview"
@@ -569,7 +570,7 @@ configuration."
              (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>"
                      (buffer-substring-no-properties (point-min) (point-max))))
            (current-buffer)))
-
+  
   (defun markdown-preview-like-god ()
     "Live markdown preview in browser"
     (interactive)
@@ -577,15 +578,15 @@ configuration."
     (setq imp-user-filter #'markdown-html)
     (cl-incf imp-last-state)
     (imp--notify-clients))
-
+  
   ;; Utility functions
   (defun my-info-mode-hook ()
     "Info mode navigation enhancements"
     (define-key Info-mode-map (kbd "b") 'Info-history-back)
     (define-key Info-mode-map (kbd "f") 'Info-history-forward))
-
+  
   (add-hook 'Info-mode-hook 'my-info-mode-hook)
-
+  
   (defun renumber-region (start end)
     "Renumber list items in region"
     (interactive "r")
@@ -595,12 +596,12 @@ configuration."
         (while (re-search-forward "^[0-9]+\\." end t)
           (replace-match (format "%d." count))
           (setq count (1+ count))))))
-
+  
   (defun codelahoma/insert-random-uid ()
     "Insert random UUID"
     (interactive)
     (insert (shell-command-to-string "uuidgen | tr '[:upper:]' '[:lower:]' | tr -d '\n'")))
-
+  
   ;; RSS integration
   (defun elfeed-save-to-org-roam-dailies ()
     "Save elfeed entry to org-roam daily note"
@@ -613,39 +614,39 @@ configuration."
       (insert (format "* [[%s][%s]]\n" url title))))
   ;; Start Emacs server for emacsclient connections
   (server-start)
-
+  
   ;; Rebind quit keys: q q closes frame, q Q quits Emacs
   (spacemacs/set-leader-keys
     "qq" 'delete-frame
     "qQ" 'spacemacs/prompt-kill-emacs)
   ;; User-defined prefix
   (spacemacs/declare-prefix "o" "user-defined")
-
+  
   ;; Buffer operations
   (spacemacs/declare-prefix "ob" "buffer")
   (spacemacs/set-leader-keys "obn" 'spacemacs/new-empty-buffer)
-
+  
   ;; Copy operations
   (spacemacs/declare-prefix "oc" "copy")
   (spacemacs/set-leader-keys
     "ocl" 'avy-copy-line
     "ocp" 'forge-copy-url-at-point-as-kill)
-
+  
   ;; Text operations
   (spacemacs/declare-prefix "ox" "text")
   (spacemacs/set-leader-keys "oxw" 'white-space-cleanup)
-
+  
   ;; Claude AI
   (spacemacs/declare-prefix "oC" "Claude")
   (spacemacs/set-leader-keys "oCC" 'rk/clip-for-claude)
-
+  
   ;; Folding
   (spacemacs/declare-prefix "of" "folding")
   (spacemacs/set-leader-keys
     "off" 'fold-this
     "ofm" 'fold-this-all
     "ofr" 'fold-this-unfold-all)
-
+  
   ;; GTD-Zettelkasten (populated by layer)
   (spacemacs/declare-prefix "og" "GTD-Zettelkasten")
   (use-package org-roam
@@ -656,15 +657,15 @@ configuration."
     :config
     (setq org-roam-node-display-template
           (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-
+  
     ;; Manual sync workflow (DO NOT enable autosync - causes 100% CPU hang)
     ;; Run M-x org-roam-db-sync after adding/modifying notes
     (add-hook 'kill-emacs-hook 'org-roam-db-sync)
-
+  
     ;; Optional: Add file exclusions for performance
     (setq org-roam-file-exclude-regexp
           (list "data/" "archive/" ".sync-conflict"))
-
+  
     ;; Capture templates
     (setq org-roam-capture-templates
           '(("d" "default" plain "%?"
@@ -686,71 +687,4 @@ configuration."
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-  (custom-set-variables
-   ;; custom-set-variables was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   '(package-selected-packages
-     '(ace-link add-node-modules-path aggressive-indent all-the-icons auto-compile
-                auto-highlight-symbol auto-yasnippet avy-jump-helm-line
-                better-jumper blacken browse-at-remote buttercup
-                centered-cursor-mode clean-aindent-mode code-cells code-review
-                color-identifiers-mode column-enforce-mode company-emoji
-                company-quickhelp company-web csv-mode cython-mode devdocs diff-hl
-                diminish dired-quick-sort direnv disable-mouse docker
-                dockerfile-mode dotenv-mode drag-stuff dumb-jump eat edit-indirect
-                ef-themes elfeed-goodies elfeed-org elisp-def elisp-demos
-                elisp-slime-nav emmet-mode emoji-cheat-sheet-plus emr esh-help
-                eshell-prompt-extras eshell-z eval-sexp-fu evil-anzu evil-args
-                evil-cleverparens evil-collection evil-easymotion evil-escape
-                evil-evilified-state evil-exchange evil-goggles evil-iedit-state
-                evil-indent-plus evil-lion evil-lisp-state evil-matchit
-                evil-nerd-commenter evil-numbers evil-org evil-surround
-                evil-textobj-line evil-tutor evil-unimpaired evil-visual-mark-mode
-                evil-visualstar expand-region eyebrowse fancy-battery
-                fira-code-mode flycheck-elsa flycheck-package flycheck-pos-tip
-                flyspell-correct-helm fold-this gh-md git-link git-messenger
-                git-modes git-timemachine gitignore-templates gnuplot golden-ratio
-                google-translate gptel gruvbox-theme hc-zenburn-theme helm-ag
-                helm-c-yasnippet helm-comint helm-company helm-css-scss
-                helm-descbinds helm-git-grep helm-ls-git helm-lsp helm-make
-                helm-mode-manager helm-mu helm-org helm-org-rifle helm-projectile
-                helm-purpose helm-pydoc helm-swoop helm-themes helm-xref helpful
-                hide-comnt highlight-indent-guides highlight-indentation
-                highlight-numbers highlight-parentheses hl-todo holy-mode
-                hungry-delete hybrid-mode ibuffer-projectile impatient-mode
-                indent-guide info+ inspector js-doc js2-refactor json-mode
-                json-navigator json-reformat keychain-environment launchctl
-                live-py-mode livid-mode lorem-ipsum lsp-origami lsp-pyright
-                lsp-treemacs lsp-ui lua-mode macrostep markdown-toc mermaid-mode
-                mu4e-alert multi-line multi-term multi-vterm nameless nodejs-repl
-                npm-mode ob-mermaid open-junk-file org-cliplink org-contrib
-                org-download org-mime org-noter-pdftools org-pomodoro org-present
-                org-projectile org-rich-yank org-roam-bibtex org-roam-ui
-                org-sticky-header org-superstar org-transclusion orgit-forge
-                osx-clipboard osx-dictionary osx-trash overseer ox-jekyll-md
-                ox-jira ox-reveal ox-slack page-break-lines paradox
-                password-generator pcre2el pdf-view-restore pip-requirements
-                pipenv pippel poetry prettier-js pug-mode py-isort pydoc
-                pyenv-mode pylookup pytest quickrun rainbow-delimiters
-                rainbow-identifiers rainbow-mode restart-emacs
-                reveal-in-osx-finder rjsx-mode sass-mode scss-mode shell-pop
-                slim-mode smeargle space-doc spaceline spacemacs-purpose-popwin
-                spacemacs-whitespace-cleanup sphinx-doc sqlite3
-                string-edit-at-point string-inflection symbol-overlay symon
-                tagedit term-cursor terminal-here tide toc-org tree-sitter-langs
-                treemacs-evil treemacs-icons-dired treemacs-magit treemacs-persp
-                treemacs-projectile typescript-mode undo-fu undo-fu-session
-                vi-tilde-fringe volatile-highlights vundo web-beautify web-mode
-                wgrep winum writeroom-mode ws-butler yaml-mode yasnippet-snippets)))
-  (custom-set-faces
-   ;; custom-set-faces was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
-   '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil))))
-   '(fixed-pitch ((t (:family "FiraMono Nerd Font" :height 1.0))))
-   '(variable-pitch ((t (:family "Source Sans Pro" :height 1.1)))))
   )

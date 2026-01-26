@@ -665,10 +665,11 @@ structure. Maintain the author's voice while suggesting improvements."
     (setq mu4e-maildir "~/Maildir/Fastmail"
           mu4e-attachment-dir "~/Downloads"
           mu4e-get-mail-command "mbsync -a"
-          mu4e-update-interval 300
+          mu4e-update-interval nil  ; Manual updates only (U key)
           mu4e-index-update-in-background t  ; Don't block during index
           mu4e-hide-index-messages t         ; Suppress index messages
-          mu4e-headers-auto-update nil)      ; Don't reset headers view after update
+          mu4e-headers-auto-update nil       ; Don't reset headers view after update
+          mu4e-change-filenames-when-moving t) ; Rename files on move (required for mbsync)
 
     ;; Folders (Fastmail folder names)
     (setq mu4e-sent-folder   "/Sent Items"
