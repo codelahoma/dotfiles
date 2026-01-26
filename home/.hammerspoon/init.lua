@@ -80,16 +80,24 @@ hotkey.bind(hyper, "right", snapRight)
 hotkey.bind(hyper, "up", maximize)
 hotkey.bind(hyper, "down", centerWindow)
 
-local function handleScreenChange()
+local function getScreenSignature()
   local screens = hs.screen.allScreens()
-  local count = #screens
+  local sig = {}
+  for _, screen in ipairs(screens) do
+    local mode = screen:currentMode()
+    table.insert(sig, screen:id() .. ":" .. mode.w .. "x" .. mode.h)
+  end
+  table.sort(sig)
+  return table.concat(sig, "|")
+end
 
-  if count == 1 then
-    hs.alert.show("Single display mode")
-  elseif count == 2 then
-    hs.alert.show("Dual display mode")
-  else
-    hs.alert.show(count .. " displays connected")
+local lastScreenSignature = getScreenSignature()
+
+local function handleScreenChange()
+  local newSig = getScreenSignature()
+  if newSig ~= lastScreenSignature then
+    lastScreenSignature = newSig
+    hs.reload()
   end
 end
 
