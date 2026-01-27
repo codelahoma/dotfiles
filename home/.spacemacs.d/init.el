@@ -528,8 +528,8 @@ configuration."
     ;; Custom action: search for other emails from sender
     (defun rk/mu4e-action-search-sender (msg)
       "Search for other messages from the sender of MSG."
-      (let* ((from (mu4e-message-field msg :from))
-             (sender (cdr (car from))))
+      (let* ((from (car (mu4e-message-field msg :from)))
+             (sender (plist-get from :email)))
         (mu4e-search (format "from:%s" sender))))
   
     ;; View actions - press 'a' in message view to see available actions
