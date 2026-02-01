@@ -571,14 +571,19 @@ _centeredWindowsFormerPositions = {}
     end)
   end
 
-  -- Brain dump: prompt in minibuffer, append directly to inbox
+  -- Brain dump: prompt in minibuffer, append under Inbox heading
   local function brainDump()
-    -- Elisp: prompt for text, append as TODO to inbox.org
+    -- Elisp: prompt for text, append as TODO under Inbox heading (for organice compatibility)
     local elisp = [[(let ((text (read-string "Brain dump: ")))
       (when (> (length text) 0)
         (with-current-buffer (find-file-noselect "~/Dropbox/org/gtd/inbox.org")
-          (goto-char (point-max))
-          (insert "\n* TODO " text "\n")
+          (goto-char (point-min))
+          (if (re-search-forward "^\\* Inbox$" nil t)
+              (org-end-of-subtree)
+            (goto-char (point-max))
+            (unless (bolp) (insert "\n"))
+            (insert "* Inbox\n"))
+          (insert "\n** TODO " text "\n")
           (save-buffer))
         (message "Captured: %s" text)))]]
     hs.task.new('/opt/homebrew/bin/emacsclient', nil,
@@ -676,8 +681,13 @@ _centeredWindowsFormerPositions = {}
       title = title:gsub('"', '\\"')
 
       local elisp = string.format([=[(with-current-buffer (find-file-noselect "~/Dropbox/org/gtd/inbox.org")
-        (goto-char (point-max))
-        (insert "\n* TODO [[%s][%s]]\n")
+        (goto-char (point-min))
+        (if (re-search-forward "^\\* Inbox$" nil t)
+            (org-end-of-subtree)
+          (goto-char (point-max))
+          (unless (bolp) (insert "\n"))
+          (insert "* Inbox\n"))
+        (insert "\n** TODO [[%s][%s]]\n")
         (save-buffer)
         (message "Captured: %s"))]=], url, title, title)
       hs.task.new('/opt/homebrew/bin/emacsclient', nil,
@@ -738,8 +748,9 @@ local hotkeyList = {
   {mod = "hyper", key = "d", desc = "Dash"},
   {mod = "magic", key = "d", desc = "Discord"},
   {mod = "hyper", key = "f", desc = "DBeaver"},
+  {mod = "hyper", key = "g", desc = "iTerm"},
   {mod = "hyper", key = "h", desc = "Hotkey Help"},
-  {mod = "hyper", key = "i", desc = "iTerm"},
+  {mod = "hyper", key = "i", desc = "Ghostty"},
   {mod = "hyper", key = "j", desc = "Emacs"},
   {mod = "hyper", key = "k", desc = "Arc"},
   {mod = "magic", key = "k", desc = "Marked"},
@@ -1010,7 +1021,8 @@ hotkey.bind(magic, "c", appLauncher('Claude'))
 hotkey.bind(hyper, "d", appLauncher('Dash'))
 hotkey.bind(magic, "d", appLauncher('Discord'))
 hotkey.bind(hyper, "f", appLauncher('DBeaver'))
-hotkey.bind(hyper, "i", appLauncher('iTerm'))
+hotkey.bind(hyper, "g", appLauncher('iTerm'))
+hotkey.bind(hyper, "i", appLauncher('Ghostty'))
 hotkey.bind(hyper, "j", emacsLauncher())
 hotkey.bind(hyper, "k", appLauncher('Arc'))
 hotkey.bind(magic, "k", appLauncher('Marked'))
