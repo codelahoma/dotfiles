@@ -64,7 +64,8 @@ This function should only modify configuration layer settings."
           org-enable-roam-support t
           org-enable-roam-ui t
           org-enable-sticky-header t
-          org-enable-transclusion-support t)
+          org-enable-transclusion-support t
+          org-startup-indented t)
      markdown
      html
      mermaid
@@ -108,8 +109,11 @@ This function should only modify configuration layer settings."
            mu4e-enable-notifications t
            mu4e-enable-mode-line t
            mu4e-org-compose-support t)
-     rk-layout
-     gtd-zettelkasten
+      rk-layout
+     (gtd-zettelkasten :location local
+                        :variables
+                        gtd-zettel-org-directory "~/Dropbox/org/"
+                        gtd-zettel-inbox-heading "Inbox")
      )
 
    ;; List of additional packages that will be installed without being wrapped
@@ -155,6 +159,7 @@ This function should only modify configuration layer settings."
      ;; Data
      sqlite3
      mermaid-mode
+     ox-hugo
      )
 
    ;; A list of packages that cannot be updated.
@@ -347,6 +352,13 @@ configuration."
             ("CANCELED" . ?✗)))
   
     (org-superstar-restart))
+  
+  ;; Visual spacing in org files
+  (with-eval-after-load 'org
+    ;; Show blank lines between collapsed trees (improves visual separation)
+    (setq org-cycle-separator-lines 1)
+    ;; Add a bit of line spacing for readability
+    (add-hook 'org-mode-hook (lambda () (setq line-spacing 0.1))))
   (with-eval-after-load 'org
     (setq org-export-backends
           '(ascii        ; Plain text
@@ -517,6 +529,14 @@ configuration."
           mu4e-html2text-command "w3m -T text/html"
           mu4e-compose-format-flowed t)
   
+    ;; Headers view columns (show maildir instead of mailing-list)
+    (setq mu4e-headers-fields
+          '((:human-date . 12)
+            (:flags . 6)
+            (:maildir . 15)
+            (:from . 22)
+            (:subject . nil)))
+  
     ;; Bookmarks (shortcuts on mu4e home screen)
     ;; BUG: First bookmark always exits immediately after search.
     ;; Using a dummy entry as workaround until root cause is found.
@@ -530,7 +550,7 @@ configuration."
       "Search for other messages from the sender of MSG."
       (let* ((from (car (mu4e-message-field msg :from)))
              (sender (plist-get from :email)))
-        (mu4e-search (format "from:%s" sender))))
+        (mu4e-search (format "maildir:/INBOX from:%s" sender))))
   
     ;; View actions - press 'a' in message view to see available actions
     (add-to-list 'mu4e-view-actions
@@ -679,7 +699,94 @@ configuration."
             ("l" "literature" plain "%?"
              :target (file+head "literature/%<%Y%m%d%H%M%S>-${slug}.org"
                                 "#+title: ${title}\n#+author: %^{Author}\n#+created: %U\n#+type: literature\n#+filetags: \n\n")
-             :unnarrowed t)))))
+             :unnarrowed t))))
+    (use-package ox-hugo
+      :after ox
+      :custom
+      (org-hugo-base-dir (expand-file-name "~/github/codelahoma.github.io"))
+      (org-hugo-default-section-directory "posts"))
+  
+    ;; Blog helper variables
+    (defvar rk/blog-server-process nil)
+    (defvar rk/blog-source-directory (expand-file-name "~/Dropbox/org/blog")
+      "Directory for blog org source files.")
+    (defvar rk/blog-ideas-file (expand-file-name "~/Dropbox/org/blog/ideas.org")
+      "File for capturing blog post ideas.")
+  
+    ;; Ensure blog source directory exists
+    (unless (file-directory-p rk/blog-source-directory)
+      (make-directory rk/blog-source-directory t))
+  
+    ;; Blog helper functions
+    (defun rk/blog-serve ()
+      "Start Hugo server for blog preview."
+      (interactive)
+      (let ((default-directory (expand-file-name "~/github/codelahoma.github.io/")))
+        (if (and rk/blog-server-process (process-live-p rk/blog-server-process))
+            (message "Hugo server already running at http://localhost:1313/")
+          (setq rk/blog-server-process
+                (start-process "hugo-serve" "*Hugo*" "hugo" "server" "-D"))
+          (message "Hugo server starting at http://localhost:1313/"))))
+  
+    (defun rk/blog-stop-serve ()
+      "Stop Hugo server."
+      (interactive)
+      (when (and rk/blog-server-process (process-live-p rk/blog-server-process))
+        (kill-process rk/blog-server-process)
+        (setq rk/blog-server-process nil)
+        (message "Hugo server stopped")))
+  
+    (defun rk/blog-open-site ()
+      "Open blog source directory in dired."
+      (interactive)
+      (dired rk/blog-source-directory))
+  
+    (defun rk/blog-open-ideas ()
+      "Open the blog ideas file."
+      (interactive)
+      (find-file rk/blog-ideas-file))
+  
+    (defun rk/blog-capture-idea ()
+      "Capture a blog post idea."
+      (interactive)
+      (org-capture nil "b"))
+  
+    (defun rk/blog-new-post (title)
+      "Create a new blog post with TITLE."
+      (interactive "sPost title: ")
+      (let* ((slug (downcase (replace-regexp-in-string "[^a-zA-Z0-9]+" "-" title)))
+             (filename (expand-file-name
+                        (format "%s.org" slug)
+                        rk/blog-source-directory)))
+        (find-file filename)
+        (insert (format "#+TITLE: %s
+  #+AUTHOR: Rod Knowlton
+  #+DATE: %s
+  #+HUGO_BASE_DIR: ~/github/codelahoma.github.io
+  #+HUGO_SECTION: posts
+  #+HUGO_DRAFT: true
+  
+  " title (format-time-string "<%Y-%m-%d %a>")))))
+  
+    ;; Blog keybindings under SPC o B
+    (spacemacs/declare-prefix "oB" "blog")
+    (spacemacs/set-leader-keys
+      "oBn" 'rk/blog-new-post
+      "oBe" 'org-hugo-export-to-md
+      "oBE" 'org-hugo-export-wim-to-md
+      "oBs" 'rk/blog-serve
+      "oBx" 'rk/blog-stop-serve
+      "oBo" 'rk/blog-open-site
+      "oBi" 'rk/blog-open-ideas
+      "oBI" 'rk/blog-capture-idea)
+  
+    ;; Blog capture template
+    (with-eval-after-load 'org
+      (add-to-list 'org-capture-templates
+                   '("b" "Blog post idea" entry
+                     (file+headline "~/Dropbox/org/blog/ideas.org" "Post Ideas")
+                     "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n"
+                     :empty-lines 1))))
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
 (defun dotspacemacs/emacs-custom-settings ()
