@@ -104,31 +104,6 @@ end
 screenWatcher = hs.screen.watcher.new(handleScreenChange)
 screenWatcher:start()
 
-local lastBatteryAlert = 0
-
-local function batteryCallback()
-  local pct = hs.battery.percentage()
-  -- Guard: no battery present (desktops or unavailable data)
-  if pct == nil then return end
-
-  local charging = hs.battery.isCharging()
-  local now = os.time()
-
-  -- Debounce: don't alert more than once per 5 minutes
-  if now - lastBatteryAlert < 300 then return end
-
-  if pct <= 20 and not charging then
-    hs.alert.show("Low battery: " .. math.floor(pct) .. "%", 5)
-    lastBatteryAlert = now
-  elseif pct >= 80 and charging then
-    hs.alert.show("Battery charged: " .. math.floor(pct) .. "%", 3)
-    lastBatteryAlert = now
-  end
-end
-
-batteryWatcher = hs.battery.watcher.new(batteryCallback)
-batteryWatcher:start()
-
 local watchedDevices = {
   ["YubiKey"] = "YubiKey connected - ready for auth",
   ["Dygma"] = "Dygma Defy connected",
