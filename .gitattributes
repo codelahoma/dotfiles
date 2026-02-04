@@ -1,0 +1,3 @@
+# FlowMem JSONL files use union merge to prevent conflicts
+# Union merge keeps all lines from both sides during a merge
+*.jsonl merge=union
