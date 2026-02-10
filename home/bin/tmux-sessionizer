@@ -63,16 +63,14 @@ track_session_launch() {
   local session_path="$1"
   [[ "$ENABLE_STATS" != "true" ]] && return
 
-  if [[ -n "$SCANNER_BIN" ]]; then
-    "$SCANNER_BIN" --track "$session_path" --stats-file "$STATS_FILE"
-  else
-    # jq fallback
+  _track_jq_fallback() {
+    local sp="$1"
     local stats="{}"
     [[ -f "$STATS_FILE" ]] && stats=$(cat "$STATS_FILE")
     local current_time=$(date +%s)
-    local session_key=$(basename "$session_path")
+    local session_key=$(basename "$sp")
     stats=$(echo "$stats" | jq --arg key "$session_key" \
-                                --arg path "$session_path" \
+                                --arg path "$sp" \
                                 --arg time "$current_time" \
       'if .[$key] then
         .[$key].count += 1 | .[$key].lastUsed = ($time | tonumber)
@@ -80,6 +78,12 @@ track_session_launch() {
         .[$key] = {path: $path, count: 1, lastUsed: ($time | tonumber)}
       end')
     echo "$stats" > "$STATS_FILE"
+  }
+
+  if [[ -n "$SCANNER_BIN" ]]; then
+    "$SCANNER_BIN" --track "$session_path" --stats-file "$STATS_FILE" || _track_jq_fallback "$session_path"
+  else
+    _track_jq_fallback "$session_path"
   fi
 }
 
@@ -216,6 +220,22 @@ _run_shell_fallback() {
     [[ -z "$dir" ]] && continue
     formatted+="${dir}\t${dir}"$'\n'
   done <<< "$found_dirs"
+  # Include home top-level directories if enabled
+  if [[ "$INCLUDE_HOME_TOPLEVEL" == "true" ]]; then
+    for home_dir in "$HOME"/*/; do
+      [[ ! -d "$home_dir" ]] && continue
+      home_dir="${home_dir%/}"
+      local skip=false
+      for sp in "${SEARCH_PATHS[@]}"; do
+        local nsp="${sp%/}"
+        if [[ "$home_dir" == "$nsp" || "$home_dir" == "$nsp"/* ]]; then
+          skip=true; break
+        fi
+      done
+      [[ "$(basename "$home_dir")" == .* ]] && skip=true
+      [[ "$skip" == "false" ]] && formatted+="${home_dir}\t${home_dir}"$'\n'
+    done
+  fi
   echo "$formatted"
 }
 
