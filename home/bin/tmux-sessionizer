@@ -43,7 +43,7 @@ SCANNER_BIN=""
 for candidate in \
   "${0:A:h}/tmux-sessionizer-scan" \
   "${HOME}/bin/tmux-sessionizer-scan"; do
-  if [[ -x "$candidate" ]]; then
+  if [[ -x "$candidate" ]] && "$candidate" --search-paths /dev/null &>/dev/null; then
     SCANNER_BIN="$candidate"
     break
   fi
@@ -262,10 +262,10 @@ _fallback_format_entry() {
       local time_str=$(format_last_used "$last_used")
       local star=""
       [[ $frecency -gt 20 ]] && star="⭐ "
-      printf '%s%-6s  %s %s %s  \033[90m(%s, %sx)\033[0m\t%s\n' \
-        "$star" "$frecency" "$git_status" "$icon" "$dir" "$time_str" "$count" "$dir"
+      printf "%010d"$'\x1f'"%s%-6s  %s %s %s  \033[90m(%s, %sx)\033[0m\t%s\n" \
+        "$frecency" "$star" "$frecency" "$git_status" "$icon" "$dir" "$time_str" "$count" "$dir"
     else
-      printf '%-6s  %s %s %s\t%s\n' "0" "$git_status" "$icon" "$dir" "$dir"
+      printf "0000000000"$'\x1f'"%-6s  %s %s %s\t%s\n" "0" "$git_status" "$icon" "$dir" "$dir"
     fi
   else
     printf '%s %s %s\t%s\n' "$git_status" "$icon" "$dir" "$dir"
@@ -299,10 +299,16 @@ _run_shell_fallback() {
       [[ "$skip" == "false" ]] && all_dirs+=("$home_dir")
     done
   fi
-  # Format each entry with metadata
-  for dir in "${all_dirs[@]}"; do
-    _fallback_format_entry "$dir"
-  done
+  # Format each entry with metadata, sort by frecency if stats enabled
+  if [[ "$ENABLE_STATS" == "true" ]] && command -v jq &>/dev/null && [[ -f "$STATS_FILE" ]]; then
+    for dir in "${all_dirs[@]}"; do
+      _fallback_format_entry "$dir"
+    done | sort -t$'\x1f' -k1 -rn | cut -d$'\x1f' -f2-
+  else
+    for dir in "${all_dirs[@]}"; do
+      _fallback_format_entry "$dir"
+    done
+  fi
 }
 
 if [[ -n "$SCANNER_BIN" ]]; then
