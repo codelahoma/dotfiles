@@ -1,7 +1,8 @@
 #!/usr/bin/env zsh
 
 # tmux-sessionizer - Fuzzy find and switch to project tmux sessions
-# Enhanced with configuration system, stats tracking, and rich previews
+# Uses tmux-sessionizer-scan (Rust) for fast directory scanning/formatting.
+# Falls back to shell-based scanning if binary not found.
 
 # Handle preview mode (called by fzf)
 if [[ "$1" == "--preview" ]]; then
@@ -37,111 +38,82 @@ if [[ -f "$CONFIG_FILE" ]]; then
   source "$CONFIG_FILE"
 fi
 
-# Stats management functions
-load_stats() {
-  if [[ -f "$STATS_FILE" ]]; then
-    cat "$STATS_FILE"
-  else
-    echo "{}"
+# Locate the Rust scanner binary
+SCANNER_BIN=""
+for candidate in \
+  "${0:A:h}/tmux-sessionizer-scan" \
+  "${HOME}/bin/tmux-sessionizer-scan"; do
+  if [[ -x "$candidate" ]] && "$candidate" --search-paths /dev/null &>/dev/null; then
+    SCANNER_BIN="$candidate"
+    break
   fi
-}
+done
 
-save_stats() {
-  local stats="$1"
-  echo "$stats" > "$STATS_FILE"
-}
+# Build scanner arguments from config (array to preserve spaces in paths)
+_scanner_args=(--search-paths "${SEARCH_PATHS[@]}" --max-depth "$MAX_DEPTH")
+[[ "$ENABLE_STATS" == "true" ]] && _scanner_args+=(--enable-stats --stats-file "$STATS_FILE")
+[[ "$ENABLE_GIT_STATUS" == "true" ]] && _scanner_args+=(--enable-git-status)
+[[ "$INCLUDE_HOME_TOPLEVEL" == "true" ]] && _scanner_args+=(--include-home-toplevel)
 
+# Track session launch via scanner or jq fallback
 track_session_launch() {
   local session_path="$1"
   [[ "$ENABLE_STATS" != "true" ]] && return
 
-  local stats=$(load_stats)
-  local current_time=$(date +%s)
-  local session_key=$(basename "$session_path")
+  _track_jq_fallback() {
+    local sp="$1"
+    local stats="{}"
+    [[ -f "$STATS_FILE" ]] && stats=$(cat "$STATS_FILE")
+    local current_time=$(date +%s)
+    local session_key=$(basename "$sp")
+    stats=$(echo "$stats" | jq --arg key "$session_key" \
+                                --arg path "$sp" \
+                                --arg time "$current_time" \
+      'if .[$key] then
+        .[$key].count += 1 | .[$key].lastUsed = ($time | tonumber)
+      else
+        .[$key] = {path: $path, count: 1, lastUsed: ($time | tonumber)}
+      end')
+    echo "$stats" > "$STATS_FILE"
+  }
 
-  # Update or create stats entry using jq
-  stats=$(echo "$stats" | jq --arg key "$session_key" \
-                              --arg path "$session_path" \
-                              --arg time "$current_time" \
-    'if .[$key] then
-      .[$key].count += 1 | .[$key].lastUsed = ($time | tonumber)
-    else
-      .[$key] = {path: $path, count: 1, lastUsed: ($time | tonumber)}
-    end')
-
-  save_stats "$stats"
-}
-
-calculate_frecency_score() {
-  local count="$1"
-  local last_used="$2"
-  local current_time=$(date +%s)
-
-  # Days since last use
-  local days_diff=$(( (current_time - last_used) / 86400 ))
-
-  # Recency weight: exponential decay
-  # Recent (0-1 day): 1.0, 1-7 days: 0.8, 7-30 days: 0.5, 30+ days: 0.2
-  local recency_weight=0.2
-  if [[ $days_diff -le 1 ]]; then
-    recency_weight=1.0
-  elif [[ $days_diff -le 7 ]]; then
-    recency_weight=0.8
-  elif [[ $days_diff -le 30 ]]; then
-    recency_weight=0.5
-  fi
-
-  # Frecency = (frequency * 0.5) + (recency * 50 * 0.5)
-  # Scale recency component to be comparable to frequency
-  local frecency=$(echo "$count * 0.5 + $recency_weight * 50 * 0.5" | bc -l)
-  printf "%.2f" "$frecency"
-}
-
-format_last_used() {
-  local last_used="$1"
-  local current_time=$(date +%s)
-  local diff=$((current_time - last_used))
-
-  if [[ $diff -lt 3600 ]]; then
-    local minutes=$((diff / 60))
-    echo "${minutes}m ago"
-  elif [[ $diff -lt 86400 ]]; then
-    local hours=$((diff / 3600))
-    echo "${hours}h ago"
-  elif [[ $diff -lt 604800 ]]; then
-    local days=$((diff / 86400))
-    echo "${days}d ago"
+  if [[ -n "$SCANNER_BIN" ]]; then
+    "$SCANNER_BIN" --track "$session_path" --stats-file "$STATS_FILE" || _track_jq_fallback "$session_path"
   else
-    local weeks=$((diff / 604800))
-    echo "${weeks}w ago"
+    _track_jq_fallback "$session_path"
   fi
 }
 
+# Helper used by preview and extract
+extract_directory_from_line() {
+  local line="$1"
+  if [[ "$line" == *$'\t'* ]]; then
+    echo "$line" | cut -d$'\t' -f2
+  else
+    echo "$line"
+  fi
+}
+
+# Detect project type (used by preview and templates)
 detect_project_type() {
   local dir="$1"
-
-  # Check for specific project markers
   [[ -f "$dir/Cargo.toml" ]] && echo "rust" && return
   [[ -f "$dir/package.json" ]] && echo "nodejs" && return
   [[ -f "$dir/pyproject.toml" ]] || [[ -f "$dir/setup.py" ]] || [[ -f "$dir/requirements.txt" ]] && echo "python" && return
   [[ -f "$dir/go.mod" ]] && echo "go" && return
   [[ -d "$dir/.homesick" ]] && echo "dotfiles" && return
+  if [[ -d "$dir/.git" ]]; then
+    local remote_url
+    remote_url=$(git -C "$dir" remote get-url origin 2>/dev/null)
+    [[ "$remote_url" == *dotfiles* ]] && echo "dotfiles" && return
+  fi
   [[ -f "$dir/Gemfile" ]] && echo "ruby" && return
   [[ -f "$dir/pom.xml" ]] || [[ -f "$dir/build.gradle" ]] && echo "java" && return
-
-  # Check for .git with specific patterns
-  if [[ -d "$dir/.git" ]]; then
-    local remote=$(git -C "$dir" remote get-url origin 2>/dev/null)
-    [[ "$remote" == *dotfiles* ]] && echo "dotfiles" && return
-  fi
-
   echo "general"
 }
 
 get_project_type_icon() {
-  local proj_type="$1"
-
-  case "$proj_type" in
+  case "$1" in
     rust)     echo "🦀" ;;
     nodejs)   echo "📦" ;;
     python)   echo "🐍" ;;
@@ -153,167 +125,19 @@ get_project_type_icon() {
   esac
 }
 
-get_git_status() {
-  local dir="$1"
-  [[ "$ENABLE_GIT_STATUS" != "true" ]] && echo "" && return
-  [[ ! -d "$dir/.git" ]] && echo "" && return
+format_last_used() {
+  local last_used="$1"
+  local current_time=$(date +%s)
+  local diff=$((current_time - last_used))
 
-  cd "$dir" 2>/dev/null || return
-
-  # Check if repo is clean
-  if git diff-index --quiet HEAD -- 2>/dev/null; then
-    # Clean repo, check if ahead/behind
-    local ahead=$(git rev-list --count @{u}..HEAD 2>/dev/null)
-    local behind=$(git rev-list --count HEAD..@{u} 2>/dev/null)
-
-    if [[ -n "$ahead" && "$ahead" -gt 0 ]] || [[ -n "$behind" && "$behind" -gt 0 ]]; then
-      echo "~"  # Ahead or behind
-    else
-      echo "✓"  # Clean and in sync
-    fi
+  if [[ $diff -lt 3600 ]]; then
+    echo "$((diff / 60))m ago"
+  elif [[ $diff -lt 86400 ]]; then
+    echo "$((diff / 3600))h ago"
+  elif [[ $diff -lt 604800 ]]; then
+    echo "$((diff / 86400))d ago"
   else
-    echo "✗"  # Dirty (uncommitted changes)
-  fi
-
-  cd - >/dev/null 2>&1
-}
-
-get_git_status_icon() {
-  local git_st="$1"
-  [[ -z "$git_st" ]] && echo " " && return
-  echo "$git_st"
-}
-
-build_directory_list_with_metadata() {
-  local stats=$(load_stats)
-  local directories=()
-
-  # Build list of directories to scan
-  local found_dirs=$(echo ${SEARCH_PATHS[@]} | tr " " "\n"; \
-                     find ${SEARCH_PATHS[@]} -mindepth 1 -maxdepth $MAX_DEPTH -type d 2>/dev/null)
-
-  # Add home top-level directories if enabled (but not their children)
-  if [[ "$INCLUDE_HOME_TOPLEVEL" == "true" ]]; then
-    # Get all immediate children of $HOME
-    for home_dir in "$HOME"/*/; do
-      [[ ! -d "$home_dir" ]] && continue
-      home_dir="${home_dir%/}"  # Remove trailing slash
-
-      # Skip if it's already in SEARCH_PATHS or is a child of a SEARCH_PATH
-      local skip=false
-      for search_path in "${SEARCH_PATHS[@]}"; do
-        # Normalize search_path (expand $HOME, remove trailing slash)
-        local normalized_path="${search_path%/}"
-        if [[ "$home_dir" == "$normalized_path" ]] || [[ "$home_dir" == "$normalized_path"/* ]]; then
-          skip=true
-          break
-        fi
-      done
-
-      # Skip hidden directories and common non-project dirs
-      local basename_dir=$(basename "$home_dir")
-      [[ "$basename_dir" == .* ]] && skip=true
-
-      if [[ "$skip" == "false" ]]; then
-        found_dirs+=$'\n'"$home_dir"
-      fi
-    done
-  fi
-
-  # Process each directory
-  while IFS= read -r dir; do
-    [[ -z "$dir" ]] && continue
-
-    local basename_dir=$(basename "$dir")
-    local project_type=$(detect_project_type "$dir")
-    local git_status=$(get_git_status "$dir")
-    local display_line="$dir"
-
-    # Add frecency score if stats enabled
-    if [[ "$ENABLE_STATS" == "true" ]]; then
-      local stats_entry=$(echo "$stats" | jq -r --arg key "$basename_dir" '.[$key] // empty')
-
-      if [[ -n "$stats_entry" ]]; then
-        local count=$(echo "$stats_entry" | jq -r '.count')
-        local last_used=$(echo "$stats_entry" | jq -r '.lastUsed')
-        local frecency=$(calculate_frecency_score "$count" "$last_used")
-        local time_str=$(format_last_used "$last_used")
-
-        # Format with score for sorting
-        display_line=$(printf "%06.2f|%s|%s|%s|%s|%s" "$frecency" "$dir" "$count" "$time_str" "$project_type" "$git_status")
-      else
-        # No stats, default score of 0
-        display_line=$(printf "000.00|%s|0|never|%s|%s" "$dir" "$project_type" "$git_status")
-      fi
-    else
-      # No stats, just add project type and git status
-      display_line=$(printf "%s|%s|%s" "$dir" "$project_type" "$git_status")
-    fi
-
-    directories+=("$display_line")
-  done <<< "$found_dirs"
-
-  # Sort by frecency (first field) if stats enabled
-  if [[ "$ENABLE_STATS" == "true" ]]; then
-    printf "%s\n" "${directories[@]}" | sort -t'|' -k1 -rn
-  else
-    printf "%s\n" "${directories[@]}"
-  fi
-}
-
-format_directory_entry() {
-  local line="$1"
-
-  if [[ "$line" == *"|"* ]]; then
-    if [[ "$ENABLE_STATS" == "true" ]]; then
-      local frecency=$(echo "$line" | cut -d'|' -f1)
-      local dir=$(echo "$line" | cut -d'|' -f2)
-      local count=$(echo "$line" | cut -d'|' -f3)
-      local time_str=$(echo "$line" | cut -d'|' -f4)
-      local project_type=$(echo "$line" | cut -d'|' -f5)
-      local git_status=$(echo "$line" | cut -d'|' -f6)
-
-      # Get icons
-      local type_icon=$(get_project_type_icon "$project_type")
-      local git_icon=$(get_git_status_icon "$git_status")
-
-      # Add star emoji for top entries (score > 20)
-      local star=""
-      if (( $(echo "$frecency > 20" | bc -l) )); then
-        star="⭐ "
-      fi
-
-      # Format: [star] [score] [git] [type] path (time, count uses) TAB actual_path
-      printf "%s%-6.0f  %s %s %s" "$star" "$frecency" "$git_icon" "$type_icon" "$dir"
-      if [[ "$count" != "0" ]]; then
-        printf "  \033[90m(%s, %dx)\033[0m" "$time_str" "$count"
-      fi
-      printf "\t%s\n" "$dir"
-    else
-      # No stats mode: just dir|type|git
-      local dir=$(echo "$line" | cut -d'|' -f1)
-      local project_type=$(echo "$line" | cut -d'|' -f2)
-      local git_status=$(echo "$line" | cut -d'|' -f3)
-
-      local type_icon=$(get_project_type_icon "$project_type")
-      local git_icon=$(get_git_status_icon "$git_status")
-
-      printf "%s %s %s\t%s\n" "$git_icon" "$type_icon" "$dir" "$dir"
-    fi
-  else
-    echo "$line"
-  fi
-}
-
-extract_directory_from_line() {
-  local line="$1"
-
-  # Extract path from after tab delimiter (appended by format_directory_entry)
-  if [[ "$line" == *$'\t'* ]]; then
-    echo "$line" | cut -d$'\t' -f2
-  else
-    # Fallback: line is already just a path
-    echo "$line"
+    echo "$((diff / 604800))w ago"
   fi
 }
 
@@ -327,74 +151,48 @@ preview_directory() {
   local project_type=$(detect_project_type "$dir")
   local type_icon=$(get_project_type_icon "$project_type")
 
-  # Header
   echo "📂 Project: $basename_dir"
   echo "📍 $dir"
   echo ""
 
-  # Usage statistics
-  if [[ "$ENABLE_STATS" == "true" ]]; then
-    local stats=$(load_stats)
-    local stats_entry=$(echo "$stats" | jq -r --arg key "$basename_dir" '.[$key] // empty')
-
+  if [[ "$ENABLE_STATS" == "true" && -f "$STATS_FILE" ]]; then
+    local stats_entry=$(jq -r --arg key "$basename_dir" '.[$key] // empty' "$STATS_FILE")
     if [[ -n "$stats_entry" ]]; then
       local count=$(echo "$stats_entry" | jq -r '.count')
       local last_used=$(echo "$stats_entry" | jq -r '.lastUsed')
       local time_str=$(format_last_used "$last_used")
-
       echo "🔥 Used $count times (last: $time_str)"
       echo ""
     fi
   fi
 
-  # Git status
   if [[ -d "$dir/.git" ]]; then
     echo "Git Status:"
     cd "$dir" 2>/dev/null || return
-
     local branch=$(git branch --show-current 2>/dev/null)
-    local ahead=$(git rev-list --count @{u}..HEAD 2>/dev/null)
-    local behind=$(git rev-list --count HEAD..@{u} 2>/dev/null)
-
-    if [[ -n "$branch" ]]; then
-      echo "  Branch: $branch"
-    fi
-
+    [[ -n "$branch" ]] && echo "  Branch: $branch"
     if git diff-index --quiet HEAD -- 2>/dev/null; then
       echo "  Status: ✓ Clean"
     else
       echo "  Status: ✗ Uncommitted changes"
     fi
-
-    if [[ -n "$ahead" && "$ahead" -gt 0 ]]; then
-      echo "  ↑ $ahead commit(s) ahead"
-    fi
-
-    if [[ -n "$behind" && "$behind" -gt 0 ]]; then
-      echo "  ↓ $behind commit(s) behind"
-    fi
-
+    local ahead=$(git rev-list --count @{u}..HEAD 2>/dev/null)
+    local behind=$(git rev-list --count HEAD..@{u} 2>/dev/null)
+    [[ -n "$ahead" && "$ahead" -gt 0 ]] && echo "  ↑ $ahead commit(s) ahead"
+    [[ -n "$behind" && "$behind" -gt 0 ]] && echo "  ↓ $behind commit(s) behind"
     cd - >/dev/null 2>&1
     echo ""
   fi
 
-  # Recent files
   echo "Recent Files:"
   find "$dir" -maxdepth 2 -type f -not -path '*/\.*' 2>/dev/null | \
-    xargs ls -t 2>/dev/null | \
-    head -5 | \
-    sed "s|$dir/||" | \
-    sed 's/^/  /'
-
+    xargs ls -t 2>/dev/null | head -5 | sed "s|$dir/||" | sed 's/^/  /'
   echo ""
 
-  # Project info
   echo "Project Type: $type_icon $project_type"
 
-  # Check for template
   if [[ "$ENABLE_TEMPLATES" == "true" ]]; then
-    local template_file="$TEMPLATE_DIR/${project_type}.tmux"
-    if [[ -f "$template_file" ]]; then
+    if [[ -f "$TEMPLATE_DIR/${project_type}.tmux" ]]; then
       echo "Template: ${project_type}.tmux"
     elif [[ -f "$dir/.tmux-template" ]]; then
       echo "Template: .tmux-template (custom)"
@@ -410,15 +208,114 @@ if [[ "$PREVIEW_MODE" == "true" ]]; then
   exit 0
 fi
 
-# Build directory list
-directories=$(build_directory_list_with_metadata)
+# Build formatted directory list using Rust scanner or shell fallback
+_fallback_git_status() {
+  local dir="$1"
+  [[ ! -d "$dir/.git" ]] && echo " " && return
+  if ! git -C "$dir" diff-index --quiet HEAD -- 2>/dev/null; then
+    echo "✗"; return
+  fi
+  local ahead behind
+  ahead=$(git -C "$dir" rev-list --count @{u}..HEAD 2>/dev/null)
+  behind=$(git -C "$dir" rev-list --count HEAD..@{u} 2>/dev/null)
+  if [[ -n "$ahead" && "$ahead" -gt 0 ]] || [[ -n "$behind" && "$behind" -gt 0 ]]; then
+    echo "~"; return
+  fi
+  echo "✓"
+}
 
-# Format for display
-formatted_list=""
-while IFS= read -r line; do
-  [[ -z "$line" ]] && continue
-  formatted_list+="$(format_directory_entry "$line")"$'\n'
-done <<< "$directories"
+_fallback_frecency() {
+  local count="$1" last_used="$2" now="$3"
+  local days_diff=$(( (now - last_used) / 86400 ))
+  local recency_weight
+  if [[ $days_diff -le 1 ]]; then recency_weight=100
+  elif [[ $days_diff -le 7 ]]; then recency_weight=80
+  elif [[ $days_diff -le 30 ]]; then recency_weight=50
+  else recency_weight=20; fi
+  # frecency = count * 0.5 + recency_weight/100 * 50 * 0.5
+  echo $(( count / 2 + recency_weight * 50 / 200 ))
+}
+
+_fallback_format_entry() {
+  local dir="$1"
+  local icon git_status
+  local project_type=$(detect_project_type "$dir")
+  icon=$(get_project_type_icon "$project_type")
+
+  if [[ "$ENABLE_GIT_STATUS" == "true" ]]; then
+    git_status=$(_fallback_git_status "$dir")
+  else
+    git_status=" "
+  fi
+
+  if [[ "$ENABLE_STATS" == "true" && -f "$STATS_FILE" ]] && command -v jq &>/dev/null; then
+    local now=$(date +%s)
+    local basename_dir=$(basename "$dir")
+    local entry=$(jq -r --arg key "$basename_dir" '.[$key] // empty' "$STATS_FILE" 2>/dev/null)
+    if [[ -n "$entry" ]]; then
+      local count=$(echo "$entry" | jq -r '.count')
+      local last_used=$(echo "$entry" | jq -r '.lastUsed')
+      local frecency=$(_fallback_frecency "$count" "$last_used" "$now")
+      local time_str=$(format_last_used "$last_used")
+      local star=""
+      [[ $frecency -gt 20 ]] && star="⭐ "
+      printf "%010d"$'\x1f'"%s%-6s  %s %s %s  \033[90m(%s, %sx)\033[0m\t%s\n" \
+        "$frecency" "$star" "$frecency" "$git_status" "$icon" "$dir" "$time_str" "$count" "$dir"
+    else
+      printf "0000000000"$'\x1f'"%-6s  %s %s %s\t%s\n" "0" "$git_status" "$icon" "$dir" "$dir"
+    fi
+  else
+    printf '%s %s %s\t%s\n' "$git_status" "$icon" "$dir" "$dir"
+  fi
+}
+
+_run_shell_fallback() {
+  echo "Warning: tmux-sessionizer-scan not available, using slow shell fallback" >&2
+  local all_dirs=()
+  # Include the search paths themselves
+  for sp in "${SEARCH_PATHS[@]}"; do
+    [[ -d "$sp" ]] && all_dirs+=("$sp")
+  done
+  # Add children
+  while IFS= read -r dir; do
+    [[ -n "$dir" ]] && all_dirs+=("$dir")
+  done < <(find ${SEARCH_PATHS[@]} -mindepth 1 -maxdepth "$MAX_DEPTH" -type d 2>/dev/null)
+  # Include home top-level directories if enabled
+  if [[ "$INCLUDE_HOME_TOPLEVEL" == "true" ]]; then
+    for home_dir in "$HOME"/*/; do
+      [[ ! -d "$home_dir" ]] && continue
+      home_dir="${home_dir%/}"
+      local skip=false
+      for sp in "${SEARCH_PATHS[@]}"; do
+        local nsp="${sp%/}"
+        if [[ "$home_dir" == "$nsp" || "$home_dir" == "$nsp"/* ]]; then
+          skip=true; break
+        fi
+      done
+      [[ "$(basename "$home_dir")" == .* ]] && skip=true
+      [[ "$skip" == "false" ]] && all_dirs+=("$home_dir")
+    done
+  fi
+  # Format each entry with metadata, sort by frecency if stats enabled
+  if [[ "$ENABLE_STATS" == "true" ]] && command -v jq &>/dev/null && [[ -f "$STATS_FILE" ]]; then
+    for dir in "${all_dirs[@]}"; do
+      _fallback_format_entry "$dir"
+    done | sort -t$'\x1f' -k1 -rn | cut -d$'\x1f' -f2-
+  else
+    for dir in "${all_dirs[@]}"; do
+      _fallback_format_entry "$dir"
+    done
+  fi
+}
+
+if [[ -n "$SCANNER_BIN" ]]; then
+  formatted_list=$("$SCANNER_BIN" "${_scanner_args[@]}")
+  if [[ $? -ne 0 ]]; then
+    formatted_list=$(_run_shell_fallback)
+  fi
+else
+  formatted_list=$(_run_shell_fallback)
+fi
 
 # Configure fzf with preview if enabled
 # --tiebreak=index preserves frecency order when match scores are equal
@@ -462,20 +359,15 @@ if [[ "$session_created" == "true" && "$ENABLE_TEMPLATES" == "true" ]]; then
     local project_type=$(detect_project_type "$session")
     local template_file=""
 
-    # Check for custom template in project root
     if [[ -f "$session/.tmux-template" ]]; then
         template_file="$session/.tmux-template"
-    # Check for project-type specific template
     elif [[ -f "$TEMPLATE_DIR/${project_type}.tmux" ]]; then
         template_file="$TEMPLATE_DIR/${project_type}.tmux"
-    # Fall back to default template
     elif [[ -f "$TEMPLATE_DIR/default.tmux" ]]; then
         template_file="$TEMPLATE_DIR/default.tmux"
     fi
 
-    # Apply template if found
     if [[ -n "$template_file" && -f "$template_file" ]]; then
-        # Source the template, passing session name as argument
         (cd "$session" && bash "$template_file" "$session_name" 2>/dev/null)
     fi
 fi

@@ -10,6 +10,7 @@ SEARCH_PATHS=(
   "$HOME/github"
   "$HOME/gitlab"
   "$HOME/personal"
+  "$HOME/personal/planning"
   "$HOME/work"
   "$HOME/.homesick/repos/dotfiles"
   # Add pinned directories here (searched as-is, not their children):
@@ -22,7 +23,7 @@ MAX_DEPTH=1
 # Feature toggles
 ENABLE_PREVIEW=true        # Show rich preview pane in fzf
 ENABLE_STATS=true          # Track session usage statistics
-ENABLE_GIT_STATUS=false    # Show git status indicators (SLOW - runs git for each dir)
+ENABLE_GIT_STATUS=true     # Show git status indicators (✓ clean, ✗ dirty, ~ ahead/behind)
 ENABLE_TEMPLATES=true      # Apply session templates based on project type
 INCLUDE_HOME_TOPLEVEL=true # Include ~/*/dirs (but not their children) if not in SEARCH_PATHS
 
