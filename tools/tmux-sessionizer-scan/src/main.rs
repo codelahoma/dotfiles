@@ -138,14 +138,18 @@ fn get_git_status(dir: &Path) -> &'static str {
         Some(o) => o,
         None => return "✓",
     };
+    // Resolve configured upstream tracking branch (like @{u})
     let branch_name = match head.shorthand() {
         Some(n) => n,
         None => return "✓",
     };
-    let upstream_ref = format!("refs/remotes/origin/{}", branch_name);
-    let upstream_oid = match repo
-        .find_reference(&upstream_ref)
-        .and_then(|r| r.peel_to_commit().map(|c| c.id()))
+    let local_branch = match repo.find_branch(branch_name, git2::BranchType::Local) {
+        Ok(b) => b,
+        Err(_) => return "✓",
+    };
+    let upstream_oid = match local_branch
+        .upstream()
+        .and_then(|u| u.get().peel_to_commit().map(|c| c.id()))
     {
         Ok(o) => o,
         Err(_) => return "✓",

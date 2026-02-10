@@ -203,17 +203,29 @@ if [[ "$PREVIEW_MODE" == "true" ]]; then
 fi
 
 # Build formatted directory list using Rust scanner or shell fallback
-if [[ -n "$SCANNER_BIN" ]]; then
-  formatted_list=$("$SCANNER_BIN" ${(z)$(_build_scanner_args)})
-else
-  echo "Warning: tmux-sessionizer-scan not found, using slow shell fallback" >&2
-  # Minimal shell fallback (no frecency sorting, no icons)
-  formatted_list=""
-  found_dirs=$(find ${SEARCH_PATHS[@]} -mindepth 0 -maxdepth $((MAX_DEPTH + 1)) -type d 2>/dev/null)
+_run_shell_fallback() {
+  echo "Warning: tmux-sessionizer-scan not available, using slow shell fallback" >&2
+  local formatted=""
+  local found_dirs
+  found_dirs=$(find ${SEARCH_PATHS[@]} -mindepth 1 -maxdepth "$MAX_DEPTH" -type d 2>/dev/null)
+  # Include the search paths themselves
+  for sp in "${SEARCH_PATHS[@]}"; do
+    [[ -d "$sp" ]] && formatted+="${sp}\t${sp}"$'\n'
+  done
   while IFS= read -r dir; do
     [[ -z "$dir" ]] && continue
-    formatted_list+="${dir}\t${dir}"$'\n'
+    formatted+="${dir}\t${dir}"$'\n'
   done <<< "$found_dirs"
+  echo "$formatted"
+}
+
+if [[ -n "$SCANNER_BIN" ]]; then
+  formatted_list=$("$SCANNER_BIN" ${(z)$(_build_scanner_args)})
+  if [[ $? -ne 0 ]]; then
+    formatted_list=$(_run_shell_fallback)
+  fi
+else
+  formatted_list=$(_run_shell_fallback)
 fi
 
 # Configure fzf with preview if enabled
