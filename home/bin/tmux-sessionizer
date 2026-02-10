@@ -49,14 +49,11 @@ for candidate in \
   fi
 done
 
-# Build scanner arguments from config
-_build_scanner_args() {
-  local args=(--search-paths "${SEARCH_PATHS[@]}" --max-depth "$MAX_DEPTH")
-  [[ "$ENABLE_STATS" == "true" ]] && args+=(--enable-stats --stats-file "$STATS_FILE")
-  [[ "$ENABLE_GIT_STATUS" == "true" ]] && args+=(--enable-git-status)
-  [[ "$INCLUDE_HOME_TOPLEVEL" == "true" ]] && args+=(--include-home-toplevel)
-  echo "${args[@]}"
-}
+# Build scanner arguments from config (array to preserve spaces in paths)
+_scanner_args=(--search-paths "${SEARCH_PATHS[@]}" --max-depth "$MAX_DEPTH")
+[[ "$ENABLE_STATS" == "true" ]] && _scanner_args+=(--enable-stats --stats-file "$STATS_FILE")
+[[ "$ENABLE_GIT_STATUS" == "true" ]] && _scanner_args+=(--enable-git-status)
+[[ "$INCLUDE_HOME_TOPLEVEL" == "true" ]] && _scanner_args+=(--include-home-toplevel)
 
 # Track session launch via scanner or jq fallback
 track_session_launch() {
@@ -312,7 +309,7 @@ _run_shell_fallback() {
 }
 
 if [[ -n "$SCANNER_BIN" ]]; then
-  formatted_list=$("$SCANNER_BIN" ${(z)$(_build_scanner_args)})
+  formatted_list=$("$SCANNER_BIN" "${_scanner_args[@]}")
   if [[ $? -ne 0 ]]; then
     formatted_list=$(_run_shell_fallback)
   fi
