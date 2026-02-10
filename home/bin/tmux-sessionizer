@@ -105,6 +105,11 @@ detect_project_type() {
   [[ -f "$dir/pyproject.toml" ]] || [[ -f "$dir/setup.py" ]] || [[ -f "$dir/requirements.txt" ]] && echo "python" && return
   [[ -f "$dir/go.mod" ]] && echo "go" && return
   [[ -d "$dir/.homesick" ]] && echo "dotfiles" && return
+  if [[ -d "$dir/.git" ]]; then
+    local remote_url
+    remote_url=$(git -C "$dir" remote get-url origin 2>/dev/null)
+    [[ "$remote_url" == *dotfiles* ]] && echo "dotfiles" && return
+  fi
   [[ -f "$dir/Gemfile" ]] && echo "ruby" && return
   [[ -f "$dir/pom.xml" ]] || [[ -f "$dir/build.gradle" ]] && echo "java" && return
   echo "general"
@@ -207,19 +212,77 @@ if [[ "$PREVIEW_MODE" == "true" ]]; then
 fi
 
 # Build formatted directory list using Rust scanner or shell fallback
+_fallback_git_status() {
+  local dir="$1"
+  [[ ! -d "$dir/.git" ]] && echo " " && return
+  if ! git -C "$dir" diff-index --quiet HEAD -- 2>/dev/null; then
+    echo "✗"; return
+  fi
+  local ahead behind
+  ahead=$(git -C "$dir" rev-list --count @{u}..HEAD 2>/dev/null)
+  behind=$(git -C "$dir" rev-list --count HEAD..@{u} 2>/dev/null)
+  if [[ -n "$ahead" && "$ahead" -gt 0 ]] || [[ -n "$behind" && "$behind" -gt 0 ]]; then
+    echo "~"; return
+  fi
+  echo "✓"
+}
+
+_fallback_frecency() {
+  local count="$1" last_used="$2" now="$3"
+  local days_diff=$(( (now - last_used) / 86400 ))
+  local recency_weight
+  if [[ $days_diff -le 1 ]]; then recency_weight=100
+  elif [[ $days_diff -le 7 ]]; then recency_weight=80
+  elif [[ $days_diff -le 30 ]]; then recency_weight=50
+  else recency_weight=20; fi
+  # frecency = count * 0.5 + recency_weight/100 * 50 * 0.5
+  echo $(( count / 2 + recency_weight * 50 / 200 ))
+}
+
+_fallback_format_entry() {
+  local dir="$1"
+  local icon git_status
+  local project_type=$(detect_project_type "$dir")
+  icon=$(get_project_type_icon "$project_type")
+
+  if [[ "$ENABLE_GIT_STATUS" == "true" ]]; then
+    git_status=$(_fallback_git_status "$dir")
+  else
+    git_status=" "
+  fi
+
+  if [[ "$ENABLE_STATS" == "true" && -f "$STATS_FILE" ]] && command -v jq &>/dev/null; then
+    local now=$(date +%s)
+    local basename_dir=$(basename "$dir")
+    local entry=$(jq -r --arg key "$basename_dir" '.[$key] // empty' "$STATS_FILE" 2>/dev/null)
+    if [[ -n "$entry" ]]; then
+      local count=$(echo "$entry" | jq -r '.count')
+      local last_used=$(echo "$entry" | jq -r '.lastUsed')
+      local frecency=$(_fallback_frecency "$count" "$last_used" "$now")
+      local time_str=$(format_last_used "$last_used")
+      local star=""
+      [[ $frecency -gt 20 ]] && star="⭐ "
+      printf '%s%-6s  %s %s %s  \033[90m(%s, %sx)\033[0m\t%s\n' \
+        "$star" "$frecency" "$git_status" "$icon" "$dir" "$time_str" "$count" "$dir"
+    else
+      printf '%-6s  %s %s %s\t%s\n' "0" "$git_status" "$icon" "$dir" "$dir"
+    fi
+  else
+    printf '%s %s %s\t%s\n' "$git_status" "$icon" "$dir" "$dir"
+  fi
+}
+
 _run_shell_fallback() {
   echo "Warning: tmux-sessionizer-scan not available, using slow shell fallback" >&2
-  local formatted=""
-  local found_dirs
-  found_dirs=$(find ${SEARCH_PATHS[@]} -mindepth 1 -maxdepth "$MAX_DEPTH" -type d 2>/dev/null)
+  local all_dirs=()
   # Include the search paths themselves
   for sp in "${SEARCH_PATHS[@]}"; do
-    [[ -d "$sp" ]] && formatted+="${sp}"$'\t'"${sp}"$'\n'
+    [[ -d "$sp" ]] && all_dirs+=("$sp")
   done
+  # Add children
   while IFS= read -r dir; do
-    [[ -z "$dir" ]] && continue
-    formatted+="${dir}"$'\t'"${dir}"$'\n'
-  done <<< "$found_dirs"
+    [[ -n "$dir" ]] && all_dirs+=("$dir")
+  done < <(find ${SEARCH_PATHS[@]} -mindepth 1 -maxdepth "$MAX_DEPTH" -type d 2>/dev/null)
   # Include home top-level directories if enabled
   if [[ "$INCLUDE_HOME_TOPLEVEL" == "true" ]]; then
     for home_dir in "$HOME"/*/; do
@@ -233,10 +296,13 @@ _run_shell_fallback() {
         fi
       done
       [[ "$(basename "$home_dir")" == .* ]] && skip=true
-      [[ "$skip" == "false" ]] && formatted+="${home_dir}"$'\t'"${home_dir}"$'\n'
+      [[ "$skip" == "false" ]] && all_dirs+=("$home_dir")
     done
   fi
-  echo "$formatted"
+  # Format each entry with metadata
+  for dir in "${all_dirs[@]}"; do
+    _fallback_format_entry "$dir"
+  done
 }
 
 if [[ -n "$SCANNER_BIN" ]]; then
