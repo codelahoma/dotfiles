@@ -35,6 +35,15 @@ fn detect_project_type(dir: &Path) -> &'static str {
         "go"
     } else if dir.join(".homesick").is_dir() {
         "dotfiles"
+    } else if dir.join(".git").is_dir() && {
+        // Check git remote URL for "dotfiles" as fallback
+        git2::Repository::open(dir)
+            .and_then(|r| r.find_remote("origin").map(|remote| {
+                remote.url().unwrap_or("").contains("dotfiles")
+            }))
+            .unwrap_or(false)
+    } {
+        "dotfiles"
     } else if dir.join("Gemfile").exists() {
         "ruby"
     } else if dir.join("pom.xml").exists() || dir.join("build.gradle").exists() {
@@ -261,19 +270,46 @@ fn run_scan(config: &ScanConfig) {
 
     let directories = scan_directories(config);
 
-    // Compute git statuses in parallel if enabled
+    // Compute git statuses with bounded parallelism if enabled
     let git_statuses: Vec<&'static str> = if config.enable_git_status {
+        use std::sync::{mpsc, Arc, Mutex};
         use std::thread;
 
-        let handles: Vec<_> = directories
-            .iter()
-            .map(|dir| {
-                let dir = dir.clone();
-                thread::spawn(move || get_git_status(&dir))
-            })
-            .collect();
+        let num_workers = thread::available_parallelism()
+            .map(|n| n.get().min(8))
+            .unwrap_or(4);
 
-        handles.into_iter().map(|h| h.join().unwrap()).collect()
+        let work: Arc<Mutex<Vec<(usize, PathBuf)>>> = Arc::new(Mutex::new(
+            directories.iter().cloned().enumerate().collect(),
+        ));
+        let (tx, rx) = mpsc::channel();
+
+        let mut handles = Vec::with_capacity(num_workers);
+        for _ in 0..num_workers {
+            let work = Arc::clone(&work);
+            let tx = tx.clone();
+            handles.push(thread::spawn(move || {
+                loop {
+                    let item = { work.lock().unwrap().pop() };
+                    match item {
+                        Some((idx, dir)) => {
+                            tx.send((idx, get_git_status(&dir))).unwrap();
+                        }
+                        None => break,
+                    }
+                }
+            }));
+        }
+        drop(tx);
+
+        let mut results = vec![" "; directories.len()];
+        for (idx, status) in rx {
+            results[idx] = status;
+        }
+        for h in handles {
+            h.join().unwrap();
+        }
+        results
     } else {
         vec![" "; directories.len()]
     };
