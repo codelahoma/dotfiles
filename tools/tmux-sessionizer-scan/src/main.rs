@@ -108,10 +108,60 @@ fn save_stats(path: &Path, stats: &HashMap<String, StatsEntry>) {
     }
 }
 
+fn get_git_status(dir: &Path) -> &'static str {
+    let repo = match git2::Repository::open(dir) {
+        Ok(r) => r,
+        Err(_) => return " ",
+    };
+
+    // Use statuses with early termination — only need to know if ANY file changed
+    let mut opts = git2::StatusOptions::new();
+    opts.include_untracked(false) // Skip untracked for speed
+        .exclude_submodules(true)
+        .no_refresh(false); // Use index stat cache
+
+    let dirty = repo
+        .statuses(Some(&mut opts))
+        .map(|s| !s.is_empty())
+        .unwrap_or(false);
+
+    if dirty {
+        return "✗";
+    }
+
+    // Check ahead/behind upstream (pure object walk, fast)
+    let head = match repo.head() {
+        Ok(h) => h,
+        Err(_) => return "✓",
+    };
+    let local_oid = match head.target() {
+        Some(o) => o,
+        None => return "✓",
+    };
+    let branch_name = match head.shorthand() {
+        Some(n) => n,
+        None => return "✓",
+    };
+    let upstream_ref = format!("refs/remotes/origin/{}", branch_name);
+    let upstream_oid = match repo
+        .find_reference(&upstream_ref)
+        .and_then(|r| r.peel_to_commit().map(|c| c.id()))
+    {
+        Ok(o) => o,
+        Err(_) => return "✓",
+    };
+
+    match repo.graph_ahead_behind(local_oid, upstream_oid) {
+        Ok((ahead, behind)) if ahead > 0 || behind > 0 => "~",
+        _ => "✓",
+    }
+}
+
 struct ScanConfig {
     search_paths: Vec<PathBuf>,
     max_depth: u32,
     enable_stats: bool,
+    enable_git_status: bool,
     stats_file: PathBuf,
     include_home_toplevel: bool,
 }
@@ -122,6 +172,7 @@ struct Entry {
     count: u64,
     time_str: String,
     project_type: &'static str,
+    git_status: &'static str,
 }
 
 fn scan_directories(config: &ScanConfig) -> Vec<PathBuf> {
@@ -206,9 +257,27 @@ fn run_scan(config: &ScanConfig) {
 
     let directories = scan_directories(config);
 
+    // Compute git statuses in parallel if enabled
+    let git_statuses: Vec<&'static str> = if config.enable_git_status {
+        use std::thread;
+
+        let handles: Vec<_> = directories
+            .iter()
+            .map(|dir| {
+                let dir = dir.clone();
+                thread::spawn(move || get_git_status(&dir))
+            })
+            .collect();
+
+        handles.into_iter().map(|h| h.join().unwrap()).collect()
+    } else {
+        vec![" "; directories.len()]
+    };
+
     let mut entries: Vec<Entry> = directories
         .into_iter()
-        .map(|path| {
+        .zip(git_statuses)
+        .map(|(path, git_status)| {
             let project_type = detect_project_type(&path);
             let basename = path
                 .file_name()
@@ -233,6 +302,7 @@ fn run_scan(config: &ScanConfig) {
                 count,
                 time_str,
                 project_type,
+                git_status,
             }
         })
         .collect();
@@ -250,15 +320,15 @@ fn run_scan(config: &ScanConfig) {
 
         if config.enable_stats {
             let star = if e.frecency > 20.0 { "⭐ " } else { "" };
-            // Format: [star][score]  [type] path  (time, countx)\tpath
-            write!(out, "{}{:<6.0}  {} {}", star, e.frecency, icon, dir_str).unwrap();
+            // Format: [star][score]  [git] [type] path  (time, countx)\tpath
+            write!(out, "{}{:<6.0}  {} {} {}", star, e.frecency, e.git_status, icon, dir_str).unwrap();
             if e.count > 0 {
                 write!(out, "  \x1b[90m({}, {}x)\x1b[0m", e.time_str, e.count).unwrap();
             }
             write!(out, "\t{}\n", dir_str).unwrap();
         } else {
-            // No stats: [type] path\tpath
-            write!(out, " {} {}\t{}\n", icon, dir_str, dir_str).unwrap();
+            // No stats: [git] [type] path\tpath
+            write!(out, "{} {} {}\t{}\n", e.git_status, icon, dir_str, dir_str).unwrap();
         }
     }
 }
@@ -312,6 +382,7 @@ fn main() {
         search_paths: Vec::new(),
         max_depth: 1,
         enable_stats: false,
+        enable_git_status: false,
         stats_file: PathBuf::from(
             env::var("HOME").unwrap_or_default()
                 + "/.config/tmux-sessionizer/stats.json",
@@ -338,6 +409,9 @@ fn main() {
             }
             "--enable-stats" => {
                 config.enable_stats = true;
+            }
+            "--enable-git-status" => {
+                config.enable_git_status = true;
             }
             "--stats-file" => {
                 i += 1;
