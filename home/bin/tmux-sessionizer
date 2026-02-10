@@ -214,11 +214,11 @@ _run_shell_fallback() {
   found_dirs=$(find ${SEARCH_PATHS[@]} -mindepth 1 -maxdepth "$MAX_DEPTH" -type d 2>/dev/null)
   # Include the search paths themselves
   for sp in "${SEARCH_PATHS[@]}"; do
-    [[ -d "$sp" ]] && formatted+="${sp}\t${sp}"$'\n'
+    [[ -d "$sp" ]] && formatted+="${sp}"$'\t'"${sp}"$'\n'
   done
   while IFS= read -r dir; do
     [[ -z "$dir" ]] && continue
-    formatted+="${dir}\t${dir}"$'\n'
+    formatted+="${dir}"$'\t'"${dir}"$'\n'
   done <<< "$found_dirs"
   # Include home top-level directories if enabled
   if [[ "$INCLUDE_HOME_TOPLEVEL" == "true" ]]; then
@@ -233,7 +233,7 @@ _run_shell_fallback() {
         fi
       done
       [[ "$(basename "$home_dir")" == .* ]] && skip=true
-      [[ "$skip" == "false" ]] && formatted+="${home_dir}\t${home_dir}"$'\n'
+      [[ "$skip" == "false" ]] && formatted+="${home_dir}"$'\t'"${home_dir}"$'\n'
     done
   fi
   echo "$formatted"
