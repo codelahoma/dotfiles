@@ -11,7 +11,7 @@ ZSH=$HOME/.oh-my-zsh
 export ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Oh-My-Zsh plugins
-plugins=(1password asdf brew eza iterm2 fzf git github npm macos wakatime zsh-autosuggestions zoxide)
+plugins=(1password brew eza fzf git github npm macos wakatime zsh-autosuggestions zoxide)
 
 # Plugin configuration
 zstyle ":omz:plugins:eza" 'dirs-first' yes
@@ -108,9 +108,8 @@ _fzf_compgen_dir() {
 eval "$(fzf --zsh)"
 
 # Tool integrations
-# asdf with direnv for project-specific environments
-eval "$(asdf exec direnv hook zsh)"
-direnv() { asdf exec direnv "$@"; }
+# mise for runtime version management
+eval "$(mise activate zsh)"
 if [ -n "$INSIDE_EMACS" ]; then
     direnv reload
 fi
