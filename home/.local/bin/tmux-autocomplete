@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+# tmux-autocomplete.sh
+# iTerm2-style autocomplete from scrollback buffer for tmux.
+# Finds words in the scrollback that match the prefix to the left of the cursor,
+# presents them in a fzf popup, and inserts the selected completion.
+
+set -euo pipefail
+
+PANE_ID="${1:-}"
+if [[ -z "$PANE_ID" ]]; then
+    PANE_ID="$(tmux display-message -p '#{pane_id}')"
+fi
+
+# --- 1. Determine the partial word to the left of the cursor ---
+
+# Get cursor position (0-indexed)
+CURSOR_X="$(tmux display-message -t "$PANE_ID" -p '#{cursor_x}')"
+CURSOR_Y="$(tmux display-message -t "$PANE_ID" -p '#{cursor_y}')"
+
+# Capture just the cursor's line (pane-relative, so line 0 is top of visible area)
+CURRENT_LINE="$(tmux capture-pane -t "$PANE_ID" -p -S "$CURSOR_Y" -E "$CURSOR_Y")"
+
+# Extract text to the left of the cursor
+LEFT_OF_CURSOR="${CURRENT_LINE:0:$CURSOR_X}"
+
+# Pull out the partial word (sequence of non-whitespace chars at end of string)
+if [[ "$LEFT_OF_CURSOR" =~ ([^[:space:]]+)$ ]]; then
+    PREFIX="${BASH_REMATCH[1]}"
+else
+    # Nothing to complete
+    exit 0
+fi
+
+# Bail on very short prefixes to avoid flooding
+if [[ "${#PREFIX}" -lt 2 ]]; then
+    tmux display-message "Prefix too short for autocomplete (need >= 2 chars)"
+    exit 0
+fi
+
+# --- 2. Capture scrollback and find completions ---
+
+# Capture the entire scrollback + visible area
+SCROLLBACK="$(tmux capture-pane -t "$PANE_ID" -p -S - -E -)"
+
+# Extract unique words that start with the prefix (case-sensitive).
+# grep -oE pulls out individual words; we then filter for our prefix.
+COMPLETIONS="$(
+    echo "$SCROLLBACK" \
+    | grep -oE '[^[:space:]]+' \
+    | grep -F "$PREFIX" \
+    | grep "^$(printf '%s' "$PREFIX" | sed 's/[][\\.^$*+?(){}|]/\\&/g')" \
+    | sort -u \
+    | grep -vxF "$PREFIX" \
+)"
+
+if [[ -z "$COMPLETIONS" ]]; then
+    tmux display-message "No completions found for: $PREFIX"
+    exit 0
+fi
+
+# --- 3. Present via fzf in a tmux popup ---
+
+# We write completions to a temp file so the popup script can read them
+TMPFILE="$(mktemp /tmp/tmux-autocomplete.XXXXXX)"
+echo "$COMPLETIONS" > "$TMPFILE"
+
+# Build the popup command. fzf runs inside the popup; on selection we
+# compute the suffix (the part after the existing prefix) and send it
+# as keys to the original pane.
+#
+# Using a heredoc-style approach via a helper script for clarity.
+HELPER="$(mktemp /tmp/tmux-ac-helper.XXXXXX.sh)"
+cat > "$HELPER" <<'INNER'
+#!/usr/bin/env bash
+set -euo pipefail
+TMPFILE="$1"
+PREFIX="$2"
+PANE_ID="$3"
+PREFIX_LEN="${#PREFIX}"
+
+SELECTED="$(cat "$TMPFILE" | fzf --height=100% --layout=reverse \
+    --prompt="complete: " --query="" \
+    --bind="enter:accept" --no-multi \
+    --header="Completing: ${PREFIX}…")"
+
+if [[ -n "$SELECTED" ]]; then
+    # Send only the suffix (the new characters beyond the existing prefix)
+    SUFFIX="${SELECTED:$PREFIX_LEN}"
+    if [[ -n "$SUFFIX" ]]; then
+        tmux send-keys -t "$PANE_ID" -l -- "$SUFFIX"
+    fi
+fi
+
+# Cleanup
+rm -f "$TMPFILE" "$0"
+INNER
+chmod +x "$HELPER"
+
+tmux popup -E -w 60 -h 16 -T " Autocomplete " \
+    bash "$HELPER" "$TMPFILE" "$PREFIX" "$PANE_ID"

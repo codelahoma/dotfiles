@@ -117,13 +117,6 @@ fi
 # Homeshick for dotfiles (HOMESHICK_DIR set in .zshenv)
 source /opt/homebrew/opt/homeshick/homeshick.sh
 
-# iTerm2 integration
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-iterm2_print_user_vars() {
-    iterm2_set_user_var gitBranch $((git branch 2> /dev/null) | grep \* | cut -c3-)
-}
-ITERM2_SQUELCH_MARK=1
-
 # Environment variables
 export DISPLAY_MAC=`ifconfig en0 | grep "inet " | cut -d " " -f2`:0
 export HELPDIR=/usr/local/share/zsh/help
