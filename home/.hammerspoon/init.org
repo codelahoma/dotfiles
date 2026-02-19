@@ -640,7 +640,7 @@ The MouseCircle spoon draws a circle around the mouse pointer to help locate it.
           launched = application.launchOrFocusByBundleID(app)
         end
 
-        wonkyAppsThatFocusButReturnFalse = {'Teams', 'iTerm', '/Applications/Emacs.app'}
+        wonkyAppsThatFocusButReturnFalse = {'Teams', '/Applications/Emacs.app'}
         for _, v in ipairs(wonkyAppsThatFocusButReturnFalse) do
            if v == app then
               return
@@ -876,7 +876,6 @@ The MouseCircle spoon draws a circle around the mouse pointer to help locate it.
     {mod = "hyper", key = "d", desc = "Dash"},
     {mod = "magic", key = "d", desc = "Discord"},
     {mod = "hyper", key = "f", desc = "DBeaver"},
-    {mod = "hyper", key = "g", desc = "iTerm"},
     {mod = "hyper", key = "h", desc = "Hotkey Help"},
     {mod = "hyper", key = "i", desc = "Ghostty"},
     {mod = "hyper", key = "j", desc = "Emacs"},
@@ -1153,7 +1152,6 @@ The MouseCircle spoon draws a circle around the mouse pointer to help locate it.
   hotkey.bind(hyper, "d", appLauncher('Dash'))
   hotkey.bind(magic, "d", appLauncher('Discord'))
   hotkey.bind(hyper, "f", appLauncher('DBeaver'))
-  hotkey.bind(hyper, "g", appLauncher('iTerm'))
   hotkey.bind(hyper, "i", appLauncher('Ghostty'))
   hotkey.bind(hyper, "j", emacsLauncher())
   hotkey.bind(hyper, "k", appLauncher('Arc'))

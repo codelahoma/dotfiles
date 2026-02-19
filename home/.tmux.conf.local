@@ -7,11 +7,9 @@
 
 # -- navigation ----------------------------------------------------------------
 
-# if you're running tmux within iTerm2
-#   - and tmux is 1.9 or 1.9a
-#   - and iTerm2 is configured to let option key act as +Esc
-#   - and iTerm2 is configured to send [1;9A -> [1;9D for option + arrow keys
-# then uncomment the following line to make Meta + arrow keys mapping work
+# if you're running tmux 1.9 or 1.9a and your terminal is configured to
+# send [1;9A -> [1;9D for option + arrow keys, uncomment the following
+# line to make Meta + arrow keys mapping work
 #set -ga terminal-overrides "*:kUP3=\e[1;9A,*:kDN3=\e[1;9B,*:kRIT3=\e[1;9C,*:kLFT3=\e[1;9D"
 
 
@@ -448,7 +446,6 @@ set -g @plugin 'tmux-plugins/tmux-resurrect'
 # "$@"
 # # /!\ do not remove the previous line
 
-# enable iTerm shell integrations
+# enable passthrough for terminal integrations
 set -g allow-passthrough on
-set -ga update-environment ITERM2_COOKIE
 set -ga update-environment TERM_PROGRAM

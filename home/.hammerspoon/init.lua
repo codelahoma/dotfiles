@@ -493,7 +493,7 @@ _centeredWindowsFormerPositions = {}
         launched = application.launchOrFocusByBundleID(app)
       end
 
-      wonkyAppsThatFocusButReturnFalse = {'Teams', 'iTerm', '/Applications/Emacs.app'}
+      wonkyAppsThatFocusButReturnFalse = {'Teams', '/Applications/Emacs.app'}
       for _, v in ipairs(wonkyAppsThatFocusButReturnFalse) do
          if v == app then
             return
@@ -723,7 +723,6 @@ local hotkeyList = {
   {mod = "hyper", key = "d", desc = "Dash"},
   {mod = "magic", key = "d", desc = "Discord"},
   {mod = "hyper", key = "f", desc = "DBeaver"},
-  {mod = "hyper", key = "g", desc = "iTerm"},
   {mod = "hyper", key = "h", desc = "Hotkey Help"},
   {mod = "hyper", key = "i", desc = "Ghostty"},
   {mod = "hyper", key = "j", desc = "Emacs"},
@@ -996,7 +995,6 @@ hotkey.bind(magic, "c", appLauncher('Claude'))
 hotkey.bind(hyper, "d", appLauncher('Dash'))
 hotkey.bind(magic, "d", appLauncher('Discord'))
 hotkey.bind(hyper, "f", appLauncher('DBeaver'))
-hotkey.bind(hyper, "g", appLauncher('iTerm'))
 hotkey.bind(hyper, "i", appLauncher('Ghostty'))
 hotkey.bind(hyper, "j", emacsLauncher())
 hotkey.bind(hyper, "k", appLauncher('Arc'))
