@@ -254,6 +254,12 @@ This function defines layer configuration and package management.
                     gtd-zettel-inbox-heading "Inbox")
 #+end_src
 
+*** AI Tools
+
+#+begin_src emacs-lisp :noweb-ref config-layers
+  github-copilot
+#+end_src
+
 ** Additional Packages
 
 #+begin_src emacs-lisp :noweb-ref additional-packages

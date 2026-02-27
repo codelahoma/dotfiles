@@ -114,6 +114,7 @@ This function should only modify configuration layer settings."
                         :variables
                         gtd-zettel-org-directory "~/Dropbox/org/"
                         gtd-zettel-inbox-heading "Inbox")
+     github-copilot
      )
 
    ;; List of additional packages that will be installed without being wrapped
