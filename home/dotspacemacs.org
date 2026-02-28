@@ -48,7 +48,11 @@ The configuration is organized into logical sections for easy navigation and mai
     (let ((homebrew-bin "/opt/homebrew/bin"))
       (when (file-directory-p homebrew-bin)
         (add-to-list 'exec-path homebrew-bin)
-        (setenv "PATH" (concat homebrew-bin ":" (getenv "PATH"))))))
+        (setenv "PATH" (concat homebrew-bin ":" (getenv "PATH")))))
+    (let ((mise-shims (expand-file-name "~/.local/share/mise/shims")))
+      (when (file-directory-p mise-shims)
+        (add-to-list 'exec-path mise-shims)
+        (setenv "PATH" (concat mise-shims ":" (getenv "PATH"))))))
 
   ;; GCC library path for native compilation (macOS + Homebrew)
   (when (and (eq system-type 'darwin)
