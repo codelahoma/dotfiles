@@ -15,3 +15,11 @@ home/personal/
 # Org-mode export files
 home/dotspacemacs-modular.org.org
 home/.config/tmux-sessionizer/stats.json
+
+# Ephemeral / generated
+.sidecar/
+.todos/
+logs/
+.claude/data/
+.claude/worktrees/
+__pycache__/
