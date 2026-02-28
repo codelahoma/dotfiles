@@ -185,6 +185,43 @@ Quick window positioning with hyper + arrow keys.
   hotkey.bind(hyper, "down", centerWindow)
 #+end_src
 
+** Window Switching
+
+Switch between windows of the focused app without cmd+grave accent.
+
+- =hyper+w= flips to the second most recent window (toggle between two)
+- =magic+w= jumps to the stalest (least recently focused) window
+
+#+begin_src lua
+  local function switchToNextWindow()
+    local app = hs.application.frontmostApplication()
+    if not app then return end
+    local wins = app:allWindows()
+    -- Filter to standard, visible windows
+    local visible = hs.fnutils.filter(wins, function(w)
+      return w:isStandard() and not w:isMinimized()
+    end)
+    if #visible < 2 then return end
+    -- Second window in the list is the next most recent
+    visible[2]:focus()
+  end
+
+  local function switchToStalestWindow()
+    local app = hs.application.frontmostApplication()
+    if not app then return end
+    local wins = app:allWindows()
+    local visible = hs.fnutils.filter(wins, function(w)
+      return w:isStandard() and not w:isMinimized()
+    end)
+    if #visible < 2 then return end
+    -- Last window in the list is the least recently focused
+    visible[#visible]:focus()
+  end
+
+  hotkey.bind(hyper, "w", switchToNextWindow)
+  hotkey.bind(magic, "w", switchToStalestWindow)
+#+end_src
+
 * Watchers
 
 System watchers for display changes and USB device events.
@@ -907,6 +944,8 @@ The MouseCircle spoon draws a circle around the mouse pointer to help locate it.
     {mod = "magic", key = "l", desc = "Link Capture"},
     {mod = "magic", key = "space", desc = "Spotify Track"},
     {mod = "magic", key = "h", desc = "Headphones"},
+    {mod = "hyper", key = "w", desc = "Next Window"},
+    {mod = "magic", key = "w", desc = "Stalest Window"},
     {mod = "hyper", key = "left", desc = "Snap Left"},
     {mod = "hyper", key = "right", desc = "Snap Right"},
     {mod = "hyper", key = "up", desc = "Maximize"},

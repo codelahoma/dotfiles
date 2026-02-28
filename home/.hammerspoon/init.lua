@@ -80,6 +80,34 @@ hotkey.bind(hyper, "right", snapRight)
 hotkey.bind(hyper, "up", maximize)
 hotkey.bind(hyper, "down", centerWindow)
 
+local function switchToNextWindow()
+  local app = hs.application.frontmostApplication()
+  if not app then return end
+  local wins = app:allWindows()
+  -- Filter to standard, visible windows
+  local visible = hs.fnutils.filter(wins, function(w)
+    return w:isStandard() and not w:isMinimized()
+  end)
+  if #visible < 2 then return end
+  -- Second window in the list is the next most recent
+  visible[2]:focus()
+end
+
+local function switchToStalestWindow()
+  local app = hs.application.frontmostApplication()
+  if not app then return end
+  local wins = app:allWindows()
+  local visible = hs.fnutils.filter(wins, function(w)
+    return w:isStandard() and not w:isMinimized()
+  end)
+  if #visible < 2 then return end
+  -- Last window in the list is the least recently focused
+  visible[#visible]:focus()
+end
+
+hotkey.bind(hyper, "w", switchToNextWindow)
+hotkey.bind(magic, "w", switchToStalestWindow)
+
 local function getScreenSignature()
   local screens = hs.screen.allScreens()
   local sig = {}
@@ -754,6 +782,8 @@ local hotkeyList = {
   {mod = "magic", key = "l", desc = "Link Capture"},
   {mod = "magic", key = "space", desc = "Spotify Track"},
   {mod = "magic", key = "h", desc = "Headphones"},
+  {mod = "hyper", key = "w", desc = "Next Window"},
+  {mod = "magic", key = "w", desc = "Stalest Window"},
   {mod = "hyper", key = "left", desc = "Snap Left"},
   {mod = "hyper", key = "right", desc = "Snap Right"},
   {mod = "hyper", key = "up", desc = "Maximize"},
