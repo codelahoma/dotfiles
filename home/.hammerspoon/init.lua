@@ -80,9 +80,16 @@ hotkey.bind(hyper, "right", snapRight)
 hotkey.bind(hyper, "up", maximize)
 hotkey.bind(hyper, "down", centerWindow)
 
+-- Apps that handle cmd+` internally for their own view switching
+local cmdGraveApps = { ["com.thebrowsercompany.arc"] = true }
+
 local function switchToNextWindow()
   local app = hs.application.frontmostApplication()
   if not app then return end
+  if cmdGraveApps[app:bundleID()] then
+    hs.eventtap.keyStroke({"cmd"}, "`", 0, app)
+    return
+  end
   local wins = app:allWindows()
   -- Filter to standard, visible windows
   local visible = hs.fnutils.filter(wins, function(w)
@@ -96,6 +103,10 @@ end
 local function switchToStalestWindow()
   local app = hs.application.frontmostApplication()
   if not app then return end
+  if cmdGraveApps[app:bundleID()] then
+    hs.eventtap.keyStroke({"cmd"}, "`", 0, app)
+    return
+  end
   local wins = app:allWindows()
   local visible = hs.fnutils.filter(wins, function(w)
     return w:isStandard() and not w:isMinimized()

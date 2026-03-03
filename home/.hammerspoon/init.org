@@ -193,9 +193,16 @@ Switch between windows of the focused app without cmd+grave accent.
 - =magic+w= jumps to the stalest (least recently focused) window
 
 #+begin_src lua
+  -- Apps that handle cmd+` internally for their own view switching
+  local cmdGraveApps = { ["com.thebrowsercompany.arc"] = true }
+
   local function switchToNextWindow()
     local app = hs.application.frontmostApplication()
     if not app then return end
+    if cmdGraveApps[app:bundleID()] then
+      hs.eventtap.keyStroke({"cmd"}, "`", 0, app)
+      return
+    end
     local wins = app:allWindows()
     -- Filter to standard, visible windows
     local visible = hs.fnutils.filter(wins, function(w)
@@ -209,6 +216,10 @@ Switch between windows of the focused app without cmd+grave accent.
   local function switchToStalestWindow()
     local app = hs.application.frontmostApplication()
     if not app then return end
+    if cmdGraveApps[app:bundleID()] then
+      hs.eventtap.keyStroke({"cmd"}, "`", 0, app)
+      return
+    end
     local wins = app:allWindows()
     local visible = hs.fnutils.filter(wins, function(w)
       return w:isStandard() and not w:isMinimized()
