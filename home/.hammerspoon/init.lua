@@ -5,6 +5,8 @@
 -- NOTE: This file is inspired by and borrows heavily from https://github.com/zzamboni/dot-hammerspoon/blob/master/init.org
 
 hs.logger.defaultLogLevel = "info"
+hs.consoleOnTop(false)
+hs.openConsoleOnDockClick(false)
 
 hyper = {"alt","cmd","ctrl","shift"}
 magic = {"alt","cmd","ctrl"}
@@ -712,43 +714,30 @@ _centeredWindowsFormerPositions = {}
   end
 
   function open750()
-    local url = "https://new.750words.com"
-    local script = string.format([[
-# shows all url+titles of Chrome along with front window+tab url+title
-set titleString to ""
-set windowFound to false
-set tabFound to false
-
-tell application "Google Chrome"
-  set window_list to every window # get the windows
-
-  repeat with the_window in window_list # for every window
-    set tab_list to every tab in the_window # get the tabs
-    set tab_index to 0
-    repeat with the_tab in tab_list # for every tab
-      set tab_index to tab_index + 1
-      set the_title to the title of the_tab
-      if the_title contains "V2 - 750 Words" then
-        set windowFound to true
-        set tabFound to true
-        set active tab index of the_window to tab_index
+    local script = [[
+tell application "Arc"
+  tell front window
+    set sTitles to title of every space
+    repeat with i from 1 to count of sTitles
+      if item i of sTitles is "Arch" then
+        set tTitles to title of every tab of space i
+        repeat with j from 1 to count of tTitles
+          if item j of tTitles contains "750" then
+            tell space i to tell tab j to select
+            activate
+            return
+          end if
+        end repeat
+        -- Not found in Arch space, switch to it and open
+        tell space i to focus
+        exit repeat
       end if
     end repeat
-    if windowFound then exit repeat
-  end repeat
-  if not tabFound then
-    set newTab to make new tab at end of tabs of window 1
-    set URL of newTab to "https://new.750words.com"
-	
-  end if
-
+  end tell
+  open location "https://new.750words.com"
   activate
-
 end tell
-
-
-      ]], url, url)
-
+    ]]
     hs.osascript.applescript(script)
   end
 
@@ -1096,4 +1085,5 @@ hs.ipc.cliInstall("/opt/homebrew")
 
 loadAppStats()
 
+hs.closeConsole()
 hs.alert.show("Config Loaded")
