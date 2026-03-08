@@ -114,6 +114,9 @@ if [ -n "$INSIDE_EMACS" ]; then
     direnv reload
 fi
 
+# Ansible vault password file for secret decryption
+export ANSIBLE_VAULT_PASSWORD_FILE="$HOME/.vault_pass"
+
 # Homeshick for dotfiles (HOMESHICK_DIR set in .zshenv)
 source /opt/homebrew/opt/homeshick/homeshick.sh
 
