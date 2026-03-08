@@ -227,6 +227,13 @@ This function defines layer configuration and package management.
          shell-default-position 'right)
 #+end_src
 
+*** Configuration Management
+
+#+begin_src emacs-lisp :noweb-ref config-layers
+  (ansible :variables
+           ansible-vault-password-file "~/.vault_pass")
+#+end_src
+
 *** UI & Navigation
 
 #+begin_src emacs-lisp :noweb-ref config-layers

@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# save-vault-to-1p: Save an Ansible Vault file to 1Password as a document.
+# Usage: save-vault-to-1p [vault-file]
+
+VAULT_FILE="${1:-secrets.vault.yml}"
+ITEM_TITLE="ansible-vault-$(basename "$(pwd)")"
+
+if [[ ! -f "$VAULT_FILE" ]]; then
+  echo "Error: vault file not found: $VAULT_FILE" >&2
+  exit 1
+fi
+
+if op document get "$ITEM_TITLE" > /dev/null 2>&1; then
+  op document edit "$ITEM_TITLE" "$VAULT_FILE"
+  echo "Updated 1Password document: $ITEM_TITLE"
+else
+  op document create "$VAULT_FILE" --title "$ITEM_TITLE"
+  echo "Created 1Password document: $ITEM_TITLE"
+fi

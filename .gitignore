@@ -17,6 +17,7 @@ home/dotspacemacs-modular.org.org
 home/.config/tmux-sessionizer/stats.json
 
 # Ephemeral / generated
+.worktrees/
 .sidecar/
 .todos/
 logs/
