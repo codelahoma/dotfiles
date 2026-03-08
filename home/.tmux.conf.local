@@ -352,7 +352,7 @@ bind-key t choose-tree
 
 # forget the find window.  That is for chumps — ThePrimeagen
 unbind-key f
-bind-key -r f run-shell "tmux neww ~/bin/tmux-sessionizer"
+bind-key -r f run-shell "tmux neww ~/bin/cmux-sessionizer"
 
 # split-window bindings to be vimish
 bind-key s split-window -v

@@ -61,3 +61,4 @@ export PS1='$ '
 export PATH="$PATH:/Users/rodk/.lmstudio/bin"
 # End of LM Studio CLI section
 
+. "$HOME/.cargo/env"

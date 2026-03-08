@@ -1,0 +1,547 @@
+#!/usr/bin/env zsh
+# cmux-sessionizer - Fuzzy find and manage cmux workspaces backed by tmux sessions
+# Each workspace gets a persistent tmux session that survives cmux restarts.
+
+# Handle subcommands
+SUBCOMMAND=""
+if [[ "$1" == "reconnect" || "$1" == "cleanup" ]]; then
+  SUBCOMMAND="$1"
+  shift
+fi
+
+# Handle preview mode (called by fzf)
+if [[ "$1" == "--preview" ]]; then
+  shift
+  PREVIEW_MODE=true
+  PREVIEW_LINE="$*"
+else
+  PREVIEW_MODE=false
+fi
+
+# --- Config Loading ---
+# Share config with tmux-sessionizer by default, with cmux-specific overrides
+
+# Defaults
+SEARCH_PATHS=(
+  "$HOME/personal"
+  "$HOME/work"
+  "$HOME/github"
+  "$HOME/gitlab"
+  "$HOME/.homesick/repos/dotfiles/home"
+)
+MAX_DEPTH=1
+ENABLE_PREVIEW=false
+ENABLE_STATS=false
+ENABLE_GIT_STATUS=false
+ENABLE_TEMPLATES=false
+INCLUDE_HOME_TOPLEVEL=false
+CLEANUP_DAYS=30
+STATS_FILE="${HOME}/.config/tmux-sessionizer/stats.json"
+TEMPLATE_DIR="${HOME}/.config/cmux-sessionizer/templates"
+
+# Load tmux-sessionizer config first (shared search paths, stats, etc.)
+TMUX_CONFIG_FILE="${HOME}/.config/tmux-sessionizer/config"
+if [[ -f "$TMUX_CONFIG_FILE" ]]; then
+  source "$TMUX_CONFIG_FILE"
+fi
+
+# Load cmux-specific overrides if present
+CMUX_CONFIG_FILE="${HOME}/.config/cmux-sessionizer/config"
+if [[ -f "$CMUX_CONFIG_FILE" ]]; then
+  source "$CMUX_CONFIG_FILE"
+fi
+
+# --- Scanner Detection ---
+
+SCANNER_BIN=""
+for candidate in \
+  "${0:A:h}/tmux-sessionizer-scan" \
+  "${HOME}/.local/bin/tmux-sessionizer-scan" \
+  "${HOME}/bin/tmux-sessionizer-scan"; do
+  if [[ -x "$candidate" ]]; then
+    SCANNER_BIN="$candidate"
+    break
+  fi
+done
+
+# --- Scanner Arguments ---
+
+_scanner_args=(--search-paths "${SEARCH_PATHS[@]}" --max-depth "$MAX_DEPTH")
+[[ "$ENABLE_STATS" == "true" ]] && _scanner_args+=(--enable-stats --stats-file "$STATS_FILE")
+[[ "$ENABLE_GIT_STATUS" == "true" ]] && _scanner_args+=(--enable-git-status)
+
+# --- Helpers ---
+
+extract_directory_from_line() {
+  local line="$1"
+  if [[ "$line" == *$'\t'* ]]; then
+    echo "$line" | cut -d$'\t' -f2
+  else
+    echo "$line"
+  fi
+}
+
+# Extract workspace ref from a cmux list-workspaces output line
+# Input format: "* workspace:N  Title  [selected]" or "  workspace:N  Title"
+extract_workspace_ref() {
+  local line="$1"
+  local ref=$(echo "$line" | awk '{print $1}')
+  [[ "$ref" == "*" ]] && ref=$(echo "$line" | awk '{print $2}')
+  echo "$ref"
+}
+
+# Extract workspace title from a cmux list-workspaces output line
+extract_workspace_title() {
+  local line="$1"
+  echo "$line" | sed 's/^[* ]*workspace:[0-9]* *//' | sed 's/ *\[selected\]$//'
+}
+
+# --- Project Type Detection (shell fallback) ---
+
+detect_project_type() {
+  local dir="$1"
+  [[ -f "$dir/Cargo.toml" ]] && echo "rust" && return
+  [[ -f "$dir/package.json" ]] && echo "nodejs" && return
+  [[ -f "$dir/pyproject.toml" ]] || [[ -f "$dir/setup.py" ]] || [[ -f "$dir/requirements.txt" ]] && echo "python" && return
+  [[ -f "$dir/go.mod" ]] && echo "go" && return
+  [[ -d "$dir/.homesick" ]] && echo "dotfiles" && return
+  if [[ -d "$dir/.git" ]]; then
+    local remote_url
+    remote_url=$(git -C "$dir" remote get-url origin 2>/dev/null)
+    [[ "$remote_url" == *dotfiles* ]] && echo "dotfiles" && return
+  fi
+  [[ -f "$dir/Gemfile" ]] && echo "ruby" && return
+  [[ -f "$dir/pom.xml" ]] || [[ -f "$dir/build.gradle" ]] && echo "java" && return
+  echo "general"
+}
+
+get_project_type_icon() {
+  case "$1" in
+    rust)     echo "🦀" ;;
+    nodejs)   echo "📦" ;;
+    python)   echo "🐍" ;;
+    go)       echo "🐹" ;;
+    dotfiles) echo "🏠" ;;
+    ruby)     echo "💎" ;;
+    java)     echo "☕" ;;
+    *)        echo "💻" ;;
+  esac
+}
+
+get_project_type_color() {
+  case "$1" in
+    rust)     echo "#ff9500" ;;
+    nodejs)   echo "#68a063" ;;
+    python)   echo "#3776ab" ;;
+    go)       echo "#00add8" ;;
+    dotfiles) echo "#9b59b6" ;;
+    ruby)     echo "#cc342d" ;;
+    java)     echo "#b07219" ;;
+    *)        echo "#808080" ;;
+  esac
+}
+
+# --- Frecency Helpers ---
+
+format_last_used() {
+  local last_used="$1"
+  local current_time=$(date +%s)
+  local diff=$((current_time - last_used))
+  if [[ $diff -lt 3600 ]]; then
+    echo "$((diff / 60))m ago"
+  elif [[ $diff -lt 86400 ]]; then
+    echo "$((diff / 3600))h ago"
+  elif [[ $diff -lt 604800 ]]; then
+    echo "$((diff / 86400))d ago"
+  else
+    echo "$((diff / 604800))w ago"
+  fi
+}
+
+# --- Stats Tracking ---
+
+track_session_launch() {
+  local session_path="$1"
+  [[ "$ENABLE_STATS" != "true" ]] && return
+
+  if [[ -n "$SCANNER_BIN" ]]; then
+    "$SCANNER_BIN" --track "$session_path" --stats-file "$STATS_FILE" 2>/dev/null
+  elif command -v jq &>/dev/null; then
+    local stats="{}"
+    [[ -f "$STATS_FILE" ]] && stats=$(cat "$STATS_FILE")
+    local current_time=$(date +%s)
+    local session_key=$(basename "$session_path")
+    mkdir -p "$(dirname "$STATS_FILE")"
+    stats=$(echo "$stats" | jq --arg key "$session_key" \
+                                --arg path "$session_path" \
+                                --arg time "$current_time" \
+      'if .[$key] then
+        .[$key].count += 1 | .[$key].lastUsed = ($time | tonumber)
+      else
+        .[$key] = {path: $path, count: 1, lastUsed: ($time | tonumber)}
+      end')
+    echo "$stats" > "$STATS_FILE"
+  fi
+}
+
+# --- Sidebar Metadata ---
+
+set_workspace_metadata() {
+  local workspace_ref="$1"
+  local project_dir="$2"
+  local project_type=$(detect_project_type "$project_dir")
+  local icon=$(get_project_type_icon "$project_type")
+  local color=$(get_project_type_color "$project_type")
+
+  # Set status pill with project type
+  cmux set-status project_type "$icon $project_type" \
+    --color "$color" \
+    --workspace "$workspace_ref" 2>/dev/null
+
+  # Log git branch if available
+  if [[ -d "$project_dir/.git" ]]; then
+    local branch=$(git -C "$project_dir" branch --show-current 2>/dev/null)
+    if [[ -n "$branch" ]]; then
+      cmux log "branch: $branch" --level info --source git \
+        --workspace "$workspace_ref" 2>/dev/null
+    fi
+  fi
+}
+
+# --- Subcommand: reconnect ---
+if [[ "$SUBCOMMAND" == "reconnect" ]]; then
+  echo "Scanning for orphaned cmux tmux sessions..."
+  orphaned_count=0
+
+  while IFS= read -r tmux_sess; do
+    [[ -z "$tmux_sess" ]] && continue
+
+    # Extract session name parts: cmux-ws<N>-<project_name>
+    if [[ "$tmux_sess" =~ ^cmux-ws[0-9]+-(.+)$ ]]; then
+      project_name="${match[1]}"
+    else
+      continue
+    fi
+
+    # Check if already attached to a cmux workspace
+    existing_ws_ref=""
+    while IFS= read -r ws_line; do
+      ws_title=$(extract_workspace_title "$ws_line")
+      if [[ "$ws_title" == "$project_name" ]]; then
+        existing_ws_ref=$(extract_workspace_ref "$ws_line")
+        break
+      fi
+    done < <(cmux list-workspaces 2>/dev/null)
+
+    if [[ -n "$existing_ws_ref" ]]; then
+      # Workspace exists — check if tmux session actually has a client attached
+      client_count=$(tmux list-clients -t "$tmux_sess" 2>/dev/null | wc -l | tr -d ' ')
+      if [[ "$client_count" -gt 0 ]]; then
+        continue
+      fi
+      # Workspace exists but tmux session has no client — reattach
+      echo "  Reattaching to restored workspace: $tmux_sess → $project_name"
+      local reattach_cmd="tmux attach-session -t '$tmux_sess'"
+      [[ -n "$project_dir" && -d "$project_dir" ]] && reattach_cmd="cd '$project_dir' && $reattach_cmd"
+      cmux send --workspace "$existing_ws_ref" "$reattach_cmd\n" 2>/dev/null
+      orphaned_count=$((orphaned_count + 1))
+      continue
+    fi
+
+    # Find the project directory from stats or search paths
+    project_dir=""
+    if [[ -f "$STATS_FILE" ]] && command -v jq &>/dev/null; then
+      project_dir=$(jq -r --arg key "$project_name" '.[$key].path // empty' "$STATS_FILE" 2>/dev/null)
+    fi
+
+    # Create workspace and reattach
+    echo "  Reattaching: $tmux_sess → $project_name"
+    local orphan_cmd="tmux attach-session -t '$tmux_sess'"
+    [[ -n "$project_dir" && -d "$project_dir" ]] && orphan_cmd="cd '$project_dir' && $orphan_cmd"
+    ws_output=$(cmux new-workspace --command "$orphan_cmd" 2>/dev/null)
+    if [[ "$ws_output" == OK* ]]; then
+      sleep 0.3
+      new_ws_ref=$(extract_workspace_ref "$(cmux list-workspaces 2>/dev/null | tail -1)")
+      if [[ -n "$new_ws_ref" ]]; then
+        cmux workspace-action --action rename --workspace "$new_ws_ref" --title "$project_name" 2>/dev/null
+        [[ -n "$project_dir" && -d "$project_dir" ]] && set_workspace_metadata "$new_ws_ref" "$project_dir"
+      fi
+      orphaned_count=$((orphaned_count + 1))
+    fi
+  done < <(tmux list-sessions -F '#{session_name}' 2>/dev/null | grep '^cmux-')
+
+  if [[ $orphaned_count -eq 0 ]]; then
+    echo "No orphaned sessions found."
+  else
+    echo "Reattached $orphaned_count session(s)."
+  fi
+  exit 0
+fi
+
+# --- Subcommand: cleanup ---
+if [[ "$SUBCOMMAND" == "cleanup" ]]; then
+  echo "Cleaning up stale cmux tmux sessions..."
+  cleaned_count=0
+  current_time=$(date +%s)
+  cutoff=$((current_time - CLEANUP_DAYS * 86400))
+
+  while IFS= read -r tmux_sess; do
+    [[ -z "$tmux_sess" ]] && continue
+
+    # Extract project name
+    if [[ "$tmux_sess" =~ ^cmux-ws[0-9]+-(.+)$ ]]; then
+      project_name="${match[1]}"
+    else
+      continue
+    fi
+
+    should_clean=false
+    reason=""
+
+    # Check if project directory still exists (from stats)
+    if [[ -f "$STATS_FILE" ]] && command -v jq &>/dev/null; then
+      project_dir=$(jq -r --arg key "$project_name" '.[$key].path // empty' "$STATS_FILE" 2>/dev/null)
+      if [[ -n "$project_dir" && ! -d "$project_dir" ]]; then
+        should_clean=true
+        reason="directory missing: $project_dir"
+      fi
+
+      # Check last used time
+      last_used=$(jq -r --arg key "$project_name" '.[$key].lastUsed // 0' "$STATS_FILE" 2>/dev/null)
+      if [[ "$last_used" -gt 0 && "$last_used" -lt "$cutoff" ]]; then
+        should_clean=true
+        reason="last used $(( (current_time - last_used) / 86400 )) days ago (threshold: ${CLEANUP_DAYS}d)"
+      fi
+    fi
+
+    if [[ "$should_clean" == "true" ]]; then
+      echo "  Removing: $tmux_sess ($reason)"
+      tmux kill-session -t "$tmux_sess" 2>/dev/null
+      cleaned_count=$((cleaned_count + 1))
+    fi
+  done < <(tmux list-sessions -F '#{session_name}' 2>/dev/null | grep '^cmux-')
+
+  if [[ $cleaned_count -eq 0 ]]; then
+    echo "No stale sessions found."
+  else
+    echo "Cleaned up $cleaned_count session(s)."
+  fi
+  exit 0
+fi
+
+# --- Preview Mode ---
+
+preview_directory() {
+  local line="$1"
+  local dir=$(extract_directory_from_line "$line")
+  [[ -z "$dir" || ! -d "$dir" ]] && echo "Invalid directory" && return
+
+  local basename_dir=$(basename "$dir")
+  local project_type=$(detect_project_type "$dir")
+  local type_icon=$(get_project_type_icon "$project_type")
+
+  echo "📂 Project: $basename_dir"
+  echo "📍 $dir"
+  echo ""
+
+  if [[ "$ENABLE_STATS" == "true" && -f "$STATS_FILE" ]] && command -v jq &>/dev/null; then
+    local stats_entry=$(jq -r --arg key "$basename_dir" '.[$key] // empty' "$STATS_FILE")
+    if [[ -n "$stats_entry" ]]; then
+      local count=$(echo "$stats_entry" | jq -r '.count')
+      local last_used=$(echo "$stats_entry" | jq -r '.lastUsed')
+      local time_str=$(format_last_used "$last_used")
+      echo "🔥 Used $count times (last: $time_str)"
+      echo ""
+    fi
+  fi
+
+  if [[ -d "$dir/.git" ]]; then
+    echo "Git Status:"
+    cd "$dir" 2>/dev/null || return
+    local branch=$(git branch --show-current 2>/dev/null)
+    [[ -n "$branch" ]] && echo "  Branch: $branch"
+    if git diff-index --quiet HEAD -- 2>/dev/null; then
+      echo "  Status: ✓ Clean"
+    else
+      echo "  Status: ✗ Uncommitted changes"
+    fi
+    local ahead=$(git rev-list --count @{u}..HEAD 2>/dev/null)
+    local behind=$(git rev-list --count HEAD..@{u} 2>/dev/null)
+    [[ -n "$ahead" && "$ahead" -gt 0 ]] && echo "  ↑ $ahead commit(s) ahead"
+    [[ -n "$behind" && "$behind" -gt 0 ]] && echo "  ↓ $behind commit(s) behind"
+    cd - >/dev/null 2>&1
+    echo ""
+  fi
+
+  echo "Project Type: $type_icon $project_type"
+
+  if [[ "$ENABLE_TEMPLATES" == "true" ]]; then
+    if [[ -f "$dir/.cmux-template" ]]; then
+      echo "Template: .cmux-template (custom)"
+    elif [[ -f "$TEMPLATE_DIR/${project_type}.cmux" ]]; then
+      echo "Template: ${project_type}.cmux"
+    else
+      echo "Template: default"
+    fi
+  fi
+}
+
+if [[ "$PREVIEW_MODE" == "true" ]]; then
+  preview_directory "$PREVIEW_LINE"
+  exit 0
+fi
+
+# --- Directory Listing ---
+
+if [[ -n "$SCANNER_BIN" ]]; then
+  formatted_list=$("$SCANNER_BIN" "${_scanner_args[@]}")
+  if [[ $? -ne 0 ]]; then
+    echo "Warning: scanner failed, no fallback yet" >&2
+    exit 1
+  fi
+else
+  echo "Warning: cmux-sessionizer-scan not found" >&2
+  exit 1
+fi
+
+# --- fzf Integration ---
+
+if [[ "$ENABLE_PREVIEW" == "true" ]]; then
+  selected=$(echo "$formatted_list" | fzf \
+    --ansi \
+    --tiebreak=index \
+    --preview="$0 --preview {}" \
+    --preview-window='right:50%:wrap' \
+    --bind='ctrl-/:toggle-preview' \
+    --header='CTRL-/: toggle preview | ENTER: select session')
+else
+  selected=$(echo "$formatted_list" | fzf --ansi --tiebreak=index)
+fi
+
+session_dir=$(extract_directory_from_line "$selected")
+[[ -z "$session_dir" ]] && exit 0
+
+session_name=$(basename "$session_dir" | tr . _)
+
+# --- Session Management ---
+
+track_session_launch "$session_dir"
+
+# Check if a cmux workspace already exists for this project
+# by looking for a tmux session with our naming pattern
+existing_tmux_session=""
+while IFS= read -r tmux_sess; do
+  # Match cmux-ws*-session_name
+  if [[ "$tmux_sess" == cmux-ws*-"$session_name" ]]; then
+    existing_tmux_session="$tmux_sess"
+    break
+  fi
+done < <(tmux list-sessions -F '#{session_name}' 2>/dev/null)
+
+if [[ -n "$existing_tmux_session" ]]; then
+  # Find the cmux workspace showing this session and switch to it
+  found_workspace=""
+  while IFS= read -r ws_line; do
+    # Format: "  workspace:N  Title  [selected]" or "* workspace:N  Title  [selected]"
+    ws_ref=$(extract_workspace_ref "$ws_line")
+    ws_title=$(extract_workspace_title "$ws_line")
+    if [[ "$ws_title" == "$session_name" || "$ws_title" == "$(basename "$session_dir")" ]]; then
+      found_workspace="$ws_ref"
+      break
+    fi
+  done < <(cmux list-workspaces 2>/dev/null)
+
+  if [[ -n "$found_workspace" ]]; then
+    cmux select-workspace --workspace "$found_workspace"
+    exit 0
+  fi
+
+  # Workspace not found but tmux session exists — reattach
+  ws_uuid=$(cmux new-workspace --command "cd '$session_dir' && tmux attach-session -t '$existing_tmux_session'" 2>/dev/null)
+  if [[ -n "$ws_uuid" && "$ws_uuid" == OK* ]]; then
+    ws_id=$(echo "$ws_uuid" | awk '{print $2}')
+    sleep 0.3
+    new_ws_ref=$(extract_workspace_ref "$(cmux list-workspaces 2>/dev/null | grep "$session_name\|Terminal" | tail -1)")
+    if [[ -n "$new_ws_ref" ]]; then
+      cmux workspace-action --action rename --workspace "$new_ws_ref" --title "$(basename "$session_dir")" 2>/dev/null
+      set_workspace_metadata "$new_ws_ref" "$session_dir"
+    fi
+  fi
+  exit 0
+fi
+
+# --- Create New Session ---
+
+# Ensure tmux server is running
+tmux start-server 2>/dev/null
+
+# Determine workspace ref number for naming
+COUNTER_FILE="${HOME}/.config/cmux-sessionizer/ws-counter"
+mkdir -p "$(dirname "$COUNTER_FILE")"
+if [[ -f "$COUNTER_FILE" ]]; then
+  ws_counter=$(cat "$COUNTER_FILE")
+else
+  ws_counter=0
+fi
+ws_counter=$((ws_counter + 1))
+echo "$ws_counter" > "$COUNTER_FILE"
+
+tmux_session_name="cmux-ws${ws_counter}-${session_name}"
+
+# Create tmux session (detached, in project directory)
+tmux new-session -d -s "$tmux_session_name" -c "$session_dir"
+
+# Apply template if enabled
+browser_url=""
+if [[ "$ENABLE_TEMPLATES" == "true" ]]; then
+  project_type=$(detect_project_type "$session_dir")
+  template_file=""
+
+  if [[ -f "$session_dir/.cmux-template" ]]; then
+    template_file="$session_dir/.cmux-template"
+  elif [[ -f "$TEMPLATE_DIR/${project_type}.cmux" ]]; then
+    template_file="$TEMPLATE_DIR/${project_type}.cmux"
+  elif [[ -f "$TEMPLATE_DIR/default.cmux" ]]; then
+    template_file="$TEMPLATE_DIR/default.cmux"
+  fi
+
+  if [[ -n "$template_file" && -f "$template_file" ]]; then
+    BROWSER_URL=""
+    (cd "$session_dir" && source "$template_file" "$tmux_session_name" 2>/dev/null)
+    source <(grep '^BROWSER_URL=' "$template_file" 2>/dev/null || true)
+    browser_url="$BROWSER_URL"
+  fi
+fi
+
+# Create cmux workspace attached to the tmux session
+ws_output=$(cmux new-workspace --command "cd '$session_dir' && tmux attach-session -t '$tmux_session_name'" 2>/dev/null)
+if [[ "$ws_output" != OK* ]]; then
+  echo "Error: Failed to create cmux workspace" >&2
+  exit 1
+fi
+
+# Brief pause for workspace to initialize
+sleep 0.3
+
+# Find the new workspace (it will be the latest one)
+new_ws_ref=""
+while IFS= read -r ws_line; do
+  new_ws_ref=$(extract_workspace_ref "$ws_line")
+done < <(cmux list-workspaces 2>/dev/null)
+
+if [[ -n "$new_ws_ref" ]]; then
+  # Rename workspace to project basename
+  cmux workspace-action --action rename --workspace "$new_ws_ref" --title "$(basename "$session_dir")" 2>/dev/null
+
+  # Set sidebar metadata
+  set_workspace_metadata "$new_ws_ref" "$session_dir"
+
+  # Add browser pane if template requested one
+  if [[ -n "$browser_url" ]]; then
+    cmux new-split right --workspace "$new_ws_ref" 2>/dev/null
+    cmux browser open "$browser_url" 2>/dev/null
+  fi
+
+  # Switch to the new workspace
+  cmux select-workspace --workspace "$new_ws_ref" 2>/dev/null
+fi

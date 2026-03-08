@@ -49,7 +49,7 @@ zle -N edit-command-line
 
 # Key bindings
 bindkey '^X^E' edit-command-line
-bindkey -s ^F "tmux-sessionizer\n"
+bindkey -s ^F "cmux-sessionizer\n"
 bindkey -s ^T "rk_autojump\n"
 
 # Aliases

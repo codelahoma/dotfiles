@@ -10,3 +10,4 @@ export PATH="$PATH:/Users/rodk/.lmstudio/bin"
 
 # Zekko shell integration
 [ -f "/Users/rodk/my-zekko/bin/zekko-shell-integration.sh" ] && source "/Users/rodk/my-zekko/bin/zekko-shell-integration.sh"
+. "$HOME/.cargo/env"
