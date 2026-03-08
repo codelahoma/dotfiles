@@ -98,6 +98,8 @@ This function should only modify configuration layer settings."
             shell-default-term-shell "/bin/zsh"
             shell-default-height 50
             shell-default-position 'right)
+     (ansible :variables
+              ansible-vault-password-file "~/.vault_pass")
      elfeed
      helpful
      ibuffer
