@@ -753,7 +753,8 @@ local hotkeyList = {
   {mod = "hyper", key = "f", desc = "DBeaver"},
   {mod = "hyper", key = "g", desc = "Bambu Studio"},
   {mod = "hyper", key = "h", desc = "Hotkey Help"},
-  {mod = "hyper", key = "i", desc = "Ghostty"},
+  {mod = "hyper", key = "i", desc = "cmux"},
+  {mod = "meh",   key = "i", desc = "Ghostty"},
   {mod = "hyper", key = "j", desc = "Emacs"},
   {mod = "hyper", key = "k", desc = "Arc"},
   {mod = "magic", key = "k", desc = "Marked"},
@@ -890,14 +891,14 @@ local function showHotkeyHelp()
            background: #dee2e6;
            padding: 2px 6px;
            border-radius: 3px;
-           font-size: 11px;
+           font-size: 13px;
            white-space: nowrap;
            min-width: 45px;
            text-align: center;
         }
         .desc {
            color: #212529;
-           font-size: 12px;
+           font-size: 14px;
         }
         .footer {
            padding: 10px 20px;
@@ -1027,7 +1028,8 @@ hotkey.bind(hyper, "d", appLauncher('Dash'))
 hotkey.bind(magic, "d", appLauncher('Discord'))
 hotkey.bind(hyper, "f", appLauncher('DBeaver'))
 hotkey.bind(hyper, "g", appLauncher('BambuStudio'))
-hotkey.bind(hyper, "i", appLauncher('Ghostty'))
+hotkey.bind(hyper, "i", appLauncher('cmux'))
+hotkey.bind(meh, "i", appLauncher('Ghostty'))
 hotkey.bind(hyper, "j", emacsLauncher())
 hotkey.bind(hyper, "k", appLauncher('Arc'))
 hotkey.bind(magic, "k", appLauncher('Marked'))
