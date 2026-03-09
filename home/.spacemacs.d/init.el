@@ -66,9 +66,14 @@ This function should only modify configuration layer settings."
           org-enable-sticky-header t
           org-enable-transclusion-support t
           org-startup-indented t)
-     markdown
      html
      mermaid
+     (json :variables
+           json-fmt-on-save t
+           json-fmt-tool 'prettier)
+     (markdown :variables
+               markdown-open-command "/Applications/Setapp/Marked.app/Contents/MacOS/Marked"
+               markdown-live-preview-engine 'eww)
      (yaml :variables yaml-enable-lsp t)
      csv
      pdf
@@ -91,8 +96,12 @@ This function should only modify configuration layer settings."
                   tree-sitter-fold-enable nil
                   tree-sitter-fold-indicators-enable nil)
      
+     dap
      docker
      git
+     restclient
+     (shell-scripts :variables
+                    shell-scripts-backend 'lsp)
      (shell :variables
             shell-default-shell 'vterm
             shell-default-term-shell "/bin/zsh"
@@ -100,9 +109,12 @@ This function should only modify configuration layer settings."
             shell-default-position 'right)
      (ansible :variables
               ansible-vault-password-file "~/.vault_pass")
+     systemd
+     bm
      elfeed
      helpful
      ibuffer
+     pass
      (spell-checking :variables spell-checking-enable-by-default nil)
      version-control
      (mu4e :variables
@@ -161,7 +173,6 @@ This function should only modify configuration layer settings."
      
      ;; Data
      sqlite3
-     mermaid-mode
      ox-hugo
      )
 
@@ -496,8 +507,8 @@ configuration."
   (require 'auth-source-pass)
   (auth-source-pass-enable)
   (setq auth-source-pass-filename "~/.password-store")
-  ;; Auth sources: password-store for SMTP, authinfo for API keys (gptel)
-  (setq auth-sources '(password-store "~/.authinfo"))
+  ;; Auth sources: password-store for SMTP, authinfo.gpg for API keys/Forge
+  (setq auth-sources '(password-store "~/.authinfo.gpg"))
   
   (with-eval-after-load 'mu4e
     ;; Primary email address (quiets mu4e warning)

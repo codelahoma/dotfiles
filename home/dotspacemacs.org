@@ -187,7 +187,6 @@ This function defines layer configuration and package management.
        org-enable-sticky-header t
        org-enable-transclusion-support t
        org-startup-indented t)
-  markdown
   html
   mermaid
 #+end_src
@@ -195,6 +194,12 @@ This function defines layer configuration and package management.
 *** Data & Formats
 
 #+begin_src emacs-lisp :noweb-ref config-layers
+  (json :variables
+        json-fmt-on-save t
+        json-fmt-tool 'prettier)
+  (markdown :variables
+            markdown-open-command "/Applications/Setapp/Marked.app/Contents/MacOS/Marked"
+            markdown-live-preview-engine 'eww)
   (yaml :variables yaml-enable-lsp t)
   csv
   pdf
@@ -222,8 +227,12 @@ This function defines layer configuration and package management.
                tree-sitter-fold-enable nil
                tree-sitter-fold-indicators-enable nil)
 
+  dap
   docker
   git
+  restclient
+  (shell-scripts :variables
+                 shell-scripts-backend 'lsp)
   (shell :variables
          shell-default-shell 'vterm
          shell-default-term-shell "/bin/zsh"
@@ -236,14 +245,17 @@ This function defines layer configuration and package management.
 #+begin_src emacs-lisp :noweb-ref config-layers
   (ansible :variables
            ansible-vault-password-file "~/.vault_pass")
+  systemd
 #+end_src
 
 *** UI & Navigation
 
 #+begin_src emacs-lisp :noweb-ref config-layers
+  bm
   elfeed
   helpful
   ibuffer
+  pass
   (spell-checking :variables spell-checking-enable-by-default nil)
   version-control
 #+end_src
@@ -310,7 +322,6 @@ This function defines layer configuration and package management.
 
   ;; Data
   sqlite3
-  mermaid-mode
 #+end_src
 
 ** Appearance & Theming
@@ -686,8 +697,8 @@ structure. Maintain the author's voice while suggesting improvements."
   (require 'auth-source-pass)
   (auth-source-pass-enable)
   (setq auth-source-pass-filename "~/.password-store")
-  ;; Auth sources: password-store for SMTP, authinfo for API keys (gptel)
-  (setq auth-sources '(password-store "~/.authinfo"))
+  ;; Auth sources: password-store for SMTP, authinfo.gpg for API keys/Forge
+  (setq auth-sources '(password-store "~/.authinfo.gpg"))
 
   (with-eval-after-load 'mu4e
     ;; Primary email address (quiets mu4e warning)
