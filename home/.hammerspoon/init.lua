@@ -753,8 +753,8 @@ local hotkeyList = {
   {mod = "hyper", key = "f", desc = "DBeaver"},
   {mod = "hyper", key = "g", desc = "Bambu Studio"},
   {mod = "hyper", key = "h", desc = "Hotkey Help"},
-  {mod = "hyper", key = "i", desc = "cmux"},
-  {mod = "meh",   key = "i", desc = "Ghostty"},
+  {mod = "hyper", key = "i", desc = "Ghostty"},
+  {mod = "meh",   key = "i", desc = "cmux"},
   {mod = "hyper", key = "j", desc = "Emacs"},
   {mod = "hyper", key = "k", desc = "Arc"},
   {mod = "magic", key = "k", desc = "Marked"},
@@ -1028,8 +1028,8 @@ hotkey.bind(hyper, "d", appLauncher('Dash'))
 hotkey.bind(magic, "d", appLauncher('Discord'))
 hotkey.bind(hyper, "f", appLauncher('DBeaver'))
 hotkey.bind(hyper, "g", appLauncher('BambuStudio'))
-hotkey.bind(hyper, "i", appLauncher('cmux'))
-hotkey.bind(meh, "i", appLauncher('Ghostty'))
+hotkey.bind(hyper, "i", appLauncher('Ghostty'))
+hotkey.bind(meh, "i", appLauncher('cmux'))
 hotkey.bind(hyper, "j", emacsLauncher())
 hotkey.bind(hyper, "k", appLauncher('Arc'))
 hotkey.bind(magic, "k", appLauncher('Marked'))
