@@ -91,7 +91,7 @@ tmux_conf_theme_window_bg="$tmux_conf_theme_colour_2"
 tmux_conf_theme_highlight_focused_pane=true
 
 # focused pane colours:
-tmux_conf_theme_focused_pane_bg="default"
+tmux_conf_theme_focused_pane_bg="$tmux_conf_theme_colour_1"
 
 # pane border style, possible values are:
 #   - thin (default)
@@ -352,7 +352,7 @@ bind-key t choose-tree
 
 # forget the find window.  That is for chumps — ThePrimeagen
 unbind-key f
-bind-key -r f run-shell "tmux neww ~/bin/cmux-sessionizer"
+bind-key -r f run-shell "tmux neww ~/bin/tmux-sessionizer"
 
 # split-window bindings to be vimish
 bind-key s split-window -v

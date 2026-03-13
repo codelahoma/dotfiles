@@ -24,7 +24,7 @@ MAX_DEPTH=1
 ENABLE_PREVIEW=true        # Show rich preview pane in fzf
 ENABLE_STATS=true          # Track session usage statistics
 ENABLE_GIT_STATUS=true     # Show git status indicators (✓ clean, ✗ dirty, ~ ahead/behind)
-ENABLE_TEMPLATES=true      # Apply session templates based on project type
+ENABLE_TEMPLATES=false      # Apply session templates based on project type
 INCLUDE_HOME_TOPLEVEL=true # Include ~/*/dirs (but not their children) if not in SEARCH_PATHS
 
 # Stats file location
