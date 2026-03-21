@@ -130,15 +130,6 @@ ulimit -n 4096
 # EAT shell integration (Emacs)
 [ -n "$EAT_SHELL_INTEGRATION_DIR" ] && source "$EAT_SHELL_INTEGRATION_DIR/zsh"
 
-# cmux context propagation for tmux
-function ta() {
-  if [ -n "$CMUX_WORKSPACE_ID" ]; then
-    tmux set-environment -g CMUX_WORKSPACE_ID "$CMUX_WORKSPACE_ID"
-    tmux set-environment -g CMUX_SOCKET_PATH "${CMUX_SOCKET_PATH:-/tmp/cmux.sock}"
-  fi
-  tmux attach "$@"
-}
-
 # Local customizations
 if [[ -f ~/.zshrc.local ]]; then
   source ~/.zshrc.local
