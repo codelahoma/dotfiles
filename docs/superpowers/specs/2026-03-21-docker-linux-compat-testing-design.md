@@ -10,7 +10,7 @@ Provide a Docker-based Ubuntu environment that Claude (or any CI tool) can use t
 
 **Out of scope:** macOS-only tools (Hammerspoon, osx layer), credential-dependent features (mail sync, GPG decryption, pass secrets), GUI Emacs, language runtimes beyond what mise bootstraps.
 
-**Prerequisite:** The `.zshrc` must be made cross-platform before the shell tests can pass. It currently has hardcoded Homebrew paths, macOS-specific oh-my-zsh plugins, and unconditional tool activations (fzf, mise, zoxide) that will fail on a fresh Linux container. Making `.zshrc` portable is part of the broader `feat/linux-compatibility` branch work and should be completed before or alongside this Docker test harness.
+**Prerequisite:** Both `.zshrc` and `.zshenv` must be made cross-platform before the shell tests can pass. `.zshenv` has hardcoded `/Users/rodk/` and `/opt/homebrew/` paths plus an unconditional `cargo env` source. `.zshrc` has hardcoded Homebrew paths, macOS-specific oh-my-zsh plugins, and unconditional tool activations. Note that on Ubuntu 24.04, `fd-find` installs as `fdfind` and `bat` installs as `batcat` — the shell config must handle these binary name differences. Making both files portable is part of the broader `feat/linux-compatibility` branch work and should be completed before or alongside this Docker test harness.
 
 ## File Layout
 
@@ -49,9 +49,10 @@ Runs inside the container as `testuser`. Each check prints `PASS` or `FAIL` with
 ### Phase 1 — Clone & Link
 
 1. Install homeshick: `git clone https://github.com/andsens/homeshick.git ~/.homesick/repos/homeshick`
-2. Clone dotfiles: `homeshick clone codelahoma/dotfiles` then `cd ~/.homesick/repos/dotfiles && git checkout $BRANCH`
+2. Clone dotfiles via git directly (avoids implicit link from `homeshick clone`): `git clone https://github.com/codelahoma/dotfiles.git ~/.homesick/repos/dotfiles && cd ~/.homesick/repos/dotfiles && git checkout $BRANCH`
 3. Initialize submodules: `git -C ~/.homesick/repos/dotfiles submodule update --init --recursive`
-4. Link dotfiles: `homeshick link --force dotfiles`
+4. Install gpakosz/.tmux framework: `git clone https://github.com/gpakosz/.tmux.git ~/.tmux && ln -s ~/.tmux/.tmux.conf ~/.tmux.conf` (required for `.tmux.conf.local` to be sourced)
+5. Link dotfiles: `homeshick link --force dotfiles`
 
 ### Phase 2 — Shell
 
@@ -65,7 +66,7 @@ Runs inside the container as `testuser`. Each check prints `PASS` or `FAIL` with
    | History limit | `tmux show -g history-limit` | `100000` | `2000` |
    | Mouse | `tmux show -g mouse` | `on` | `off` |
    | Vi mode | `tmux show -g mode-keys` | `vi` | `emacs` |
-   | Escape time | `tmux show -g escape-time` | `0` | `500` |
+   | Escape time | `tmux show escape-time` | `0` | `500` |
    | Passthrough | `tmux show -g allow-passthrough` | `on` | `off` |
 
 ### Phase 3 — Emacs
