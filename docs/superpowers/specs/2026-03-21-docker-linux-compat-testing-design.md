@@ -57,7 +57,16 @@ Runs inside the container as `testuser`. Each check prints `PASS` or `FAIL` with
 
 5. Verify zsh loads without errors: `zsh -li -c 'echo ok'`
 6. Verify oh-my-zsh is present: `~/.oh-my-zsh/oh-my-zsh.sh` exists
-7. Verify tmux config loads: `tmux new-session -d -s test && tmux kill-session -t test`
+7. Verify tmux config loads correctly by starting a server and checking distinctive custom options. A vanilla tmux would have different defaults for all of these:
+
+   | Check | Command | Expected | Vanilla Default |
+   |-------|---------|----------|-----------------|
+   | Prefix key | `tmux show -g prefix` | `C-a` | `C-b` |
+   | History limit | `tmux show -g history-limit` | `100000` | `2000` |
+   | Mouse | `tmux show -g mouse` | `on` | `off` |
+   | Vi mode | `tmux show -g mode-keys` | `vi` | `emacs` |
+   | Escape time | `tmux show -g escape-time` | `0` | `500` |
+   | Passthrough | `tmux show -g allow-passthrough` | `on` | `off` |
 
 ### Phase 3 — Emacs
 
