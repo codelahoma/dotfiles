@@ -72,8 +72,7 @@ echo "=== Phase 2: Shell ==="
 # Test zsh loads
 check "zsh loads without errors" zsh -li -c 'echo ok'
 
-# Test oh-my-zsh present (submodule at ~/.homesick/repos/dotfiles/home/.oh-my-zsh,
-# symlinked to ~/.oh-my-zsh by homeshick)
+# Test oh-my-zsh present (submodule, symlinked by homeshick)
 check "oh-my-zsh is present" test -f "$HOME/.homesick/repos/dotfiles/home/.oh-my-zsh/oh-my-zsh.sh"
 
 # Test tmux with custom config verification
