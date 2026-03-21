@@ -31,7 +31,6 @@ This function should only modify configuration layer settings."
                treemacs-use-git-mode 'deferred
                treemacs-filewatch-mode t
                treemacs-use-scope-type 'Perspectives)
-     osx
      ;; Python
      (python :variables
              python-fill-column 99
@@ -72,7 +71,6 @@ This function should only modify configuration layer settings."
            json-fmt-on-save t
            json-fmt-tool 'prettier)
      (markdown :variables
-               markdown-open-command "/Applications/Setapp/Marked.app/Contents/MacOS/Marked"
                markdown-live-preview-engine 'eww)
      (yaml :variables yaml-enable-lsp t)
      csv
@@ -118,8 +116,6 @@ This function should only modify configuration layer settings."
      (spell-checking :variables spell-checking-enable-by-default nil)
      version-control
      (mu4e :variables
-           mu4e-installation-path "/opt/homebrew/share/emacs/site-lisp/mu/mu4e"
-           mu4e-mu-binary "/opt/homebrew/bin/mu"
            mu4e-enable-notifications t
            mu4e-enable-mode-line t
            mu4e-org-compose-support t)
@@ -189,7 +185,11 @@ This function should only modify configuration layer settings."
    ;; installs only the used packages but won't delete unused ones. `all'
    ;; installs *all* packages supported by Spacemacs and never uninstalls them.
    ;; (default is `used-only')
-   dotspacemacs-install-packages 'used-only))
+   dotspacemacs-install-packages 'used-only)
+
+  ;; Platform-specific layers (must be inside dotspacemacs/layers, not user-init)
+  (when (eq system-type 'darwin)
+    (push 'osx dotspacemacs-configuration-layers)))
 (defun dotspacemacs/init ()
   "Initialization:
 This function is called at the very beginning of Spacemacs startup,
@@ -305,15 +305,17 @@ configuration."
     (let ((homebrew-bin "/opt/homebrew/bin"))
       (when (file-directory-p homebrew-bin)
         (add-to-list 'exec-path homebrew-bin)
-        (setenv "PATH" (concat homebrew-bin ":" (getenv "PATH")))))
-    (let ((user-bin (expand-file-name "~/bin")))
-      (when (file-directory-p user-bin)
-        (add-to-list 'exec-path user-bin)
-        (setenv "PATH" (concat user-bin ":" (getenv "PATH")))))
-    (let ((mise-shims (expand-file-name "~/.local/share/mise/shims")))
-      (when (file-directory-p mise-shims)
-        (add-to-list 'exec-path mise-shims)
-        (setenv "PATH" (concat mise-shims ":" (getenv "PATH"))))))
+        (setenv "PATH" (concat homebrew-bin ":" (getenv "PATH"))))))
+  
+  ;; Universal paths (useful on both macOS and Linux)
+  (let ((user-bin (expand-file-name "~/bin")))
+    (when (file-directory-p user-bin)
+      (add-to-list 'exec-path user-bin)
+      (setenv "PATH" (concat user-bin ":" (getenv "PATH")))))
+  (let ((mise-shims (expand-file-name "~/.local/share/mise/shims")))
+    (when (file-directory-p mise-shims)
+      (add-to-list 'exec-path mise-shims)
+      (setenv "PATH" (concat mise-shims ":" (getenv "PATH")))))
   
   ;; GCC library path for native compilation (macOS + Homebrew)
   (when (and (eq system-type 'darwin)
@@ -325,6 +327,14 @@ configuration."
   ;; Prevent native compilation of problematic org files
   (setq native-comp-jit-compilation-deny-list '(".*org-element.*" ".*org-macs.*" ".*org-compat.*"))
   (setq comp-deferred-compilation t)
+  ;; mu4e binary/library paths differ by platform
+  (pcase system-type
+    ('darwin
+     (setq mu4e-installation-path "/opt/homebrew/share/emacs/site-lisp/mu/mu4e"
+           mu4e-mu-binary "/opt/homebrew/bin/mu"))
+    ('gnu/linux
+     (setq mu4e-installation-path "/usr/share/emacs/site-lisp/mu4e"
+           mu4e-mu-binary (or (executable-find "mu") "/usr/bin/mu"))))
   ;; Set org files root directory (all org paths built from this)
   ;; Defined in user-init so it's available before packages load
   (defvar my-org-root-directory (expand-file-name "~/Dropbox/org/")
@@ -397,7 +407,7 @@ configuration."
   (use-package ox-reveal
     :after org
     :config
-    (setq org-reveal-root "file:///Users/rodk/.emacs.d/private/reveal.js"))
+    (setq org-reveal-root (concat "file://" (expand-file-name "~/.emacs.d/private/reveal.js"))))
   
   (use-package ox-gfm :after org)        ; GitHub Flavored Markdown
   (use-package ox-jira :after org)       ; JIRA markup
@@ -442,8 +452,15 @@ configuration."
         `(("." . ,(concat user-emacs-directory "backups"))))
   (setq create-lockfiles nil)
   
-  ;; Browse URL - use system handler (routes through Hammerspoon URLDispatcher)
-  (setq browse-url-browser-function 'browse-url-default-macosx-browser)
+  ;; Markdown preview (macOS only; Linux falls back to eww)
+  (when (eq system-type 'darwin)
+    (setq markdown-open-command "/Applications/Setapp/Marked.app/Contents/MacOS/Marked"))
+  
+  ;; Browse URL - use platform-appropriate handler
+  (setq browse-url-browser-function
+        (pcase system-type
+          ('darwin 'browse-url-default-macosx-browser)
+          ('gnu/linux 'browse-url-xdg-open)))
     (use-package gptel
       :after org
       :config
@@ -574,9 +591,17 @@ configuration."
              (sender (plist-get from :email)))
         (mu4e-search (format "maildir:/INBOX from:%s" sender))))
   
+    ;; Custom action: move message to Archive and advance to next
+    (defun rk/mu4e-action-archive (msg)
+      "Move MSG to the Archive folder and view the next message."
+      (mu4e--server-move (mu4e-message-field msg :docid) "/Archive" "+S-u-N")
+      (mu4e-view-headers-next))
+  
     ;; View actions - press 'a' in message view to see available actions
     (add-to-list 'mu4e-view-actions
-                 '("Ssearch for sender" . rk/mu4e-action-search-sender) t))
+                 '("Ssearch for sender" . rk/mu4e-action-search-sender) t)
+    (add-to-list 'mu4e-view-actions
+                 '("Aarchive" . rk/mu4e-action-archive) t))
   
   ;; Make mu4e buffers shared across all perspectives/layouts
   ;; This prevents "buffer not in current perspective" errors when
@@ -661,6 +686,46 @@ configuration."
   (spacemacs/set-leader-keys
     "qq" 'delete-frame
     "qQ" 'spacemacs/prompt-kill-emacs)
+  ;; Use overlays for org folding (more reliable than text-properties in some modes)
+  (setq org-fold-core-style 'overlays)
+  
+  ;; Safe local variables (project-specific .dir-locals.el values)
+  (setq safe-local-variable-values
+        '((projectile-project-name . "org-files")
+          (typescript-backend . tide)
+          (typescript-backend . lsp)
+          (javascript-backend . tide)
+          (javascript-backend . tern)
+          (javascript-backend . lsp)))
+  
+  ;; Paradox (package management UI) - suppress GitHub token prompt
+  (setq paradox-github-token t)
+  (custom-set-faces
+   '(fixed-pitch ((t (:family "FiraMono Nerd Font" :height 1.0))))
+   '(variable-pitch ((t (:family "Source Sans Pro" :height 1.1))))
+   '(org-block ((t (:inherit fixed-pitch :height 0.8))))
+   '(org-code ((t (:inherit (shadow fixed-pitch)))))
+   '(org-date ((t (:inherit (font-lock-comment-face fixed-pitch) :height 0.9))))
+   '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+   '(org-document-title ((t (:inherit default :weight normal :inherit fixed-pitch :height 2.5 :underline nil))))
+   '(org-done ((t (:font "Fira Sans" :height 1.0 :weight bold))))
+   '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
+   '(org-level-1 ((t (:inherit default :weight normal :inherit fixed-pitch :height 1.8))))
+   '(org-level-2 ((t (:inherit default :weight normal :inherit fixed-pitch :height 1.5))))
+   '(org-level-3 ((t (:inherit default :weight normal :inherit fixed-pitch :height 1.4))))
+   '(org-level-4 ((t (:inherit default :weight normal :inherit fixed-pitch :height 1.3))))
+   '(org-level-5 ((t (:inherit default :weight normal :inherit fixed-pitch :height 1.2))))
+   '(org-level-6 ((t (:inherit default :weight normal :inherit fixed-pitch :height 1.2))))
+   '(org-level-7 ((t (:inherit default :weight normal :inherit fixed-pitch :height 1.2))))
+   '(org-level-8 ((t (:inherit default :weight normal :inherit fixed-pitch :height 1.2))))
+   '(org-link ((t (:underline t))))
+   '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+   '(org-property-value ((t (:inherit fixed-pitch))))
+   '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+   '(org-table ((t (:inherit fixed-pitch))))
+   '(org-tag ((t (:inherit (shadow fixed-pitch) :height 0.5))))
+   '(org-todo ((t (:font "Fira Sans" :height 0.8))))
+   '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
   ;; User-defined prefix
   (spacemacs/declare-prefix "o" "user-defined")
   

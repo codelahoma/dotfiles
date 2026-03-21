@@ -126,7 +126,7 @@
 
   ;; Org-reveal
   (setq org-re-reveal-title-slide "<h1 class='title'>%t</h1><h2 class='author'>%a</h2><p class='email'>%e</p>")
-  (setq org-re-reveal-root "file:///Users/rodk/.emacs.d/private/reveal.js-4.1.0")
+  (setq org-re-reveal-root (concat "file://" (expand-file-name "~/.emacs.d/private/reveal.js")))
 
   ;; Refiling refinements
   ;; source: https://blog.aaronbieber.com/2017/03/19/organizing-notes-with-refile.html
