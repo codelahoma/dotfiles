@@ -3,15 +3,22 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Homebrew (must be early, many tools depend on this PATH)
-eval "$(/opt/homebrew/bin/brew shellenv)"
+# Homebrew (macOS)
+if [[ -f /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 
 # Oh-My-Zsh configuration
 ZSH=$HOME/.oh-my-zsh
 export ZSH_THEME="powerlevel10k/powerlevel10k"
 
-# Oh-My-Zsh plugins
-plugins=(1password brew eza fzf git github npm macos wakatime zsh-autosuggestions zoxide)
+# Core plugins (cross-platform)
+plugins=(eza fzf git github npm zsh-autosuggestions zoxide)
+
+# macOS-only plugins
+if [[ "$OSTYPE" == darwin* ]]; then
+  plugins+=(1password brew macos wakatime)
+fi
 
 # Plugin configuration
 zstyle ":omz:plugins:eza" 'dirs-first' yes
@@ -54,11 +61,21 @@ bindkey -s ^T "rk_autojump\n"
 
 # Aliases
 alias mmv='noglob zmv -W'
-alias le='open -a /opt/homebrew/opt/emacs-plus/Emacs.app'
 alias emc="emacsclient -nw"
 alias ccat='/bin/cat'
-alias cat='/opt/homebrew/bin/bat'
 alias Ls="/bin/ls"
+
+if [[ "$OSTYPE" == darwin* ]]; then
+  alias le='open -a /opt/homebrew/opt/emacs-plus/Emacs.app'
+  alias cat='/opt/homebrew/bin/bat'
+else
+  # On Ubuntu/Debian, bat is installed as batcat
+  if command -v batcat &>/dev/null; then
+    alias cat='batcat'
+  elif command -v bat &>/dev/null; then
+    alias cat='bat'
+  fi
+fi
 alias rm='rm -i'
 alias ohmyzsh="emacsclient -n ~/.oh-my-zsh"
 alias orgg='(cd ~/personal/org-files && git-sync && cd .catalyst && git-sync)'
@@ -82,10 +99,29 @@ function gi() {
 }
 
 # FZF configuration
-export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
-export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always --line-range :500 {}'"
+# Determine fd and bat binary names (Ubuntu uses fdfind/batcat)
+if command -v fd &>/dev/null; then
+  _fd_cmd="fd"
+elif command -v fdfind &>/dev/null; then
+  _fd_cmd="fdfind"
+fi
+
+if command -v bat &>/dev/null; then
+  _bat_cmd="bat"
+elif command -v batcat &>/dev/null; then
+  _bat_cmd="batcat"
+fi
+
+if [[ -n "${_fd_cmd:-}" ]]; then
+  export FZF_DEFAULT_COMMAND="$_fd_cmd --hidden --strip-cwd-prefix --exclude .git"
+  export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+  export FZF_ALT_C_COMMAND="$_fd_cmd --type=d --hidden --strip-cwd-prefix --exclude .git"
+fi
+
+if [[ -n "${_bat_cmd:-}" ]]; then
+  export FZF_CTRL_T_OPTS="--preview '$_bat_cmd -n --color=always --line-range :500 {}'"
+fi
+
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
 # FZF theme
@@ -98,18 +134,22 @@ cyan="#2CF9ED"
 export FZF_DEFAULT_OPTS="--color=fg:${fg},bg:${bg},hl:${purple},fg+:${fg},bg+:${bg_highlight},hl+:${purple},info:${blue},prompt:${cyan},pointer:${cyan},marker:${cyan},spinner:${cyan},header:${cyan}"
 
 _fzf_compgen_path() {
-    fd --hidden --exclude .git . "$1"
+    ${_fd_cmd:-fd} --hidden --exclude .git . "$1"
 }
 
 _fzf_compgen_dir() {
-    fd --type=d --hidden --exclude .git . "$1"
+    ${_fd_cmd:-fd} --type=d --hidden --exclude .git . "$1"
 }
 
-eval "$(fzf --zsh)"
+if command -v fzf &>/dev/null; then
+  eval "$(fzf --zsh)"
+fi
 
 # Tool integrations
 # mise for runtime version management
-eval "$(mise activate zsh)"
+if command -v mise &>/dev/null; then
+  eval "$(mise activate zsh)"
+fi
 if [ -n "$INSIDE_EMACS" ]; then
     direnv reload
 fi
@@ -118,11 +158,18 @@ fi
 export ANSIBLE_VAULT_PASSWORD_FILE="$HOME/.vault_pass"
 
 # Homeshick for dotfiles (HOMESHICK_DIR set in .zshenv)
-source /opt/homebrew/opt/homeshick/homeshick.sh
+# Homeshick (HOMESHICK_DIR set in .zshenv)
+if [[ -f /opt/homebrew/opt/homeshick/homeshick.sh ]]; then
+  source /opt/homebrew/opt/homeshick/homeshick.sh
+elif [[ -f "$HOME/.homesick/repos/homeshick/homeshick.sh" ]]; then
+  source "$HOME/.homesick/repos/homeshick/homeshick.sh"
+fi
 
 # Environment variables
-export DISPLAY_MAC=`ifconfig en0 | grep "inet " | cut -d " " -f2`:0
-export HELPDIR=/usr/local/share/zsh/help
+if [[ "$OSTYPE" == darwin* ]]; then
+  export DISPLAY_MAC=$(ifconfig en0 2>/dev/null | grep "inet " | cut -d " " -f2):0
+  export HELPDIR=/usr/local/share/zsh/help
+fi
 
 # System limits
 ulimit -n 4096
@@ -136,8 +183,14 @@ if [[ -f ~/.zshrc.local ]]; then
 fi
 
 # Additional plugins (syntax-highlighting must be last)
-source ~/fzf-git.sh/fzf-git.sh
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+[[ -f ~/fzf-git.sh/fzf-git.sh ]] && source ~/fzf-git.sh/fzf-git.sh
+
+# zsh-syntax-highlighting (must be last)
+if [[ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
+  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+elif [[ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
+  source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi
 
 # Powerlevel10k configuration (after oh-my-zsh)
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
