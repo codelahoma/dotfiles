@@ -372,6 +372,12 @@ if [[ "$session_created" == "true" && "$ENABLE_TEMPLATES" == "true" ]]; then
     fi
 fi
 
+# Propagate cmux context into tmux so hooks can notify the correct workspace
+if [[ -n "$CMUX_WORKSPACE_ID" ]]; then
+    tmux set-environment -g CMUX_WORKSPACE_ID "$CMUX_WORKSPACE_ID"
+    tmux set-environment -g CMUX_SOCKET_PATH "${CMUX_SOCKET_PATH:-/tmp/cmux.sock}"
+fi
+
 # Attach or switch to session depending on context
 if [ -z "$TMUX" ]; then
     tmux attach -t "$session_name"
