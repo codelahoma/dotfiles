@@ -1,4 +1,4 @@
 [submodule "home/.oh-my-zsh"]
 	path = home/.oh-my-zsh
-	url = https://github.com/codelahoma/oh-my-zsh
+	url = https://github.com/codelahoma/oh-my-zsh.git
 	branch = rodk

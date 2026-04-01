@@ -1,6 +1,7 @@
 home/.pentadactyl/info/
 .DS_Store
 /home/.emacs.d/private/framegeometry
+home/.spacemacs.d/custom.el
 .direnv/
 .envrc
 display.md

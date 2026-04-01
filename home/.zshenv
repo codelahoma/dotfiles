@@ -59,4 +59,4 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
     export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
 fi
-. "$HOME/.cargo/env"
+[[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"

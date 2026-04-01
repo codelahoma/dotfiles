@@ -9,6 +9,6 @@
       (add-hook 'after-make-frame-functions #'rk-layout-apply-geometry)
       (add-hook 'delete-frame-functions #'rk-layout-save-framegeometry))
   ;; Standalone mode: use init/quit hooks (legacy behavior)
-  (when window-system
+  (when (display-graphic-p)
     (add-hook 'after-init-hook (lambda () (rk-layout-apply-geometry (selected-frame))))
     (add-hook 'kill-emacs-hook #'rk-layout-save-framegeometry)))
