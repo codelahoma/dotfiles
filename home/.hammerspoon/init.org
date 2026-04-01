@@ -22,15 +22,16 @@
 - [[#menu-hammer---spacemacs-style-modal-menu-manager-wip][Menu Hammer - Spacemacs style modal menu manager (wip)]]
 - [[#window-and-screen-manipulation][Window and Screen Manipulation]]
   - [[#window-snapping][Window Snapping]]
+  - [[#window-switching][Window Switching]]
 - [[#watchers][Watchers]]
   - [[#screen-watcher][Screen Watcher]]
   - [[#usb-device-watcher][USB Device Watcher]]
 - [[#url-dispatching-to-site-specific-browsers][URL dispatching to site-specific browsers]]
 - [[#global-key-bindings][Global Key Bindings]]
-- [[#show-application-keybindings][Show application keybindings]]
 - [[#find-mouse-pointer][Find Mouse Pointer]]
 - [[#fast-navigation-to-core-apps][Fast navigation to core apps]]
   - [[#helper-functions][Helper Functions]]
+  - [[#hotkey-help-display][Hotkey Help Display]]
   - [[#key-bindings][Key Bindings]]
 - [[#caffeinate][Caffeinate]]
 - [[#load-local-config][Load Local Config]]
@@ -348,17 +349,6 @@ What's playing?
   hotkey.bind(magic, 's', setSpeakers)
 #+end_src
 
-* Show application keybindings
-
-The KSheet spoon provides for showing the keybindings for the currently active application.
-
-#+begin_src lua
-  Install:andUse("KSheet", {
-                   hotkeys = {
-                     toggle = { hyper, "-" }
-                   }
-  })
-#+end_src
 
 * Find Mouse Pointer
 
@@ -912,7 +902,8 @@ The MouseCircle spoon draws a circle around the mouse pointer to help locate it.
     {mod = "magic", key = "c", desc = "Claude"},
     {mod = "hyper", key = "d", desc = "Dash"},
     {mod = "magic", key = "d", desc = "Discord"},
-    {mod = "hyper", key = "f", desc = "DBeaver"},
+    {mod = "hyper", key = "f", desc = "Fusion"},
+    {mod = "magic", key = "f", desc = "Finder"},
     {mod = "hyper", key = "g", desc = "Bambu Studio"},
     {mod = "hyper", key = "h", desc = "Hotkey Help"},
     {mod = "hyper", key = "i", desc = "Ghostty"},
@@ -1192,7 +1183,8 @@ The MouseCircle spoon draws a circle around the mouse pointer to help locate it.
   hotkey.bind(magic, "c", appLauncher('Claude'))
   hotkey.bind(hyper, "d", appLauncher('Dash'))
   hotkey.bind(magic, "d", appLauncher('Discord'))
-  hotkey.bind(hyper, "f", appLauncher('DBeaver'))
+  hotkey.bind(hyper, "f", appLauncher('Autodesk Fusion'))
+  hotkey.bind(magic, "f", appLauncher('Finder'))
   hotkey.bind(hyper, "g", appLauncher('BambuStudio'))
   hotkey.bind(hyper, "i", appLauncher('Ghostty'))
   hotkey.bind(meh, "i", appLauncher('cmux'))
