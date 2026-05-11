@@ -27,6 +27,7 @@ This function should only modify configuration layer settings."
      spacemacs-navigation
      syntax-checking
      theming
+     toml
      (treemacs :variables
                treemacs-use-git-mode 'deferred
                treemacs-filewatch-mode t
