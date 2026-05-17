@@ -4,6 +4,7 @@ export PATH="/Users/rodk/bin:/usr/local/opt/qt@5.5/bin:$PATH"
 export PATH="/opt/homebrew/opt/sqlite/bin:$PATH"
 export PATH="$PATH:/Users/rodk/.lmstudio/bin"
 export PATH=/Users/rodk/Library/Python/3.9/bin:$PATH
+export PATH="/Users/rodk/.bun/bin:$PATH"
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:/usr/local/man:$MANPATH"
 
 # Default editor
