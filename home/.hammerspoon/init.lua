@@ -735,6 +735,133 @@ end tell
     hs.osascript.applescript(script)
   end
 
+local promptAutomationChooser = nil
+
+  local codelahomaReferenceImage =
+    os.getenv("HOME") .. "/Pictures/ChatGPT/codelahoma-reference.png"
+
+  local codelahomaBaselinePrompt = [[
+Use the attached image as the visual reference for the recurring character Codelahoma.
+
+Preserve the character identity, general design language, proportions, and visual continuity. Do not include the name "Codelahoma" as visible text unless I explicitly ask for it.
+
+Request:
+]]
+
+  local function pasteIntoFrontmostApp()
+    hs.eventtap.keyStroke({ "cmd" }, "v")
+  end
+
+  local function setClipboardToImageFile(imagePath)
+    local image = hs.image.imageFromPath(imagePath)
+
+    if image == nil then
+      hs.alert.show("Could not load image: " .. imagePath)
+      return false
+    end
+
+    local ok = hs.pasteboard.writeObjects(image)
+
+    if not ok then
+      hs.alert.show("Could not write image to clipboard")
+      return false
+    end
+
+    return true
+  end
+
+  local function setClipboardToText(text)
+    local ok = hs.pasteboard.writeObjects(text)
+
+    if not ok then
+      hs.alert.show("Could not write text to clipboard")
+      return false
+    end
+
+    return true
+  end
+
+  local function ensurePromptTarget(targetApp)
+    local targetName = targetApp and targetApp:name() or ""
+
+    if targetName ~= "ChatGPT" then
+      hs.alert.show("Click into ChatGPT first")
+      return false
+    end
+
+    targetApp:activate()
+    return true
+  end
+
+  local function insertCodelahomaBaseline(targetApp)
+    if not ensurePromptTarget(targetApp or hs.application.frontmostApplication()) then
+      return
+    end
+
+    hs.timer.doAfter(0.2, function()
+      if not setClipboardToImageFile(codelahomaReferenceImage) then
+        return
+      end
+
+      pasteIntoFrontmostApp()
+
+      -- Give ChatGPT time to accept/render the pasted image attachment.
+      hs.timer.doAfter(1.5, function()
+        if not setClipboardToText(codelahomaBaselinePrompt) then
+          return
+        end
+
+        pasteIntoFrontmostApp()
+      end)
+    end)
+  end
+
+  local promptAutomationActions = {
+    ["codelahoma-baseline"] = insertCodelahomaBaseline,
+  }
+
+  local promptAutomationChoices = {
+    {
+      text = "Codelahoma reference prompt",
+      subText = "Paste reference image, then baseline prompt text",
+      id = "codelahoma-baseline",
+    },
+  }
+
+  local function showPromptAutomationChooser()
+    local targetApp = hs.application.frontmostApplication()
+
+    if promptAutomationChooser then
+      promptAutomationChooser:delete()
+      promptAutomationChooser = nil
+    end
+
+    promptAutomationChooser = hs.chooser.new(function(choice)
+      if not choice then
+        return
+      end
+
+      local action = promptAutomationActions[choice.id]
+      if action then
+        action(targetApp)
+      end
+    end)
+
+    promptAutomationChooser
+      :placeholderText("Prompt automation")
+      :choices(promptAutomationChoices)
+      :searchSubText(true)
+      :show()
+  end
+
+  hs.urlevent.bind("promptAutomationChooser", function()
+    showPromptAutomationChooser()
+  end)
+
+  hs.urlevent.bind("insertCodelahomaBaseline", function()
+    insertCodelahomaBaseline(hs.application.frontmostApplication())
+  end)
+
 -- Hotkey reference data
 local hotkeyList = {
   {mod = "hyper", key = "a", desc = "Stickies"},
@@ -762,7 +889,7 @@ local hotkeyList = {
   {mod = "hyper", key = "r", desc = "Reload HS"},
   {mod = "hyper", key = "s", desc = "Grid"},
   {mod = "magic", key = "s", desc = "Safari"},
-  {mod = "hyper", key = "t", desc = "DEVONthink"},
+  {mod = "hyper", key = "t", desc = "T3 Code Alpha"},
   {mod = "hyper", key = "u", desc = "750 Words"},
   {mod = "hyper", key = "v", desc = "Paste"},
   {mod = "magic", key = "z", desc = "Zotero"},
@@ -774,6 +901,7 @@ local hotkeyList = {
   {mod = "magic", key = "j", desc = "Journal"},
   {mod = "magic", key = "t", desc = "Clock Toggle"},
   {mod = "magic", key = "o", desc = "Note Clocked"},
+  {mod = "magic", key = "return", desc = "Prompt Automations"},
   {mod = "magic", key = "a", desc = "Agenda Today"},
   {mod = "magic", key = "l", desc = "Link Capture"},
   {mod = "magic", key = "space", desc = "Spotify Track"},
@@ -1038,7 +1166,7 @@ hotkey.bind(hyper, "q", appLauncher('1Password'))
 hotkey.bind(hyper, "r", hs.reload)
 hotkey.bind(hyper, "s", hs.grid.show)
 hotkey.bind(magic, "s", appLauncher("Safari"))
-hotkey.bind(hyper, "t", appLauncher("DEVONthink 3"))
+hotkey.bind(hyper, "t", appLauncher("com.t3tools.t3code"))
 hotkey.bind(hyper, "u", open750)
 hotkey.bind(hyper, "v", pasteLauncher())
 hotkey.bind(magic, "z", appLauncher("Zotero"))
@@ -1052,6 +1180,7 @@ hotkey.bind(magic, "t", clockToggle)
 hotkey.bind(magic, "o", noteToClocked)
 hotkey.bind(magic, "a", agendaToday)
 hotkey.bind(magic, "l", linkCapture)
+hotkey.bind(magic, "return", showPromptAutomationChooser)
 
 caffeine = hs.menubar.new()
 hs.caffeinate.set("system", true, false)
