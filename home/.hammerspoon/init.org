@@ -1032,7 +1032,8 @@ Request:
     {mod = "hyper", key = "a", desc = "Stickies"},
     {mod = "hyper", key = "b", desc = "ChatGPT"},
     {mod = "magic", key = "b", desc = "Bazecor"},
-    {mod = "hyper", key = "c", desc = "HS Console"},
+    {mod = "hyper", key = "c", desc = "Codex"},
+    {mod = "meh",   key = "c", desc = "HS Console"},
     {mod = "magic", key = "c", desc = "Claude"},
     {mod = "hyper", key = "d", desc = "Dash"},
     {mod = "magic", key = "d", desc = "Discord"},
@@ -1314,7 +1315,8 @@ Request:
   hotkey.bind(hyper, "a", appLauncher('Stickies'))
   hotkey.bind(hyper, "b", appLauncher('ChatGPT'))
   hotkey.bind(magic, "b", appLauncher('Bazecor'))
-  hotkey.bind(hyper, "c", hs.toggleConsole)
+  hotkey.bind(hyper, "c", appLauncher("com.openai.codex"))
+  hotkey.bind(meh, "c", hs.toggleConsole)
   hotkey.bind(magic, "c", appLauncher('Claude'))
   hotkey.bind(hyper, "d", appLauncher('Dash'))
   hotkey.bind(magic, "d", appLauncher('Discord'))
