@@ -25,3 +25,10 @@ logs/
 .claude/data/
 .claude/worktrees/
 __pycache__/
+
+# Private agent configuration tracked by local/private overlay repo
+CLAUDE.md
+.claude/
+AGENTS.md
+.codex/
+.agent-private/
