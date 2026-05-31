@@ -174,11 +174,13 @@ Zoom = "us.zoom.xos"
 Safari = "com.apple.Safari"
 Arc = "company.thebrowser.Browser"
 Comet = "ai.perplexity.comet"
+Zen = "app.zen-browser.zen"
 
 -- DefaultBrowser = Safari
 -- DefaultBrowser = Chrome
 -- DefaultBrowser = Comet
-DefaultBrowser = Arc
+-- DefaultBrowser = Arc
+DefaultBrowser = Zen
 
 Install:andUse("URLDispatcher",
               {
@@ -879,8 +881,10 @@ local hotkeyList = {
   {mod = "hyper", key = "i", desc = "Ghostty"},
   {mod = "meh",   key = "i", desc = "cmux"},
   {mod = "hyper", key = "j", desc = "Emacs"},
-  {mod = "hyper", key = "k", desc = "Arc"},
-  {mod = "magic", key = "k", desc = "Marked"},
+  {mod = "hyper", key = "k", desc = "Zen"},
+  {mod = "magic", key = "k", desc = "Arc"},
+  {mod = "magic", key = "m", desc = "Marked"},
+  {mod = "meh",   key = "m", desc = "Messages"},
   {mod = "meh",   key = "k", desc = "Chrome"},
   {mod = "meh",   key = "l", desc = "Fantastical"},
   {mod = "hyper", key = "m", desc = "Spark Mail"},
@@ -891,6 +895,8 @@ local hotkeyList = {
   {mod = "hyper", key = "s", desc = "Grid"},
   {mod = "magic", key = "s", desc = "Safari"},
   {mod = "hyper", key = "t", desc = "T3 Code Alpha"},
+  {mod = "meh",   key = "t", desc = "Org Clock Toggle"},
+  {mod = "magic", key = "t", desc = "Tailscale"},
   {mod = "hyper", key = "u", desc = "750 Words"},
   {mod = "hyper", key = "v", desc = "Paste"},
   {mod = "magic", key = "z", desc = "Zotero"},
@@ -900,7 +906,6 @@ local hotkeyList = {
   {mod = "magic", key = "n", desc = "Org Capture"},
   {mod = "magic", key = "i", desc = "Brain Dump"},
   {mod = "magic", key = "j", desc = "Journal"},
-  {mod = "magic", key = "t", desc = "Clock Toggle"},
   {mod = "magic", key = "o", desc = "Note Clocked"},
   {mod = "magic", key = "return", desc = "Prompt Automations"},
   {mod = "magic", key = "a", desc = "Agenda Today"},
@@ -1157,8 +1162,10 @@ hotkey.bind(hyper, "g", appLauncher('BambuStudio'))
 hotkey.bind(hyper, "i", appLauncher('Ghostty'))
 hotkey.bind(meh, "i", appLauncher('cmux'))
 hotkey.bind(hyper, "j", emacsLauncher())
-hotkey.bind(hyper, "k", appLauncher('Arc'))
-hotkey.bind(magic, "k", appLauncher('Marked'))
+hotkey.bind(hyper, "k", appLauncher('Zen'))
+hotkey.bind(magic, "k", appLauncher('Arc'))
+hotkey.bind(magic, "m", appLauncher('Marked'))
+hotkey.bind(meh, "m", appLauncher('Messages'))
 hotkey.bind(meh, "k", appLauncher('Google Chrome'))
 hotkey.bind(meh, "l", appLauncher('Fantastical'))
 hotkey.bind(hyper, "m", appLauncher('Spark Mail'))
@@ -1178,7 +1185,8 @@ hotkey.bind(magic, "/", showAppStats)
 hotkey.bind(magic, "n", quickOrgCapture)
 hotkey.bind(magic, "i", brainDump)
 hotkey.bind(magic, "j", quickJournal)
-hotkey.bind(magic, "t", clockToggle)
+hotkey.bind(meh, "t", clockToggle)
+hotkey.bind(magic, "t", appLauncher('Tailscale'))
 hotkey.bind(magic, "o", noteToClocked)
 hotkey.bind(magic, "a", agendaToday)
 hotkey.bind(magic, "l", linkCapture)
